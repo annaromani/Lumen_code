@@ -50,12 +50,12 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
  integer     :: i1,ik,is,rho_syms,ir,ik_mem
  real(SP)    :: rho_no_sym(fft_size)
  !
-  call timing('FL Density',OPR='start')
+ call timing('FL Density',OPR='start')
  !
-!$OMP WORKSHARE  
+ !$OMP WORKSHARE  
  rho=rZERO
  rho_no_sym=rZERO
-!$OMP END WORKSHARE 
+ !$OMP END WORKSHARE 
  !
  do ik=1,Xk%nibz
    !  
@@ -63,11 +63,11 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
    ik_mem=PAR_Xk_ibz_index(ik)
    !
    do is=1,n_sp_pol
-!$OMP WORKSHARE  
+     !$OMP WORKSHARE  
      forall(ir=1:fft_size)
        rho_no_sym(ir)=rho_no_sym(ir)+real(spin_occ,SP)*Xk%weights(ik)*sum(abs(VAL_BANDS(ir,:en%nbf(is),ik_mem,is))**2._SP)
      end forall
-!$OMP END WORKSHARE  
+     !$OMP END WORKSHARE  
    enddo
    !
  enddo
@@ -76,19 +76,20 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
  !
  ! Simmetrization
  !
-!$OMP WORKSHARE  
+ !$OMP WORKSHARE  
  rho_syms=nsym/(i_time_rev+1)
-!$OMP END WORKSHARE  
+ !$OMP END WORKSHARE  
  !
-!$OMP WORKSHARE  
+ !$OMP WORKSHARE  
  forall(ir=1:fft_size)
    rho(ir)=rho(ir)+sum(rho_no_sym(fft_rot_r(ir,1:rho_syms)))/real(nsym,SP)
  end forall
-!$OMP END WORKSHARE  
+ !$OMP END WORKSHARE  
  !
-!$OMP WORKSHARE  
+ !$OMP WORKSHARE  
  rho=real(1._SP+i_time_rev,SP)*rho
-!$OMP END WORKSHARE  
+ !$OMP END WORKSHARE  
  !
-  call timing('FL Density',OPR='stop')
+ call timing('FL Density',OPR='stop')
+ !
 end subroutine
