@@ -582,14 +582,15 @@ subroutine INIT_activate()
    enddo
    !
  endif
+#endif
  !
 #if defined _FL
  if (l_fl_optics) then
    call initactivate(1,'NLBands NLEnRange NLEnSteps NLDamping NLCorrelation')
    call initactivate(1,'FFTGvecs HARRLvcs EXXRLvcs Dephase FL_2D_ild')
    call initactivate(1,'Field1_Dir Field1_Int Field1_Phase')
-   call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver &
-           &            FL_deg_thresh FL_deg_lift S_inv_mode FL_beta FL_max_it')
+   call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver')
+   call initactivate(1,'FL_deg_thresh FL_deg_lift S_inv_mode FL_beta FL_max_it')
    call initactivate(1,'Field1_Phase,FL_2D_ild, FL_Pade')
  endif
 #endif
