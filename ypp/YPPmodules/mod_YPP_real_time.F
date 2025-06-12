@@ -31,6 +31,7 @@ module YPP_real_time
  logical  :: l_RT_X
  logical  :: l_RT_abs
  logical  :: l_RT_pol
+ logical  :: l_RT_fields
  !
  ! NL post-processing
  !
@@ -132,6 +133,10 @@ module YPP_real_time
  ! (FL) bands
  !
  integer     :: FL_freq_indx
+ !
+ ! (RT) Fields
+ !
+ real(SP)                 :: ypp_chirp=0._SP
  !
  type RT_ctl
    real(SP) :: delta_W             =0._SP   ! delta W

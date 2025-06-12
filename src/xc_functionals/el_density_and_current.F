@@ -156,7 +156,7 @@ subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
        if(present(bands)) then
          f_occ=0._SP
          do ik_RT=RTibz%k_range(ik,1),RTibz%k_range(ik,2)
-           f_occ=f_occ+RT_el_occ%dN(ib,ik_RT)*RTibz%weights(ik_RT)
+           f_occ=f_occ+RT_el_occ%dN(ib,ik_RT,i_sp_pol)*RTibz%weights(ik_RT)
          enddo
        endif
 #endif
@@ -193,7 +193,7 @@ subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
        !
        if (l_drho) then
          !
-         call eval_Gradient(WF%c(:,:,i_wf),WF_der,n_spinor,"wave")
+         call eval_Gradient_wf(WF%c(:,:,i_wf),WF_der)
          !
          do i_dir=1,3
            do i_spinor=1,n_spinor
@@ -208,7 +208,7 @@ subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
        !
        if (l_J) then
          !
-         call eval_Gradient(WF%c(:,:,i_wf),WF_der,n_spinor,"wave")
+         call eval_Gradient_wf(WF%c(:,:,i_wf),WF_der)
          !
          do i_dir=1,3
            do i_spinor=1,n_spinor

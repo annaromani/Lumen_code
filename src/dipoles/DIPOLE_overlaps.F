@@ -7,6 +7,8 @@
 !      
 !> @brief Calculate overlaps between wave-function <\psi_k | \psi_{k+q} > for q = 1,2
 !
+!! @param[it]       Xk                  k-points sampling for the xhi
+!! @param[it]       Dip                 Dip dipoles range
 !! @param[out]      DIP_S               Overlap matrices
 !
 #include<dev_defs.h>
@@ -16,9 +18,10 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  use pars,              ONLY:SP,cZERO,pi
  use LIVE_t,            ONLY:live_timing
  use R_lattice,         ONLY:k_map,bz_samp,WF_shifts,G_m_G
- use wave_func,         ONLY:WF
+ use wave_func,         ONLY:WF,WF_load_mode
  use vec_operate,       ONLY:k_periodic_idx
  use DIPOLES,           ONLY:DIPOLE_t,DIP_S
+ use ALLOC,             ONLY:DIPOLE_ALLOC_elemental
  use electrons,         ONLY:n_spinor,n_sp_pol
  use wrapper,           ONLY:Vstar_dot_V_gpu
  use wave_func,         ONLY:wf_ng_1st_BZ,wf_ng_overlaps,wf_ng
@@ -51,6 +54,11 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !
  call timing("DIPOLE_overlaps",OPR="start")
  !
+ if(.not.allocated(k_map%k_map_dir)) call k_map_nearest_by_dir(Xk,k_map)
+ if(.not.allocated(Xk%k_table))      call k_build_up_BZ_tables(Xk)
+ !
+ DIP_S=cZERO
+ !
  call k_find_smallest_g0(g0_idx,g0_length)
  iG0=max(maxval(g0_idx(:,1)),maxval(g0_idx(:,2)))
  !
@@ -76,6 +84,9 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !
  call PARALLEL_WF_index( )
  !
+ if (trim(WF_load_mode)=="all") call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/1,Xk%nibz/),space='G',title='-Overlaps')
+
+ !
  YAMBO_ALLOC_GPU(WF_symm,   (wf_ng_1st_BZ,n_spinor,1))
  YAMBO_ALLOC_GPU(WF_ikp,    (wf_ng_overlaps,n_spinor,1))
  YAMBO_ALLOC_GPU(WF_ik,     (wf_ng_overlaps,n_spinor,Dip%ib(2)))
@@ -84,7 +95,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  DIP_S=cZERO
 !$OMP END WORKSHARE
  !
- call live_timing("Overlaps:",PAR_IND_DIPk_bz%n_of_elements(PAR_IND_DIPk_bz_ID+1)*n_sp_pol)
+ call live_timing("Overlaps",PAR_IND_DIPk_bz%n_of_elements(PAR_IND_DIPk_bz_ID+1)*n_sp_pol)
  !
  do i_sp_pol=1,n_sp_pol
    !
@@ -97,8 +108,10 @@ subroutine DIPOLE_overlaps(Xk,Dip)
      ik = Xk%sstar(ikbz,1)
      is = Xk%sstar(ikbz,2)
      !
-     call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
-     &            space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+     if (trim(WF_load_mode)=="on-the-fly") then
+       call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
+       &            space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+     endif
      !
      do ib=1,Dip%ib(2)
        !
@@ -112,7 +125,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
        !
      enddo
      !
-     call WF_free(WF)
+     if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
      !
      do id=1,3  ! Loop on the three crystal directions in the BZ
        !
@@ -132,19 +145,40 @@ subroutine DIPOLE_overlaps(Xk,Dip)
          idx_kp=k_periodic_idx(idx_kp,k_map)  ! Bring it back by periodicity
          ikbzp=k_map%k_map_dir(idx_kp(1),idx_kp(2),idx_kp(3))  ! Find the corresponding index in the BZ
          !
-         ! ! Find the index in the IBZ and the symmetry
+         ! Find the index in the IBZ and the symmetry
          ikp = Xk%sstar(ikbzp,1)
          isp = Xk%sstar(ikbzp,2)
          !
-         call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ikp,ikp/),(/i_sp_pol,i_sp_pol/),&
-         &              space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+         if (trim(WF_load_mode)=="on-the-fly") then
+           call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ikp,ikp/),(/i_sp_pol,i_sp_pol/),&
+           &              space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+         endif
          !
          ! Shift the wave-function by a G-vector if the neighbor is out of the BZ (USE_shifed_wf=.true.)
          shift=WF_shifts(ikbzp,:)
          if(USE_shifted_wf) then
+           !
+           ! In this case a points k+q is out of the BZ
+           ! now I have different possibilities:
+           ! 1) the original point ikbz that corresponds to (k+q) was
+           !    between 0-1, therefore I have to shift it to generate
+           !    the k+q => case WF_shifts==0
+           ! 2) the orignal points ikbz that corresponds to (k+q) was 
+           !    shifted in the opposite direction the two
+           !    shifts cancel out and I get shift==0 ==> WF_shifts==-1
+           ! 3) the orignal points ibbz that corresponds to (k+q) was
+           !    already shifted in the right direction I keep this shift
+           !    case WF_shifts==1    
+           ! 
+           ! see also comments in src/bz_ops/k_map_nearest_by_dir.F 
+           ! 
+           ! WF_shifts==1 --> kpt(id) < 0
            if(WF_shifts(ikbzp,id)==1) shift(id)=1
+           ! WF_shifts==0 --> 0 < kpt(id) < 1
            if(WF_shifts(ikbzp,id)==0) shift(id)=1
-           if(WF_shifts(ikbzp,id)==2) shift(id)=0
+           ! WF_shifts==-1 --> kpt(id) > 1
+           if(WF_shifts(ikbzp,id)==-1) shift(id)=0
+           !
          endif
          !
          do ibp=1,Dip%ib(2) 
@@ -160,7 +194,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
            enddo ! ibp
          enddo ! ib
          !
-         call WF_free(WF)
+         if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
          !
        enddo ! istep
      enddo ! idir
@@ -194,7 +228,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  YAMBO_FREE(WF_ik)
  YAMBO_FREE(WF_ikp)
  !
- call WF_free(WF)
+ if (trim(WF_load_mode)=="all") call WF_free(WF)
  !
  call timing("DIPOLE_overlaps",OPR="stop")
  !
