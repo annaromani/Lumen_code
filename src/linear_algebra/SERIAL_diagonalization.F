@@ -34,11 +34,17 @@ subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
  type(LALGEBRA_WS) :: WS
  !
  integer :: nthreads_save
+ logical :: l_msg
 
 #if defined _DOUBLE
 #  define magmaf_xgeev_m magmaf_zgeev_m
 #else
 #  define magmaf_xgeev_m magmaf_cgeev_m
+#endif
+
+ l_msg=.true.
+#if defined _FL
+ l_msg=.false.
 #endif
 
  call timing('SERIAL_diagonalization',OPR='start')
@@ -79,7 +85,7 @@ subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
  !   
 #if defined _MAGMA
  !   
- call msg('sr','SERIAL diagonalization with magma')
+ if(l_msg) call msg('sr','SERIAL diagonalization with magma')
  !
  call magmaf_xgeev_m('V','V', n,M,n,E,V_left,n,V_right,n,&
 &                    WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
@@ -88,7 +94,7 @@ subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
  !   
  ! use lapack (otherwise)
  !   
- call msg('sr','SERIAL diagonalization with lapack')
+ if(l_msg) call msg('sr','SERIAL diagonalization with lapack')
  !
  call la_xgeev('V','V',n,M,n,E,V_left,n,V_right,n,WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
  !   
