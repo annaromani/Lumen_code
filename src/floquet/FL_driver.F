@@ -113,7 +113,9 @@ subroutine FL_driver(E,X,k,q,Dip)
  ! ========================================
  call DIPOLE_dimensions(E,Dip,NL_bands,(/0._SP,0._SP,0._SP/))
  call DIPOLE_IO(k,E,Dip,'read ',io_err,'NL')
- if(io_err/=0) call error("Error in DIPOLES! ")
+ if(io_err/=0) call error("Error in Dipoles I/O")
+ call OVERLAPS_IO(k,E,Dip,'read',io_err,'NL')
+ if(io_err/=0) call error("Error in Overlaps I/O")
  !
  ! Generate bare_qpg if required
  !=============================
@@ -208,6 +210,8 @@ subroutine FL_driver(E,X,k,q,Dip)
  ! =====================================
  if(n_runs_todo==0) return
  !
+ call section('*','FL self-consistency')
+ !
  ! Initialize IO
  ! ==================
  if (master_cpu) then
@@ -227,7 +231,6 @@ subroutine FL_driver(E,X,k,q,Dip)
  iterations = 0
  accuracy = cZERO
  !
- call section('*','FL self-consistency')
  do i_f=1,n_frequencies
    !
    if(.not.PAR_IND_freqs%element_1D(i_f)) cycle
