@@ -33,9 +33,9 @@ fi
 # each line is of the form:
 # file_name.o : @module_name@
 # cast all module names to lowercase because Fortran is case insensitive
-grep -E -H -i -e "include ?<memory.h>" -e "^ *use " $sources |  # look for "USE name"
+grep -E -H -i -e "include ?<y_memory.h>" -e "^ *use " $sources |  # look for "USE name"
 sed 's/F:/o /
-     s/,/ /;s/#include/ use /;s/<memory.h>/memory/' | # replace extension, insert space
+     s/,/ /;s/#include/ use /;s/<y_memory.h>/y_memory/' | # replace extension, insert space
 #                                         #   and remove trailing comma
 awk '{print $1 " : @" tolower($3) "@"}' | # create dependency entry
 sort | uniq > $compdir/$CDIR/modulesdep.list              # remove duplicates
@@ -50,7 +50,7 @@ sed 's/F:/o /
 awk '{print "s/@" tolower($3) "@/" $1 "/" }' | # create substitution line
 sort | uniq > $compdir/$CDIR/modules.rules     # remove duplicates
 
-egrep -H -i "^ *module " $sources |           # look for "MODULE name"
+grep -E -H -i "^ *module " $sources |           # look for "MODULE name"
 sed 's/F:/o /
      s/\//\\\//g' |                            # replace extension, insert
 #                                              #   space and escape slashes

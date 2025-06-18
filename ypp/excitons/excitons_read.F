@@ -19,7 +19,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
  use BS,            ONLY:BS_H_dim,BS_K_dim,BS_bands,BS_K_coupling,BSqpts
  use YPPm,          ONLY:BS_R_left,BS_R_right,BS_E,BS_E_SOC_corr,BS_R_PL,BS_R_kerr,Xbsk   
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(bz_samp) ::Xk,k
  type(levels)  ::Xen,en
@@ -118,7 +118,8 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
    YAMBO_ALLOC(BS_mat,(BS_H_dim,BSS_n_eig))
    !
    call io_control(ACTION=OP_RD_CL,COM=REP,MODE=VERIFY,SEC=(/3/),ID=io_ID)
-   io_err=io_BSS_diago(iq,1,io_ID,Xbsk,BS_E,BS_R_left,BS_R_right,BsE_corr=BS_E_SOC_corr,bsR_kerr=BS_R_kerr,bsR_pl=BS_R_PL)
+   io_err=io_BSS_diago(iq,1,io_ID,Xbsk,BS_E,BS_R_left,BS_R_right,&
+   &                   BsE_corr=BS_E_SOC_corr,bsR_kerr=BS_R_kerr,bsR_pl=BS_R_PL,BS_mat=BS_mat)
    if (io_err/=0) call error(' ndb.BSS_diago, SEC 3, not compatible with ypp input')
    !
    ! Create the anti-resonant part of the eh_table

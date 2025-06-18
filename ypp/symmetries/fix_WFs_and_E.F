@@ -5,14 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+#include<dev_defs.h>
+!
 subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  !
- use pars,                ONLY:SP,lchlen,cZERO
+ use pars,                ONLY:LP,SP,lchlen,cZERO
  use com,                 ONLY:msg,core_io_path,more_io_path
  use IO_int,              ONLY:io_control
  use IO_m,                ONLY:OP_WR_CL,NONE,OP_APP_CL,OP_WR,OP_RD,&
 &                              OP_APP,OP_RD_CL,RD_CL,RD,frag_WF
- use wave_func,           ONLY:io_WF,wf_nc_k, wf_igk,wf_ncx,wf_nb_io,wf_ng, &
+ use wave_func,           ONLY:io_WF,wf_nc_k, wf_igk,DEV_VAR(wf_igk),wf_ncx,wf_nb_io,wf_ng, &
  &                             WF,wf_nb_io_groups
  use electrons,           ONLY:levels,E_reset,n_sp_pol,n_spinor
  use LIVE_t,              ONLY:live_timing
@@ -23,7 +25,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
 &                              wf_nc_k_new,wf_igk_new,&
 &                              wf_nc_k_new,wf_ncx_new,wf_ncx_save,wf_ng_new,wf_ng_save
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(levels),intent(in)  :: E
  !
@@ -32,7 +34,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  integer,intent(in)          :: kpoints_map(2,k%nibz)
  !
  integer,intent(in)       :: old_nsym
- logical,intent(in)       :: S_contains_TR(old_nsym)
+ integer(LP),intent(in)       :: S_contains_TR(old_nsym)
  !
  ! Work space
  !
@@ -94,6 +96,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  ! to make sure that WF_load works properly
  !
  YAMBO_FREE(wf_nc_k)
+ YAMBO_FREE_GPU(DEV_VAR(wf_igk))
  YAMBO_FREE(wf_igk)
  YAMBO_ALLOC(wf_nc_k,(k_save%nibz))
  YAMBO_ALLOC(wf_igk,(wf_ncx_save,k_save%nibz))
@@ -216,7 +219,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
              forall(ic=1:wf_nc_k_new(ik)) wf_tmp(ic,:)=matmul(spin_sop(:,:,is),wf_tmp(ic,:))
            endif
            !
-           if ( S_contains_TR(is) ) wf_tmp=conjg(wf_tmp)
+           if ( S_contains_TR(is) ==1 ) wf_tmp=conjg(wf_tmp)
            !  
            wf_disk(:,:,ib_disk)= wf_tmp(:,:)
            !
@@ -257,6 +260,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  !
  ! Finally I save again the new WFs_shells to be used by fix_PPs
  YAMBO_FREE(wf_nc_k)
+ YAMBO_FREE_GPU(DEV_VAR(wf_igk))
  YAMBO_FREE(wf_igk)
  YAMBO_ALLOC(wf_nc_k,(k%nibz))
  YAMBO_ALLOC(wf_igk,(wf_ncx,k%nibz))
@@ -278,7 +282,7 @@ subroutine map_energies(E,E_new,k,kpoints_map)
  use electrons,           ONLY:levels,E_reset,n_sp_pol
  use R_lattice,           ONLY:bz_samp
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(levels), intent(in)     :: E
  type(levels), intent(out)    :: E_new

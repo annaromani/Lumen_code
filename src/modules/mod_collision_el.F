@@ -14,10 +14,10 @@ module collision_el
  use pars,        ONLY:DP,SP,LP,schlen
  use parallel_m,  ONLY:PP_indexes
  use qe_pseudo_m, ONLY:bec_type,deallocate_bec_type
- use cuda_m,      ONLY:have_cuda
+ use gpu_m,       ONLY:have_gpu
  !
 #include<dev_defs.h>
-#include<memory.h>
+#include<y_memory.h>
  !
  type elemental_collision
    !
@@ -78,19 +78,18 @@ module collision_el
    subroutine elemental_collision_free(ggw)
      type(elemental_collision), target::ggw
      !
+     YAMBO_FREE_GPU(DEV_VAR(ggw%gamp))
+     YAMBO_FREE_GPU(DEV_VAR(ggw%rhotw))
+     YAMBO_FREE_GPU(DEV_VAR(ggw%rho_tw_rs))
+     YAMBO_FREE_GPU(DEV_VAR(ggw%WF_symm_i))
+     YAMBO_FREE_GPU(DEV_VAR(ggw%WF_symm_o))
+     !
      YAMBO_FREE(ggw%gamp)
      YAMBO_FREE(ggw%rhotw)
      YAMBO_FREE(ggw%rho_tw_rs)
      YAMBO_FREE(ggw%WF_symm_i)
      YAMBO_FREE(ggw%WF_symm_o)
      ! 
-     YAMBO_FREE(ggw%gamp_d)
-     YAMBO_FREE(ggw%rhotw_d)
-     !
-     YAMBO_FREE(ggw%rho_tw_rs_d)
-     YAMBO_FREE(ggw%WF_symm_i_d)
-     YAMBO_FREE(ggw%WF_symm_o_d)
-     !
      ! USPP workspace
      call deallocate_bec_type(ggw%ibec)
      call deallocate_bec_type(ggw%obec)
@@ -99,6 +98,8 @@ module collision_el
      YAMBO_FREE(ggw%qgm)
      YAMBO_FREE(ggw%becprod)
      YAMBO_FREE(ggw%eiqtau)
+     !
+     !DEV_ACC exit data delete(ggw)
      !
    end subroutine
    !
@@ -127,15 +128,16 @@ module collision_el
      !
      ! workspace
      !
+     !DEV_ACC enter data copyin(ggw)
      if (fft_size>0.and..not.allocated(ggw%rho_tw_rs)) then
        YAMBO_ALLOC(ggw%rho_tw_rs,(fft_size))
        YAMBO_ALLOC(ggw%WF_symm_i,(fft_size,n_spinor))
        YAMBO_ALLOC(ggw%WF_symm_o,(fft_size,n_spinor))
        !
-       if (have_cuda.and..not.CPU_ONLY_) then
-         YAMBO_ALLOC(ggw%rho_tw_rs_d,(fft_size))
-         YAMBO_ALLOC(ggw%WF_symm_i_d,(fft_size,n_spinor))
-         YAMBO_ALLOC(ggw%WF_symm_o_d,(fft_size,n_spinor))
+       if (have_gpu.and..not.CPU_ONLY_) then
+         YAMBO_ALLOC_GPU(DEV_VAR(ggw%rho_tw_rs),(fft_size))
+         YAMBO_ALLOC_GPU(DEV_VAR(ggw%WF_symm_i),(fft_size,n_spinor))
+         YAMBO_ALLOC_GPU(DEV_VAR(ggw%WF_symm_o),(fft_size,n_spinor))
        endif
      endif
      !
@@ -147,13 +149,13 @@ module collision_el
          if (     present(GRADIENT)) RHOSIZE=3*NG
          if (.not.present(GRADIENT)) RHOSIZE=1*NG
          YAMBO_ALLOC(ggw%rhotw,(RHOSIZE))
-         !
-         if (have_cuda.and..not.CPU_ONLY_) then
-           YAMBO_ALLOC(ggw%rhotw_d,(RHOSIZE))
+         if (have_gpu.and..not.CPU_ONLY_) then
+           YAMBO_ALLOC_GPU(DEV_VAR(ggw%rhotw),(RHOSIZE))
          endif
          !
        endif
        ggw%ngrho=NG
+       ggw%iqref=0
      endif
      !
      ! GAMP
@@ -167,9 +169,11 @@ module collision_el
        if (present(GAMP_NG)) call error("[COLL] GAMP_NG should not be present")
        YAMBO_ALLOC(ggw%gamp,(GAMP_ROWS(1):GAMP_ROWS(2),GAMP_COLS(1):GAMP_COLS(2)))
      endif
-     if (have_cuda.and.allocated(ggw%gamp).and..not.CPU_ONLY_) then
-       YAMBO_ALLOC_MOLD(ggw%gamp_d,ggw%gamp)
+#ifdef _GPU
+     if (have_gpu.and.allocated(ggw%gamp).and..not.CPU_ONLY_) then
+       YAMBO_ALLOC_GPU_MOLD(DEV_VAR(ggw%gamp),ggw%gamp)
      endif
+#endif
      if (allocated(ggw%gamp)) then
        ggw%gamp_rows(1)=lbound(ggw%gamp,1)
        ggw%gamp_rows(2)=ubound(ggw%gamp,1)

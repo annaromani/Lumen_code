@@ -24,6 +24,8 @@
 ! 4 pi / |q+G|^2 = 2 pi DLVol NqBZ qpg(q,G)                                  
 ! |q+G| = Sqrt[ 2 / ( DLVol NqBZ qpg(q,G)) ]                                  
 !
+#include<dev_defs.h>
+!
 subroutine col_driver(bare_NG,q)
  !
  !Here I launch the routine to create/read the 
@@ -40,12 +42,12 @@ subroutine col_driver(bare_NG,q)
  use R_lattice,     ONLY:d3q_factor,RIM_is_diagonal,RIM_qpg,bare_qpg,&
 &                        nqibz,g_vec,q_pt,nqbz,RIM_ng,RIM_n_rand_pts,&
 &                        bz_samp,q_norm,cutoff_presets,bare_qpg_d,&
-&                        cut_geometry,cut_is_slab,idir,q0_def_norm
+&                        cut_geometry,cut_is_slab,idir,q0_def_norm,eps_env
  use wave_func,     ONLY:wf_ng
  use IO_int,        ONLY:io_control
  use IO_m,          ONLY:OP_RD_CL,OP_WR_CL,REP,VERIFY
- use cuda_m,        ONLY:have_cuda
-#include<memory.h>
+ !
+#include<y_memory.h>
  !
  integer       :: bare_NG
  type(bz_samp) :: q
@@ -174,16 +176,26 @@ subroutine col_driver(bare_NG,q)
    call cutoff_driver(q)
    q_norm(1)=q0_def_norm
    !
+   ! Here I rescale bare_qpg and RIM_qpg by a constant dielectric
+   ! function due to the environment. A similar rescaling is also done
+   ! in the subroutine rim_integrate_w for RIM_W. However, since RIM_W
+   ! is not linear in q+G, the rescaling there is more involved
+   !
+   ! bare_qpg= q+G
+   if (allocated(bare_qpg)) bare_qpg=bare_qpg*sqrt(eps_env)
+   ! RIM_qpg= \int C/|q+G|**2
+   if (allocated(RIM_qpg)) RIM_qpg =RIM_qpg/eps_env
+   !
  endif
  !
  ! copy again,
  ! bare_qpg is modified by cutff_driver
  !
- if (have_cuda) then
-   YAMBO_FREE(bare_qpg_d)
-   if (size(bare_qpg)>0) then
-     YAMBO_ALLOC_SOURCE(bare_qpg_d,bare_qpg)
-   endif
+#ifdef _GPU
+ YAMBO_FREE_GPU(DEV_VAR(bare_qpg))
+ if (size(bare_qpg)>0) then
+   YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(bare_qpg),bare_qpg)
  endif
+#endif
  !
 end subroutine

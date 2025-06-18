@@ -37,7 +37,7 @@ subroutine XCo_local(E,Xk)
 #endif
  use timing_m,      ONLY:timing
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(levels) ::E       
  type(bz_samp)::Xk
@@ -129,7 +129,7 @@ subroutine XCo_local(E,Xk)
        endif
        !
        if (.not.PAR_IND_WF_k%element_1D(ik)) cycle
-       if (.not.PAR_IND_B_mat_ordered%element_1D( UP_matrix_index(ib-H_ref_bands(1)+1,ibp-H_ref_bands(1)+1)-1 )) cycle
+       if (.not.PAR_IND_B_mat_ordered%element_1D( UP_matrix_index(ib-H_ref_bands(1)+1,ibp-H_ref_bands(1)+1) )) cycle
        !
      else
 #endif
@@ -145,11 +145,11 @@ subroutine XCo_local(E,Xk)
      iwf =WF%index(ib,ik,1)
      iwfp=WF%index(ibp,ik,1)
      ! 
-!$omp parallel do default(shared), private(ifft)
+     !$omp parallel do default(shared), private(ifft)
      do ifft=1,fft_size
        c_ws(ifft,1)=V_xc(ifft,1)*WF%c(ifft,1,iwfp)
      enddo
-!$omp end parallel do
+     !$omp end parallel do
      !
      QP_Vxc(i1)=Vstar_dot_V_omp(fft_size*n_spinor,WF%c(:,:,iwf),c_ws)
      !
@@ -189,7 +189,7 @@ subroutine XCo_local(E,Xk)
 #if defined _RT
      if (l_real_time) then
        if (.not.PAR_IND_WF_k%element_1D(ik)) cycle
-       if (.not.PAR_IND_B_mat_ordered%element_1D( UP_matrix_index(ib-H_ref_bands(1)+1,ibp-H_ref_bands(1)+1)-1 )) cycle
+       if (.not.PAR_IND_B_mat_ordered%element_1D( UP_matrix_index(ib-H_ref_bands(1)+1,ibp-H_ref_bands(1)+1) )) cycle
      else
 #endif
        if (.not.PAR_IND_WF_linear%element_2D(ib,ik)) cycle

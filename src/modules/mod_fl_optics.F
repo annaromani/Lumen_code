@@ -28,7 +28,7 @@ module fl_optics
  use pars,            ONLY:SP,schlen,lchlen
  use electrons,       ONLY:levels
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  ! Bands in terms of Kohn-Sham orbitals
  !

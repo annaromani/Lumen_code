@@ -37,7 +37,7 @@ integer function io_FL(ID)
 &                        FL_desc,FL_table
  use timing_m,      ONLY:timing
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  integer, intent(in) :: ID
  !

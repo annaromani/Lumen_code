@@ -17,6 +17,8 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+#include<dev_defs.h>
+!
 subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  ! Plasmon Pole & COHSEX Correlation Self-Energy
@@ -32,7 +34,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 &                        l_rt_carriers_in_use,l_rim_w
  use parallel_int,  ONLY:PP_wait,PP_redux_wait,PARALLEL_global_indexes,PARALLEL_WF_index,&
 &                        PARALLEL_WF_distribute
- use parallel_m,    ONLY:PAR_IND_Xk_ibz,PAR_IND_G_b,PAR_IND_QP,&
+ use parallel_m,    ONLY:PAR_IND_Xk_ibz,PAR_IND_G_b,PAR_IND_QP,PAR_COM_QP_A2A,&
 &                        PAR_IND_Q_ibz,PAR_IND_Q_ibz_ID,PAR_IND_QP_ID,&
 &                        PAR_Q_ibz_index,n_WF_bands_to_load,HEAD_QP_cpu
  use collision_el,  ONLY:elemental_collision,elemental_collision_free,elemental_collision_alloc
@@ -43,12 +45,13 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  use QP_m,          ONLY:QP_solver,QP_t,QP_n_G_bands,QP_dSc_steps,QP_Sc_steps,QP_table,l_QP_symmetrize,&
 &                        QP_Sc,QP_n_states,QP_G_damp,QP_table,QP_dSc_delta,GW_terminator_E,&
 &                        COHSEX_use_empties,l_GW_terminator,GW_terminator_Kind,QP_states_simmetrize
- use X_m,           ONLY:X_ALLOC_elemental,X_par,X_t
+ use ALLOC,         ONLY:X_ALLOC_elemental
+ use X_m,           ONLY:X_t,X_par
  use wave_func,     ONLY:WF
- use R_lattice,     ONLY:qindx_S,bz_samp,G_m_G,G_m_G_d,nqibz,RIM_W_E,&
-&                        RIM_W_is_diagonal,RIM_W_ng,RIM_W,RIM_W_d
+ use R_lattice,     ONLY:qindx_S,bz_samp,DEV_VAR(G_m_G),G_m_G_maxval,nqibz,RIM_W_E,&
+&                        RIM_W_is_diagonal,RIM_W_ng,DEV_VAR(RIM_W)
  use D_lattice,     ONLY:nsym,i_time_rev,i_space_inv,mag_syms
- use wrapper,       ONLY:M_by_V,V_dot_V
+ use wrapper,       ONLY:V_dot_V_gpu,devxlib_xGEMV_gpu
  use interfaces,    ONLY:QP_state_print,WF_load,WF_free,MATRIX_transpose
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
  use timing_m,      ONLY:timing
@@ -56,15 +59,15 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 #if defined _SC
  use SC,            ONLY:it_now,it_to_start
 #endif
- use deviceXlib_m,  ONLY:dev_memcpy,dev_memset,dev_conjg
- use cuda_m,        ONLY:have_cuda
+ use devxlib,       ONLY:devxlib_memcpy_h2d,devxlib_memcpy_d2h,&
+&                        devxlib_memcpy_d2d,devxlib_memset_d,devxlib_conjg_d
+ use gpu_m,         ONLY:have_gpu
  !
  use drivers,       ONLY:Finite_Tel
  use D_lattice,     ONLY:Bose_Temp
  use functions,     ONLY:bose_E_cut
  !
-#include<dev_defs.h>
-#include<memory.h>
+#include<y_memory.h>
  !
  type(levels) ::E
  type(bz_samp)::Xk,k,q
@@ -72,18 +75,19 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  type(QP_t)   ::qp
  type(w_samp) ::Xw
  integer      ::GW_iter
- type(w_samp)     ::Sc_W(qp%n_states)
  !
  ! Work Space
  !
- integer          :: i_qp,i_w,iqbz,iqibz,ib,ig1,ig2,alloc_err,iqs,iscs_save(2,4),&
-&                    i_qp_to_start,iq_to_start,is,iq_mem,io_err,ID,IO_ACT,timing_steps
+ type(w_samp)     :: Sc_W(qp%n_states)
+ integer          :: i_qp,i_w,iqbz,iqibz,ib,i_v,i_c,i_k,i_kmq,i_kmq_Go,i_kmq_bz,i_kmq_s,&
+&                    i_sp_pol,ig1,ig2,iqs,i_qp_to_start,iq_to_start,is,iq_mem,&
+&                    alloc_err,iscs_save(2,4),io_err,ID,IO_ACT,timing_steps
  integer          :: iw
  integer          :: X_range1,X_range2
  integer          :: X_rows1,X_rows2,X_cols1,X_cols2,X_nrows,X_ncols
  !
  character(schlen):: ch,SECTION_name,W_name
- logical          :: X_is_TR_rotated,l_X_ALLOC_elemental,l_RIM_W_g
+ logical          :: X_is_TR_rotated,l_X_ALLOC_elemental,fill_QP_sc,l_RIM_W_g
  real(SP)         :: eet_cutoff0_sp(n_sp_pol),eet_cutoff0,eet_cutoff1_sp(n_sp_pol),eet_cutoff1
  real(SP)         :: X_ppaE,bose_PPA_E,eet_energy
  real(SP)         :: E_kmq,f_kmq,PPA_E
@@ -194,32 +198,33 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  ! WF distributed & load
  !=======================
  !
- if ( .not.l_sc_run ) call PARALLEL_global_indexes(E,k,q,"Self_Energy")
- !
- ! Redefine iq_to_start to be CPU-dependent
- !
- do iqbz=1,q%nbz 
-   if (PAR_IND_Q_ibz%element_1D(q%sstar(iqbz,1))) then
-     iq_to_start=iqbz
-     exit
-   endif
- enddo
- !
- if( .not.l_sc_run ) then
+ if ( .not.l_sc_run ) then
+   call PARALLEL_global_indexes(E,k,q,"Self_Energy")
    call PARALLEL_WF_distribute(K_index=PAR_IND_Xk_ibz,B_index=PAR_IND_G_b,CLEAN_UP=.TRUE.)
    call PARALLEL_WF_distribute(QP_index=PAR_IND_QP)
    call PARALLEL_WF_index( )
  endif
  !
- ch='-GW'
-#if defined _SC
- if(l_sc_run) ch='-SC'
-#endif
+ if(.not.l_sc_run) ch='-GW'
+ if(     l_sc_run) ch='-SC'
+ !
+ ! Redefine iq_to_start to be CPU-dependent
+ !
+ do iqbz=1,q%nbz 
+   iqibz=q%sstar(iqbz,1)
+   if (PAR_IND_Q_ibz%element_1D(iqibz)) then
+     iq_to_start=iqbz
+     exit
+   endif
+ enddo
  !
  ! wf and collisions dimension
  !-----------------------------
  isc%ngrho=X%ng
- if (((l_sc_srpa.or.l_cohsex.or.l_sc_coh).and..not.COHSEX_use_empties).or.l_GW_terminator) isc%ngrho=maxval(G_m_G)
+ ! AF: isc%ngrho=maxval(G_m_G), but maxval() 
+ !     is already precalculated in eval_G_minus_G
+ if (((l_sc_srpa.or.l_cohsex.or.l_sc_coh).and..not.COHSEX_use_empties).or.&
+&      l_GW_terminator) isc%ngrho=G_m_G_maxval
  !
  call WF_load(WF,isc%ngrho,maxval(qindx_S(:,:,2)),(/1,n_WF_bands_to_load/),(/1,k%nibz/),title=trim(ch))
  !
@@ -253,12 +258,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
    YAMBO_ALLOC(W_,(QP_dSc_steps))
    YAMBO_ALLOC(dc,(QP_dSc_steps))
  endif
- YAMBO_ALLOC(local_rhotw,(X%ng))
- YAMBO_ALLOC(conjg_iscp_rhotw,(X%ng))
+ YAMBO_ALLOC_GPU(local_rhotw,(X%ng))
+ YAMBO_ALLOC_GPU(conjg_iscp_rhotw,(X%ng))
+
  !
  ! Elemental Collisions
  !====================== 
- isc%iqref=0
  call elemental_collision_alloc(isc,NG=isc%ngrho,TITLE="GW")
  call elemental_collision_alloc(iscp,NG=isc%ngrho,TITLE="GW")
  !
@@ -272,9 +277,9 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 &             PAR_IND_Q_ibz%n_of_elements(PAR_IND_Q_ibz_ID+1)*&
 &             count( PAR_IND_G_b%element_1D(QP_n_G_bands(1):QP_n_G_bands(2)) )
  !
- ch=trim(SECTION_name)
+ if (.not.l_sc_run) ch=trim(SECTION_name)
 #if defined _SC
- if (l_sc_run) ch=trim(SECTION_name)//'@it'//trim(intc(it_now))
+ if (     l_sc_run) ch=trim(SECTION_name)//'@it'//trim(intc(it_now))
 #endif
  call live_timing(trim(ch),timing_steps)
  !
@@ -292,11 +297,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  Q_loop: do iqbz=iq_to_start,q%nbz
    !
-   if (.not.PAR_IND_Q_ibz%element_1D(q%sstar(iqbz,1))) cycle
+   iqs  =q%sstar(iqbz,2)
+   iqibz=q%sstar(iqbz,1)
    !
-   isc%qs(2:)=(/q%sstar(iqbz,1),q%sstar(iqbz,2)/)
-   iqibz=isc%qs(2)
-   iqs  =isc%qs(3)
+   if (.not.PAR_IND_Q_ibz%element_1D(iqibz)) cycle
+   !
+   isc%qs(2:)=(/iqibz,iqs/)
    !
    if (iqibz/=isc%iqref) then
      !
@@ -357,9 +363,9 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
                !
                if(real(1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range2),SP)*aimag( 1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range1) )>0._SP) then
                    TO_rate=TO_rate+1
-                 endif
+               endif
              endif
-           !
+             !
            endif
            !
          enddo
@@ -372,8 +378,8 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          ! update alloc
          call elemental_collision_alloc(isc,GAMP_ROWS=X_par(1)%rows,GAMP_COLS=X_par(1)%cols)
          !
-         call DEV_SUB(scatter_Gamp)(isc,'c')
-         if (have_cuda) call dev_memcpy(isc%gamp,isc%gamp_d)
+         call scatter_Gamp_gpu(isc,'c')
+         if (have_gpu) call devxlib_memcpy_d2h(isc%gamp,DEV_VAR(isc%gamp))
          !
          !$omp parallel do default(shared), private(ig1,ig2), collapse(2)
          do ig2=X_par(iq_mem)%cols(1),X_par(iq_mem)%cols(2)
@@ -382,8 +388,8 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          enddo
          enddo
          !
+         YAMBO_FREE_GPU(DEV_VAR(isc%gamp))
          YAMBO_FREE(isc%gamp)
-         YAMBO_FREE(isc%gamp_d)
          !
        endif
        !
@@ -425,9 +431,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
    X_nrows=X_rows2-X_rows1+1
    X_ncols=X_cols2-X_cols1+1
    !
-   if (have_cuda) then
-     YAMBO_ALLOC_SOURCE(X_par(iq_mem)%blc_d,X_par(iq_mem)%blc)
+#ifdef _GPU
+   if (have_gpu) then
+     YAMBO_ALLOC_GPU_MOLD(DEV_VAR(X_par(iq_mem)%blc),X_par(iq_mem)%blc)
+     call devxlib_memcpy_h2d(DEV_VAR(X_par(iq_mem)%blc),X_par(iq_mem)%blc)
    endif
+#endif
    X_blc_p=> DEV_VAR(X_par(iq_mem)%blc)
    !
    ! GAMP
@@ -435,13 +444,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
    if(l_ppa) then
      ! update alloc
      call elemental_collision_alloc(isc,GAMP_ROWS=X_par(1)%rows,GAMP_COLS=X_par(1)%cols)
-     call DEV_SUB(scatter_Gamp)(isc,'c')
+     call scatter_Gamp_gpu(isc,'c')
      isc_gamp_p => DEV_VAR(isc%gamp)
    endif
    !
-   !
    if(l_ppa.and.l_GW_terminator) then
-     YAMBO_ALLOC(eet_factor,(X_rows1:X_rows2,X_cols1:X_cols2))
+     YAMBO_ALLOC_GPU(eet_factor,(X_rows1:X_rows2,X_cols1:X_cols2))
    endif
 
    !
@@ -456,6 +464,17 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
      !
      if (i_qp==QP_n_states) i_qp_to_start=1
      !
+     i_v=QP_table(i_qp,1)
+     i_c=QP_table(i_qp,2)
+     i_k=QP_table(i_qp,3)
+     i_sp_pol=spin(QP_table(i_qp,:))
+     !
+     i_kmq_Go=qindx_S(i_k,iqbz,2)
+     i_kmq_bz=qindx_S(i_k,iqbz,1)
+     !
+     i_kmq  =k%sstar(i_kmq_bz,1)
+     i_kmq_s=k%sstar(i_kmq_bz,2)
+     !
 !#if defined _SC  
 !     !
 !     ! In OEP only vc matrix elements so ... no cc' no vv' 
@@ -464,11 +483,11 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 !     if (l_sc_srpa.and.(QP_table(i_qp,1)>E%nbf.or.QP_table(i_qp,2)<=E%nbf)) cycle
 !#endif
      !
-     isc%is=(/QP_table(i_qp,1),QP_table(i_qp,3),1,spin(QP_table(i_qp,:))/)
-     isc%os(2:)=(/k%sstar(qindx_S(isc%is(2),iqbz,1),:),spin(QP_table(i_qp,:))/)
-     isc%qs(1)=qindx_S(QP_table(i_qp,3),iqbz,2)
+     isc%is=(/i_v,i_k,  1,      i_sp_pol/)
+     isc%os=(/0,  i_kmq,i_kmq_s,i_sp_pol/)
+     isc%qs(1)=i_kmq_Go
      !
-     iscp%is=(/QP_table(i_qp,2),QP_table(i_qp,3),1,spin(QP_table(i_qp,:))/)
+     iscp%is=(/i_c,i_k,1,i_sp_pol/)
      iscp%qs=isc%qs
      !
      dc=cZERO
@@ -477,12 +496,15 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
      !
      if (((l_sc_srpa.or.l_sc_coh.or.l_cohsex).and..not.COHSEX_use_empties).or.l_GW_terminator) then
        !
+       ! Why this is inside a iq loop if nothing depends on q ??
+       !
        iscs_save(1,: )=isc%os
        iscs_save(2,:3)=isc%qs
-       isc%os=(/QP_table(i_qp,2),QP_table(i_qp,3),1,spin(QP_table(i_qp,:))/)
+       !
+       isc%os=(/i_c,i_k,1,i_sp_pol/)
        isc%qs=(/1,1,1/)
        !
-       call DEV_SUB(scatter_Bamp)(isc)
+       call scatter_Bamp_gpu(isc)
        !
        if (l_GW_terminator) then
          !
@@ -494,7 +516,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          eet_cutoff1=minval(eet_cutoff1_sp(:))
          !
          ! eet_factor=cZERO
-         call dev_memset(eet_factor,cZERO)
+         call devxlib_memset_d(eet_factor,cZERO)
          !
          ! MB: After the inclusion of G-parallelism, PAR_COM_G_b_INDEX can be different
          ! from HEAD_QP_cpu --> the right one to be used is PAR_COM_G_b_INDEX
@@ -502,23 +524,35 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          if (PAR_COM_G_b_INDEX%CPU_id==0) then
            if (X_is_TR_rotated) then
              !
+             !DEV_ACC_DEBUG data present(G_m_G,isc_rhotw_p,eet_factor)
+             !DEV_ACC parallel loop collapse(2)
              !DEV_CUF kernel do(2)
+             !DEV_OMPGPU target map(present,alloc:G_m_G,isc_rhotw_p,eet_factor)
+             !DEV_OMPGPU teams loop collapse(2)
              !DEV_OMP parallel do default(shared), private(ig1,ig2), collapse(2)
              do ig2=X_cols1,X_cols2
              do ig1=X_rows1,X_rows2
                eet_factor(ig1,ig2)=isc_rhotw_p(DEV_VAR(G_m_G)(ig2,ig1))
              enddo
              enddo
+             !DEV_OMPGPU end target
+             !DEV_ACC_DEBUG end data
              !
            else
              !
+             !DEV_ACC_DEBUG data present(G_m_G,isc_rhotw_p,eet_factor)
+             !DEV_ACC parallel loop collapse(2)
              !DEV_CUF kernel do(2)
+             !DEV_OMPGPU target map(present,alloc:G_m_G,isc_rhotw_p,eet_factor)
+             !DEV_OMPGPU teams loop collapse(2)
              !DEV_OMP parallel do default(shared), private(ig1,ig2), collapse(2)
              do ig2=X_cols1,X_cols2
              do ig1=X_rows1,X_rows2
                eet_factor(ig1,ig2)=isc_rhotw_p(DEV_VAR(G_m_G)(ig1,ig2))
              enddo
              enddo
+             !DEV_OMPGPU end target
+             !DEV_ACC_DEBUG end data
              !
            endif
          endif
@@ -531,7 +565,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          !
          if (X_is_TR_rotated) then
            !
+           !DEV_ACC_DEBUG data present(G_m_G,isc_rhotw_p,X_blc_p)
+           !DEV_ACC parallel loop collapse(2) private(ctmp) reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_CUF kernel do(2)
+           !DEV_OMPGPU target map(present,alloc:G_m_G,isc_rhotw_p) &
+           !DEV_OMPGPU &      map(tofrom:dp_dummy_r,dp_dummy_i)
+           !DEV_OMPGPU teams loop collapse(2) reduction(+:dp_dummy)
            !DEV_OMP parallel do default(shared), private(ig1,ig2,ctmp), &
            !DEV_OMP &           reduction(+:dp_dummy), collapse(2)
            !
@@ -539,7 +578,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
            do ig1=X_rows1,X_rows2
              ctmp=cmplx(2._SP*pi*isc_rhotw_p(DEV_VAR(G_m_G)(ig2,ig1))* &
 &                       X_blc_p(ig1,ig2,X_range1),kind=DP)
-#ifdef _CUDA
+#ifdef _GPU
              dp_dummy_r=dp_dummy_r+real(ctmp,DP)
              dp_dummy_i=dp_dummy_i+imag(ctmp)
 #else
@@ -547,10 +586,17 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 #endif
            enddo
            enddo
+           !DEV_OMPGPU end target
+           !DEV_ACC_DEBUG end data
            !
          else
            !
+           !DEV_ACC_DEBUG data present(G_m_G,isc_rhotw_p,X_blc_p)
+           !DEV_ACC parallel loop collapse(2) private(ctmp) reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_CUF kernel do(2)
+           !DEV_OMPGPU target map(present,alloc:G_m_G,isc_rhotw_p) &
+           !DEV_OMPGPU &      map(tofrom:dp_dummy_r,dp_dummy_i)
+           !DEV_OMPGPU teams loop collapse(2) reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_OMP parallel do default(shared), private(ig1,ig2,ctmp), &
            !DEV_OMP &           reduction(+:dp_dummy), collapse(2)
            !
@@ -558,7 +604,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
            do ig1=X_rows1,X_rows2
              ctmp=cmplx(2._SP*pi*isc_rhotw_p(DEV_VAR(G_m_G)(ig1,ig2))*&
 &                       X_blc_p(ig1,ig2,X_range1),kind=DP)
-#ifdef _CUDA
+#ifdef _GPU
              dp_dummy_r=dp_dummy_r+real(ctmp,DP)
              dp_dummy_i=dp_dummy_i+imag(ctmp)
 #else
@@ -566,10 +612,12 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 #endif
            enddo
            enddo
+           !DEV_OMPGPU end target
+           !DEV_ACC_DEBUG end data
            !
          endif
          !
-         if (have_cuda) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
+         if (have_gpu) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
          !
          dc(1) = cmplx(dp_dummy,kind=SP)
          !
@@ -585,16 +633,10 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          ! AF: for the time being, the SC case is treated as if g-parallelism is
          ! disabled
          !
-#if defined _SC
-         if (l_sc_run) then
-           if (PAR_COM_QP_A2A%CPU_id==0)    QP_Sc(i_qp,:)=QP_Sc(i_qp,:)+dc(1)
-         else
-#endif
-!          if (HEAD_QP_cpu)                 QP_Sc(i_qp,:)=QP_Sc(i_qp,:)+dc(1)
-           if (PAR_COM_G_b_INDEX%CPU_id==0) QP_Sc(i_qp,:)=QP_Sc(i_qp,:)+dc(1)
-#if defined _SC
-         endif
-#endif
+         if (     l_sc_run) fill_QP_Sc=PAR_COM_QP_A2A%CPU_id==0
+         if (.not.l_sc_run) fill_QP_Sc=PAR_COM_G_b_INDEX%CPU_id==0
+         !
+         if (fill_QP_Sc) QP_Sc(i_qp,:)=QP_Sc(i_qp,:)+dc(1)
          !
          dc=cZERO
          !
@@ -609,22 +651,22 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
        !
        if (.not.PAR_IND_G_b%element_1D(ib)) cycle
        !
-       if (q%sstar(iqbz,2)==1) call live_timing(steps=1)
+       if (iqs==1) call live_timing(steps=1)
        !
        isc%os(1)=ib
        !
-       call DEV_SUB(scatter_Bamp)(isc)
+       call scatter_Bamp_gpu(isc)
        iscp%os=isc%os
        !
        if (any(isc%is/=iscp%is)) then
-         call DEV_SUB(scatter_Bamp)(iscp)
+         call scatter_Bamp_gpu(iscp)
        else
          !iscp%rhotw=isc%rhotw
-         call dev_memcpy(iscp_rhotw_p, isc_rhotw_p)
+         call devxlib_memcpy_d2d(iscp_rhotw_p, isc_rhotw_p)
        endif
        !conjg_iscp_rhotw=conjg(iscp%rhotw)
-       call dev_memcpy(conjg_iscp_rhotw,iscp_rhotw_p)
-       call dev_conjg(conjg_iscp_rhotw)
+       call devxlib_memcpy_d2d(conjg_iscp_rhotw,iscp_rhotw_p)
+       call devxlib_conjg_d(conjg_iscp_rhotw)
        !
        dc=cZERO
        !
@@ -632,7 +674,11 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          !
          if(l_GW_terminator) then
            !
+           !DEV_ACC_DEBUG data present(eet_factor,isc_rhotw_p,conjg_iscp_rhotw)
+           !DEV_ACC parallel loop collapse(2) 
            !DEV_CUF kernel do(2)
+           !DEV_OMPGPU target map(present,alloc:eet_factor,isc_rhotw_p,conjg_iscp_rhotw)
+           !DEV_OMPGPU teams loop collapse(2)
            !DEV_OMP parallel do default(shared), private(ig1,ig2), collapse(2)
            !
            do ig2=X_cols1,X_cols2
@@ -640,14 +686,16 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
               eet_factor(ig1,ig2)=eet_factor(ig1,ig2)-isc_rhotw_p(ig1)*conjg_iscp_rhotw(ig2)
            enddo
            enddo
+           !DEV_OMPGPU end target
+           !DEV_ACC_DEBUG end data
            !
          endif
          !
          ! DALV: here the grid is center in E0
          forall (i_w=1:QP_dSc_steps) W_(i_w)=Sc_W(i_qp)%p(i_w)+cI*QP_G_damp
          !
-         E_kmq=E%E(isc%os(1),isc%os(2),isc%os(4))
-         f_kmq=E%f(isc%os(1),isc%os(2),isc%os(4))
+         E_kmq=E%E(ib,i_kmq,i_sp_pol)
+         f_kmq=E%f(ib,i_kmq,i_sp_pol)
          !
          !
          do i_w=1,QP_dSc_steps
@@ -660,7 +708,14 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
            dp_dummy_i = 0.0_DP
            dp_dummy = 0.0_DP
            !
+           !DEV_ACC_DEBUG data present(X_blc_p,RIM_W,isc_gamp_p,conjg_iscp_rhotw,isc_rhotw_p,iscp_rhotw_p)
+           !DEV_ACC parallel  loop collapse(2) private(PPA_E,PPA_R,l_RIM_W_g,bose_PPA_E,ctmp) &
+           !DEV_ACC                reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_CUF kernel do(2)
+           !DEV_OMPGPU target map(present,alloc:X_blc_p,RIM_W,isc_gamp_p,conjg_iscp_rhotw,isc_rhotw_p,iscp_rhotw_p) &
+           !DEV_OMPGPU &      map(tofrom:dp_dummy_r,dp_dummy_i)
+           !DEV_OMPGPU teams  loop collapse(2) private(PPA_E,PPA_R,l_rim_W_g,bose_PPA_E,ctmp) &
+           !DEV_OMPGPU &           reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_OMP parallel do default(shared), private(ig1,ig2,PPA_E,PPA_R,ctmp,l_RIM_W_g), &
            !DEV_OMP &        reduction(+:dp_dummy), collapse(2)
            !
@@ -697,7 +752,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
 &                   ( (spin_occ-f_kmq+bose_PPA_E)/(W_i-E_kmq-PPA_E)+&
 &                     (f_kmq+bose_PPA_E)/(conjg(W_i)-E_kmq+PPA_E))
              !
-#ifdef _CUDA
+#ifdef _GPU
              dp_dummy_r=dp_dummy_r+real(ctmp,DP)
              dp_dummy_i=dp_dummy_i+imag(ctmp)
 #else
@@ -706,8 +761,10 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
              !
            enddo
            enddo
+           !DEV_OMPGPU end target
+           !DEV_ACC_DEBUG end data
            !
-           if (have_cuda) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
+           if (have_gpu) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
            !
            dc(i_w) = cmplx(dp_dummy,kind=SP)
            !
@@ -718,15 +775,15 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          !
        else if (l_sc_sex.or.l_cohsex.or.(l_sc_coh.and.COHSEX_use_empties)) then
          !
-         call M_by_V('N',X_nrows,X_ncols, cONE, X_blc_p(:,:,X_range1),X_nrows,&
-&                        conjg_iscp_rhotw(X_cols1:X_cols2),1,cZERO,local_rhotw(X_rows1:X_rows2),1)
+         call devxlib_xGEMV_gpu ('N',X_nrows,X_ncols, cONE, DEV_VAR(X_par(iq_mem)%blc)(:,:,X_range1),X_nrows,&
+&                                conjg_iscp_rhotw(X_cols1:X_cols2),1,cZERO,local_rhotw(X_rows1:X_rows2),1)
          !
-         pre_factor=V_dot_V(X_nrows,DEV_VAR(isc%rhotw)(X_rows1:X_rows2),local_rhotw(X_rows1:X_rows2))
+         pre_factor=V_dot_V_gpu(X_nrows,DEV_VAR(isc%rhotw)(X_rows1:X_rows2),local_rhotw(X_rows1:X_rows2))
 
          !
          ! SEX
          !
-         if (l_sc_sex.or.l_cohsex) dc(1)=-4._SP/spin_occ*pi*pre_factor*e%f(isc%os(1),isc%os(2),isc%os(4))
+         if (l_sc_sex.or.l_cohsex) dc(1)=-4._SP/spin_occ*pi*pre_factor*e%f(ib,i_kmq,i_sp_pol)
          !
          ! COH (when no empties are used the COH part is indeed calculated above)
          !
@@ -751,29 +808,35 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          dp_dummy_i=0.0_DP
          dp_dummy=0.0_DP
          !
+         !DEV_ACC_DEBUG data present(X_blc_p,isc_gamp_p,eet_factor)
+         !DEV_ACC parallel  loop collapse(2) private(PPA_E,PPA_R,eet_energy,lW,QP_ppa_EET,ctmp) &
+         !DEV_ACC                reduction(+:dp_dummy_r,dp_dummy_i)
          !DEV_CUF kernel do(2)
+         !DEV_OMPGPU target map(present,alloc:X_blc_p,isc_gamp_p,eet_factor) &
+         !DEV_OMPGPU &      map(tofrom:dp_dummy_r,dp_dummy_i)
+         !DEV_OMPGPU teams  loop collapse(2) private(PPA_E,PPA_R,eet_energy,lW,QP_ppa_EET,ctmp) &
+         !DEV_OMPGPU &           reduction(+:dp_dummy_r,dp_dummy_i)
          !DEV_OMP parallel do default(shared), private(ig1,ig2,PPA_E,PPA_R,QP_ppa_EET,ctmp), &
          !DEV_OMP &        reduction(+:dp_dummy), collapse(2)
-         !
          do ig2=X_cols1,X_cols2
          do ig1=X_rows1,X_rows2
            !
            PPA_E=X_ppaE/real(X_blc_p(ig1,ig2,X_range2))
            PPA_R=-X_blc_p(ig1,ig2,X_range1)/2._SP*PPA_E*isc_gamp_p(ig1,ig2)
            !
-#ifdef _CUDA
+#ifdef _GPU
            eet_energy=eet_cutoff1+GW_terminator_E
            lW=W_i
            if (Finite_Tel) lW=conjg(W_i)
            QP_ppa_EET=real(spin_occ)/(lW-eet_energy-PPA_E)
 #else
-           QP_ppa_EET= QP_ppa_EET_terminator(W_i,E,isc%is,PPA_E,ig1,ig2,isc%qs(2),&
+           QP_ppa_EET= QP_ppa_EET_terminator(W_i,E,isc%is,PPA_E,ig1,ig2,iqs,&
 &                                            eet_cutoff0,eet_cutoff1)
 #endif
            !
            ctmp = cmplx(4._SP/spin_occ*pi*PPA_R*eet_factor(ig1,ig2)*QP_ppa_EET, kind=DP)
            !
-#ifdef _CUDA
+#ifdef _GPU
            dp_dummy_r=dp_dummy_r+real(ctmp,DP)
            dp_dummy_i=dp_dummy_i+imag(ctmp)
 #else
@@ -782,9 +845,10 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
            !
          enddo
          enddo
-         !DEV_OMP end parallel do
+         !DEV_OMPGPU end target
+         !DEV_ACC_DEBUG end data
          !
-         if (have_cuda) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
+         if (have_gpu) dp_dummy=cmplx(dp_dummy_r,dp_dummy_i,kind=DP)
          !
          QP_Sc(i_qp,i_w)=QP_Sc(i_qp,i_w)+cmplx(dp_dummy,kind=SP)
          !
@@ -794,10 +858,13 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
      !
    enddo QP_loop
    !
+   YAMBO_FREE_GPU(eet_factor)
    YAMBO_FREE(eet_factor)
+   YAMBO_FREE_GPU(DEV_VAR(isc%gamp))
    YAMBO_FREE(isc%gamp)
-   YAMBO_FREE(isc%gamp_d)
-   YAMBO_FREE(X_par(iq_mem)%blc_d)
+   if (have_gpu) then
+     YAMBO_FREE_GPU(DEV_VAR(X_par(iq_mem)%blc))
+   endif
    !
  enddo Q_loop 
  !
@@ -807,13 +874,13 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  YAMBO_FREE(dc)
  YAMBO_FREE(W_)
+ YAMBO_FREE_GPU(local_rhotw)
  YAMBO_FREE(local_rhotw)
+ YAMBO_FREE_GPU(conjg_iscp_rhotw)
  YAMBO_FREE(conjg_iscp_rhotw)
  !
- l_X_ALLOC_elemental=.true.
-#if defined _SC
- l_X_ALLOC_elemental=l_sc_run.and.io_RESPONSE
-#endif
+ if(.not.l_sc_run) l_X_ALLOC_elemental=.true.
+ if(     l_sc_run) l_X_ALLOC_elemental=io_RESPONSE
  if(l_X_ALLOC_elemental) then
    do iq_mem = 1,size(X_par)
      call MATRIX_reset(X_par(iq_mem))
@@ -838,7 +905,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  ! AM, Sept 2019. The COH potential seems to break (in some case of a large amount) the
  ! energy degenerations. 
  !
- if (.not.l_sc_run.and..not.l_rt_carriers_in_use.and.l_QP_symmetrize) then
+ if (.not.l_sc_run.and.(.not.l_rt_carriers_in_use).and.l_QP_symmetrize) then
    do i_w=1,QP_dSc_steps
      if (i_w==1) call QP_states_simmetrize(E,what="COHSEX Sc",V_complex=QP_Sc(:,1),warn_me=.TRUE.)
      if (i_w> 1) call QP_states_simmetrize(E,V_complex=QP_Sc(:,i_w))

@@ -11,7 +11,7 @@ module ELPH
  use electrons,      ONLY:levels,E_reset
  use descriptors,    ONLY:IO_desc
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  ! Dumensions
  integer   :: ph_modes=0
@@ -115,6 +115,7 @@ module ELPH
  logical :: l_GKKP_hosts_bare_dV=.FALSE.
  logical :: l_GKKP_DB_exists=.FALSE.
  logical :: l_GKKP_expanded_DB_exists=.FALSE.
+ logical :: l_GKKP_DW=.TRUE.
  character(schlen) :: gkkp_db ! Database type for el-ph calculation (gkkp | expanded | genFroh )
  !
  contains

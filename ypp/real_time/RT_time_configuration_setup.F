@@ -14,7 +14,7 @@ subroutine RT_time_configuration_setup(what,GENERAL_RT_IO_t)
  use real_time,      ONLY:RT_step
  use RT_control,     ONLY:TIME_adjust,RT_IO_t
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  character(*),  intent(in) :: what
  type(RT_IO_t), intent(in) :: GENERAL_RT_IO_t
@@ -142,14 +142,14 @@ subroutine RT_time_configuration_setup(what,GENERAL_RT_IO_t)
      !
    else
      RT_conf%T_n_steps=1
-     YAMBO_ALLOC(RT_time,(RT_conf%T_n_steps))
+     YAMBO_ALLOC(RT_time,(1))
      RT_time=0._SP
      RT_conf%delta_T=0._SP
    endif
  else
-   RT_conf%T_n_steps = GENERAL_RT_IO_t%N
+   RT_conf%T_n_steps = RT_conf%T_n_range(2)-RT_conf%T_n_range(1)+1
    YAMBO_ALLOC(RT_time,(RT_conf%T_n_steps))
-   RT_time=GENERAL_RT_IO_t%Time
+   RT_time=GENERAL_RT_IO_t%Time(RT_conf%T_n_range(1):RT_conf%T_n_range(2))
    RT_conf%delta_T   = STEP
  endif
  !

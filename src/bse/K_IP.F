@@ -33,7 +33,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
  use PHOTOLUM,      ONLY:PL,PL_prefactor,PL_weights
  use units,         ONLY:SPEED_OF_LIGHT
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  integer       ::iq
  type(levels)  ::Ken
@@ -229,7 +229,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
        endif
      endif
      !
-     if ( abs(real(E_plus_W0)) < Dip%Energy_treshold .and. iq==1 .and. dip_r ) then
+     if ( abs(real(E_plus_W0)) < Dip%Energy_threshold .and. iq==1 .and. dip_r ) then
        res_abs =0._SP
        res_kerr=0._SP
        res_PL  =0._SP

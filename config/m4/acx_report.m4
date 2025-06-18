@@ -22,7 +22,7 @@ if test "$enable_time_profile" = "yes" ; then TIME_profile_check="X"; fi
 MEM_profile_check="-"
 if test "$enable_memory_profile" = "yes" ; then MEM_profile_check="X"; fi
 # 
-# - PARALLEL/CUDA SUPPORT -
+# - PARALLEL/GPU SUPPORT -
 # 
 CUDA_check="-"
 if ! test x"$enable_cuda" = "x"; then CUDA_check="X"; fi
@@ -40,6 +40,12 @@ fi
 #
 OPENMP_check="-"
 if test "$enable_open_mp" = "yes" ; then OPENMP_check="X"; fi
+#
+GPU_check="-"
+if test "$enable_cuda_fortran" = "yes" ; then GPU_check="X"; fi
+if test "$enable_openacc"      = "yes" ; then GPU_check="X"; fi
+if test "$enable_openmp5"      = "yes" ; then GPU_check="X"; fi
+
 #
 # - LIBRARIES -
 #
@@ -104,6 +110,13 @@ if test "$internal_slk" = "yes" ; then
   if test "$compile_slk" = "no" ; then SLK_check="I"; fi
 fi
 #
+ELPA_check="-"
+if test "$enable_elpa" = "yes" ; then ELPA_check="E"; fi
+if test "$internal_elpa" = "yes" ; then
+  if test "$compile_elpa" = "yes"; then ELPA_check="C"; fi
+  if test "$compile_elpa" = "no" ; then ELPA_check="I"; fi
+fi
+#
 BLACS_check="-"
 if test "$enable_scalapack" = "yes" ; then BLACS_check="E"; fi
 if test "$internal_blacs" = "yes" ; then
@@ -111,20 +124,28 @@ if test "$internal_blacs" = "yes" ; then
   if test "$compile_blacs" = "no" ; then BLACS_check="I"; fi
 fi
 #
+if test x"$with_ldiago_branch" = "xnone"; then
+ LDIAGO_check="I"; 
+else
+ LDIAGO_check="G"; 
+fi
+#
 PETSC_check="-"
+PETSC_info=""
 if test "$internal_petsc" = "yes" ; then
   if test "$compile_petsc" = "yes" ; then PETSC_check="C"; fi
   if test "$compile_petsc" = "no"  ; then PETSC_check="I"; fi
-  if ! test "$with_petsc_branch" = "none"; then PETSC_LIBS="$PETSC_LIBS (git branch $with_petsc_branch)"; fi
+  if ! test "$with_petsc_branch" = "none"; then PETSC_info="(git branch $with_petsc_branch)"; fi
 elif test "$enable_petsc" = "yes" ; then
   PETSC_check="E"
 fi
 #
 SLEPC_check="-"
+SLEPC_info=""
 if test "$internal_slepc" = "yes" ; then
   if test "$compile_slepc" = "yes" ; then SLEPC_check="C"; fi
   if test "$compile_slepc" = "no"  ; then SLEPC_check="I"; fi
-  if ! test "$with_slepc_branch" = "none"; then SLEPC_LIBS="$SLEPC_LIBS (git branch $with_slepc_branch)"; fi
+  if ! test "$with_slepc_branch" = "none"; then SLEPC_info="(git branch $with_slepc_branch)"; fi
 elif test "$enable_slepc" = "yes" ; then
   SLEPC_check="E"
 fi
@@ -134,6 +155,26 @@ if test "$internal_libxc" = "yes" ; then
   if test "$compile_libxc" = "yes"; then LIBXC_check="C"; fi
   if test "$compile_libxc" = "no" ; then LIBXC_check="I"; fi
 fi
+#
+MAGMA_check="-"
+if test "$internal_magma" = "yes" ; then
+  if test "$compile_magma" = "yes" ; then MAGMA_check="C"; fi
+  if test "$compile_magma" = "no"  ; then MAGMA_check="I"; fi
+elif test "$enable_magma" = "yes" ; then
+  MAGMA_check="E"
+fi
+#
+DEVXLIB_check="E"
+if test "$internal_devxlib" = "yes" ; then
+  if test "$compile_devxlib" = "yes"; then DEVXLIB_check="C"; fi
+  if test "$compile_devxlib" = "no" ; then DEVXLIB_check="I"; fi
+fi
+#
+LIBCUDA_check="-"
+if test "$use_libcuda" = "yes" ; then LIBCUDA_check="E"; fi
+
+GPU_libinfo=""
+if test "$GPU_SUPPORT" = "cudaf" && test "$LIBCUDA_check" = "-" ; then GPU_libinfo="with internal cuda library"; fi 
 #
 YDB_check="-";
 if test "$enable_ydb" = "yes" ; then YDB_check="X"; fi
@@ -186,6 +227,8 @@ AC_SUBST(MEM_profile_check)
 #
 AC_SUBST(CUDA_check)
 AC_SUBST(OPENMP_check)
+AC_SUBST(GPU_check)
+AC_SUBST(GPU_libinfo)
 AC_SUBST(PARIO_check)
 AC_SUBST(HDF5_check)
 AC_SUBST(HDF5_info)
@@ -202,17 +245,33 @@ AC_SUBST(BLAS_check)
 AC_SUBST(LAPACK_check)
 AC_SUBST(BLACS_check)
 AC_SUBST(SLK_check)
+AC_SUBST(ELPA_check)
+AC_SUBST(LDIAGO_check)
 AC_SUBST(PETSC_check)
 AC_SUBST(SLEPC_check)
+AC_SUBST(PETSC_info)
+AC_SUBST(SLEPC_info)
 #
 AC_SUBST(YDB_check)
 AC_SUBST(YPY_check)
 #
 AC_SUBST(LIBXC_check)
+AC_SUBST(MAGMA_check)
+AC_SUBST(DEVXLIB_check)
+AC_SUBST(LIBCUDA_check)
 AC_SUBST(MPI_check)
 AC_SUBST(MPI_info)
 #
 # STRIPE [LIB] from paths
+#
+ACX_STRIPE_SUBPATH($LDIAGO_LIBS,"LIB")
+#ACX_STRIPE_SUBPATH2($LDIAGO_LIBS,"LIB")
+LDIAGO_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($LDIAGO_INCS,"INC")
+#ACX_STRIPE_SUBPATH2($LDIAGO_INCS,"INC")
+LDIAGO_INCS_R=$STRIPE
+AC_SUBST(LDIAGO_LIBS_R)
+AC_SUBST(LDIAGO_INCS_R)
 #
 ACX_STRIPE_SUBPATH($IOTK_LIBS,"LIB")
 IOTK_LIBS_R=$STRIPE
@@ -291,6 +350,20 @@ SCALAPACK_INCS_R=$STRIPE
 AC_SUBST(SCALAPACK_LIBS_R)
 AC_SUBST(SCALAPACK_INCS_R)
 #
+ACX_STRIPE_SUBPATH($ELPA_LIBS,"LIB")
+ELPA_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($ELPA_INCS,"INC")
+ELPA_INCS_R=$STRIPE
+AC_SUBST(ELPA_LIBS_R)
+AC_SUBST(ELPA_INCS_R)
+#
+ACX_STRIPE_SUBPATH($MAGMA_LIBS,"LIB")
+MAGMA_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($MAGMA_INCS,"INC")
+MAGMA_INCS_R=$STRIPE
+AC_SUBST(MAGMA_LIBS_R)
+AC_SUBST(MAGMA_INCS_R)
+#
 ACX_STRIPE_SUBPATH($BLACS_LIBS,"LIB")
 BLACS_LIBS_R=$STRIPE
 ACX_STRIPE_SUBPATH($BLACS_INCS,"INC")
@@ -312,12 +385,33 @@ SLEPC_INCS_R=$STRIPE
 AC_SUBST(SLEPC_LIBS_R)
 AC_SUBST(SLEPC_INCS_R)
 #
+ACX_STRIPE_SUBPATH($MAGMA_LIBS,"LIB")
+MAGMA_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($MAGMA_INCS,"INC")
+MAGMA_INCS_R=$STRIPE
+AC_SUBST(MAGMA_LIBS_R)
+AC_SUBST(MAGMA_INCS_R)
+#
 ACX_STRIPE_SUBPATH($LIBXC_LIBS,"LIB")
 LIBXC_LIBS_R=$STRIPE
 ACX_STRIPE_SUBPATH($LIBXC_INCS,"INC")
 LIBXC_INCS_R=$STRIPE
 AC_SUBST(LIBXC_LIBS_R)
 AC_SUBST(LIBXC_INCS_R)
+#
+ACX_STRIPE_SUBPATH($DEVXLIB_LIBS,"LIB")
+DEVXLIB_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($DEVXLIB_INCS,"INC")
+DEVXLIB_INCS_R=$STRIPE
+AC_SUBST(DEVXLIB_LIBS_R)
+AC_SUBST(DEVXLIB_INCS_R)
+#
+ACX_STRIPE_SUBPATH($LIBCUDA_LIBS,"LIB")
+LIBCUDA_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($LIBCUDA_INCS,"INC")
+LIBCUDA_INCS_R=$STRIPE
+AC_SUBST(LIBCUDA_LIBS_R)
+AC_SUBST(LIBCUDA_INCS_R)
 #
 ACX_STRIPE_SUBPATH($BLAS_PETSC_LIBS,"LIB")
 BLAS_PETSC_LIBS_R=$STRIPE

@@ -17,10 +17,10 @@ do
 done
 #
 llocal="-lqe_pseudo -lmath77 -lslatec -llocal"
-lPLA="\$(lscalapack) \$(lblacs) \$(llapack) \$(lblas)"
+lPLA="\$(lldiago) \$(lelpa) \$(lscalapack) \$(lblacs) \$(lmagma) \$(llapack) \$(lblas)"
 lSL="\$(lslepc) \$(lpetsc)"
-lIO="\$(liotk) \$(letsf) \$(lnetcdff) \$(lnetcdf) \$(lhdf5)"
-lextlibs="\$(llibxc) \$(lfft) \$(lfutile) \$(lyaml)"
+lIO="\$(liotk) \$(lnetcdff) \$(lnetcdf) \$(lhdf5)"
+lextlibs="\$(llibxc) \$(lfft) \$(lfutile) \$(lyaml)  \$(ldevxlib) \$(llapack) \$(lblas) \$(lcudalib)"
 #
 case $target in
   yambo_nl|yambo_fl)

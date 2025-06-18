@@ -32,15 +32,11 @@ module mpa_m
  !
  use pars,            ONLY:SP,DP,cZERO,cONE,cI
  use functions,       ONLY:NAN
- use parallel_m,      ONLY:COMM_copy,PAR_COM_RL_INDEX,PAR_COM_RL_A2A
- use matrix,          ONLY:MATRIX_reset,PAR_matrix
- use X_m,             ONLY:X_par_lower_triangle,X_rows,X_cols,&
- &                         X_FILL_UP_matrix_only,X_lower_triangle_matrix_in_use
- use parallel_int,    ONLY:PARALLEL_live_message
- use cuda_m,          ONLY:have_cuda
+ use matrix,          ONLY:PAR_matrix
+ use gpu_m,           ONLY:have_gpu
  !
+#include <y_memory.h>
 #include <dev_defs.h>
-#include <memory.h>
 
  complex(SP),      allocatable, target :: MPA_freqs(:)
  type(PAR_matrix), allocatable, target :: MPA_E_par(:)
@@ -56,6 +52,7 @@ contains
  subroutine MPA_alloc(d)
    implicit none
    integer :: d(4)
+   !
    call MPA_free()
    YAMBO_ALLOC(MPA_freqs,(d(4)))
  end subroutine
@@ -82,7 +79,8 @@ contains
      PPcond_rate=1._SP 
    endif
    !
-   ! DALV: since MPA uses complex poles we need to guarantee the time ordering
+   ! DALV: since MPA uses complex poles 
+   !       we need to guarantee the time ordering
    !
    if(real(E)<0._SP) E=-E
    if(aimag(E)>-epsilon(1._SP)) E=real(E,SP)-cI*epsilon(1._SP)
@@ -137,7 +135,10 @@ contains
    real(SP)    :: wmax, thr=0.00001_SP
    !
    npr=np
-   wmax=maxval(sqrt(real(z,SP)))*1.5_SP !DALV: we were using the square before, now we use 1.5* the extreme of the interval
+   !
+   !DALV: we were using the square before, 
+   !      now we use 1.5* the extreme of the interval
+   wmax=maxval(sqrt(real(z,SP)))*1.5_SP 
    !
    i=1
    do while(i<=npr)

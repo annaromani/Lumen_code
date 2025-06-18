@@ -15,7 +15,7 @@ subroutine INIT_read_command_line(rstr,init_)
  use BS_solvers,     ONLY:BSS_mode
  use X_m,            ONLY:Chi_mode
  use QP_m,           ONLY:QP_solver
- use memory,         ONLY:USER_MEM_limit_string,GET_user_MEM_limit
+ use y_memory,         ONLY:USER_MEM_limit_string,GET_user_MEM_limit
  use LIVE_t,         ONLY:USER_wall_time_string,GET_user_WALL_time
  use stderr,         ONLY:STRING_split,STRING_match,STRING_same
  use it_tools,       ONLY:runlevel_is_on,switch_off_runlevel
@@ -212,7 +212,7 @@ subroutine INIT_read_command_line(rstr,init_)
        BSS_mode=trim(rstr_piece(i1+1))
        if (.not.STRING_match(BSS_mode,'h').and..not.STRING_match(BSS_mode,'d').and.&
 &          .not.STRING_match(BSS_mode,'i').and..not.STRING_match(BSS_mode,'t').and.&
-&          .not.STRING_match(BSS_mode,'s')) BSS_mode='h'
+&          .not.STRING_match(BSS_mode,'s').and..not.STRING_match(BSS_mode,'o')) BSS_mode='h'
        !
        ! With and ALDA Fxc the t solver is not permitted
        !
@@ -339,6 +339,7 @@ subroutine INIT_read_command_line(rstr,init_)
        V_is_defined=INIT_read_command_line_potentials(V_string,"f")
        V_is_defined=INIT_read_command_line_potentials(V_string,"h")
        V_is_defined=INIT_read_command_line_potentials(V_string,"cvonly")
+       V_is_defined=INIT_read_command_line_potentials(V_string,"kbse")
        !
      endif
 #endif
@@ -359,6 +360,7 @@ subroutine INIT_read_command_line(rstr,init_)
        V_is_defined=INIT_read_command_line_potentials(V_string,"f")
        V_is_defined=INIT_read_command_line_potentials(V_string,"h")
        V_is_defined=INIT_read_command_line_potentials(V_string,"cvonly")
+       V_is_defined=INIT_read_command_line_potentials(V_string,"kbse")
        !
      endif
 #endif
@@ -428,8 +430,9 @@ subroutine INIT_read_command_line(rstr,init_)
      ! COLLISIONS
      !
      if (runlevel_is_on('collisions')) then
-       if ( l_elel_scatt.or.trim(H_potential)=='COH+SEX'.or.&
-&               trim(H_potential)=='COH'.or.trim(H_potential)=='SEX' ) call initactivate(1,'em1s')
+       if ( l_elel_scatt.or.index(H_potential,'SEX')>0 .or.&
+&                           index(H_potential,'COH')>0 ) call initactivate( 1,'em1s')
+       if ( index(H_potential,'KBSE')>0 )                call initactivate(-1,'em1s') 
      endif
      !
 #endif

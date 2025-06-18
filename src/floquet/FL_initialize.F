@@ -45,7 +45,7 @@ subroutine FL_initialize(E,k,q)
 &                         l_FL_precond
  use parser_m,       ONLY:parser
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(levels), intent(in) :: E
  type(bz_samp),intent(in) :: q,k

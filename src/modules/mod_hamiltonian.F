@@ -10,9 +10,11 @@ module hamiltonian
  use pars,       ONLY:SP,schlen
  use electrons,  ONLY:levels
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  integer           :: H_ref_bands(2)
+ integer           :: H_ref_hole_bands(2)
+ integer           :: H_ref_elec_bands(2)
  integer           :: H_ref_nbands
  !
  character(schlen) :: H_potential
@@ -57,9 +59,19 @@ module hamiltonian
    integer function B_mat_index(ib1,ib2,nb)
      integer :: ib1,ib2,nb(2)
      !
+     ! This is identical to 
+     ! B_mat_index = matrix_index(ib1-nb(1)+1,ib2-nb(1)+1,nb(2)-nb(1)+1)
      B_mat_index=(ib1-nb(1))*(nb(2)-nb(1)+1)+ib2-nb(1)+1
      !
-   end function
+   end function B_mat_index
+   !
+   integer function B_mat_index_cv(ib1,ib2,nb1,nb2)
+     integer :: ib1,ib2,nb1(2),nb2(2)
+     !
+     B_mat_index_cv=(ib1-nb1(1))*(nb2(2)-nb2(1)+1)+ib2-nb2(1)+1
+     !
+   end function B_mat_index_cv
+   !
    !
    subroutine H_QP_table_setup(E)
      use drivers,        ONLY:l_use_collisions
@@ -136,7 +148,7 @@ module hamiltonian
    !
    subroutine H_free()
      use xc_functionals, ONLY:magn,V_xc
-     use X_m,            ONLY:X_ALLOC_elemental
+     use ALLOC,          ONLY:X_ALLOC_elemental
      !
      implicit none
      !

@@ -30,11 +30,13 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
 # endif
 #endif
  !
- ! Define io_COLLs_header to handle either serial or parallel I/O
+ ! Inside collisions.h, io_COLLs_header is defined as either
+ ! - io_COLLISIONS        (serial I/O) or
+ ! - io_COLLISIONS_header (parallel I/O case)
  !
 #include<collisions.h>
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  type(X_t)        :: X(5),Xbsk
  type(QP_t)       :: qp

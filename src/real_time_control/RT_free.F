@@ -8,15 +8,15 @@
 subroutine RT_free( )
  !
  use R_lattice,      ONLY:bz_samp_FineGd_reset
- use DIPOLES,        ONLY:DIP_alloc
+ use ALLOC,          ONLY:DIPOLE_ALLOC_global
 #if defined _ELPH
- use ELPH_intfcs,    ONLY:ELPH_alloc
+ use ALLOC,          ONLY:ELPH_alloc
  use ELPH,           ONLY:Q_io_map,GKKP_ep_sq,GKKP_pe_sq
 #endif
  use hamiltonian,    ONLY:H_free
  use xc_functionals, ONLY:E_xc
- use real_time,      ONLY:DbGd_EE_scatt_table,RT_TIME_status,REF_V_xc_sc,&
-&                         Ho_plus_Sigma,H_EQ,H_pseudo_eq,RT_Vnl_xc,HARTREE0,XC0,G_lesser_reference,&
+ use real_time,      ONLY:DbGd_EE_scatt_table,RT_TIME_status,REF_V_xc_sc,dG_avg,&
+&                         Ho_plus_Sigma,H_EQ,H_field,H_pseudo_eq,RT_Vnl_xc,HARTREE0,XC0,G_lesser_reference,&
 &                         dG_lesser,G_lesser,MEM_pointer,REF_V_xc_sc,REF_V_hartree_sc,rho_reference,&
 &                         magn_reference,DbGd_EE_scatt_table,RT_TIME_status,REF_V_xc_sc,&
 &                         RT_levels,I1_matrix,RT_Deph_Matrix,RTibz
@@ -26,24 +26,18 @@ subroutine RT_free( )
 #endif
  use RT_lifetimes,   ONLY:RT_ALL_lifetimes_free,q_weight_RT
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  call H_free()
  !
- call DIP_alloc('DIP_iR')
- call DIP_alloc('DIP_P')
- call DIP_alloc('DIP_v')
- call DIP_alloc('DIP_spin')
- call DIP_alloc('DIP_orbital')
- call DIP_alloc('P_square')
- call DIP_alloc('DIP_P_spinor')
+ call DIPOLE_ALLOC_global( )
  !
  call RT_ALL_lifetimes_free()
  call RT_ALL_occupations_free()
  !
  YAMBO_FREE(DbGd_EE_scatt_table)
  YAMBO_FREE(E_xc)
- YAMBO_FREE(RT_TIME_status)
+ !AMBO_FREE(RT_TIME_status)
  YAMBO_FREE(REF_V_xc_sc)
  !
  YAMBO_FREE(REF_V_hartree_sc)
@@ -52,8 +46,10 @@ subroutine RT_free( )
  !
  YAMBO_FREE(Ho_plus_Sigma)
  YAMBO_FREE(H_EQ)
+ YAMBO_FREE(H_field)
  YAMBO_FREE(H_pseudo_eq)
  YAMBO_FREE(RT_Vnl_xc)
+ YAMBO_FREE(dG_avg)
  !
  YAMBO_FREE(HARTREE0)
  YAMBO_FREE(XC0)

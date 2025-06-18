@@ -103,9 +103,9 @@ if test -d "$with_netcdf_path" || test -d "$with_netcdf_libdir" ; then
   fi
   #
   try_NETCDF_LIBS="-L$try_netcdf_libdir -lnetcdf" ;
-  if test -r $try_netcdff_libdir/libnetcdff.a ; then
+  if test -r $try_netcdff_libdir/libnetcdff.a || test -r $try_netcdff_libdir/libnetcdff.so ; then
     try_NETCDFF_LIBS="-L$try_netcdff_libdir -lnetcdff" ;
-  elif test -r $try_netcdf_libdir/libnetcdff.a ; then
+  elif test -r $try_netcdf_libdir/libnetcdff.a || test -r $try_netcdf_libdir/libnetcdff.so ; then
     try_NETCDFF_LIBS="-L$try_netcdf_libdir -lnetcdff" ;
   fi
   #
@@ -249,9 +249,11 @@ if test x"$enable_hdf5" = "xyes"; then
     NETCDF_HDF5_PATH="${extlibs_path}/${FCKIND}/${FC}/${NETCDF_VER}/${IO_LIB_VER}" ;
     NETCDF_HDF5_PAR_PATH="${extlibs_path}/${FCKIND}/${FC}/${NETCDF_VER}/parallel" ;
     #
-    NETCDF_LIBS="${NETCDF_HDF5_PATH}/lib/libnetcdf.a" ;
+    #NETCDF_LIBS="${NETCDF_HDF5_PATH}/lib/libnetcdf.a" ;
+    NETCDF_LIBS="-L${NETCDF_HDF5_PATH}/lib/ -lnetcdf" ;
     NETCDF_INCS="${IFLAG}${NETCDF_HDF5_PATH}/include" ;
-    NETCDFF_LIBS="${NETCDF_HDF5_PATH}/lib/libnetcdff.a" ;
+    #NETCDFF_LIBS="${NETCDF_HDF5_PATH}/lib/libnetcdff.a" ;
+    NETCDFF_LIBS="-L${NETCDF_HDF5_PATH}/lib/ -lnetcdff" ;
     NETCDFF_INCS="${IFLAG}${NETCDF_HDF5_PATH}/include" ;
     #
     netcdf=yes ;
@@ -265,9 +267,11 @@ if test x"$enable_hdf5" = "xyes"; then
       #
       compile_netcdf="no" ;
       IO_LIB_VER="parallel";
-      NETCDF_LIBS="${NETCDF_HDF5_PAR_PATH}/lib/libnetcdf.a" ;
+      #NETCDF_LIBS="${NETCDF_HDF5_PAR_PATH}/lib/libnetcdf.a" ;
+      NETCDF_LIBS="-L${NETCDF_HDF5_PAR_PATH}/lib/ -lnetcdf" ;
       NETCDF_INCS="${IFLAG}${NETCDF_HDF5_PAR_PATH}/include" ;
-      NETCDFF_LIBS="${NETCDF_HDF5_PAR_PATH}/lib/libnetcdff.a" ;
+      #NETCDFF_LIBS="${NETCDF_HDF5_PAR_PATH}/lib/libnetcdff.a" ;
+      NETCDFF_LIBS="-L${NETCDF_HDF5_PAR_PATH}/lib/ -lnetcdff" ;
       NETCDFF_INCS="${IFLAG}${NETCDF_HDF5_PAR_PATH}/include" ;
       AC_MSG_RESULT([already compiled (using parallel version)]) ;
       #

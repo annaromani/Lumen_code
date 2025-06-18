@@ -31,7 +31,8 @@ subroutine FL_driver(E,X,k,q,Dip)
  use LIVE_t,         ONLY:live_timing 
  use electrons,      ONLY:levels,n_sp_pol
  use X_m,            ONLY:X_t
- use DIPOLES,        ONLY:DIPOLE_t,DIP_alloc,DIP_S
+ use DIPOLES,        ONLY:DIPOLE_t,DIP_S
+ use ALLOC,          ONLY:DIPOLE_ALLOC_elemental
  use wave_func,      ONLY:WF,wf_ng
  use interfaces,     ONLY:WF_load,WF_free
  use hamiltonian,    ONLY:WF_Go_indx,H_QP_table_setup,H_potential
@@ -56,7 +57,7 @@ subroutine FL_driver(E,X,k,q,Dip)
 &                         PAR_COM_freqs_INDEX,PAR_COM_Xk_bz_INDEX,PAR_COM_Xk_ibz_INDEX,myid,master_cpu
  use collision_ext,  ONLY:COLLISIONS_have_HARTREE,COLLISIONS_CV_only
  !
-#include<memory.h>
+#include<y_memory.h>
  !
  ! Notice that E is never changed!
  !
@@ -122,14 +123,14 @@ subroutine FL_driver(E,X,k,q,Dip)
  ! =====================================================
  call qindx_free('ALL')
  !
- call DIP_alloc('P_square')
+ call DIPOLE_ALLOC_elemental('P_square')
  if(l_use_DIPOLES) then
-   call DIP_alloc('DIP_S')
+   call DIPOLE_ALLOC_elemental('DIP_S')
  else
-   call DIP_alloc('DIP_R')
+   call DIPOLE_ALLOC_elemental('DIP_R')
    if(.not.l_eval_CURRENT) then
-     call DIP_alloc('DIP_R')
-     call DIP_alloc('DIP_v')
+     call DIPOLE_ALLOC_elemental('DIP_R')
+     call DIPOLE_ALLOC_elemental('DIP_v')
    endif
  endif
  !
@@ -344,9 +345,9 @@ subroutine FL_driver(E,X,k,q,Dip)
  !
  call WF_free(WF)
  call FL_free()
- call DIP_alloc('DIP_S')
- call DIP_alloc('DIP_R')
- call DIP_alloc('DIP_v')
+ call DIPOLE_ALLOC_elemental('DIP_S')
+ call DIPOLE_ALLOC_elemental('DIP_R')
+ call DIPOLE_alloc_elemental('DIP_v')
  !
 end subroutine FL_driver
    !

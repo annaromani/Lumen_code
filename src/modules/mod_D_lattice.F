@@ -7,11 +7,11 @@
 !
 module D_lattice
  !
- use pars,        ONLY:SP,lchlen,cONE,cZERO,cI,schlen
- use cuda_m,      ONLY:have_cuda
+ use pars,        ONLY:LP,SP,lchlen,cONE,cZERO,cI,schlen
+ use devxlib
  !
 #include<dev_defs.h>
-#include<memory.h>
+#include<y_memory.h>
  !
  ! Non periodic directions
  !
@@ -43,6 +43,13 @@ module D_lattice
  integer, allocatable    :: sop_inv(:)
  integer, allocatable    :: irt(:,:,:)     ! (nsym,nat,n_at_species) gives the index of a rotated atomic position
  integer, allocatable    :: icell(:,:,:,:) ! (3,nsym,nat,n_at_species) gives the referene cell after a symm is operated
+ !
+ ! Full symmetries after removing them with ypp -y
+ integer  :: old_nsym
+ real(SP), allocatable :: old_dl_sop(:,:,:)
+ integer,  allocatable :: kpoints_map(:,:)
+ integer(LP),  allocatable :: old_S_contains_TR(:)
+ !                       
  ! device memory
  complex(SP),allocatable DEV_ATTR :: spin_sop_d(:,:,:)
  integer,    allocatable DEV_ATTR :: sop_inv_d(:)
@@ -101,8 +108,10 @@ module D_lattice
      integer  :: i1,i2,i3
      real(SP) :: m(3,3)
      !
-     YAMBO_FREE(sop_tab)
+     YAMBO_FREE_GPU(DEV_VAR(sop_inv))
      YAMBO_FREE(sop_inv)
+     YAMBO_FREE(sop_tab)
+     !
      YAMBO_ALLOC(sop_tab,(nsym,nsym))
      YAMBO_ALLOC(sop_inv,(nsym))
      sop_tab=0
@@ -123,10 +132,9 @@ module D_lattice
      if (any(sop_inv==0)) call error('[SYMs] check the input symmetries!')
      call msg(msg_where,'Group table correct   ',.true.)
      !
-     if (have_cuda) then
-       YAMBO_FREE(sop_inv_d)
-       YAMBO_ALLOC_SOURCE(sop_inv_d,sop_inv)
-     endif
+#ifdef _GPU
+     YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(sop_inv),sop_inv)
+#endif    
      !
    end subroutine symmetry_group_table
    !
