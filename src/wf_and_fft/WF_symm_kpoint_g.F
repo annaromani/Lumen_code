@@ -133,7 +133,7 @@ subroutine WF_symm_kpoint_g_BZ(b_to_load,ik,i_sp_pol,isymm,ig0,isref,igref,WF)
   use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(G_m_G),&
   &                       k_pt,rl_sop,g_vec
   use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv, &
-  &                       dl_sop,i_time_rev,nsym
+  &                       dl_sop,i_time_rev,nsym,non_symmorphic_syms
   !
   implicit none
   !
@@ -159,7 +159,7 @@ subroutine WF_symm_kpoint_g_BZ(b_to_load,ik,i_sp_pol,isymm,ig0,isref,igref,WF)
   !
   isymm_m1=sop_inv(isymm)
   !
-  call error(" to be fixed with wf_phases")
+  if (non_symmorphic_syms) call error(" to be fixed with wf_phases")
   !  
   do ib=b_to_load(1),b_to_load(2)
     !
@@ -214,7 +214,7 @@ subroutine WF_symm_kpoint_g_ssop(b_to_load,ik,i_sp_pol,isymm,ig0,ssop,WF)
   use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(G_m_G),&
   &                       k_pt,rl_sop,g_vec
   use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv, &
-  &                       dl_sop,i_time_rev,nsym
+  &                       dl_sop,i_time_rev,nsym,non_symmorphic_syms
   !
   implicit none
   !
@@ -241,7 +241,7 @@ subroutine WF_symm_kpoint_g_ssop(b_to_load,ik,i_sp_pol,isymm,ig0,ssop,WF)
   !
   isymm_m1=sop_inv(isymm)
   !
-  call error(" to be fixed with wf_phases")
+  if (non_symmorphic_syms) call error(" to be fixed with wf_phases")
   !  
   do ib=b_to_load(1),b_to_load(2)
     !
