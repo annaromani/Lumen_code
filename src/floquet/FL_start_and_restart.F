@@ -4,6 +4,10 @@
 !              http://www.yambo-code.org
 !
 ! Authors (see AUTHORS file for details): AM CA IA
+!
+! headers
+!
+#include<y_memory.h>
 ! 
 ! This file is distributed under the terms of the GNU 
 ! General Public License. You can redistribute it and/or 
@@ -57,7 +61,9 @@ subroutine FL_start_and_restart(E,k,Dip)
  use stderr,         ONLY:intc
  use collision_ext,  ONLY:COLLISIONS_have_HARTREE
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  type(levels)      :: E
  type(bz_samp)     :: k

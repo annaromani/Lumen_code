@@ -3,6 +3,10 @@
 !              http://www.yambo-code.org
 !
 ! Authors (see AUTHORS file for details): DS, IM
+!
+! headers
+!
+#include<y_memory.h>
 ! 
 ! This file is distributed under the terms of the GNU 
 ! General Public License. You can redistribute it and/or 
@@ -37,7 +41,9 @@ integer function io_FL(ID)
 &                        FL_desc,FL_table
  use timing_m,      ONLY:timing
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  integer, intent(in) :: ID
  !

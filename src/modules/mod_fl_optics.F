@@ -3,6 +3,10 @@
 !              http://www.yambo-code.org
 !
 ! Authors (see AUTHORS file for details): MG AC IA
+!
+! headers
+!
+#include<y_memory.h>
 ! 
 ! This file is distributed under the terms of the GNU 
 ! General Public License. You can redistribute it and/or 
@@ -28,7 +32,9 @@ module fl_optics
  use pars,            ONLY:SP,schlen,lchlen
  use electrons,       ONLY:levels
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  ! Bands in terms of Kohn-Sham orbitals
  !

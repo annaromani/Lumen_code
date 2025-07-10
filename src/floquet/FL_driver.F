@@ -3,6 +3,10 @@
 !              http://www.yambo-code.org
 !
 ! Authors (see AUTHORS file for details): MG IA
+!
+! headers
+!
+#include<y_memory.h>
 ! 
 ! This file is distributed under the terms of the GNU 
 ! General Public License. You can redistribute it and/or 
@@ -57,7 +61,9 @@ subroutine FL_driver(E,X,k,q,Dip)
 &                         PAR_COM_freqs_INDEX,PAR_COM_Xk_bz_INDEX,PAR_COM_Xk_ibz_INDEX,myid,master_cpu
  use collision_ext,  ONLY:COLLISIONS_have_HARTREE,COLLISIONS_CV_only
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  ! Notice that E is never changed!
  !
