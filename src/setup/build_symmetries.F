@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+! headers
+!
+#include <y_memory.h>
+!
 subroutine build_symmetries()
  !
  use pars,           ONLY:SP
@@ -17,7 +21,9 @@ subroutine build_symmetries()
 &                         symmetry_equiv_atoms,pure_rotation
  use R_lattice,      ONLY:rl_sop
  !
-#include <y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  integer           :: i1,i2,i3,is,iclass,jclass,ich,len_class(12),max_len
  character(5)      :: vec_ch(12)

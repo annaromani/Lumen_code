@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine INIT_ypp(E,instr,FINALIZE)
  !
  use drivers,        ONLY:l_exc_rad_life
@@ -43,7 +47,8 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  use YPP_real_time,  ONLY:l_RealTime,l_RT_dos,l_RT_abs,l_RT_bands,l_RT_DBs,l_RT_density,l_RT_G_two_times,&
 &                         l_RT_energy,l_RT_lifetimes,l_RT_occupations,l_RT_time,l_RT_X,l_RTpump_Fermi,&
 &                         l_RTpump_energy,Eh_pumped_pair_n_BZ_regions,Eh_pumped_pair_BZ_regions,&
-&                         l_NL_X,l_NL_exc,RT_conf,l_RT_pol,l_RT_ARPES
+&                         l_NL_X,l_NL_exc,RT_conf,l_RT_pol,l_RT_fields,l_RT_ARPES
+ use fields,         ONLY:n_ext_fields
  use real_time,      ONLY:RT_bands
 #endif
 #if defined _YPP_NL 
@@ -59,8 +64,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  use com,            ONLY:of_yaml_IDs
  use yaml_output,    ONLY:yaml_close_stream
 #endif
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  type(levels)     ::E
  character(*)     ::instr
@@ -327,6 +333,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
        l_RT_abs         =STRING_match(rstr_piece(i1+1),'a')
        l_RT_ARPES       =STRING_match(rstr_piece(i1+1),'s')
        l_RT_pol         =STRING_match(rstr_piece(i1+1),'p')
+       l_RT_fields      =STRING_match(rstr_piece(i1+1),'f')
        !
        l_rtplot=.TRUE.
        !
@@ -371,6 +378,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_RT_energy)      call initactivate(1,'RTenergy')
  if (l_RT_dos)         call initactivate(1,'RTdos')
  if (l_RT_pol)         call initactivate(1,'RTpol')
+ if (l_RT_fields)      call initactivate(1,'RTfields')
  !
 #endif
  !
@@ -462,6 +470,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_RTpump_Fermi     = runlevel_is_on('Select_Fermi')
  !
  l_RT_pol           = runlevel_is_on('RTpol')
+ l_RT_fields        = runlevel_is_on('RTfields')
  l_RT_abs           = runlevel_is_on('RTabs')
  l_RT_ARPES         = runlevel_is_on('RTARPES')
  l_RT_occupations   = runlevel_is_on('RToccupations')
@@ -641,7 +650,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    !
    l_flag=l_RT_occupations.or.l_RT_abs.or.l_RT_pol.or.l_RT_ARPES
    if (l_flag)      call init_RT_ctl_switch('G')
-   l_flag=l_RT_occupations.or.l_RT_density.or.l_RT_lifetimes.or.l_RT_abs.or.l_RT_pol.or.l_RT_G_two_times
+   l_flag=l_RT_occupations.or.l_RT_density.or.l_RT_lifetimes.or.l_RT_abs.or.l_RT_pol.or.l_RT_G_two_times.or.l_RT_fields
    if (l_flag)      call initactivate(1,"TimeStep TimeRange")
    !
    if (l_RT_pol)    call initactivate(1,"PolMode EnRngeRt ETStpsRt DampFactor")
@@ -674,6 +683,11 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    if (l_RT_abs) then
      call initactivate(1," TRabsExcPol TRabsNexc TRabsVelFullExpr TRabsGoldModes TRabsNExc")
      call initactivate(1,"TRabsOBS TRabsDIPdir TRabsDIPplane TRabsMODE TRabsEtresh")
+   endif
+   if (l_RT_fields) then
+     call initactivate(1,"EnRngeRt ETStpsRt ChirpFac")
+     n_ext_fields=1
+     call Afield_activate(1)
    endif
    !
  endif

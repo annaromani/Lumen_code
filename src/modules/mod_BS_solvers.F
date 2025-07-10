@@ -5,14 +5,19 @@
 !
 ! Authors (see AUTHORS file for details): AM DS NM
 !
+! headers
+!
+#include <y_memory.h>
+!
 module BS_solvers
  !
  use descriptors,    ONLY:IO_desc
  use pars,           ONLY:SP,schlen,lchlen
  use BS,             ONLY:BS_T_grp,BS_nT_grps,BS_K_dim,BS_H_dim,BS_block,n_BS_blks,BS_blk
  use matrix,         ONLY:PAR_matrix
+ use y_memory_alloc
  !
-#include <y_memory.h>
+ implicit none
  !
  ! Epsilon factor
  !==================
@@ -54,11 +59,11 @@ module BS_solvers
  character(schlen):: BSS_mode
  complex(SP)      :: BSS_Wd
  integer  :: BSS_n_freqs
- integer  :: BSS_n_eig            ! number of eigenvalues to find. Ydiago/Slepc
- integer  :: BSS_n_eig_Input      ! number of eigenvalues requested in input. Ydiago/Slepc
- integer  :: BSS_first_eig        ! index of the first eigenvalue to find. Ydiago
+ integer  :: BSS_n_eig            ! number of eigenvalues to find. Ldiago/Slepc
+ integer  :: BSS_n_eig_Input      ! number of eigenvalues requested in input. Ldiago/Slepc
+ integer  :: BSS_first_eig        ! index of the first eigenvalue to find. Ldiago
  real(SP) :: BSS_target_E         ! find eigenvalues close to this energy. Slepc
- real(SP) :: BSS_trange_E(2)      ! find eigenvalues in this energy range. Ydiago
+ real(SP) :: BSS_trange_E(2)      ! find eigenvalues in this energy range. Ldiago
  real(SP) :: BSS_er(2)
  real(SP) :: BSS_dr(2)
  real(SP) :: BSS_damp_reference
@@ -85,7 +90,7 @@ module BS_solvers
  ! Solvers (Diago)
  !=========
  logical  :: BSS_write_eig_2_db
- character(1) :: BSS_ydiago_solver     ! "s" for scalapack / "e" for elpa
+ character(1) :: BSS_ldiago_solver     ! "s" for scalapack / "e" for elpa
  !
  ! Solvers (Haydock)
  !=========

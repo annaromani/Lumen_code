@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM DS IMA
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
  !
  ! Filling of Transition groups
@@ -38,8 +42,9 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
  use drivers,      ONLY:l_rt_carriers_in_use
  use RT_control,   ONLY:EQ_Transitions,EQ_NoOcc
 #endif
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  type(levels),    intent(in)   :: Ken
  type(bz_samp),   intent(in) :: Xk
@@ -244,10 +249,11 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
 #if defined _RT
  use electrons,    ONLY:n_full_bands,n_met_bands
  use drivers,      ONLY:l_rt_carriers_in_use
- use RT_control,   ONLY:EQ_Transitions,EQ_NoOcc
+ use RT_control,   ONLY:EQ_Transitions,ALL_NoOcc
 #endif
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  type(levels),    intent(in) :: Ken
  type(bz_samp),   intent(in) :: Xk
@@ -294,10 +300,11 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
    V_bands=(/BS_bands(1),maxval(n_met_bands)/)
    C_bands=(/minval(n_full_bands)+1,BS_bands(2)/)
  endif
- if (EQ_NoOcc) then
-   V_bands=BS_bands
-   C_bands=BS_bands
- endif
+ !if (ALL_NoOcc) then
+ !  l_skip_unoccupied=.false.
+ !  V_bands=BS_bands
+ !  C_bands=BS_bands
+ !endif
 #endif
  !
  do i_res_ares=1,BS_n_eh_spaces

@@ -4,6 +4,10 @@
 !
 ! Authors (see AUTHORS file for details): AM FP AC
 !
+! headers
+!
+#include<y_memory.h>
+!
 ! This file is distributed under the terms of the GNU
 ! General Public License. You can redistribute it and/or
 ! modify it under the terms of the GNU General Public
@@ -39,7 +43,9 @@ subroutine EXC_dipole(Xk,E,q,X)
  use parallel_int,   ONLY:PARALLEL_global_indexes,PP_redux_wait,PARALLEL_index,PARALLEL_WF_distribute,PARALLEL_WF_index
  use parallel_m,     ONLY:PAR_IND_WF_b_and_k
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  type(levels),  intent(in) :: E
  type(bz_samp), intent(in) :: Xk,q
@@ -102,7 +108,7 @@ subroutine EXC_dipole(Xk,E,q,X)
    ! Recalculate the residuals
    !
    i_BS_mat=1
-   call K_diago_right_residuals("opt1", i_BS_mat,BS_E_in,BS_R_right,BS_mat)
+   call K_diago_R_res("opt1", i_BS_mat,BS_E_in,BS_R_right,BS_mat)
    !call K_diago_hermitian_residuals(i_BS_mat,BS_E_in,BS_R_left,BS_R_right)
    BS_R_left =conjg(BS_R_right)
    !

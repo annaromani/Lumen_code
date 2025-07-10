@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+! headers
+!
+#include <y_memory.h>
+!#include <netcdf.inc>
+!
 subroutine setup(en,Xen,Ken,k,Xk)
  !
  use pars,           ONLY:DP,SP,pi
@@ -18,9 +23,10 @@ subroutine setup(en,Xen,Ken,k,Xk)
 &                         input_Tel_is_negative,dl_sop,dl_tra,sp_nsym,nsym,i_time_rev,&
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
 &                         n_atomic_species,PT_elements,non_periodic_directions,lattice,&
+&                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms,&
 &                         non_symmorphic_syms
- use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,&
-&                         bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
+ use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,g_rot,&
+&                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
  use com,            ONLY:msg,fat_log
  use stderr,         ONLY:intc
  use units,          ONLY:HA2EV
@@ -43,12 +49,12 @@ subroutine setup(en,Xen,Ken,k,Xk)
  ! For I/O debug, see below
  !use IO_m,           ONLY:netcdf_call
 #endif
+ use y_memory_alloc
  !
-#include <y_memory.h>
+ implicit none
  !
  ! For I/O debug, see below
 #if defined _HDF5_IO
-!#include <netcdf.inc>
 #endif
  !
  type(levels)    ::en,Xen,Ken
@@ -218,12 +224,7 @@ subroutine setup(en,Xen,Ken,k,Xk)
  enddo
  if (n_to_print<n_g_shells) call msg('r',"...")
  !
- ! First simplified implementation of wf_ng_1st_BZ & wf_ng_2st_BZ
- ! A more correct implementation would involve a rotation of the shells
- ! and the evaluation of the resulting wf_ng
- !
- wf_ng_1st_BZ=wf_ng
- call PARSER_close_G(wf_ng_1st_BZ,'tRL')
+ wf_ng_1st_BZ=maxval(g_rot(:min(wf_ng,ng_closed),:))
  !
  if (wf_ng_1st_BZ/=wf_ng) then
    call warning( 'Increasing wf_ng from '//trim(intc(wf_ng))//' to '//trim(intc(wf_ng_1st_BZ)) )
