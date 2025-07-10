@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  use pars,           ONLY:SP,DP,cZERO,cI,schlen
@@ -27,7 +31,9 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  use com,            ONLY:msg,of_open_close
  use LIVE_t,         ONLY:live_timing
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  integer, intent(in) :: iq
  type(bz_samp)       :: Xk,qpt
@@ -91,7 +97,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
    enddo
  endif
  !
- call build_inverse_BS_eh_table(Xk%nbz)
+ call build_inverse_BS_eh_table_from_BSS_table(Xk%nbz)
  !
  ! Exciton part
  !

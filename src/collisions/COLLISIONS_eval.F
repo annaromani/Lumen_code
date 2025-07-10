@@ -459,7 +459,7 @@ subroutine load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  !
  call read_BS_table(1,ID_mat)
  !
- call build_inverse_BS_eh_table(Xk%nbz)
+ call build_inverse_BS_eh_table_from_BS_kernel(Xk%nbz)
  !
  deallocate(BS_blk(1)%table)
  deallocate(BS_blk(2)%table)

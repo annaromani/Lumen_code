@@ -63,6 +63,7 @@ subroutine G_shells_finder()
      YAMBO_FREE(g_rot)
      YAMBO_FREE(g_phs)
      YAMBO_FREE(minus_G)
+     YAMBO_FREE(G_mod_indx)
      call io_control(ACTION=OP_RD_CL,SEC=(/1,2/),MODE=VERIFY,ID=ID)
      io_err=io_GROT(ID)
      !

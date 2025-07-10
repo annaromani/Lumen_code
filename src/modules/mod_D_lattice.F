@@ -170,6 +170,9 @@ module D_lattice
    end subroutine symmetry_group_table
    !
    subroutine atoms_spatial_inversion(sop_tra)
+     ! Here the logic should be checked.
+     ! Am I looking if the atoms respect the pure spatial inversion,
+     ! or the spatial inversion plus a translation?
      use pars,           ONLY:zero_dfl
      use matrix_operate, ONLY:m3inv
      implicit none
@@ -183,10 +186,11 @@ module D_lattice
      if (n_atoms_species_max==0) return
      !
      i_space_inv=1
+     tra=0._SP
      !
      call m3inv(transpose(a),a_m1)
-     if (.not.present(sop_tra)) tra=dl_tra(:,inv_index)
-     if (     present(sop_tra)) tra=sop_tra
+     if (.not.present(sop_tra).and.inv_index>1) tra=dl_tra(:,inv_index)
+     if (     present(sop_tra))                 tra=sop_tra
      !
      do is=1,n_atomic_species
        atoms_loop: do ia=1,n_atoms_species(is)

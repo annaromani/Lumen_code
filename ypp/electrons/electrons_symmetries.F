@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine electrons_symmetries(Xk,Xen,blim,klim)
  !
  use pars,           ONLY:DP,SP,cZERO,schlen,cI
@@ -23,7 +27,9 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
  use com,            ONLY:msg,of_open_close
  use LIVE_t,         ONLY:live_timing
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  type(levels) :: Xen
  type(bz_samp):: Xk
