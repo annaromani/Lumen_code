@@ -18,7 +18,7 @@ subroutine build_symmetries()
  use D_lattice,      ONLY:alat,sp_nsym,nsym,nrot,i_time_rev,dl_sop,&
 &                         atoms_spatial_inversion,i_space_inv,inv_index,&
 &                         symmetry_group_table,mag_syms,idt_index,      &
-&                         symmetry_equiv_atoms,pure_rotation
+&                         symmetry_equiv_atoms,pure_rotation,non_symmorphic_syms
  use R_lattice,      ONLY:rl_sop
  !
  use y_memory_alloc
@@ -84,6 +84,7 @@ subroutine build_symmetries()
  !
  call msg('r','K-space Time-reversal ',(i_time_rev==1))
  call msg('r','Magnetic symmetries   ',mag_syms)
+ call msg('r','Symmorphyc symmetries ',.not.non_symmorphic_syms)
  if (i_time_rev==1) call msg('r','Time-reversal derived K-space symmetries',(/sp_nsym+1,nsym/))
  !
 end subroutine build_symmetries
