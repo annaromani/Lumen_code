@@ -34,7 +34,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  use vec_operate,       ONLY:degeneration_finder
  use parallel_m,        ONLY:PAR_IND_WF_k,PAR_IND_WF_b,PAR_IND_B_mat
  use parallel_int,      ONLY:PP_redux_wait,PARALLEL_WF_index,PARALLEL_WF_distribute
- use interfaces,        ONLY:WF_symm_kpoint_g,WF_symm_kpoint_g_BZ,WF_symm_kpoint_g_ssop,WF_load,WF_free,eval_G_minus_G
+ use interfaces,        ONLY:WF_symm_kpoint_g,WF_symm_kpoint_g_BZ,WF_load,WF_free,eval_G_minus_G
  use IO_int,            ONLY:io_control
  use IO_m,              ONLY:VERIFY,DUMP,REP,OP_WR,WR,WR_CL,OP_RD_CL
  use timing_m,          ONLY:timing
@@ -175,17 +175,17 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
          !
          if(n_spinor==2) then
            ! OPTION 1: Apply second symmetry operatio to the WF already expanded in the BZ
-           call WF_copy(WF_Rk,WF_Rk_c)
-           call WF_symm_kpoint_g_BZ(blim,ik,i_sp_pol,isloop,iGloop,isk,iGk,WF_Rk_c)
+           !call WF_copy(WF_Rk,WF_Rk_c)
+           !call WF_symm_kpoint_g_BZ(blim,ik,i_sp_pol,isloop,iGloop,isk,iGk,WF_Rk_c)
            !
            ! OPTION 2: Use the composed symmetry, importing the composed spin soc
-           !call WF_copy(WF_k,WF_Rk_c)
-           !call WF_symm_kpoint_g_ssop(blim,ik,i_sp_pol,isk_c,iGk_c,spin_sop_composed,WF_Rk_c)
+           call WF_copy(WF_k,WF_Rk_c)
+           call WF_symm_kpoint_g(blim,ik,i_sp_pol,isk_c,iGk_c,WF_Rk_C,ssop=spin_sop_composed)
            !
          else
            ! In the non spinorial case, I can directly apply the composed operation
            call WF_copy(WF_k,WF_Rk_c)
-           call WF_symm_kpoint_g(blim,ik,i_sp_pol,isk_c,iGk,WF_Rk_c)
+           call WF_symm_kpoint_g(blim,ik,i_sp_pol,isk_c,iGk_c,WF_Rk_c)
          endif
          !
          call WF_copy(WF_k,WF_Rk_y)
