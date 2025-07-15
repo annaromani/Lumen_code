@@ -8,7 +8,7 @@
 subroutine YPP_SET_defaults()
  !
  use YPPm,           ONLY:DOS_broadening,DOS_E_range,r_hole,deg_energy ,EXCITON_weight_treshold,&
-                          WF_multiplier,SOC_split,BANDS_bands,BANDS_steps,l_sp_symm,l_exc_symm, &
+                          WF_multiplier,SOC_split,BANDS_bands,BANDS_steps,elec_spin,hole_spin,&
 &                         coo_in,coo_out,DOS_E_steps,INTERP_grid ,l_amplitude,l_bands,l_current,l_density  ,&
 &                         l_dos,l_exc_wf   ,l_mag,l_norm_to_one,l_sort,l_sp_wf,l_spin,l_wannier,mag_dir    ,&
 &                         N_path_pts,ncell ,output_fname,p_dir,p_format   ,perturbative_SOC_path,&
@@ -16,7 +16,7 @@ subroutine YPP_SET_defaults()
 &                         WF_ref,what_to_write,SP,HA2EV,E_field,Nel_fac,DOS_bands,AVE_exc,l_interp,  &
 &                         BSiq,l_PROJECT_atom,PDOS_atoms,PDOS_kinds,PDOS_wfcs,PDOS_l,PDOS_j,PDOS_m,&
 &                         EXCITON_Res_treshold,EXCITON_E_treshold,l_PROJECT_line,l_PROJECT_plane,K_grid,&
-&                         DIPs_C_bands,DIPs_V_bands,DIPs_E_range,symm_thresh
+&                         DIPs_C_bands,DIPs_V_bands,DIPs_E_range,symm_thresh,l_sp_symm,l_exc_symm
  use YPP_symm,       ONLY:wf_ng_cut
  use units,          ONLY:FS2AUT
  use interpolate,    ONLY:INTERP_shell_factor,interpls,max_interpls
@@ -154,6 +154,8 @@ subroutine YPP_SET_defaults()
  l_interp=.false.
  ncell = (/1, 1, 1/) 
  r_hole= (/0._SP,0._SP,0._SP/)
+ hole_spin="average"
+ elec_spin="average"
  state_ctl = '0 - 0'
  deg_energy =0.01_SP/HA2EV
  EXCITON_Res_treshold =0.0_SP
