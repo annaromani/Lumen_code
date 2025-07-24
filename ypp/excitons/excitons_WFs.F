@@ -171,9 +171,15 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  ! Par Proc
  !
- call PP_indexes_reset(px)
- call PARALLEL_index(px,(/BS_H_dim/))
- call PP_wait()
+ if(l_average_eh.or.Xk%nbz==1) then
+   call PP_indexes_reset(px)
+   call PARALLEL_index(px,(/BS_H_dim/))
+   call PP_wait()
+ else
+   call PP_indexes_reset(px)
+   call PARALLEL_index(px,(/Xk%nbz/))
+   call PP_wait()
+ endif
  !
  ! Loop on exc states
  !===================
@@ -293,18 +299,24 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
      !
      call live_timing('ExcWF@'//trim(intc(j_lambda)),px%n_of_elements(myid+1))
      !
-     WF1 = cZERO
-     WF2 = cZERO
-     !
      wf_tmp= cZERO
      !
      !$omp parallel default(shared), &
-     !$omp private(k_dot_r_e,kp_dot_r_h,alpha,phase,ir), &
+     !$omp private(k_dot_r_e,kp_dot_r_h,alpha,phase,ir,neh,&
+     !$omp         wf_tmp_uc,WF1,WF2,wf_vc,ikibz,is,ikpbz,ikp,isp,k1,k2,&
+     !$omp         ikbz,iv,ic,i_sp_c,i_sp_v,i_spinor,j_spinor), &
      !$omp reduction(+:wf_tmp)
+     !
+     WF1 = cZERO
+     WF2 = cZERO
      !
      call OPENMP_update(master_thread)
      !
      do ikbz  = 1,Xk%nbz
+       !
+       if (Xk%nbz>1) then
+         if (.not.px%element_1D(ikbz)) cycle
+       endif
        !
        ikibz = Xk%sstar(ikbz,1)
        is    = Xk%sstar(ikbz,2)
@@ -326,7 +338,9 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
        neh=BSS_eh_table_m1(ikbz,iv,ic,i_sp_c,i_sp_v)
        if (neh==0) cycle
        !
-       if (.not.px%element_1D(neh)) cycle
+       if (Xk%nbz==1) then
+         if (.not.px%element_1D(neh)) cycle
+       endif
        !
        if (n_sp_pol==2 .and. i_spin_hole>0 .and. i_sp_v /=i_spin_hole) cycle
        !
@@ -374,6 +388,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          !
        endif
        !
+       if (master_thread.and.Xk%nbz==1) call live_timing(steps=1)
+       !
      enddo
      enddo
      enddo
@@ -416,7 +432,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          !
        endif
        !
-       if (master_thread) call live_timing(steps=1)
+       if (master_thread.and.Xk%nbz>1) call live_timing(steps=1)
        !
      enddo
      !$omp end parallel
