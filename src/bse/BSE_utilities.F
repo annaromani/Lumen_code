@@ -21,7 +21,7 @@ subroutine build_inverse_BS_eh_table_from_BSS_table(nk)
  !
  integer, intent(in) :: nk
  !
- integer :: iv,ic,i_H,ik_bz
+ integer :: iv,ic,i_H,ik_bz,i_sp_c,i_sp_v
  !
  if (.not.allocated(BSS_eh_table_m1)) then
    allocate(BSS_eh_table_m1(nk,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol,n_sp_pol))
@@ -34,8 +34,10 @@ subroutine build_inverse_BS_eh_table_from_BSS_table(nk)
    ik_bz = BSS_eh_table(i_H,1)
    iv    = BSS_eh_table(i_H,2)
    ic    = BSS_eh_table(i_H,3)
+   i_sp_c= BSS_eh_table(i_H,4)
+   i_sp_v= BSS_eh_table(i_H,5)
    !
-   BSS_eh_table_m1(ik_bz,iv,ic,1,1)=i_H
+   BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H
    !call live_timing(steps=1)
    !
  enddo

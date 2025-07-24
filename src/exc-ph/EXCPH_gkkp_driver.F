@@ -183,7 +183,7 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  BS_mat_in         =BS_mat(:,EXCPH_states(1):EXCPH_states(2))
  !
  BSS_eh_table_in   =BSS_eh_table
- BSS_eh_table_m1_in=BSS_eh_table_m1(:,:,:,1,1)
+ BSS_eh_table_m1_in=BSS_eh_table_m1
  BS_E_in           =BS_E
  !
  ! Open gkkp_expanded

@@ -43,8 +43,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  ! Workspace
  !
  type(PP_indexes)  :: px
- integer           :: iv,ic,ikbz,ikibz,is,neh,i1,i2,i_lambda,j_lambda,i_sp_pol,ir,ir_hole,j1,&
-&                     n_lambda_deg,BS_E_deg_done,neh1,iv1,ic1,ikbz1,ikibz1,i_sp_pol1,is1,&
+ integer           :: iv,ic,ikbz,ikibz,is,neh,i1,i2,i_lambda,j_lambda,i_sp_c,i_sp_v,ir,ir_hole,j1,&
+&                     n_lambda_deg,BS_E_deg_done,neh1,iv1,ic1,ikbz1,ikibz1,i_sp_c1,i_sp_v1,is1,&
 &                     i_spin_hole,i_spin_elec,n1_lambda,n2_lambda
  integer           :: ikpbz,ikp,isp,i_spinor,j_spinor,rh_size,ir_hole_rlu(3)
  character(schlen) :: exc_index_msg
@@ -166,6 +166,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
    YAMBO_ALLOC(wf_tmp,(nr_tot,n_spinor,i1))
  endif
  !
+ call build_inverse_BS_eh_table_from_BSS_table(Xk%nbz)
+ !
  ! Par Proc
  !
  call PP_indexes_reset(px)
@@ -207,7 +209,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
        ikbz  = BSS_eh_table(neh,1)
        iv    = BSS_eh_table(neh,2)
        ic    = BSS_eh_table(neh,3)
-       i_sp_pol = BSS_eh_table(neh,4)
+       i_sp_c= BSS_eh_table(neh,4)
+       i_sp_v= BSS_eh_table(neh,5)
        !
        ikibz = Xk%sstar(ikbz,1)
        is    = Xk%sstar(ikbz,2)
@@ -217,7 +220,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          ikbz1  = BSS_eh_table(neh1,1)
          iv1    = BSS_eh_table(neh1,2)
          ic1    = BSS_eh_table(neh1,3)
-         i_sp_pol1 = BSS_eh_table(neh1,4)
+         i_sp_c1= BSS_eh_table(neh1,4)
+         i_sp_v1= BSS_eh_table(neh1,5)
          !
          ikibz1 = Xk%sstar(ikbz1,1)
          is1    = Xk%sstar(ikbz1,2)
@@ -229,12 +233,12 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          if (ic1==ic.and.trim(AVE_exc)=='h') then
            !
            if (n_sp_pol==2 .and. i_spin_hole>0) then
-             if (i_sp_pol /=i_spin_hole) cycle
-             if (i_sp_pol1/=i_spin_hole) cycle
+             if (i_sp_v /=i_spin_hole) cycle
+             if (i_sp_v1/=i_spin_hole) cycle
            endif
            !
-           call WF_apply_symm((/iv, ikibz, is, i_sp_pol /),WF1)
-           call WF_apply_symm((/iv1,ikibz1,is1,i_sp_pol1/),WF2)
+           call WF_apply_symm((/iv, ikibz, is, i_sp_v /),WF1)
+           call WF_apply_symm((/iv1,ikibz1,is1,i_sp_v1/),WF2)
            !
            B_coeff = BS_mat(neh, j_lambda)* conjg(BS_mat(neh1, j_lambda))
            !
@@ -252,12 +256,12 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          elseif(iv1==iv.and.trim(AVE_exc)=='e') then
            !
            if (n_sp_pol==2 .and. i_spin_elec>0) then
-             if (i_sp_pol /=i_spin_elec) cycle
-             if (i_sp_pol1/=i_spin_elec) cycle
+             if (i_sp_c /=i_spin_elec) cycle
+             if (i_sp_c1/=i_spin_elec) cycle
            endif
            !
-           call WF_apply_symm((/ic, ikibz, is, i_sp_pol /),WF1)
-           call WF_apply_symm((/ic1,ikibz1,is1,i_sp_pol1/),WF2)
+           call WF_apply_symm((/ic, ikibz, is, i_sp_c /),WF1)
+           call WF_apply_symm((/ic1,ikibz1,is1,i_sp_c1/),WF2)
            !
            B_coeff = conjg(BS_mat(neh,j_lambda))* BS_mat(neh1,j_lambda)
            !
@@ -316,9 +320,10 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
        ikbz  = BSS_eh_table(neh,1)
        iv    = BSS_eh_table(neh,2)
        ic    = BSS_eh_table(neh,3)
-       i_sp_pol = BSS_eh_table(neh,4)
+       i_sp_c= BSS_eh_table(neh,4)
+       i_sp_v= BSS_eh_table(neh,5)
        !
-       if (n_sp_pol==2 .and. i_spin_hole>0 .and. i_sp_pol /=i_spin_hole) cycle
+       if (n_sp_pol==2 .and. i_spin_hole>0 .and. i_sp_v /=i_spin_hole) cycle
        !
        ikibz = Xk%sstar(ikbz,1)
        is    = Xk%sstar(ikbz,2)
@@ -327,8 +332,8 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
        ikp   = Xk%sstar(ikpbz,1)
        isp   = Xk%sstar(ikpbz,2)
        !
-       call WF_apply_symm((/iv,ikp,  isp,i_sp_pol/),WF1)
-       call WF_apply_symm((/ic,ikibz,is, i_sp_pol/),WF2)
+       call WF_apply_symm((/iv,ikp,  isp,i_sp_v/),WF1)
+       call WF_apply_symm((/ic,ikibz,is, i_sp_c/),WF2)
        !
        ! All the following operations are only up to fft_size
        wf_vc=cZERO
