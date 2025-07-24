@@ -23,7 +23,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
 &                        nr,nr_tot,output_fname,l_average_eh,elec_spin,hole_spin,&
 &                        use_xcrysden,use_gnuplot,use_cube,plot_dim,&
 &                        EXCITONS_user_indexes,EXCITONS_n_user_states
- use BS_solvers,    ONLY:BSS_eh_table,BS_mat,BSS_desc,BSS_n_eig
+ use BS_solvers,    ONLY:BSS_eh_table,BSS_eh_table_m1,BS_mat,BSS_desc,BSS_n_eig
  use BS,            ONLY:BS_bands,BS_H_dim
  use interfaces,    ONLY:WF_load,WF_free,DESC_write
  use wave_func,     ONLY:WF,wf_ng
@@ -53,7 +53,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  integer,  allocatable :: rindex(:)
  real(SP), allocatable :: r_cell_cc(:,:),kp_dot_r_h(:),k_dot_r_e(:),alpha(:)
- complex(SP), allocatable :: wf_tmp(:,:,:),wf_vc(:,:,:),WF1(:,:),WF2(:,:),phase(:)
+ complex(SP), allocatable :: wf_tmp(:,:,:),wf_tmp_uc(:,:,:),wf_vc(:,:,:),WF1(:,:),WF2(:,:),phase(:)
  !
  call section('+','Excitonic Wave Function')
  !
@@ -161,6 +161,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
    i1=n_spinor
    if(l_free_hole) i1=1
    YAMBO_ALLOC(wf_vc,(fft_size,n_spinor,i1))
+   YAMBO_ALLOC(wf_tmp_uc,(fft_size,n_spinor,i1))
    YAMBO_ALLOC(alpha,(nr_tot))
    YAMBO_ALLOC(phase,(nr_tot))
    YAMBO_ALLOC(wf_tmp,(nr_tot,n_spinor,i1))
@@ -297,33 +298,13 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
      !
      wf_tmp= cZERO
      !
-     ! DS note: 2025/07/14
-     ! The simulation is demading due to the huge loop on the nr_tot,
-     ! multiplied by a large loop on BS_H_dim. All other operations are irrelevant.
-     ! The present strategy emplois MPI distribution over BS_H_dim, OpenMP over nr_tot
-     ! A simplification would be possible, since the large nr_tot loop should be 
-     ! multiplied only by nkbz. This is the sole term which is not periodic in the extended supercell.
-     ! This could be achieved by replacing hte neh loop with a multiple loop over
-     ! nbkbz, n_sp_pol, nbv, nbc with a partial internal accumulation over nvb, nbc, n_sp_pol
-     ! For a system with many bands it would lead to a speed-up of a factor nbv*nbc*n_sp_pol
-     !
      !$omp parallel default(shared), &
      !$omp private(k_dot_r_e,kp_dot_r_h,alpha,phase,ir), &
      !$omp reduction(+:wf_tmp)
      !
      call OPENMP_update(master_thread)
      !
-     do neh = 1,BS_H_dim
-       !
-       if (.not.px%element_1D(neh)) cycle
-       !
-       ikbz  = BSS_eh_table(neh,1)
-       iv    = BSS_eh_table(neh,2)
-       ic    = BSS_eh_table(neh,3)
-       i_sp_c= BSS_eh_table(neh,4)
-       i_sp_v= BSS_eh_table(neh,5)
-       !
-       if (n_sp_pol==2 .and. i_spin_hole>0 .and. i_sp_v /=i_spin_hole) cycle
+     do ikbz  = 1,Xk%nbz
        !
        ikibz = Xk%sstar(ikbz,1)
        is    = Xk%sstar(ikbz,2)
@@ -331,6 +312,23 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
        ikpbz = qindx_X(iq,ikbz,1)
        ikp   = Xk%sstar(ikpbz,1)
        isp   = Xk%sstar(ikpbz,2)
+       !
+       k1=Xk%ptbz(ikbz,:)/alat(:)*2._SP*pi
+       k2=Xk%ptbz(ikpbz,:)/alat(:)*2._SP*pi
+       !
+       wf_tmp_uc= cZERO
+       !
+     do iv    = BS_bands(1),BS_bands(2)
+     do ic    = BS_bands(1),BS_bands(2)
+     do i_sp_c= 1,n_sp_pol
+     do i_sp_v= 1,n_sp_pol
+       !
+       neh=BSS_eh_table_m1(ikbz,iv,ic,i_sp_c,i_sp_v)
+       if (neh==0) cycle
+       !
+       if (.not.px%element_1D(neh)) cycle
+       !
+       if (n_sp_pol==2 .and. i_spin_hole>0 .and. i_sp_v /=i_spin_hole) cycle
        !
        call WF_apply_symm((/iv,ikp,  isp,i_sp_v/),WF1)
        call WF_apply_symm((/ic,ikibz,is, i_sp_c/),WF2)
@@ -354,8 +352,32 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
          enddo
        endif
        !
-       k1=Xk%ptbz(ikbz,:)/alat(:)*2._SP*pi
-       k2=Xk%ptbz(ikpbz,:)/alat(:)*2._SP*pi
+       if (l_free_hole) then
+         !
+         do i_spinor=1,n_spinor
+           if (n_spinor==2 .and. i_spin_hole>0 .and. i_spinor /= i_spin_hole) cycle
+           wf_tmp_uc(:,i_spinor,i_spinor) = wf_tmp_uc(:,i_spinor,i_spinor)+  &
+             &  BS_mat(neh,j_lambda)*wf_vc(:,i_spinor,1)
+         enddo
+         !
+       else
+         !
+         do i_spinor=1,n_spinor
+           if (n_spinor==2 .and. i_spin_hole>0 .and. i_spinor /= i_spin_hole) cycle
+           do j_spinor=1,n_spinor
+             if (n_spinor==2 .and. i_spin_elec>0 .and. j_spinor /= i_spin_elec) cycle
+             if (n_spinor==2 .and. i_spin_elec==-10 .and. i_spinor/= j_spinor) cycle
+             wf_tmp_uc(:,i_spinor,j_spinor) = wf_tmp_uc(:,i_spinor,j_spinor)+&
+                &  BS_mat(neh,j_lambda)*wf_vc(:,i_spinor,j_spinor)
+           enddo
+         enddo
+         !
+       endif
+       !
+     enddo
+     enddo
+     enddo
+     enddo
        !
        if (l_free_hole) then
          !
@@ -368,7 +390,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
              alpha(ir)=k_dot_r_e(ir)-kp_dot_r_h(ir)
              phase(ir)=cmplx(cos(alpha(ir)),sin(alpha(ir)),kind=SP)
              wf_tmp(ir,i_spinor,i_spinor) = wf_tmp(ir,i_spinor,i_spinor)+  &
-             &  BS_mat(neh,j_lambda)*wf_vc(rindex(ir),i_spinor,1)*phase(ir)
+             &  wf_tmp_uc(rindex(ir),i_spinor,1)*phase(ir)
            enddo
          enddo
          !
@@ -382,12 +404,12 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
              if (n_spinor==2 .and. i_spin_elec>0 .and. j_spinor /= i_spin_elec) cycle
              if (n_spinor==2 .and. i_spin_elec==-10 .and. i_spinor/= j_spinor) cycle
              !$omp do
-              do ir=1,nr_tot
-                k_dot_r_e(ir) =r_cell_cc(ir,1)*k1(1)+r_cell_cc(ir,2)*k1(2)+r_cell_cc(ir,3)*k1(3)
-                alpha(ir)=k_dot_r_e(ir)-kp_dot_r_h(1)
-                phase(ir)=cmplx(cos(alpha(ir)),sin(alpha(ir)),kind=SP)
-                wf_tmp(ir,i_spinor,j_spinor) = wf_tmp(ir,i_spinor,j_spinor)+&
-                &  BS_mat(neh,j_lambda)*wf_vc(rindex(ir),i_spinor,j_spinor)*phase(ir)
+             do ir=1,nr_tot
+               k_dot_r_e(ir) =r_cell_cc(ir,1)*k1(1)+r_cell_cc(ir,2)*k1(2)+r_cell_cc(ir,3)*k1(3)
+               alpha(ir)=k_dot_r_e(ir)-kp_dot_r_h(1)
+               phase(ir)=cmplx(cos(alpha(ir)),sin(alpha(ir)),kind=SP)
+               wf_tmp(ir,i_spinor,j_spinor) = wf_tmp(ir,i_spinor,j_spinor)+&
+               &  wf_tmp_uc(rindex(ir),i_spinor,j_spinor)*phase(ir)
              enddo
            enddo
          enddo
@@ -462,6 +484,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  YAMBO_FREE(wf_vc)
  YAMBO_FREE(wf_tmp)
+ YAMBO_FREE(wf_tmp_uc)
  !
  call WF_free(WF)
  !
