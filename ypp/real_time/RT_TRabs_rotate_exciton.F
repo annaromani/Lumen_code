@@ -4,6 +4,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 ! This file is distributed under the terms of the GNU
 ! General Public License. You can redistribute it and/or
 ! modify it under the terms of the GNU General Public
@@ -45,7 +49,9 @@ subroutine RT_TRabs_rotate_exciton(DIP_kind,DIP_dir,DIP_f,Xen,Xk)
  use parallel_m,      ONLY:PAR_IND_DIPk_ibz,PAR_IND_VAL_BANDS_DIP,PAR_IND_CON_BANDS_DIP
  use parallel_int,    ONLY:PP_redux_wait
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  type(levels),  intent(in) :: Xen
  type(bz_samp), intent(in) :: Xk

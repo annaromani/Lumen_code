@@ -4,6 +4,10 @@
 !
 ! Authors (see AUTHORS file for details): MP DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 ! This file is distributed under the terms of the GNU
 ! General Public License. You can redistribute it and/or
 ! modify it under the terms of the GNU General Public
@@ -43,7 +47,9 @@ subroutine excitons_lifetimes(Xen,Xk,Xq,BS_R,BS_E,BS_E_degs)
  !
  ! implicit none 
  !
-#include<y_memory.h>
+ use y_memory_alloc
+ !
+ implicit none
  !
  type(levels)       :: Xen
  type(bz_samp)      :: Xk,Xq
