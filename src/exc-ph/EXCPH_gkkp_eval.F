@@ -39,7 +39,7 @@ subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !
  integer                 :: io_err,i_H,i_Hp,i_alpha,iq_db,ik_db,&
 &                           iv,ic,ik_bz,ivp,icp,i_beta,ik_plus_iq_bz,IO_ACT, &
-&                           iv_in,ic_in,ik_bz_in,i_sp_c,i_sp_v
+&                           iv_in,ic_in,ik_bz_in,i_sp_c,i_sp_v,i_sp_c_in,i_sp_v_in
  real(SP)                :: ph_E
  complex(SP)             :: elph_gkkp,EXC_out,EXC_in
  integer, external       :: io_ELPH
