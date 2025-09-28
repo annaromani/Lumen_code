@@ -71,7 +71,7 @@ function K_correlation_kernel_std(i_block,i_p,i_pmq,                            
  O_c1_p => DEV_VAR(BS_blk(i_block_1)%O_c)(:,:)
  O_c2_p => DEV_VAR(BS_blk(i_block_2)%O_c)(:,:)
  !
- !DEV_ACC_DEBUG data present(O_c1_p,O_c2_p,G_m_G,g_rot,O1,O2)
+ !DEV_ACC_DEBUG data present(O_c1_p,O_c2_p,G_m_G,g_rot,g_phs,O1,O2)
  !DEV_ACC parallel loop private(i_g2,i_g3,i_g2p,i_g3p,gphase1,gphase2)
  !DEV_CUF kernel do(1) <<<*,*>>>
  !DEV_OMP parallel do default(shared), private(i_g1,i_g2,i_g3,i_g2p,i_g3p,gphase1,gphase2)
