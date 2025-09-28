@@ -143,13 +143,13 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
        O_x_p     => DEV_VAR(BS_T_grp(i_T_grp)%O_x)
        O_x_sym_p => DEV_VAR(BS_T_grp(i_T_grp_last_with_identity_sym)%O_x)
        !
-       !DEV_ACC_DEBUG data present(O_x_p,O_x_sym_p,g_rot)
+       !DEV_ACC_DEBUG data present(O_x_p,O_x_sym_p,g_rot,g_phs)
        !DEV_ACC parallel loop private(i_g1,i_g2)
        !DEV_CUF kernel do (1) <<<*,*>>>
        !DEV_OMP parallel do default(shared), private(i_g1,i_g2)
        do i_g1=2,BS_n_g_exch
          i_g2=DEV_VAR(g_rot)(i_g1,i_s_m1)
-         gphase = cmplx(cos(g_phs_d(i_g1,i_s)),sin(g_phs_d(i_g1,i_s)))
+         gphase = cmplx(cos(DEV_VAR(g_phs)(i_g1,i_s)),sin(DEV_VAR(g_phs)(i_g1,i_s)))
          O_x_p(i_g1,i_T_el) = O_x_sym_p(i_g2,i_T_el_last_with_identity_sym)*gphase
        enddo
        !DEV_ACC_DEBUG end data
