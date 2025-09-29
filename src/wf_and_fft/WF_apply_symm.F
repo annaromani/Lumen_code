@@ -90,7 +90,7 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
    !
  endif
  !
- if (non_symmorphyc_syms) then
+ if (non_symmorphic_syms) then
    ! Take care of transialtions
    krot=matmul(rl_sop(:,:,isymm),k_pt(isc(2),:))
    call c2a(v_in=krot,mode='ki2c')
