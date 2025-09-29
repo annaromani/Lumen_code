@@ -128,7 +128,8 @@ module mod_com2y
      !
      ! Space Invertion (possible only for v >= 3.0.4)
      !
-     sop_tra=matmul(transpose(a),real(trasl(:,is_inv),SP))
+     sop_tra=0._SP
+     if(l_inversion) sop_tra=matmul(transpose(a),real(trasl(:,is_inv),SP))
      call atoms_spatial_inversion(sop_tra)
      !
      if (i_space_inv==0) call msg("l","[SI no]...")
