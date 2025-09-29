@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
+subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_TR)
  !
  use pars,                ONLY:LP,SP
  use com,                 ONLY:msg
@@ -20,7 +20,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  use electrons,           ONLY:n_spinor,Spin_magn
  use R_lattice,           ONLY:rl_sop
  use vec_operate,         ONLY:v_norm
- use D_lattice,           ONLY:nsym,dl_sop,i_time_rev,alat,mag_syms,&
+ use D_lattice,           ONLY:nsym,dl_sop,dl_tra,i_time_rev,alat,mag_syms,&
 &                              i_space_inv,sop_inv,inv_index,symmetry_group_table
  use y_memory_alloc
  !
@@ -28,6 +28,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  !
  integer, intent(out)   :: old_nsym
  real(SP),intent(out)   :: old_dl_sop(3,3,nsym)
+ real(SP),intent(out)   :: old_dl_tra(3,nsym)
  integer, intent(out)   :: old_sop_inv(nsym)
  integer(LP), intent(out)   :: S_contains_TR(nsym)
  !
@@ -36,6 +37,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  integer                :: spatial_nsym,old_spatial_nsym,old_trev_nsym
  integer                :: symm_M_factor,symm_B_factor
  real(SP), allocatable  :: dl_sop_tmp(:,:,:)
+ real(SP), allocatable  :: dl_tra_tmp(:,:)
  real(SP)               :: B_cart(3)
  logical                :: Reduce_syms
  logical                :: Rm_all_syms,Rm_TR,Rm_INV
@@ -109,6 +111,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  old_spatial_nsym=spatial_nsym
  old_trev_nsym=nsym-spatial_nsym
  old_dl_sop=dl_sop
+ old_dl_tra=dl_tra
  old_sop_inv=sop_inv
  !
  if (use_B_field) then
@@ -199,6 +202,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
        !
        if(reject_symmetry) then
          dl_sop(:,:,is:nsym-1)=dl_sop(:,:,is+1:nsym)
+         dl_tra(:,is:nsym-1)=dl_tra(:,is+1:nsym)
          nsym=nsym-1
          if(is<=spatial_nsym) spatial_nsym=spatial_nsym-1
        else
@@ -209,11 +213,17 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
    endif
    !
    YAMBO_ALLOC(dl_sop_tmp,(3,3,nsym))
+   YAMBO_ALLOC(dl_tra_tmp,(3,nsym))
    dl_sop_tmp(1:3,1:3,1:nsym)=dl_sop(1:3,1:3,1:nsym)
+   dl_tra_tmp(1:3,    1:nsym)=dl_tra(1:3,    1:nsym)
    YAMBO_FREE(dl_sop)
+   YAMBO_FREE(dl_tra)
    YAMBO_ALLOC(dl_sop,(3,3,nsym))
+   YAMBO_ALLOC(dl_tra,(3,nsym))
    dl_sop=dl_sop_tmp
+   dl_tra=dl_tra_tmp
    YAMBO_FREE(dl_sop_tmp)
+   YAMBO_FREE(dl_tra_tmp)
    !
  !
  if(.not.RM_all_syms)&

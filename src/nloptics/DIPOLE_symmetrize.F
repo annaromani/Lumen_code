@@ -15,7 +15,7 @@ subroutine DIPOLE_symmetrize(k)
  use nl_optics,      ONLY:NL_bands
  use R_lattice,      ONLY:bz_samp
  use electrons,      ONLY:n_sp_pol
- use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_S_contains_TR
+ use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_dl_tra,old_S_contains_TR
  use DIPOLES,        ONLY:DIP_iR
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,OP_RD_CL,DUMP
@@ -70,7 +70,8 @@ subroutine DIPOLE_symmetrize(k)
    do i_sp=1,n_sp_pol
    do ib2=NL_bands(1),NL_bands(2)
    do ib1=NL_bands(1),NL_bands(2)
-     DIP_iR(:,ib1,ib2,ik_mem,i_sp)=matmul(old_dl_sop(:,:,is),DIP_tmp(:,ib1,ib2,ik_old,i_sp)) 
+     DIP_iR(:,ib1,ib2,ik_mem,i_sp)=matmul(old_dl_sop(:,:,is),DIP_tmp(:,ib1,ib2,ik_old,i_sp))
+     ! To code: impact of dl_tra on dipoles
    enddo
    enddo
    if(old_S_contains_TR(is)==1) DIP_iR(:,:,:,ik_mem,i_sp)=conjg(DIP_iR(:,:,:,ik_mem,i_sp))
@@ -80,6 +81,7 @@ subroutine DIPOLE_symmetrize(k)
  !
  YAMBO_FREE(kpoints_map)
  YAMBO_FREE(old_dl_sop)
+ YAMBO_FREE(old_dl_tra)
  YAMBO_FREE(DIP_tmp)
  !  
 end subroutine DIPOLE_symmetrize
