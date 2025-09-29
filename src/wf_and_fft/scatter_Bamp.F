@@ -204,7 +204,7 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
      igs=DEV_VAR(fft_g_table)(igr,iGo)
      !To check what to do. gphase coding below might not be not correct
      !gphase=cmplx(cos(DEV_VAR(g_phs)(igr,qs)),sin(DEV_VAR(g_phs)(igr,qs)))
-     rhotw_p(ig)= cmplx(rho_tw_rs_p(igr),kind=SP)!*gphase
+     rhotw_p(ig)= cmplx(rho_tw_rs_p(igs),kind=SP)!*gphase
    enddo
    !DEV_ACC_DEBUG end data
    !DEV_OMPGPU end target
