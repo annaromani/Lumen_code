@@ -79,7 +79,7 @@ function K_correlation_kernel_std(i_block,i_p,i_pmq,                            
    i_g2=DEV_VAR(G_m_G)(DEV_VAR(g_rot)(i_g1,iq_W_s)   ,ig_W   )
    i_g3=DEV_VAR(G_m_G)(DEV_VAR(g_rot)(i_g1,iq_W_s_mq),ig_W_mq)
    gphase1=cmplx(cos(DEV_VAR(g_phs)(i_g2,iq_W_s)   ),sin(DEV_VAR(g_phs)(i_g2,iq_W_s)   ))
-   gphase1=cmplx(cos(DEV_VAR(g_phs)(i_g3,iq_W_s_mq)),sin(DEV_VAR(g_phs)(i_g3,iq_W_s_mq)))
+   gphase2=cmplx(cos(DEV_VAR(g_phs)(i_g3,iq_W_s_mq)),sin(DEV_VAR(g_phs)(i_g3,iq_W_s_mq)))
    i_g2p=DEV_VAR(g_rot)(i_g2,i_k_s_m1  )
    i_g3p=DEV_VAR(g_rot)(i_g3,i_kmq_s_m1)
    gphase1=cmplx(cos(DEV_VAR(g_phs)(i_g2p,i_k_s_m1)  ),sin(DEV_VAR(g_phs)(i_g2p,i_k_s_m1)  ))*gphase1
