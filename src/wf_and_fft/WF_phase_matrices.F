@@ -259,8 +259,8 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
          !
        enddo ! isp
        !
-       ! OPTION 1: (disabled) expand from IBZ (WF_k) to BZ (WF_Rk)
-       !call WF_free(WF_Rk)
+       ! OPTION 1: expand from IBZ (WF_k) to BZ (WF_Rk)
+       if (opt1) call WF_free(WF_Rk)
        !
        call live_timing(steps=1)
        !

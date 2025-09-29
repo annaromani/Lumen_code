@@ -17,7 +17,8 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
  use electrons,     ONLY:n_spinor
  use vec_operate,   ONLY:c2a
  use R_lattice,     ONLY:k_pt,rl_sop
- use D_lattice,     ONLY:nsym,dl_tra,DEV_VAR(spin_sop),i_time_rev,idt_index
+ use D_lattice,     ONLY:nsym,dl_tra,DEV_VAR(spin_sop),i_time_rev,&
+ &                       idt_index,non_symmorphic_syms
  use devxlib,       ONLY:devxlib_memcpy_d2d,devxlib_conjg_d
  !
  implicit none
@@ -89,11 +90,13 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
    !
  endif
  !
- ! Take care of transialtions
- krot=matmul(rl_sop(:,:,isymm),k_pt(isc(2),:))
- call c2a(v_in=krot,mode='ki2c')
- kphase=cmplx(cos(dot_product(dl_tra(:,isymm),krot)),sin(dot_product(dl_tra(:,isymm),krot)))
- WF_symm=WF_symm*conjg(kphase)
+ if (non_symmorphyc_syms) then
+   ! Take care of transialtions
+   krot=matmul(rl_sop(:,:,isymm),k_pt(isc(2),:))
+   call c2a(v_in=krot,mode='ki2c')
+   kphase=cmplx(cos(dot_product(dl_tra(:,isymm),krot)),sin(dot_product(dl_tra(:,isymm),krot)))
+   WF_symm=WF_symm*conjg(kphase)
+ endif
  !
  ! take care of time reversal if needed
  !

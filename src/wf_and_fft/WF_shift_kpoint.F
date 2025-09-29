@@ -17,7 +17,7 @@ subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_
  use electrons,     ONLY: n_spinor
  use R_lattice,     ONLY: k_map,bz_samp
  use R_lattice,     ONLY: DEV_VAR(G_m_G)
- use wave_func,     ONLY: wf_ng_1st_BZ,wf_ng_overlaps,WF
+ use wave_func,     ONLY: wf_ng_1st_BZ,wf_ng_overlaps
  use devxlib,       ONLY: devxlib_memcpy_d2d, devxlib_memset_d
  use gpu_m,         ONLY: have_gpu
  use y_memory_alloc
@@ -31,9 +31,9 @@ subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_
  !
  ! Work space
  !
- integer :: id,ik,is,i_wf
+ integer :: id,ik,is
  complex(SP), allocatable DEV_ATTR :: WF_tmp(:,:,:)
- integer :: ig,igp,i_b1,i_b2,i_b_ref
+ integer :: ig,igp,i_b1,i_b2
  integer :: g0_idx(3,2),g0_idx_val
  integer :: i_spinor,i_b
  !
