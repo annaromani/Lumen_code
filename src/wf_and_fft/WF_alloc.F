@@ -10,10 +10,10 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-subroutine WF_alloc(WF,k_extrema_only)
+subroutine WF_alloc(WF,wf_ng,k_extrema_only)
  !
  use pars,          ONLY:cZERO
- use wave_func,     ONLY:WAVEs,states_to_load,wf_ng,wf_ncx
+ use wave_func,     ONLY:WAVEs,states_to_load,wf_ncx
  use FFT_m,         ONLY:fft_size
  use electrons,     ONLY:n_spinor
  use parallel_int,  ONLY:PARALLEL_live_message
@@ -24,6 +24,7 @@ subroutine WF_alloc(WF,k_extrema_only)
  implicit none
  !
  type(WAVEs)           :: WF
+ integer, intent(in)   :: wf_ng
  logical, intent(in)   :: k_extrema_only
  !
  ! Work Space

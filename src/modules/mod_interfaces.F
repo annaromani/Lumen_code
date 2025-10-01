@@ -194,12 +194,13 @@ module interfaces
    end function
    !
    subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load,&
-&                     k_extrema_only,space,title,impose_free_and_alloc,&
+&                     wf_ng_in,k_extrema_only,space,title,impose_free_and_alloc,&
 &                     force_WFo,keep_states_to_load,quiet)
      use wave_func,       ONLY:WAVEs
      integer :: iG_in,iGo_max_in,bands_to_load(2),kpts_to_load(2)
      type(WAVEs)           :: WF
      integer,     optional :: sp_pol_to_load(2)
+     integer,     optional :: wf_ng_in
      character(*),optional :: space
      character(*),optional :: title
      logical     ,optional :: k_extrema_only
@@ -344,16 +345,17 @@ module interfaces
      integer,              optional, intent(in) :: isref,igref
    end subroutine WF_symm_kpoint_g
    !
-   subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_out)
+   subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,isref,igref)
      use pars,          ONLY:SP
      use electrons,     ONLY:n_spinor
-     use wave_func,     ONLY:wf_ng_1st_BZ,wf_ng_overlaps
-     use R_lattice,     ONLY:bz_samp
-     integer,       intent(in) :: wf_shift(3),ikbz,b_to_shift(2),nb_to_shift
-     type(bz_samp), intent(in) :: Xk
-     complex(SP),   intent(in)  DEV_ATTR :: WF_k_in (wf_ng_1st_BZ,n_spinor,nb_to_shift)
-     complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_overlaps,n_spinor,nb_to_shift)
-   end subroutine WF_shift_kpoint
+     use wave_func,     ONLY:WAVEs,wf_ng_overlaps
+     integer,              intent(in)    :: b_to_load(2)
+     integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
+     type (WAVEs), target, intent(inout) :: WF
+     complex(SP) DEV_ATTR, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
+     complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
+     integer,              optional, intent(in) :: isref,igref
+   end subroutine WF_symm_kpoint_g2
    !
    subroutine WF_symm_kpoint(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
      use pars,          ONLY:SP 

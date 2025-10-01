@@ -44,7 +44,7 @@ module wave_func
  ! Real components ?
  !
  logical                :: real_wavefunctions
- character(schlen)      :: WF_load_mode="all"   ! "all"/"on-the-fly"/"on-the-fly-kq"
+ character(schlen)      :: WF_load_mode="all"     ! "all"/"on-the-fly"
  !
  ! Bands block size
  !

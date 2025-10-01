@@ -85,10 +85,14 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  !
  call timing("WF_phases",OPR="start")
  !
- !call k_find_smallest_g0(g0_idx,g0_length)
- !iGp=max(maxval(g0_idx(:,1)),maxval(g0_idx(:,2)))
- iGp=2*maxval(Xk%g_table)
+ iGp=maxval(Xk%g_table)
+ ng_tmp=eval_G_minus_G(iGp,iGp,opr_in="+")
+ !
+ iGp=maxval(G_m_G)
+ YAMBO_FREE(G_m_G)
  ng_tmp=eval_G_minus_G(wf_ng_1st_BZ,iGp)
+ !
+ wf_ng_overlaps=maxval(G_m_G)
  !
  nb=blim(2)-blim(1)+1
  !
@@ -121,7 +125,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
      !
      ifrag=ifrag+1
      !
-     call WF_load(WF_k,0,1,blim,(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
+     call WF_load(WF_k,0,1,blim,(/ik,ik/),(/i_sp_pol,i_sp_pol/),wf_ng_in=wf_ng_overlaps,&
      & space='G',title='-WF_phases',quiet=ifrag>1,keep_states_to_load=.true.)
      !
      call degeneration_finder(En%E(blim(1):blim(2),ik,i_sp_pol),nb,&
