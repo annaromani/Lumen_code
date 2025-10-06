@@ -56,24 +56,27 @@ subroutine build_inverse_BS_eh_table_from_BS_kernel(nk)
  !
  integer, intent(in) :: nk
  !
- integer :: i_H,ik_bz,iv,ic,i_sp_c,i_sp_v
+ integer :: i_H,i_res_ares,ik_bz,iv,ic,i_sp_c,i_sp_v
  !
  allocate(BSS_eh_table_m1(nk,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol,n_sp_pol))
  BSS_eh_table_m1=0
  !call live_timing('BSE inverse eh-table',BS_H_dim)
  !
- do i_H=1,2*BS_K_dim(1)
+ !do i_H=1,2*BS_K_dim(1)
+ do i_res_ares=1,2
+ do i_H=1,BS_K_dim(1)
    !
-   ik_bz    = BS_blk(i_H)%table(1,1)
-   iv       = BS_blk(i_H)%table(2,1)
-   ic       = BS_blk(i_H)%table(3,1)
-   i_sp_c   = BS_blk(i_H)%table(4,1)
-   i_sp_v   = BS_blk(i_H)%table(5,1)
+   ik_bz    = BS_blk(i_res_ares)%table(1,i_H)
+   iv       = BS_blk(i_res_ares)%table(2,i_H)
+   ic       = BS_blk(i_res_ares)%table(3,i_H)
+   i_sp_c   = BS_blk(i_res_ares)%table(4,i_H)
+   i_sp_v   = BS_blk(i_res_ares)%table(5,i_H)
    !
    BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H
    !
    !call live_timing(steps=1)
    !
+ enddo
  enddo
  !call live_timing( )
  !
