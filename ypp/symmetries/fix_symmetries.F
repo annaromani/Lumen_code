@@ -40,7 +40,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  real(SP), allocatable  :: dl_tra_tmp(:,:)
  real(SP)               :: B_cart(3)
  logical                :: Reduce_syms
- logical                :: Rm_all_syms,Rm_TR,Rm_INV
+ logical                :: Rm_all_syms,Rm_TR,Rm_INV,Rm_no_symmo
  logical                :: use_E_field,use_B_field,has_magnetization
  !
  ! Dummies
@@ -59,13 +59,15 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  !
  call parser('RmAllSymm',Rm_all_syms)
  !
+ call parser('RmNoSymmo',Rm_no_symmo)
+ !
  call parser('RmTimeRev',Rm_TR)
  if (i_time_rev==0) Rm_TR=.false.
  !
  call parser('RmSpaceInv',Rm_INV)
  if (i_space_inv==0) Rm_INV=.false.
  !
- Reduce_syms=any((/use_B_field,use_E_field,has_magnetization,Rm_all_syms,Rm_TR,Rm_INV/))
+ Reduce_syms=any((/use_B_field,use_E_field,has_magnetization,Rm_all_syms,Rm_TR,Rm_INV,Rm_no_Symmo/))
  !
  ! Check if we are using mag symmetries
  !
@@ -90,11 +92,11 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  !
  if (has_magnetization.and.n_spinor==2) call section('*',"== Magnetic system: BZ sampling remapping ==")
  !
- if (     Rm_TR.and..not.RM_INV) call section('*',"== Remove Time Reversal ==")
+ if (Rm_TR) call msg('s',"== Remove Time Reversal ==")
  !
- if (.not.Rm_TR.and.     RM_INV) call section('*',"== Remove Spatial Inversion ==")
+ if (RM_INV) call msg('s',"== Remove Spatial Inversion ==")
  !
- if (     Rm_TR.and.     RM_INV) call section('*',"== Remove Time Reversal and Spatial Inversion ==")
+ if (Rm_no_Symmo) call msg('s',"== Remove non-symmorphic symmetries ==")
  !
  if (use_B_field.and.has_magnetization) call warning('Magnetic field in magnetic system')
  !
@@ -160,7 +162,10 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
      do while (is<=nsym)
        !
        reject_symmetry=.false.
-       if (use_E_field) then
+       !
+       if(Rm_no_Symmo.and.any(abs(dl_tra(:,is))>0.01)) reject_symmetry=.true.
+       !
+       if (use_E_field.and..not.reject_symmetry) then
          v1(:) = matmul( dl_sop(:,:,is), E_field(1,:) )      
          v2(:) = matmul( dl_sop(:,:,is), E_field(2,:) )      
          ! Ok Spatial symmetries that leave E invariant

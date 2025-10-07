@@ -545,7 +545,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_mean_potential) call initactivate(1,"PotValue")
 #endif
  !
- if (l_fix_syms) call initactivate(1,"Efield1 Efield2 BField Bpsi Btheta RmAllSymm RmTimeRev RmSpaceInv GvecsCut KeepKGrid")
+ if (l_fix_syms) then
+   call initactivate(1,"Efield1 Efield2 BField Bpsi Btheta GvecsCut KeepKGrid")
+   call initactivate(1,"RmAllSymm RmNoSymmo RmTimeRev RmSpaceInv")
+ endif
  !
 #if defined _YPP_RT
  !

@@ -125,20 +125,19 @@ subroutine detect_point_group(sp_nsym,dl_sop)
 end subroutine detect_point_group
 !
 !
-subroutine print_point_group(fname,sp_nsym,dl_sop,dl_tra)
+subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra)
  !
  use pars,           ONLY:SP,schlen,cI
  use com,            ONLY:msg
  use electrons,      ONLY:n_spinor
  use stderr,         ONLY:intc
  use D_lattice,      ONLY:group_code,group_name,nclass,nelem,elem,which_irr,&
-&                         nclass_ref,char_mat,name_rap,name_class,which_class,&
-&                         i_time_rev,nsym,non_symmorphic_syms
+&                         nclass_ref,char_mat,name_rap,name_class,which_class
  !
  implicit none
  !
  character(*), intent(in) :: fname
- integer,  intent(in)  :: sp_nsym
+ integer,  intent(in)  :: sp_nsym,nsym
  real(SP), intent(in)  :: dl_sop(3,3,sp_nsym)
  real(SP), intent(in)  :: dl_tra(3,sp_nsym)
  !
@@ -180,7 +179,7 @@ subroutine print_point_group(fname,sp_nsym,dl_sop,dl_tra)
    enddo
  endif
  !
- if (non_symmorphic_syms) then
+ if (any(abs(dl_tra)>0.01)) then
    call msg(fname,tmp_ch//'')
    do is=1,sp_nsym
      dumb_ch=trim(intc(is))//'] '

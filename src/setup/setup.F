@@ -24,7 +24,7 @@ subroutine setup(en,Xen,Ken,k,Xk)
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
 &                         n_atomic_species,PT_elements,non_periodic_directions,lattice,&
 &                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms,&
-&                         non_symmorphic_syms
+&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra,old_S_contains_TR
  use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,g_rot,&
 &                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
  use com,            ONLY:msg,fat_log
@@ -63,8 +63,12 @@ subroutine setup(en,Xen,Ken,k,Xk)
  ! Work Space
  !
  real(SP)          :: Tel_SAVE,tmp_V(3)
- integer           :: i1,i2,ik,is,ia,i_err,nbf_SAVE(2),nbm_SAVE(2),ID,n_to_print
+ integer           :: i1,i2,ik,is,ia,i_err,nbf_SAVE(2),nbm_SAVE(2),&
+                      n_to_print,old_sp_nsym,old_i_time_rev
  type(levels)      :: Xen_COPY
+ integer           :: io_old_SYMMs,ID
+ !
+ integer, external :: io_full_SYMMs
  integer, external :: k_lattice,io_Double_Grid
  !
 #if defined _HDF5_IO
@@ -176,6 +180,19 @@ subroutine setup(en,Xen,Ken,k,Xk)
  !
  ! Symmetries and moltiplication table:
  !
+ call section('=','Full Symmetries') 
+ !=============================
+ !
+ call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
+ io_old_SYMMs=io_full_SYMMs(k,ID)
+ !
+ if (io_old_SYMMs==0) then
+   old_i_time_rev=any(old_S_contains_TR==1)
+   old_sp_nsym=old_nsym/(1+old_i_time_rev)
+   call detect_point_group(old_sp_nsym,real(old_dl_sop(:,:,:old_sp_nsym),DP),.true.)
+   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_sp_nsym),old_dl_tra(:,:old_sp_nsym))
+ endif
+ !
  call section('=','Symmetries') 
  !=============================
  !
@@ -183,7 +200,7 @@ subroutine setup(en,Xen,Ken,k,Xk)
  !
  call detect_point_group(sp_nsym,real(dl_sop(:,:,:sp_nsym),DP),.true.)
  !
- call print_point_group('r',sp_nsym,dl_sop(:,:,:sp_nsym),dl_tra(:,:sp_nsym))
+ call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:sp_nsym),dl_tra(:,:sp_nsym))
  !
  call section('=','Reciprocal space')
  !====================================

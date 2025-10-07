@@ -375,6 +375,7 @@ subroutine INIT_ypp_load(defs)
  !
  if(n_spinor==2) call it('f',defs,'ExpandSymm' , 'Add inv and magnetic symms if possible')
  call it('f',defs,'RmAllSymm' , 'Remove all symmetries')
+ call it('f',defs,'RmNoSymmo' , 'Remove non-symmorphic symmetries')
  call it('f',defs,'RmTimeRev' , 'Remove Time Reversal')
  call it('f',defs,'KeepKGrid' , 'Do not expand the k-grid')
  !
