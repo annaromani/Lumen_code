@@ -180,13 +180,12 @@ subroutine setup(en,Xen,Ken,k,Xk)
  !
  ! Symmetries and moltiplication table:
  !
- call section('=','Full Symmetries') 
- !=============================
- !
  call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
  io_old_SYMMs=io_full_SYMMs(k,ID)
  !
  if (io_old_SYMMs==0) then
+   call section('=','Full Symmetries') 
+   !=============================
    old_i_time_rev=any(old_S_contains_TR==1)
    old_sp_nsym=old_nsym/(1+old_i_time_rev)
    call detect_point_group(old_sp_nsym,real(old_dl_sop(:,:,:old_sp_nsym),DP),.true.)
