@@ -341,9 +341,6 @@ integer function io_DB1(E,k,ID)
  !
  ! G-vectors
  !
- ! Andrea (May 2010): Note here that in p2y g_vec may be allocated bigger then
- ! ng_vec*3 due to the larger charge RL vectors.
- !
  call io_bulk(ID, VAR="G-VECTORS", VAR_SZ=(/ng_vec,3/) )
  call io_bulk(ID, R2=g_vec(:ng_vec,:))
  !
