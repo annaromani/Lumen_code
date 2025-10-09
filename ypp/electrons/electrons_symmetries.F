@@ -113,9 +113,9 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
        call msg("o "//trim(filename),"# Syms gamma  grp ",loc_msg,INDENT=0)
        call msg("o "//trim(filename),"#")
        !
-       call detect_point_group(nrotk,real(dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),DP),.true.)
+       call detect_point_group(nrotk,real(dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),DP))
        !
-       call print_point_group("o "//trim(filename),nrotk,dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),&
+       call print_point_group("o "//trim(filename),nrotk,nsym,dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),&
        &                                                 dl_tra(:,Xk%grp_table(:nrotk,ikbz))   )
        !
        loc_fmt="(F10.4,12x,F4.2,12x,a,12x,i4)"

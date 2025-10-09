@@ -14,8 +14,8 @@ subroutine DIPOLE_symmetrize(k)
  use pars,           ONLY:SP,cI,cZERO
  use nl_optics,      ONLY:NL_bands
  use R_lattice,      ONLY:bz_samp
- use electrons,      ONLY:n_sp_pol
- use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_dl_tra,old_S_contains_TR
+ use electrons,      ONLY:levels,n_sp_pol
+ use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_dl_tra,old_i_time_rev,old_nsym
  use DIPOLES,        ONLY:DIP_iR
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,OP_RD_CL,DUMP
@@ -33,12 +33,14 @@ subroutine DIPOLE_symmetrize(k)
  integer, external :: io_full_SYMMs
  integer           :: io_old_SYMMs,ID
  integer           :: ik,ib1,ib2,i_sp,ik_old,is,ik_mem
+ type(bz_samp)     :: k_old
+ type(levels)      :: En_old
  complex(SP),allocatable :: DIP_tmp(:,:,:,:,:)
  !     
  ! Load old full symmetries if present
  !
  call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
- io_old_SYMMs=io_full_SYMMs(k,ID)
+ io_old_SYMMs=io_full_SYMMs(En_old,k_old,k%nibz,ID)
  !
  if(io_old_SYMMs/=0) return
  !
@@ -74,7 +76,7 @@ subroutine DIPOLE_symmetrize(k)
      ! To code: impact of dl_tra on dipoles
    enddo
    enddo
-   if(old_S_contains_TR(is)==1) DIP_iR(:,:,:,ik_mem,i_sp)=conjg(DIP_iR(:,:,:,ik_mem,i_sp))
+   if(is>old_nsym/(1+old_i_time_rev)) DIP_iR(:,:,:,ik_mem,i_sp)=conjg(DIP_iR(:,:,:,ik_mem,i_sp))
    enddo
    !     
  enddo 

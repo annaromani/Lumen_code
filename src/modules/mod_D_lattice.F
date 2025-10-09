@@ -57,10 +57,10 @@ module D_lattice
  !
  ! Full symmetries after removing them with ypp -y
  integer  :: old_nsym
+ integer  :: old_i_time_rev
  real(SP), allocatable :: old_dl_sop(:,:,:)
  real(SP), allocatable :: old_dl_tra(:,:)
  integer,  allocatable :: kpoints_map(:,:)
- integer(LP),  allocatable :: old_S_contains_TR(:)
  !                       
  ! device memory
  complex(SP),allocatable DEV_ATTR :: spin_sop_d(:,:,:)

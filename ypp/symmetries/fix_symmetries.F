@@ -21,7 +21,8 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  use R_lattice,           ONLY:rl_sop
  use vec_operate,         ONLY:v_norm
  use D_lattice,           ONLY:nsym,dl_sop,dl_tra,i_time_rev,alat,mag_syms,&
-&                              i_space_inv,sop_inv,inv_index,symmetry_group_table
+&                              i_space_inv,sop_inv,inv_index,symmetry_group_table,&
+&                              old_i_time_rev
  use y_memory_alloc
  !
  implicit none
@@ -30,7 +31,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  real(SP),intent(out)   :: old_dl_sop(3,3,nsym)
  real(SP),intent(out)   :: old_dl_tra(3,nsym)
  integer, intent(out)   :: old_sop_inv(nsym)
- integer(LP), intent(out)   :: S_contains_TR(nsym)
+ logical, intent(out)   :: S_contains_TR(nsym)
  !
  ! Work space
  !
@@ -110,6 +111,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  spatial_nsym=nsym/(1+i_time_rev)
  !
  old_nsym=nsym
+ old_i_time_rev=i_time_rev
  old_spatial_nsym=spatial_nsym
  old_trev_nsym=nsym-spatial_nsym
  old_dl_sop=dl_sop

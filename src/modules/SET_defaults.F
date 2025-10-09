@@ -29,7 +29,8 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  use functions,  ONLY:bose_E_cut
  use D_lattice,  ONLY:i_space_inv,inv_index,n_atoms_species_max,n_atomic_species,mag_syms,&
 &                     input_Tel_is_negative,non_periodic_directions,lattice,Bose_Temp,    &
-&                     non_symmorphic_syms,molecule_position,l_0D,l_1D,l_2D,l_3D,Boltz_Temp
+&                     non_symmorphic_syms,molecule_position,l_0D,l_1D,l_2D,l_3D,Boltz_Temp,&
+&                     old_nsym
  use pseudo,     ONLY:pp_n_l_times_proj_max,pp_kbv_dim
  use R_lattice,  ONLY:n_g_shells,ng_closed,bse_scattering,coll_scattering,&
 &                     Xk_grid_is_uniform,RIM_id_epsm1_reference,RIM_epsm1,&
@@ -264,6 +265,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  l_1D=.FALSE.
  l_0D=.FALSE.
  Boltz_Temp=0._SP
+ old_nsym=0
  !
  ! R_lattice
  !

@@ -206,7 +206,7 @@ integer function io_DB1(E,k,ID)
    endif
    !
    if (variable_exist(ID,"non_symmorphic_syms").or.write_is_on(ID)) then
-     call def_variable_elemental(ID, VAR="non_symmorphic_syms",VAR_SZ=5,VAR_KIND=LP_YIO,MENU=0)
+     call def_variable_elemental(ID, VAR="non_symmorphic_syms",VAR_SZ=1,VAR_KIND=LP_YIO,MENU=0)
      call  io_variable_elemental(ID, L0=non_symmorphic_syms,VAR=' Non symmorphic symmetries')
    endif
    !
