@@ -39,7 +39,7 @@ integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
  !
  io_extension(ID)="full_SYMMs"
  !
- io_full_SYMMs=io_connect(desc=trim(io_extension(ID)),type=2,ID=ID)
+ io_full_SYMMs=io_connect(desc=trim(io_extension(ID)),type=1,ID=ID)
  if (io_full_SYMMs/=0) goto 1
  !
  if (any((/io_sec(ID,:)==1/))) then
