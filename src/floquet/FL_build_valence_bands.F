@@ -57,7 +57,7 @@ subroutine FL_build_valence_bands(en,Xk,FL_V_bands,FL_V_bands_time)
  call timing('FL Density',OPR='start')
 #endif
  !
- w0 = Efield(1)%frequency(1) ! in Ha
+ w0 = Efield(1)%frequency ! in Ha
  !
  FL_V_bands_time = cZERO 
  !
