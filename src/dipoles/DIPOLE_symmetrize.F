@@ -9,14 +9,13 @@
 !
 #include<y_memory.h>
 !                  
-subroutine DIPOLE_symmetrize(k)
+subroutine DIPOLE_symmetrize(k,Dip)
  !
  use pars,           ONLY:SP,cI,cZERO
- use nl_optics,      ONLY:NL_bands
  use R_lattice,      ONLY:bz_samp
  use electrons,      ONLY:levels,n_sp_pol
  use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_dl_tra,old_i_time_rev,old_nsym
- use DIPOLES,        ONLY:DIP_iR
+ use DIPOLES,        ONLY:DIPOLE_t,DIP_iR
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,OP_RD_CL,DUMP
  use com,            ONLY:msg
@@ -25,8 +24,9 @@ subroutine DIPOLE_symmetrize(k)
  use y_memory_alloc
  !
  implicit none
- !     
- type(bz_samp), intent(in)  :: k
+ !    
+ type(bz_samp), intent(in)    :: k
+ type(DIPOLE_t),intent(inout) :: Dip
  !
  ! Work space
  !
@@ -44,7 +44,7 @@ subroutine DIPOLE_symmetrize(k)
  !
  if(io_old_SYMMs/=0) return
  !
- YAMBO_ALLOC(DIP_tmp,(3,NL_bands(1):NL_bands(2),NL_bands(1):NL_bands(2),k%nibz,n_sp_pol))
+ YAMBO_ALLOC(DIP_tmp,(3,Dip%ib_lim(2):Dip%ib(2),Dip%ib(1):Dip%ib_lim(1),k%nibz,n_sp_pol))
  !
  ! I need dipoles in all cores
  !
@@ -70,8 +70,8 @@ subroutine DIPOLE_symmetrize(k)
    if(is==1) continue
    !
    do i_sp=1,n_sp_pol
-   do ib2=NL_bands(1),NL_bands(2)
-   do ib1=NL_bands(1),NL_bands(2)
+   do ib2=Dip%ib(1),Dip%ib_lim(1)
+   do ib1=Dip%ib_lim(2),Dip%ib(2)
      DIP_iR(:,ib1,ib2,ik_mem,i_sp)=matmul(old_dl_sop(:,:,is),DIP_tmp(:,ib1,ib2,ik_old,i_sp))
      ! To code: impact of dl_tra on dipoles
    enddo
