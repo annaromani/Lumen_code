@@ -92,14 +92,11 @@ subroutine FL_dephasing(en,Xk,ik,i_sp,FL_V_bands,H_nl_sc)
  ! diagonal part
  !
  do i1=H_ref_bands(1),en%nbf(i_sp) !i
-   do i1_fl=1,n_tot_fl_modes !eta
      !
-     i1_fks = i1_fl + (i1-1)*n_tot_fl_modes !i,eta
+     i1_fks = max_fl_mode+1 + (i1-1)*n_tot_fl_modes !i,eta
      !
      I_deph(i1_fks,i1_fks) = I_deph(i1_fks,i1_fks) - 1._SP
      !
-     !
-   enddo
  enddo
  !
  l_force_Hermitian = .true.
