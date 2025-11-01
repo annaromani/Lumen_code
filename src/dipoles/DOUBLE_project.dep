@@ -23,6 +23,7 @@
  DIPOLE_setup.o
  DIPOLE_shifted_grids.o
  DIPOLE_spin_magnetization.o
+ DIPOLE_symmetrize.o
  DIPOLE_x_real_space.o
  Ionic_polarization.o
  OVERLAPS_IO.o

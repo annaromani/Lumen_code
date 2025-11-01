@@ -57,7 +57,7 @@ function small_a(T,dt,E_field,order,envelop_only)
   use stderr,    ONLY:STRING_split
   use wrapper,   ONLY:FADEVA
   use functions, ONLY:theta_function
-  use fields,    ONLY:ext_field,get_field_file_index,&
+  use fields,    ONLY:ext_field,get_field_file_index,field_from_file_dt,&
   &                   field_from_file,n_fields_defs_max
   !
   implicit none
@@ -153,7 +153,7 @@ function small_a(T,dt,E_field,order,envelop_only)
       if(trim(field_defs(2))=="4SIGMA" .or. trim(field_defs(3))=="4SIGMA") T_0_fac=4._SP*sigma_eff
       if(trim(field_defs(2))=="5SIGMA" .or. trim(field_defs(3))=="5SIGMA") T_0_fac=5._SP*sigma_eff
       T_0=pi/W_0*(real(nint(W_0/pi*T_0_fac),SP))
-      if( index(field_defs(1),"PULSE")>0 ) T_0=T_0_fac
+      if( index(field_defs(1),"PULSE")>0.or.index(field_defs(1),"GAUSS")>0 ) T_0=T_0_fac
   end select
   !
   ! Initial and relative phases control
@@ -199,7 +199,7 @@ function small_a(T,dt,E_field,order,envelop_only)
     !
     select case( trim(field_defs(1)) )
     case('FROM_FILE')
-      i_T=nint((T-T_0)/(dT/2._SP))+1
+      i_T=nint((T-T_0)/field_from_file_dt)+1
       if (i_T<=0.or.envelop_only_) then
         f_now=0
       else
