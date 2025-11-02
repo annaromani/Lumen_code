@@ -129,7 +129,7 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  if (l_neq_exc) then
    DIPs%ib =BS_bands
    !DIPs%bands_ordered=.false.
-   N_cv_trans=TRabs_Exc(2)-TRabs_Exc(1)
+   N_cv_trans=TRabs_Exc(2)-TRabs_Exc(1)+1
  else if (l_BS) then
    DIPs%ib   =BS_bands
    N_cv_trans=BSS_n_eig
