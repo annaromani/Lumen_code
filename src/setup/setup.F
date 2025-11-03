@@ -10,7 +10,7 @@
 #include <y_memory.h>
 !#include <netcdf.inc>
 !
-subroutine setup(en,Xen,Ken,k,Xk)
+subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  use pars,           ONLY:DP,SP,pi
  use units,          ONLY:Da2AU
@@ -58,7 +58,7 @@ subroutine setup(en,Xen,Ken,k,Xk)
 #endif
  !
  type(levels)    ::en,Xen,Ken
- type(bz_samp)   ::k,Xk
+ type(bz_samp)   ::q,k,Xk
  !
  ! Work Space
  !
@@ -210,12 +210,15 @@ subroutine setup(en,Xen,Ken,k,Xk)
  call G_shells_finder()
  !
  if ( wf_ng > maxval(wf_igk) ) then
-   call warning("wf_ng > maxval(wf_igk), probably because FFTGvecs in input. Reducing it")
+   call msg("r","wf_ng > maxval(wf_igk), likely because FFTGvecs was set in input.")
+   call msg("rn","Reducing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(maxval(wf_igk))))
+   wf_ng=maxval(wf_igk)
  endif
  !
  if (non_symmorphic_syms .and. wf_ng<maxval(wf_igk)) then
+   call msg("r","wf_ng < maxval(wf_igk), likely due to the use of non symmorphic symmetries.")
+   call msg("rn","Increasing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(maxval(wf_igk))))
    wf_ng=maxval(wf_igk)
-   call warning("Non symmorphic symmetries forcing wf_ng= maxval(wf_igk)= "//trim(intc(wf_ng)))
  endif
  !
  call msg('r','nG shells         ',n_g_shells)
@@ -375,6 +378,14 @@ subroutine setup(en,Xen,Ken,k,Xk)
  ! Once the occupations have been evaluated I dump Xen in Ken
  !
  call E_duplicate(Xen,Ken)
+ ! 
+ ! Test Spatial Inversion for WFs
+ ! Notice that the variable i_space_inv is already defined by
+ ! atoms_spatial_inversion()
+ call WF_spatial_inversion(en,k,q)
+ !
+ ! Magnetization
+ call eval_Mtot(en,k)
  !
 #if defined _SC
  K_kind=X_kind
