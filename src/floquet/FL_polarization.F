@@ -27,9 +27,10 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
  use units,          ONLY:HA2FSm1,HA2EV
  use electrons,      ONLY:levels,n_sp_pol,spin_occ,n_spin
  use fields,         ONLY:Efield,Divide_by_Field
- use D_lattice,      ONLY:a,DL_vol
+ use D_lattice,      ONLY:a,DL_vol,nsym,i_time_rev,dl_sop
  use R_lattice,      ONLY:bz_samp,k_map,bz_map,nXkbz
  use vec_operate,    ONLY:get_id_perpendicular
+ use electric,       ONLY:l_no_res_symms
  use QP_m,           ONLY:QP_nk
  use nl_optics,      ONLY:NL_bands,NL_initial_P,NL_damping
  use fl_optics,      ONLY:max_fl_mode,n_tot_fl_modes,FL_space_dim,FL_S_plus,FL_S_minus,&
@@ -53,8 +54,9 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
  complex(DP)  :: FL_time_P_Berry_RED(3,n_tot_time_steps)  ! In reduced coordinates
  complex(DP)  :: FL_time_P_Berry_CART(3,n_tot_time_steps) ! In cartesian coordinates
  complex(DP)  :: FL_Pi_pol(3,n_tot_time_steps)
+ complex(DP)  :: Pol_symm(3)
  integer      :: ik_bz,i_sp,i_t,i_order,i1_fl
- integer      :: id_in,id2,id3,Nperpend,i1,i2,i3,idx(3),ikbz,id
+ integer      :: id_in,id2,id3,Nperpend,i1,i2,i3,idx(3),ikbz,id,is
  complex(DP)  :: zeta
  real(DP)     :: imag_zeta
  real(SP)     :: time,w0_sm1
@@ -133,7 +135,7 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
        enddo
      enddo
      !
-     FL_time_P_Berry_RED(id_in,i_t)=-FL_time_P_Berry_RED(id_in,i_t)/real(Nperpend,SP)
+     FL_time_P_Berry_RED(id_in,i_t)=FL_time_P_Berry_RED(id_in,i_t)/real(Nperpend,SP)
      !
    enddo
    !
@@ -153,6 +155,18 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    enddo
    !
  enddo
+ ! 
+ ! Apply residual symmetries
+ !
+ if(nsym/=1.and..not.l_no_res_symms) then
+   do i_t=1,n_tot_time_steps      
+     Pol_symm=cZERO
+     do is=1,nsym/(i_time_rev+1) ! Time reversal is not present 
+       Pol_symm(:)=Pol_symm(:)+matmul(dl_sop(:,:,is),FL_time_P_Berry_CART(:,i_t))
+     enddo
+     FL_time_P_Berry_CART(:,i_t)=Pol_symm(:)/dble(nsym/(i_time_rev+1))
+   enddo
+ endif
  !
  FL_Chi_pol = cZERO
  FL_Pi_pol = cZERO

@@ -197,7 +197,7 @@ subroutine FL_build_W_operator(en,Xk,A_input,ik,i_sp,FL_V_bands,H_nl_sc)
     do i1_fl=1,n_tot_fl_modes
       i1_fks = i1_fl + (i1-1)*n_tot_fl_modes
       do id=1,3
-        H_nl_sc(i1_fks,:)=H_nl_sc(i1_fks,:) - &
+        H_nl_sc(i1_fks,:)=H_nl_sc(i1_fks,:) + &
  &      Efield(1)%amplitude*Efield(1)%versor(id)*Wk(id,i1_fks,:)
       enddo
     enddo
