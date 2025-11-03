@@ -602,7 +602,7 @@ subroutine INIT_activate()
  !
 #if defined _FL
  if (l_fl_optics) then
-   call initactivate(1,'NLBands NLEnRange NLEnSteps NLDamping NLCorrelation')
+   call initactivate(1,'NLBands NLEnRange NLEnSteps NLDamping NLCorrelation NoUseSymm')
    call initactivate(1,'FFTGvecs HARRLvcs EXXRLvcs Dephase FL_2D_ild')
    call initactivate(1,'Field1_Dir Field1_Int Field1_Phase')
    call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver')
