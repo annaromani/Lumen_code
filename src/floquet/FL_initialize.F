@@ -43,7 +43,7 @@ subroutine FL_initialize(E,k,q)
  use nl_optics,      ONLY:l_use_DIPOLES,NL_damping,NL_correlation,Correlation,NL_er,NL_estep,n_frequencies,&
 &                         IPA,TDDFT,HARTREE,LRC,JGM,LRCW,SEX,HF,eval_dG,eval_COLLISIONS,NL_bands,NL_nbands,&
 &                         NL_verb_name,VERB_HIGH,VERB_LOW,NL_verbosity,l_eval_CURRENT,n_runs,n_angles,n_frequencies
- use electric,       ONLY:l_force_SndOrd
+ use electric,       ONLY:l_force_SndOrd, l_no_res_symms
  use fl_optics,      ONLY:l_FL_dephase,FL_Chi_order,FL_add_mode,max_time_step,max_fl_mode,max_extra_mode,max_duffin_mode, &
 &                         FL_states,FL_space_dim,n_tot_time_steps,n_tot_fl_modes,n_tot_extra_modes,n_tot_duffin_modes,&
 &                         l_FL_precond
@@ -95,6 +95,7 @@ subroutine FL_initialize(E,k,q)
  call parser('FrSndOrd',             l_force_SndOrd)
  call parser('InducedField' ,        l_RT_induced_field)
  call parser('EvalCurrent' ,         l_eval_CURRENT)
+ call parser('NoUseSymm',            l_no_res_symms)
  !
  if(l_use_DIPOLES) call warning(' Fixed dipoles: only linear response properties are correct!')
  if(l_FL_dephase)  call warning(' Dephase in Floquet is only for testing purposes.')
@@ -253,5 +254,6 @@ subroutine FL_initialize(E,k,q)
  call msg( 'r', 'Induced Field              ',l_RT_induced_field)
  call msg( 'r', 'Force Snd Order Dipoles    ',l_force_SndOrd)
  call msg( 'r', 'Evaluate Current           ',l_eval_CURRENT)
+ call msg( 'r', 'Symmetrize current and pol    ',.not.l_no_res_symms)
  !
 end subroutine FL_initialize
