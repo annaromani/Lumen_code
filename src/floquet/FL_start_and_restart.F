@@ -91,7 +91,9 @@ subroutine FL_start_and_restart(E,k,Dip)
  if(NL_bands(2)<=maxval(E%nbf).or.NL_bands(1)>minval(E%nbf)) &
      & call error(" Wrong bands range!")
  !
- forall(i1=1:maxval(E%nbf)) V_bands(i1,i1,:,:)=cONE
+ do concurrent (i1=1:maxval(E%nbf)) 
+   V_bands(i1,i1,:,:)=cONE
+ end do
  !
  if(Correlation/=IPA.and..not.COLLISIONS_have_HARTREE) then
    !  

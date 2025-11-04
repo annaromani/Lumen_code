@@ -54,7 +54,9 @@ subroutine FL_determinants(en,ik_ibz,ikp_ibz,i_sp,FL_S_plus,FL_time_S_det)
  w0 = Efield(1)%frequency ! in Ha
  T_period = EtoT(E=w0)
  !
- forall(i_t=1:n_tot_time_steps) t_samples(i_t)=T_period*(i_t-1._SP)/n_tot_time_steps
+ do concurrent (i_t=1:n_tot_time_steps) 
+   t_samples(i_t)=T_period*(i_t-1._SP)/n_tot_time_steps
+ end do
  !
  do i_t=1,n_tot_time_steps
    !
