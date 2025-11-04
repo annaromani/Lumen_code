@@ -22,7 +22,7 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
  use pars,           ONLY:SP,cZERO,pi
  use electrons,      ONLY:n_sp_pol,levels,spin_occ
  use R_lattice,      ONLY:bz_samp,bz_map,nXkbz
- use D_lattice,      ONLY:a,nsym,dl_sop,i_time_rev
+ use D_lattice,      ONLY:a
  use vec_operate,    ONLY:get_id_perpendicular
  use parallel_m,     ONLY:PAR_COM_Xk_ibz_INDEX,PAR_IND_Xk_ibz,PAR_IND_Xk_bz
  use parallel_int,   ONLY:PP_redux_wait
@@ -42,7 +42,7 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
  !
  integer       :: ik,i1,iv,isp,ikbz,Nperpend,id,id2,id3,is
  integer       :: id_red,istep,max_step
- complex(SP)   :: NL_J_red(3),NL_J_symm(3)
+ complex(SP)   :: NL_J_red(3)
  complex(SP)   :: VH_bands(NL_bands(1):NL_bands(2),maxval(en%nbf),Xk%nibz,n_sp_pol)
  complex(SP)   :: V_tilde(maxval(en%nbf),NL_bands(1):NL_bands(2),2)
  complex(SP)   :: delta_V_tilde(maxval(en%nbf),NL_bands(1):NL_bands(2),2)
@@ -131,12 +131,6 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
  !
  ! Apply residual symmetries
  !
- if(nsym/=1.and..not.l_no_res_symms) then
-   NL_J_symm=cZERO
-   do is=1,nsym/(i_time_rev+1) ! Time-reversal is never present 
-     NL_J_symm(:)=NL_J_symm(:)+matmul(dl_sop(:,:,is),NL_J)
-   enddo
-   NL_J=NL_J_symm/dble(nsym/(i_time_rev+1))
- endif
+ if(.not.l_no_res_symms) call Apply_symm_vec(NL_J)
  !
 end subroutine NL_Berry_current

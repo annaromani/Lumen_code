@@ -3,5 +3,4 @@
  startup.o
  test_acc_cublas.o
  test_omp_cublas.o
- objects.o
 
