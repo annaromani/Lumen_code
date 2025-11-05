@@ -207,7 +207,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  !
  ! Invert matrices
  !
-! $omp parallel do default(shared), private(id)
+! $omp parallel do default(shared), private(id,max_step)
  do id=1,3
    if(k_map%max_kdir(id)==1) cycle ! non-periodic directions
      max_step=1

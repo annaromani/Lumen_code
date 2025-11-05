@@ -26,9 +26,11 @@ subroutine Apply_symm_vec(vec)
  !
  if(nsym/=1) then
    V_tmp=cZERO
+!$omp parallel do default(shared), private(is),reduction(+:V_tmp)
    do is=1,nsym/(i_time_rev+1) ! Time-reversal is never present 
      V_tmp=V_tmp+matmul(dl_sop(:,:,is),vec)
    enddo
+!$omp end parallel do
    vec=V_tmp/dble(nsym/(i_time_rev+1))
  else
    return
