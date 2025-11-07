@@ -44,9 +44,9 @@ subroutine RT_TRabs_residuals(what,N_trans,N_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
  integer           :: i_cv,i_v,i_c,i_kbz,i_kibz,i_spin,i_l,i_l_ref,bands(2,2),i_n,i_np,i_dir,j_dir, &
 &                     i_cv_p,i_v_p,i_c_p,i_kbz_p,i_spin_p,i_exc,i_exc_p,i_dip
  character(6)      :: DIP_kind
- character(schlen) :: fileroot,filename(3,3),headers(8)
+ character(schlen) :: fileroot,filename(3,3),headers(9)
  logical           :: l_gold_modes,l_skip_intra
- real(SP)          :: E_eh,values(8),fac
+ real(SP)          :: E_eh,values(9),fac
  complex(SP)       :: DIP_f,DIP_rot(3),DIP_bare(3),f_eh(2),DIP_dot,DIP_NN(3),dip_tmp(5,3)
  !
  if(trim(global_gauge)=="length") then
@@ -153,6 +153,7 @@ subroutine RT_TRabs_residuals(what,N_trans,N_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
    headers(6)="Res nn"
    headers(7)="Res all [Re]"
    headers(8)="Res all [Im]"
+   headers(9)="il index"
    !
    !
    do i_dir=1,N_dirs
@@ -295,6 +296,7 @@ subroutine RT_TRabs_residuals(what,N_trans,N_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
      if (trim(global_gauge)=="length"   ) fac=1._SP !/ q0_def_norm**2
      values(1)=(TRabs_E(N_trans)+real(BS_E(i_l_ref),SP))*HA2EV
      values(2)=TRabs_E(N_trans)*HA2EV
+     values(9)=real(i_l,SP)
      do i_dir=1,N_dirs
        do j_dir=1,N_dirs
          if (.not.TRabs_lEPS(i_dir,j_dir)) cycle
