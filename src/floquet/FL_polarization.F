@@ -126,9 +126,6 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
          ! Do we miss a factor 2?
          !
          imag_zeta=aimag(log(zeta))
-         !if (i_t == 1) phase_correction(i2,i3) = nint(imag_zeta/(1._DP*pi)) - uncommenting these lines gives strange results at 0
-         !                                                                     frequency for hBN-2D...
-         !imag_zeta=imag_zeta-1._DP*pi*phase_correction(i2,i3)
          !
          FL_time_P_Berry_RED(id_in,i_t)=FL_time_P_Berry_RED(id_in,i_t)+imag_zeta
          !
@@ -149,8 +146,7 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    do i_t=1,n_tot_time_steps
      !
      FL_time_P_Berry_CART(id,i_t)=sum(FL_time_P_Berry_RED(:,i_t)&
-             &                   *a(:,id))/(DL_vol*2._SP*pi)*spin_occ&
-             &                   -NL_initial_P(id)
+             &                   *a(:,id))/(DL_vol*2._SP*pi)*spin_occ
      !
    enddo
    !
@@ -161,6 +157,8 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
  if(.not.l_no_res_symms) then
    do i_t=1,n_tot_time_steps      
      call Apply_symm_vec(FL_time_P_Berry_CART(:,i_t)) 
+     !
+     FL_time_P_Berry_CART(:,i_t) = FL_time_P_Berry_CART(:,i_t) - NL_initial_P(:3)
    enddo
  endif
  !
