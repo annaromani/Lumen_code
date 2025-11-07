@@ -332,9 +332,13 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
    endif
    !
    ! Output (write)
-   call RT_Trabs_output("write",label,ofile,N_files,W_bss,Time)
    !
-   if (.not.l_neq_exc) call live_timing(steps=1)
+   if (.not.l_neq_exc) then
+     call live_timing(steps=1)
+     call RT_Trabs_output("write",label,ofile,N_files,W_bss,Time)
+   else
+     call RT_Trabs_output("write",label,ofile,N_files,W_bss,0._SP)
+   endif
    !
  enddo
  !
