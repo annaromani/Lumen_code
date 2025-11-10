@@ -60,7 +60,6 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
  real(DP)     :: imag_zeta
  real(SP)     :: time,w0_sm1
  character(4) :: filename
- integer,allocatable :: phase_correction(:,:)
  !
  ! Update Floquet Overlaps and determinant
  ! ===================================================================
@@ -92,51 +91,16 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    !
  enddo
  !
- FL_time_P_Berry_RED  = cZERO
  FL_time_P_Berry_CART = cZERO
+ FL_time_P_Berry_RED  = cZERO
  !
- do id_in=1,3
+ do i_t=1,n_tot_time_steps
    !
-   call get_id_perpendicular(id_in,id2,id3)
-   !
-   Nperpend=k_map%max_kdir(id2)*k_map%max_kdir(id3)
-   !
-   allocate(phase_correction(k_map%max_kdir(id2),k_map%max_kdir(id3)))
-   do i_t=1,n_tot_time_steps
+   do i_sp=1,n_sp_pol
      !
-     do i2=1,k_map%max_kdir(id2)
-       do i3=1,k_map%max_kdir(id3)
-         !
-         zeta=cONE
-         !
-         idx(id2)=i2
-         idx(id3)=i3
-         !
-         ! Loop on the string
-         !
-         do i1=1,k_map%max_kdir(id_in)
-           !
-           idx(id_in)=i1
-           ikbz=k_map%k_map_dir(idx(1),idx(2),idx(3))
-           zeta=zeta*FL_time_S_det(i_t,id_in,ikbz,1)
-           !
-         enddo
-         !
-         ! Map phases between -pi and pi for all k_perpendicular
-         ! Do we miss a factor 2?
-         !
-         imag_zeta=aimag(log(zeta))
-         !
-         FL_time_P_Berry_RED(id_in,i_t)=FL_time_P_Berry_RED(id_in,i_t)+imag_zeta
-         !
-       enddo
-     enddo
-     !
-     FL_time_P_Berry_RED(id_in,i_t)=FL_time_P_Berry_RED(id_in,i_t)/real(Nperpend,SP)
+     call Berry_polarization_EQ(FL_time_P_Berry_RED(:,i_t),FL_time_S_det(i_t,:,:,i_sp_pol),Xen,Xk,k_map)
      !
    enddo
-   !
-   deallocate(phase_correction)
    !
  enddo
  !
@@ -146,7 +110,7 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    do i_t=1,n_tot_time_steps
      !
      FL_time_P_Berry_CART(id,i_t)=sum(FL_time_P_Berry_RED(:,i_t)&
-             &                   *a(:,id))/(DL_vol*2._SP*pi)*spin_occ
+             &                   *a(:,id))/DL_vol
      !
    enddo
    !
@@ -193,65 +157,3 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
 #endif
  !
 end subroutine
-!
-!
-subroutine FL_FT_polarization(FL_time_pol,FL_floquet_pol)
- !
- use pars,           ONLY:DP,SP,cZERO,pi,cONE,cI
- use units,          ONLY:HA2FSm1
- use fields,         ONLY:Efield,EtoT
- use wrapper,        ONLY:M_by_V
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra,  ONLY:INV
- use fl_optics,      ONLY:max_fl_mode,n_tot_fl_modes,FL_space_dim,FL_S_plus,FL_S_minus,&
-&                         FL_states,FL_Ho_plus_Sigma,FL_time_S_det,n_tot_time_steps,max_time_step
- !
- implicit none
- !
- complex(DP), intent(inout) :: FL_time_pol(n_tot_time_steps)
- complex(DP), intent(inout) :: FL_floquet_pol(n_tot_time_steps)
- !
- ! Work Space
- !
- complex(DP) :: FL_FT_Mat(n_tot_time_steps,n_tot_time_steps)
- complex(DP) :: tmp_P_t
- complex(SP) :: dummy_det
- integer     :: i_t,i1_fl,i1_shifted_fl
- real(SP)    :: time,w0_sm1
- !
- ! Build Matrix for Fourier Transform
- ! ===================================================================
- !
- FL_FT_Mat = cZERO
- FL_floquet_pol = cZERO
- !
- do i_t=1,n_tot_time_steps
-   !
-   do i1_fl=1,n_tot_time_steps
-     !
-     i1_shifted_fl = i1_fl -(max_time_step+1)
-     !
-     FL_FT_Mat(i_t,i1_fl) =  exp(-1._SP*cI*real(i1_shifted_fl,SP)*2._SP*pi*(i_t-1._SP)/n_tot_time_steps)
-     !
-   enddo
-   !
- enddo
- !
- ! Invert Matrix for Fourier Transform
- ! ===================================================================
- !
- call LINEAR_ALGEBRA_driver(INV,M=FL_FT_Mat)
- !
- ! Calculate FL_floquet_pol
- ! ===================================================================
- !
-  do i1_fl=(max_time_step+1),n_tot_time_steps
-    do i_t=1,n_tot_time_steps
-    !
-    FL_floquet_pol(i1_fl)=FL_floquet_pol(i1_fl)+&
-            &             FL_FT_Mat(i1_fl,i_t)*FL_time_pol(i_t)
-    !
-    enddo
-  enddo
- !
-end subroutine FL_FT_polarization
