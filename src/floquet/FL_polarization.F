@@ -98,7 +98,7 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    !
    do i_sp=1,n_sp_pol
      !
-     call Berry_polarization_EQ(FL_time_P_Berry_RED(:,i_t),FL_time_S_det(i_t,:,:,i_sp_pol),Xen,Xk,k_map)
+     call Berry_polarization_EQ(FL_time_P_Berry_RED(:,i_t),FL_time_S_det(i_t,:,:,i_sp),E,k,k_map)
      !
    enddo
    !
@@ -139,16 +139,7 @@ subroutine FL_polarization(E,k,FL_V_bands,FL_Chi_pol)
    !
    i1_fl = i_order + (max_time_step+1)
    !
-   if (i_order == 1) then
-     !
-     FL_Chi_pol(1,i_order+1) = 4._SP*pi*dot_product(Efield(1)%versor(:),FL_Pi_pol(:,i1_fl)) &
-                                           &      * Divide_by_Field(Efield(1),i_order)
-     !
-   else
-     !
-     FL_Chi_pol(:,i_order+1) = FL_Pi_pol(:,i1_fl) * Divide_by_Field(Efield(1),i_order)
-     !
-   endif
+   FL_Chi_pol(:,i_order+1) = FL_Pi_pol(:,i1_fl) * Divide_by_Field(Efield(1),i_order)
    !
  enddo
  !
