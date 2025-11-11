@@ -607,7 +607,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'Xthresh_1', '[FL] Self-consistent threshold on 1st order response function',FL_Chi_thr_1)
  call it(defs,'Xthresh_2', '[FL] Self-consistent threshold on 2nd order response function',FL_Chi_thr_2)
  call it(defs,'Xthresh_3', '[FL] Self-consistent threshold on 3rd order response function',FL_Chi_thr_3)
- call it(defs,'FL_solver',    '[FL] Eigenproblem solver mode ("(D)IAGONALIZATION")',FL_solver_mode)
+ call it(defs,'FL_solver',    '[FL] Eigenproblem solver mode ("(D)IAGONALIZATION")',FL_solver_mode,verb_level=V_fl_optics)
  call it(defs,'FL_deg_thresh','[FL] Degeneracy threshold in KS band structure',FL_deg_thrs,verb_level=V_fl_optics)
  call it(defs,'FL_deg_lift',  '[FL] Degeneracy lifting of KS band structure',FL_deg_lift,verb_level=V_fl_optics)
  call it(defs,'S_inv_mode',   '[FL] Inversion method ("(N)UMERICAL/(P)ERTURBATIVE")',FL_S_inv_mode,verb_level=V_fl_optics)
