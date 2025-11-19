@@ -93,7 +93,8 @@ gfortran_*
 src/wf_and_fft/sgfft.F
 bin/*
 lib/bin/*
-
+doc/ford_output
+doc/ford_output/*
 # source #
 ##########
 src/external_c/.objects
