@@ -125,8 +125,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call sort(BS_E_real,indx=S_index)
  !
- call degeneration_finder(BS_E_real,EXCITONS_n_user_states,first_exc,n_of_exc,n_deg_grp,&
- &                           deg_energy,Include_single_values=.true.)
+ call degeneration_finder(EXCITONS_n_user_states,first_exc,n_of_exc,n_deg_grp,Er=BS_E_real,&
+ &                                     deg_accuracy=deg_energy,Include_single_values=.true.)
  !
  n_of_exc_max=maxval(n_of_exc)
  !n_of_exc_max=3

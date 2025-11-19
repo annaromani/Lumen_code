@@ -21,22 +21,27 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston,
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-subroutine excitons_get_user_states(BS_E_degs)
+subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
  !
  use pars,          ONLY:SP,schlen
  use com,           ONLY:msg
- use BS_solvers,    ONLY:BSS_n_eig
  use stderr,        ONLY:STRING_split,intc
- use YPPm,          ONLY:EXCITONS_user_indexes,EXCITONS_n_user_states,EXCITON_E_treshold,EXCITON_Res_treshold, &
-&                        state_ctl,BS_E,BS_R_right
+ use YPPm,          ONLY:EXCITONS_user_indexes,EXCITONS_n_user_states,EXCITON_E_treshold,&
+                         EXCITON_Res_treshold,MAGNON_Res_threshold,state_ctl,BS_E,exc_kind
  !
  implicit none
  !
- integer, intent(in) :: BS_E_degs(BSS_n_eig)
+ integer, intent(in)    :: n_eig
+ integer, intent(inout) :: BS_E_degs(n_eig)
+ real(SP),intent(in)    :: Res(n_eig)
+ logical, intent(in)    :: recompute
  !
- integer          ::i_start,i_end,i_str,i_st,TMP_index(BSS_n_eig),n_user
- real(SP)         ::Residuals(BSS_n_eig)
+ integer          ::i_start,i_end,i_str,i_st,TMP_index(n_eig),n_user
  character(schlen)::str_piece(50)
+ !
+ ! Sort energies to find degenerate states
+ !========================================
+ if(recompute) call excitons_find_degeneracies(BS_E,BS_E_degs,n_eig)
  !
  call STRING_split(state_ctl,str_piece)
  !
@@ -70,10 +75,14 @@ subroutine excitons_get_user_states(BS_E_degs)
    enddo
  enddo
  !
+ if (EXCITONS_n_user_states>n_user) &
+ & call warning(" "//trim(intc(EXCITONS_n_user_states-n_user))//&
+ & ""//exc_kind//"ic states added to the USER selection to preserve degeneracy")
+ !
  ! 2. Using the "En_treshold" variable
  !------------------------------------
  if (EXCITON_E_treshold>0.) then
-   do i_st=1,BSS_n_eig
+   do i_st=1,n_eig
      if (real(BS_E(i_st))<EXCITON_E_treshold) call ADD_me_to_the_list(i_st,TMP_index)
    enddo
  endif
@@ -81,18 +90,21 @@ subroutine excitons_get_user_states(BS_E_degs)
  ! 3. Using the "Res_treshold" variable
  !--------------------------------------
  if (EXCITON_Res_treshold>0.) then
-   Residuals(:) = real(BS_R_right(:)*conjg(BS_R_right(:)),SP)
-   do i_st=1,BSS_n_eig
-     if (real(Residuals(i_st))>EXCITON_Res_treshold*maxval(Residuals)) call ADD_me_to_the_list(i_st,TMP_index)
+   do i_st=1,n_eig
+     if (real(Res(i_st))>EXCITON_Res_treshold*maxval(Res)) call ADD_me_to_the_list(i_st,TMP_index)
+   enddo
+ endif
+ !
+ if (MAGNON_Res_threshold>0.) then
+   do i_st=1,n_eig
+     if (real(Res(i_st))>MAGNON_Res_threshold*maxval(Res)) call ADD_me_to_the_list(i_st,TMP_index)
    enddo
  endif
  !
  if (EXCITONS_n_user_states==0) return
+ call msg("s"," "//trim(intc(EXCITONS_n_user_states))//" "//exc_kind//"ic states selected")
  !
- if (EXCITONS_n_user_states>n_user) call warning(" "//trim(intc(EXCITONS_n_user_states-n_user))//&
-                                                 " excitonic states added to the USER selection to preserve degeneracy")
- call msg("s"," "//trim(intc(EXCITONS_n_user_states))//" excitonic states selected")
- !
+ if(allocated(EXCITONS_user_indexes)) deallocate(EXCITONS_user_indexes)
  allocate(EXCITONS_user_indexes(EXCITONS_n_user_states))
  EXCITONS_user_indexes=TMP_index(:EXCITONS_n_user_states)
  !
@@ -102,9 +114,9 @@ subroutine excitons_get_user_states(BS_E_degs)
      !
      use YPPm,   ONLY:EXCITONS_n_user_states
      !
-     integer i_st_p,i_state,TMP_index(BSS_n_eig)
+     integer i_st_p,i_state,TMP_index(n_eig)
      !
-     do i_st_p=1,BSS_n_eig
+     do i_st_p=1,n_eig
        if (BS_E_degs(i_st_p)==BS_E_degs(i_state)) then
          if (.not.any(TMP_index==i_st_p)) then
            EXCITONS_n_user_states=EXCITONS_n_user_states+1

@@ -78,8 +78,8 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
    !
    do ik=klim(1),klim(2)
      !
-     call degeneration_finder(Xen%E(blim(1):blim(2),ik,i_sp_pol),nb,&
-     &                           first_el,n_of_el,n_deg_grp,0.0001/HA2EV,Include_single_values=.true.)
+     call degeneration_finder(nb,first_el,n_of_el,n_deg_grp,Er=Xen%E(blim(1):blim(2),ik,i_sp_pol),&
+     &                                      deg_accuracy=0.0001/HA2EV,Include_single_values=.true.)
      !
      ! This loop can be used for debug
      do istark=1,1 !Xk%nstar(ik)

@@ -19,8 +19,10 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  use drivers,       ONLY:l_exc_rad_life
  use electrons,     ONLY:levels,spin
  use YPP_interfaces,ONLY:excitons_sort_and_report
- use YPPm,          ONLY:l_sort,l_exc_wf,l_spin,l_exc_symm,l_amplitude,EXCITONS_user_indexes,BSiq, &
-&                        BS_R_right,BS_E,BS_E_SOC_corr,l_interp,l_dipoles
+ use YPPm,          ONLY:l_magnons,l_sort,l_exc_wf,l_exc_symm,l_spin,l_amplitude,exc_kind,&
+ &                       EXCITONS_n_user_states,EXCITONS_user_indexes,BSiq, &
+ &                       BS_R_left,BS_R_right,BS_R_left_magn,BS_R_right_magn,&
+ &                       BS_E,BS_E_SOC_corr,l_interp,l_dipoles,MAGNON_Res_threshold
  use BS_solvers,    ONLY:BSS_n_eig
 #if defined _YPP_ELPH
  use YPP_ELPH,      ONLY:l_eliashberg,l_gkkp,l_ph_ass_dos
@@ -39,6 +41,7 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  logical              :: l_flag
  integer ,allocatable :: BS_E_degs(:)
+ real(SP),allocatable :: Res(:)
  !... I/0
  integer              :: iq,io_err
  !
@@ -52,10 +55,16 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  if(.not.l_flag) return
  !
- if(.not.l_interp) call section('*','Excitonic Properties @ Q-index #'//trim(intc(BSiq)))
- if(     l_interp) call section('*','Excitonic Properties')
+ exc_kind="exciton"
+ if (l_magnons) exc_kind="magnon "
  !
- iq = BSiq
+ if(.not.l_interp) then
+   call section('*',exc_kind//'ic Properties @ Q-index #'//trim(intc(BSiq)))
+   iq= BSiq
+ else if(l_interp) then
+   call section('*',exc_kind//'ic Properties')
+   iq = 1
+ endif
  !
  call                excitons_read(k,Xk,en,Xen,BSiq,"check",.true.,io_err)
  !
@@ -70,9 +79,13 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
    return
  endif
  !
+ YAMBO_ALLOC(Res,(BSS_n_eig))
+ if (l_magnons)       Res(:)=real(BS_R_left_magn(:,1)*BS_R_right_magn(:,1),SP)
+ if (.not.l_magnons)  Res(:)=real(BS_R_left(:)*BS_R_right(:),SP)
+ !
  ! Sort energies and write to output
  !===================================
- if (l_sort) call excitons_sort_and_report(iq,BS_R_right,BS_E,BS_E_SOC_corr=BS_E_SOC_corr)
+ if (l_sort) call excitons_sort_and_report(iq,Res,BS_E,BS_E_SOC_corr=BS_E_SOC_corr)
  !
  call parser("States",l_flag)
  !
@@ -81,11 +94,11 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
    ! Sort energies to find degenerate states
    !========================================
    YAMBO_ALLOC(BS_E_degs,(BSS_n_eig))
-   call excitons_find_degeneracies(BS_E,BS_E_degs)
+   call excitons_find_degeneracies(BS_E,BS_E_degs,BSS_n_eig)
    !
    ! Define the USER set of excitonic states
    !=========================================
-   if(.not.l_sort) call excitons_get_user_states(BS_E_degs)
+   if(.not.l_sort) call excitons_get_user_states(BS_E_degs,Res,BSS_n_eig,.false.)
    !
  endif
  !
@@ -113,7 +126,7 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  ! 
  ! Exciton's spin
  !=====================
- if (l_spin)       call excitons_spin(Xk,BS_R_right,BS_E,BS_E_degs)
+ if (l_spin)       call excitons_spin(Xk,Res,BS_E,BS_E_degs)
  !
  ! Exciton's Amplitude
  !=====================

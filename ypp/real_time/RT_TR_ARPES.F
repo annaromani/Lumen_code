@@ -65,6 +65,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  complex(SP)           :: F_tmp(RT_conf%W_n_steps),PES(RT_conf%W_n_steps)
  real(SP),allocatable  :: ARPES_int(:,:,:)
  integer, allocatable  :: BS_E_degs(:)
+ real(SP),allocatable  :: Res(:)
  !
  character(schlen)     :: headings(3),file_name,title
  real(SP)              :: odata(3),DIP_dir(3,3)
@@ -126,16 +127,15 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  !
  if (l_single_exciton) then
    !
-   ! Sort energies to find degenerate states
-   !========================================
-   allocate(BS_E_degs(BSS_n_eig))
-   call excitons_find_degeneracies(BS_E,BS_E_degs)
-   !
    ! Set the exciton
-   !============
-   call excitons_get_user_states(BS_E_degs)
-   call RT_TRabs_rotate_exciton("DIP_iR",DIP_dir,cONE,Xen,Xk)
+   !=================
+   allocate(BS_E_degs(BSS_n_eig))
+   allocate(Res(BSS_n_eig))
+   call excitons_get_user_states(BS_E_degs,Res,BSS_n_eig,.true.)
    deallocate(BS_E_degs)
+   deallocate(Res)
+   !
+   call RT_TRabs_rotate_exciton("DIP_iR",DIP_dir,cONE,Xen,Xk)
    i_l_ref=EXCITONS_user_indexes(1)
    deallocate(EXCITONS_user_indexes)
    !
