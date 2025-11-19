@@ -3,6 +3,7 @@ summary: A Many-Body Physics Code for Excited States and Spectroscopic Propertie
 author: Yambo Team
 version: 5.3
 src_dir: ./src
+       ./ypp
 output_dir: ./doc/ford_output
 page_dir: ./doc/markdown
 docmark: !>
