@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM, DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
  ! 
  ! Optics driver
@@ -17,7 +21,7 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
  use electrons,     ONLY:levels
  use R_lattice,     ONLY:bz_samp
  use DIPOLES,       ONLY:DIPOLE_t
- use X_m,           ONLY:X_t,X_par,X_fxc,X_Double_Grid_setup,X_par_lower_triangle,&
+ use X_m,           ONLY:X_t,X_par,X_fxc,X_Double_Grid_setup,&
 &                        X_DbGd_nkpt_at_q,X_DbGd_nkpt_at_q_table,use_X_DbGd,&
 &                        i_G_shift,Q_plus_G_sq_modulus
  use parallel_int,  ONLY:PP_wait,PP_redux_wait,PARALLEL_global_indexes,PARALLEL_WF_index,PARALLEL_WF_distribute
@@ -27,8 +31,9 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
  use TDDFT,         ONLY:F_xc_gspace,FXC_K_diagonal
  use interfaces,    ONLY:WF_load,WF_free,WF_load
  use matrix,        ONLY:MATRIX_reset
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  type(levels)  :: Xen
  type(bz_samp) :: Xk,q
@@ -51,20 +56,20 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
  !
  allocate(X_par(1))
  !
- do iq=X%iq(1),X%iq(2)
-   !
-   ! PARALLEL indexes
-   !==================
-   call PARALLEL_global_indexes(Xen,Xk,q,"Response_G_space",X=X)
-   !
-   ! WF distribution 
-   !=================
-   call PARALLEL_WF_distribute(K_index=PAR_IND_Xk_ibz,B_index=PAR_IND_CON_BANDS_X(X%whoami),&
+ ! PARALLEL indexes
+ !==================
+ call PARALLEL_global_indexes(Xen,Xk,q,"Response_G_space",X=X)
+ !
+ ! WF distribution 
+ !=================
+ call PARALLEL_WF_distribute(K_index=PAR_IND_Xk_ibz,B_index=PAR_IND_CON_BANDS_X(X%whoami),&
 &                              Bp_index=PAR_IND_VAL_BANDS_X(X%whoami),CLEAN_UP=.TRUE.)
-   !
-   call PARALLEL_WF_index(COMM=PAR_COM_Q_A2A)
-   !
-   if (WF_buffered_IO) call WF_load(WF_buffer,0,1,X%ib,(/1,Xk%nibz/),space='B',title='-BUFFER')
+ !
+ call PARALLEL_WF_index(COMM=PAR_COM_Q_A2A)
+ !
+ if (WF_buffered_IO) call WF_load(WF_buffer,0,1,X%ib,(/1,Xk%nibz/),space='B',title='-BUFFER')
+ !
+ do iq=X%iq(1),X%iq(2)
    !
    ! TDDFT setup
    call TDDFT_do_X_W_typs(iq,X,wv)
@@ -103,7 +108,7 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
    ! Response function parallel allocation
    call X_half_mat_check(Xen,Xk,wv)
    !
-   call X_ALLOC_parallel(X_par(1),X%ng,wv%n_freqs,"XUP")
+   call X_ALLOC_parallel(X_par(1),X%ng,wv%n_freqs,"X")
    !
    Macroscopic_CPU=X_par(1)%rows(1)<=i_G_shift.and.i_G_shift<=X_par(1)%rows(2).and.&
 &                  X_par(1)%cols(1)<=i_G_shift.and.i_G_shift<=X_par(1)%cols(2)
@@ -155,7 +160,6 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
    ! CLEAN (each q)
    call FREQUENCIES_reset(wv,"all")
    call MATRIX_reset(X_par(1))
-   YAMBO_FREE(X_par_lower_triangle%blc)
    if (use_X_DbGd) then
      YAMBO_FREE(X_DbGd_nkpt_at_q_table)
      YAMBO_FREE(X_DbGd_nkpt_at_q)
@@ -163,9 +167,10 @@ subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
    !
  enddo
  !
+ call PARALLEL_global_reset("Response_G_space",X%whoami)
+ !
  ! CLEAN
  !
- call MATRIX_reset(X_par_lower_triangle)
  deallocate(X_par)
  call WF_free(WF)
  call PP_wait()

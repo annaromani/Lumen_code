@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+! headers
+!
+#include <dev_defs.h>
+#include <y_memory.h>
+!
 module X_m
  !
  use descriptors,    ONLY:IO_desc
@@ -13,9 +18,9 @@ module X_m
  use matrix,         ONLY:PAR_matrix
  use OUTPUT,         ONLY:N_MAX_columns
  use gpu_m,          ONLY:have_gpu
+ use y_memory_alloc
  !
-#include <dev_defs.h>
-#include <y_memory.h>
+ implicit none
  !
  ! Observables
  !
@@ -75,6 +80,8 @@ module X_m
  complex(SP), allocatable :: X_fxc(:)
  complex(SP), allocatable :: X_magnons(:,:,:)
  complex(SP), allocatable :: X_dichroism(:,:)
+ complex(SP), allocatable :: X_mespin(:,:)
+ complex(SP), allocatable :: X_meorb(:,:)
  !
  ! Response function
  !
@@ -115,8 +122,6 @@ module X_m
  ! PARALLEL distribution
  !
  type(PAR_matrix), allocatable, target :: X_par(:)
- type(PAR_matrix), target      :: X_par_lower_triangle
- logical                       :: X_lower_triangle_matrix_in_use=.FALSE.
  integer                       :: X_rows(2) = 0
  !DEV_ACC declare device_resident(X_rows)
  integer                       :: X_cols(2) = 0
@@ -159,7 +164,7 @@ module X_m
    integer               :: N_messages
    character(schlen)     :: messages(N_MAX_columns)
  end type
- integer, parameter     :: N_X_obs=16
+ integer, parameter     :: N_X_obs=18
  type(X_obs_t)          :: X_obs(N_X_obs) 
  !
  interface

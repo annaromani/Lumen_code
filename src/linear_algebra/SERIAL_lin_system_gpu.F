@@ -4,6 +4,11 @@
 ! Copyright (C) 2018 the Yambo Team
 !
 ! Authors (see AUTHORS file for details): AF
+!
+! headers
+!
+#include<dev_defs.h>
+#include<y_memory.h>
 ! 
 subroutine SERIAL_lin_system_gpu(n,nrhs,A_d,B_d)
  !
@@ -19,9 +24,9 @@ subroutine SERIAL_lin_system_gpu(n,nrhs,A_d,B_d)
 #if defined _CUDA
  use cublas,         ONLY:CUBLAS_OP_N
 #endif
+ use y_memory_alloc
  !
-#include<dev_defs.h>
-#include<y_memory.h>
+ implicit none
  !
  integer     :: n,nrhs
  complex(SP) DEV_ATTR :: A_d(n,n),B_d(n,nrhs)
@@ -41,7 +46,6 @@ subroutine SERIAL_lin_system_gpu(n,nrhs,A_d,B_d)
  !
  YAMBO_ALLOC_GPU(v_int,(n))
  YAMBO_ALLOC_GPU(vp_int,(1))
-
  !
  ! init
  if (.not.gpu_linalg_init) call gpu_linalg_setup()
@@ -84,6 +88,10 @@ subroutine SERIAL_lin_system_gpu(n,nrhs,A_d,B_d)
  !DEV_ACC end host_data
  !DEV_ACC_DEBUG end data
 #endif
+ !
+ YAMBO_FREE_GPU(v_int)
+ YAMBO_FREE_GPU(vp_int)
+ YAMBO_FREE_GPU(v_cmplx)
  !
  if(.not.(l_nl_optics.or.l_real_time)) call timing(trim(subname),OPR='stop')
  !

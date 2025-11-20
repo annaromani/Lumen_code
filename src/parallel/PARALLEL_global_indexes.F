@@ -5,10 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre_defined)
  !
  ! LOGICALS
- use parallel_m,    ONLY:l_par_X_T,l_par_RT,l_par_SE,l_par_X_G,l_par_X_G_finite_q,&
+ use parallel_m,    ONLY:l_par_X_T,l_par_RT,l_par_SE,l_par_SX,l_par_X_G,l_par_X_G_finite_q,&
 &                        l_par_DIP,l_par_BZINDX,l_par_NL,l_par_SC,l_par_OSCLL
  ! COMMUNICATORS
  use parallel_m,    ONLY:PAR_COM_CON_INDEX_X,PAR_COM_VAL_INDEX_X
@@ -26,8 +30,9 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
  use electrons,     ONLY:levels
  use R_lattice,     ONLY:bz_samp
  use pars,          ONLY:SP
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  type(levels)               ::E
  type(bz_samp)              ::Xk,q
@@ -78,9 +83,10 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
  l_par_X_G_finite_q =ENVIRONMENT=="Response_G_space_and_IO"
  l_par_X_G          =ENVIRONMENT=="Response_G_space"
  l_par_SE           =ENVIRONMENT=="Self_Energy"
+ l_par_SX           =ENVIRONMENT=="Sigma_X"
  l_par_RT           =ENVIRONMENT=="Real_Time"
  l_par_NL           =ENVIRONMENT=="Non_Linear"
- l_par_SC           =ENVIRONMENT=="Self_Energy"
+ l_par_SC           =ENVIRONMENT=="Self_Energy".or.ENVIRONMENT=="Sigma_X"
  l_par_OSCLL        =ENVIRONMENT=="Oscillators"
  !
  !==================================
@@ -108,7 +114,7 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
      Do_dip_limits=.not.Dip_limits_pre_defined
    endif
    if (Do_dip_limits) then
-     if (Dip%bands_ordered.or.Dip%Energy_treshold<0._SP) then
+     if (Dip%bands_ordered.or.Dip%Energy_threshold<0._SP) then
        Dip%ib_lim(1)=maxval(E%nbm)
        Dip%ib_lim(2)=minval(E%nbf)+1
        if (l_X_terminator) Dip%ib_lim(2)=Dip%ib(1)
@@ -140,7 +146,8 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
  !
  if (      ENVIRONMENT=="DIPOLES")             call PARALLEL_global_DIPOLES(E,Xk,q,ENVIRONMENT)
  !
- if (      ENVIRONMENT=="Self_Energy")         call PARALLEL_global_Self_Energy(E,Xk,q)
+ if (      ENVIRONMENT=="Self_Energy")         call PARALLEL_global_Self_Energy(E,Xk,q,ENVIRONMENT)
+ if (      ENVIRONMENT=="Sigma_X")       call PARALLEL_global_Self_Energy(E,Xk,q,ENVIRONMENT)
  !
  if (      ENVIRONMENT=="Response_T_space")    call PARALLEL_global_Response_T_base(Xk)
  !
