@@ -1,29 +1,35 @@
-project: Yambo
+---
+project: Lumen
 summary: A Many-Body Physics Code for Excited States and Spectroscopic Properties
-author: Yambo Team
-version: 5.3
-src_dir: ./src
-       ./ypp
+author: Lumen Team
+version: 1.0
 output_dir: ./doc/ford_output
 page_dir: ./doc/markdown
-docmark: !>
-predocmark: !!
-docmark_alt: /!
-predocmark_alt: /*
-display: public
-warn: true
-graph: true
-search: true
-incl_src: true
-sort: src
-preprocess: false
-project_github: https://gitlab.com/lumen-code/lumen
+license: gpl
+doc_license: gpl
+github: https://gitlab.com/lumen-code/lumen
+website: https://www.lumen-code.org/
 favicon: ./doc/media/yambo_favicon.png
-css: doc/ford/dark_theme.css
-extra_mods: ./include:
-project_download: https://gitlab.com/lumen-code/lumen/releases
-
-![Yambo Logo](../media/yambo_logo.png)
+summary: <p align="center"><img alt="logo" src="media/yambo_logo.png"></p>
+media_dir: ./doc/media
+extensions: f90
+            F
+fixed_extensions: f
+fpp_extensions: F
+extra_filetypes: c //
+src_dir: ./src
+         ./driver
+         ./lib
+         ./ypp
+         ./interfaces
+exclude: src/wf_and_fft/scatter_Bamp_incl.F
+         src/wf_and_fft/scatter_Gamp_incl.F
+         src/wf_and_fft/WF_apply_symm_incl.F
+         src/wf_and_fft/WF_symm_kpoint_incl.F
+macro: DEV_SUB(x)=x
+       DEV_VAR(x)=x
+       DEV_ATTR= 
+---
 
 ## 📚 Documentation Guide
 

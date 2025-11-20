@@ -143,7 +143,7 @@ generate_documentation() {
     if [ "$VERBOSE" = true ]; then
         ford .ford
     else
-        ford .ford 2>&1 | grep -E "(Building|Parsing|Creating|Documenting|Warning|Error)" || true
+        ford .ford 
     fi
     
     END_TIME=$(date +%s)
