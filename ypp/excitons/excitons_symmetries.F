@@ -150,7 +150,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call detect_point_group(nrotq,real(dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),DP))
  !
  call print_point_group("o "//trim(filename),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
- &                                                   dl_tra(:,qpt%grp_table(:nrotk,ikbz)),.true.)
+ &                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
  !
  !write(*,*) "point group detected ",nclass,n_deg_grp
  !
