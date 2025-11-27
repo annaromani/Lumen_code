@@ -99,14 +99,14 @@ subroutine detect_point_group(sp_nsym,dl_sop)
  use electrons,      ONLY:n_spinor
  use D_lattice,      ONLY:group_code,group_name,nclass,nelem,elem,which_irr,&
 &                         nclass_ref,char_mat,name_rap,name_class,ir_ram,&
-&                         which_class
+&                         which_class,nirrep
  !
  implicit none
  !
  integer,  intent(in)  :: sp_nsym
  real(DP), intent(in)  :: dl_sop(3,3,sp_nsym)
  !
- integer :: iclass, irap
+ integer :: iclass, irap, is
  !
  ! Double point group detection not coded
  if (n_spinor==2) call warning("Detecting no SOC point group")
@@ -117,8 +117,11 @@ subroutine detect_point_group(sp_nsym,dl_sop)
  !
  call divide_class(group_code,sp_nsym,dl_sop,nclass,nelem,elem,which_irr)
  !
+ nirrep=0
+ which_class=0
  do iclass=1,nclass
    irap=which_irr(iclass)
+   if(which_class(irap)==0) nirrep=nirrep+1
    which_class(irap)=iclass
  enddo
  !
@@ -135,7 +138,8 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  use electrons,      ONLY:n_spinor
  use stderr,         ONLY:intc
  use D_lattice,      ONLY:group_code,group_name,nclass,nelem,elem,which_irr,&
-&                         nclass_ref,char_mat,name_rap,name_class,which_class
+&                         nclass_ref,char_mat,name_rap,name_class,which_class,&
+&                         nirrep
  !
  implicit none
  !
@@ -145,7 +149,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  real(SP), intent(in)  :: dl_tra(3,sp_nsym)
  logical,  intent(in)  :: prt_syms_only
  !
- integer           :: i1,i2,i3,is,iclass,jclass,ich,len_class(12),max_len
+ integer           :: i1,i2,i3,is,iclass,jclass,irap,ich,len_class(12),max_len
  character(5)      :: vec_ch(12)
  character(15)     :: name_rap_tmp
  logical           :: trev,l_print_aimag
@@ -199,18 +203,30 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  !
  if (prt_syms_only) return
  !
+ !write(*,*) "nclasses= ",nclass,nclass
+ !write(*,*) "irrep to classes table ",which_class(:nirrep)
+ !write(*,*) "number of elements per class ",nelem(which_class(:nirrep))
+ !do irap=1,nirrep
+ !  iclass=which_class(irap)
+ !  write(*,*) "class name ",name_class(iclass),nelem(iclass),nelem(irap)
+ !  write(*,*) "list of elements in class ",elem(:nelem(iclass),iclass)
+ !enddo
+ !
  call msg(fname,tmp_ch//'')
  call msg(fname,tmp_ch//'Point group is        ',group_name,INDENT=0)
  call msg(fname,tmp_ch//'')
  call msg(fname,tmp_ch//'Number of classes        ',nclass,INDENT=0)
+ call msg(fname,tmp_ch//'Number of real classes   ',nirrep,INDENT=0)
  call msg(fname,tmp_ch//'Symmetries per class     ',nelem(which_class(:nclass)),INDENT=0)
  call msg(fname,tmp_ch//'Name of classes          ',name_class(:nclass),INDENT=0)
+ !call msg(fname,tmp_ch//'Name of irrep            ',name_rap(:nirrep),INDENT=0)
  !
  len_class=-1
  do iclass=1,nclass
-   len_class(iclass)=len_trim(name_class(iclass))
-   call msg(fname,tmp_ch//'Symmetries in class '//name_class(iclass),&
-   &        elem(:nelem(which_class(iclass)),which_class(iclass)),INDENT=0)
+   irap=which_irr(iclass)
+   len_class(iclass)=len_trim(name_class(irap))
+   call msg(fname,tmp_ch//'Syms indexes in class '//name_class(iclass),&
+   &        elem(:nelem(irap),irap),INDENT=0)
  enddo
  max_len=max(maxval(len_class),5)
  !
@@ -227,7 +243,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
    enddo
  enddo
  !
- call msg(fname,tmp_ch//'Symm./classes  ',vec_ch(:nclass),INDENT=0)
+ call msg(fname,tmp_ch//'Irrep/Syms     ',vec_ch(:nclass),INDENT=0)
  !
  l_print_aimag=maxval(abs(real(cI*char_mat)))>0.01_SP
  !

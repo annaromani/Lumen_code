@@ -55,7 +55,7 @@ REAL(DP) :: cmat(3,3), ax(3), bx(3), cx(3), ars
 INTEGER :: done(48), irot, jrot, krot, iclass, i, other, other1
 INTEGER :: tipo_sym, ipol, axis, axis1, axis2, ts, iax, ibx, icx, aclass, &
            bclass, cclass, imax, imbx, imcx, amclass, bmclass, cmclass, ind2(3)
-REAL(DP), PARAMETER :: eps=zero_dfl_DP
+REAL(DP), PARAMETER :: eps=zero_dfl_DP*1.E4_DP
 REAL(DP) :: angle_rot, angle_rot_s, angle_vectors, ax_save(3,2:4)
 LOGICAL :: compare_mat, is_axis, is_parallel, isok, isok1, done_ax(6)
 !

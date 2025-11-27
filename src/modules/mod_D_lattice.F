@@ -113,7 +113,8 @@ module D_lattice
  integer               :: group_code
  character(len=11)     :: group_name
  !
- integer :: nclass                     ! The number of classes
+ integer :: nirrep         ! The number of irreps
+ integer :: nclass         ! The number of classes
  integer :: nelem(12)      ! The elements of each class
  integer :: elem(8,12)     ! Which elements in the smat list for each class
  integer :: which_irr(12)  ! See the subroutine description
