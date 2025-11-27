@@ -116,7 +116,7 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
        call detect_point_group(nrotk,real(dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),DP))
        !
        call print_point_group("o "//trim(filename),nrotk,nsym,dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),&
-       &                                                 dl_tra(:,Xk%grp_table(:nrotk,ikbz))   )
+       &                                                  dl_tra(:,Xk%grp_table(:nrotk,ikbz)),.true.)
        !
        loc_fmt="(F10.4,12x,F4.2,12x,a,12x,i4)"
        l_char_table_imag=maxval(abs(real(cI*char_mat)))>0.01_SP

@@ -88,6 +88,7 @@ subroutine build_symmetries()
  call msg('r','Magnetic symmetries   ',mag_syms)
  call msg('r','Symmorphyc symmetries ',.not.non_symmorphic_syms)
  if (i_time_rev==1) call msg('r','Time-reversal derived K-space symmetries',(/sp_nsym+1,nsym/))
+ call msg('r',' ')
  !
 end subroutine build_symmetries
 !
@@ -127,7 +128,7 @@ subroutine detect_point_group(sp_nsym,dl_sop)
 end subroutine detect_point_group
 !
 !
-subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra)
+subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  !
  use pars,           ONLY:SP,schlen,cI
  use com,            ONLY:msg
@@ -142,6 +143,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra)
  integer,  intent(in)  :: sp_nsym,nsym
  real(SP), intent(in)  :: dl_sop(3,3,sp_nsym)
  real(SP), intent(in)  :: dl_tra(3,sp_nsym)
+ logical,  intent(in)  :: prt_syms_only
  !
  integer           :: i1,i2,i3,is,iclass,jclass,ich,len_class(12),max_len
  character(5)      :: vec_ch(12)
@@ -194,6 +196,8 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra)
      call msg(fname,trim(dumb_ch),dl_tra(:,is),INDENT=0)  
    enddo
  endif
+ !
+ if (prt_syms_only) return
  !
  call msg(fname,tmp_ch//'')
  call msg(fname,tmp_ch//'Point group is        ',group_name,INDENT=0)

@@ -179,30 +179,35 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    !
  endif
  !
- ! Symmetries and moltiplication table:
+ call section('=','Symmetries') 
+ !=============================
+ !
+ ! Symmetries and point group
+ !
+ call build_symmetries()
  !
  call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
  io_old_SYMMs=io_full_SYMMs(En_old,k_old,k%nibz,ID)
  !
  if (io_old_SYMMs==0) then
-   call section('=','Full Symmetries') 
-   !=============================
+   !
+   call msg('nr','Full symmetries list') 
    old_sp_nsym=old_nsym/(1+old_i_time_rev)
    call detect_point_group(old_sp_nsym,real(old_dl_sop(:,:,:old_sp_nsym),DP))
-   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_sp_nsym),old_dl_tra(:,:old_sp_nsym))
+   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_sp_nsym),old_dl_tra(:,:old_sp_nsym),.false.)
    YAMBO_FREE(old_dl_sop)
    YAMBO_FREE(old_dl_tra)
    YAMBO_FREE(kpoints_map)
+   call msg('r','Reduced symmetries list') 
+   !
+ else
+   !
+   call msg('nr','Symmetries list') 
+   call detect_point_group(sp_nsym,real(dl_sop(:,:,:sp_nsym),DP))
+   !
  endif
  !
- call section('=','Symmetries') 
- !=============================
- !
- call build_symmetries()
- !
- call detect_point_group(sp_nsym,real(dl_sop(:,:,:sp_nsym),DP))
- !
- call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:sp_nsym),dl_tra(:,:sp_nsym))
+ call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:sp_nsym),dl_tra(:,:sp_nsym),io_old_SYMMs==0)
  !
  call section('=','Reciprocal space')
  !====================================
