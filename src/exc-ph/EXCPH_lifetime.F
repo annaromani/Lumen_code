@@ -109,12 +109,14 @@ subroutine EXCPH_lifetime(k,q,X)
  &                       Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),1),&
  &                 deg_accuracy=deg_exc_thrshld,Include_single_values=.true.)
  !
- do igrp=1,n_deg_grp
-   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
-   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
-   EXC_energy_average=sum(BS_all_E(j_alpha:i_alpha,1))/real(n_of_exc_grp(igrp),SP)
-   BS_all_E(j_alpha:i_alpha,1)=EXC_energy_average
- enddo
+ call degeneration_average(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
+ &                       Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),1))
+! do igrp=1,n_deg_grp
+!   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
+!   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
+!   EXC_energy_average=sum(BS_all_E(j_alpha:i_alpha,1))/real(n_of_exc_grp(igrp),SP)
+!   BS_all_E(j_alpha:i_alpha,1)=EXC_energy_average
+! enddo
  !
  !
  ! Load the Exciton-phonon elements and phonon energies
