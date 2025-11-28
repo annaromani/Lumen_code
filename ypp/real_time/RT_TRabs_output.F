@@ -34,7 +34,7 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  !
  ! Work Space
  !
- logical           :: l_TRANS,l_REFL,l_ABS,l_EXC
+ logical           :: l_TRANS,l_REFL,l_ABS
  integer           :: i_freq,i_f,i_dir,j_dir
  real(SP)          :: B_data(1)
  character(schlen) :: file,title(1),titles(2)
@@ -43,7 +43,6 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  l_TRANS=STRING_match(TRabsWHAT,"trans")
  l_REFL =STRING_match(TRabsWHAT,"refl")
  l_ABS  =STRING_match(TRabsWHAT,"abs")
- l_EXC  =STRING_match(TRabsMODE,"eq").or.STRING_match(TRabsMODE,"inter-exc")
  !
  if (what=="init") then
    if (l_ABS) then
@@ -77,7 +76,7 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  call set_real_printed_length(f_length=12,g_length=15)
  !
  ! Epsilon neq
- if (l_ABS.and..not.l_EXC) then
+ if (l_ABS.and.trim(how)=="IP") then
    do i_dir=1,3
      do j_dir=1,3
        if (.not.TRabs_lEPS(i_dir,j_dir)) cycle
@@ -94,7 +93,7 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  endif
  !
  ! Epsilon exc-exc
- if (l_EXC) then
+ if (l_ABS.and.trim(how)=="BSE") then
    do i_dir=1,3
      do j_dir=1,3
        if (.not.TRabs_lEPS(i_dir,j_dir)) cycle

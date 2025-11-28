@@ -296,7 +296,7 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
      if(      l_neq_exc         ) call RT_TRabs_residuals("EXC",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
    else
      ! IP spectrum
-     if (l_cc) call RT_TRabs_residuals("cv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+     if (l_cv) call RT_TRabs_residuals("cv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
    endif
    !
    if (l_rt_carriers_in_use) then
