@@ -139,7 +139,7 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
 &                                          E_eh,E_eh_SOC_corr,f_eh,f_eh_RES,f_eh_PL)) cycle
                !
                i_T_now=i_T_now+1
-               i_T_group_now=T_group(i_T_now,ik,i_res_ares)
+               i_T_group_now=T_group(i_T_now)
                !
                if (i_loop==1) BS_T_grp(i_T_group_now)%size=BS_T_grp(i_T_group_now)%size+1
                !

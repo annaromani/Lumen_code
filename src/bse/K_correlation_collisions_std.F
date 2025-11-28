@@ -11,11 +11,11 @@
 #include<y_memory.h>
 !
 !************************* WARNING **************************
-!* In this subroutine is not correct at in 2 cases:         *
+!* This subroutine is not correct in 2 cases:               *
 !* a) finite q-bse plus spin-orbit coupling                 * 
 !* b) non symmorphyc symmetri operations                    * 
 !* An alternative subroutine that applies symmetries in a   *
-!* different way is proposed K_correlation_collisions_dir.F *
+!* different way exist: K_correlation_collisions_dir.F      *
 !* This second subroutine is automatically called in the    *
 !* two above mentioned cases                                *
 !************************************************************

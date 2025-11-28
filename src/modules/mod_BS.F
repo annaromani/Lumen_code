@@ -228,9 +228,8 @@ module BS
  end type BS_T_group
  !
  type(BS_T_group), allocatable, target :: BS_T_grp(:)
- integer         , allocatable  :: BS_T_grp_1st_el_at_k(:,:)
+ integer         , allocatable  :: BS_T_grp_1st_el(:)
  integer         , allocatable  :: BS_nT_at_k(:)
- integer         , allocatable  :: BS_nT_grps_at_k(:,:)
  integer         , allocatable  :: BS_nkFGbz_in_Tgrp(:)
  integer                        :: BS_nT_grps
  !
@@ -292,25 +291,19 @@ module BS
  !
  contains
    !
-   integer function T_group(I,ik,i_res_ares)
-     integer, intent(in) :: I,ik,i_res_ares
-     integer :: i_g
-     if (BS_nT_grps_at_k(ik,i_res_ares)==1) then
-       T_group=1+sum(BS_nT_grps_at_k(:ik-1,i_res_ares))
-       if (i_res_ares>1) T_group=T_group+sum(BS_nT_grps_at_k(:,1))
-       return
-     endif
-     do i_g=1,BS_nT_grps_at_k(ik,i_res_ares)-1
-       if (BS_T_grp_1st_el_at_k(i_g,ik)<=I.and.I<BS_T_grp_1st_el_at_k(i_g+1,ik)) then
-         T_group=i_g+sum(BS_nT_grps_at_k(:ik-1,i_res_ares))
-         if (i_res_ares>1) T_group=T_group+sum(BS_nT_grps_at_k(:,1))
+   integer function T_group(I)
+     integer :: i_g,I
+     do i_g=1,BS_nT_grps-1
+       if (BS_T_grp_1st_el(i_g)<=I.and.I<BS_T_grp_1st_el(i_g+1)) then
+         T_group=i_g
          return
        endif
      enddo
-     if (I>=BS_T_grp_1st_el_at_k(BS_nT_grps_at_k(ik,i_res_ares)-1,ik)) then
-       T_group=sum(BS_nT_grps_at_k(:ik,i_res_ares))
-       if (i_res_ares>1) T_group=T_group+sum(BS_nT_grps_at_k(:,1))
+     if (BS_nT_grps==1) then
+       T_group=1
+       return
      endif
+     if (I>=BS_T_grp_1st_el(BS_nT_grps-1)) T_group=BS_nT_grps
    end function
    !
    subroutine BS_Blocks_and_Transitions_alloc(E,iT,dom_k_T_group)
@@ -361,8 +354,7 @@ module BS
      !
      YAMBO_FREE(BS_nT_at_k)
      YAMBO_FREE(PAR_BS_T_grps_index)
-     YAMBO_FREE(BS_T_grp_1st_el_at_k)
-     YAMBO_FREE(BS_nT_grps_at_k)
+     YAMBO_FREE(BS_T_grp_1st_el)
      !
      do iT=1,BS_nT_grps
        !
