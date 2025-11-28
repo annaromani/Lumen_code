@@ -837,7 +837,7 @@ module vec_operate
      !
      do igrp=1,deg_grps
        j_alpha=first_deg_el(igrp)
-       i_alpha=first_deg_el(igrp)+deg_elmnts(igrp)
+       i_alpha=first_deg_el(igrp)+deg_elmnts(igrp)-1
        ave_energy=sum(Er(j_alpha:i_alpha))/real(deg_elmnts(igrp),SP)
        Er(j_alpha:i_alpha)=ave_energy
      enddo

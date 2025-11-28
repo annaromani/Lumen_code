@@ -27,7 +27,7 @@ subroutine EXCPH_lifetime(k,q,X)
 &                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth 
  use ELPH,           ONLY:use_PH_DbGd,elph_branches,FAN_deltaE_treshold,Q_io_map
  use BS_solvers,     ONLY:deg_exc_thrshld
- use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm
+ use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm,degeneration_average
  use frequency,      ONLY:w_samp
  use stderr,         ONLY:intc
  use parallel_m,     ONLY:PP_indexes,myid,PP_indexes_reset
