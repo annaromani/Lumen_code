@@ -11,7 +11,7 @@
 !
 subroutine symmetries_driver(E,Xk)
  !
- use pars,                ONLY:SP,lchlen
+ use pars,                ONLY:SP,LP,lchlen
  use xc_functionals,      ONLY:magn
  use electrons,           ONLY:levels,Spin_magn,n_spinor
  use FFT_m,               ONLY:fft_size
@@ -40,7 +40,7 @@ subroutine symmetries_driver(E,Xk)
  type(bz_samp)         :: Xk_save
  ! 
  integer               :: old_sop_inv(nsym)
- logical               :: S_contains_TR(nsym)
+ integer(LP)           :: S_contains_TR(nsym)
  logical               :: l_keep_k_grid
  !
  integer               :: old_nkpt,ID,io_old_SYMMs

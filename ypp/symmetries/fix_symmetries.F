@@ -31,7 +31,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_sop_inv,S_contains_
  real(SP),intent(out)   :: old_dl_sop(3,3,nsym)
  real(SP),intent(out)   :: old_dl_tra(3,nsym)
  integer, intent(out)   :: old_sop_inv(nsym)
- logical, intent(out)   :: S_contains_TR(nsym)
+ integer(LP), intent(out)   :: S_contains_TR(nsym)
  !
  ! Work space
  !
