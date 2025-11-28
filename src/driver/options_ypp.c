@@ -219,21 +219,24 @@ void options_ypp(struct options_struct *options, int *i_opt)
     options[*i_opt].yambo_string = "TDplots"; /* TDplots */
     options[*i_opt].section = "Real-Time";
     strcpy(options[*i_opt].long_desc[0],
-           "<string>=(X)response,(a)bsorption,(o)ccupations,(l)ifetimes,(d)"
-           "ensity,(p)olarization,(f)ields,(g)reen-function");
-    strcpy(options[*i_opt].long_desc[1], " ");
-    strcpy(options[*i_opt].long_desc[2],
+           "<string>=(X)response,(a)bsorption,(o)ccupations,(l)ifetimes,(d)ensity");
+    strcpy(options[*i_opt].long_desc[1],
+           "(p)olarization,(f)ields,arpe(s),(g)reen-function");
+    strcpy(options[*i_opt].long_desc[2], " ");
+    strcpy(options[*i_opt].long_desc[3],
            "(X) response calculates the response via the time-resolved "
            "polarization");
-    strcpy(options[*i_opt].long_desc[3],
+    strcpy(options[*i_opt].long_desc[4],
            "(a) absorption amends the Kubo expression with the time-dependent "
            "occupations");
-    strcpy(options[*i_opt].long_desc[4],
+    strcpy(options[*i_opt].long_desc[5],
            "(p) polarization evaluates the k-resolved components of the "
            "time-dependent polarization");
-    strcpy(options[*i_opt].long_desc[5],
-	   "(f) generate and manupulate fields file");
     strcpy(options[*i_opt].long_desc[6],
+	   "(f) generate and manupulate fields file");
+    strcpy(options[*i_opt].long_desc[7],
+	   "(s) generate arpes from exciton dispersion with assumed distribution");
+    strcpy(options[*i_opt].long_desc[8],
            "(g) evaluates the two-times Green`s function");
     *i_opt = *i_opt + 1;
     options[*i_opt].short_desc = "TD plot control";
