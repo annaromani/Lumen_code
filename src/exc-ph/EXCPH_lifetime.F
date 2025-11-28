@@ -242,16 +242,11 @@ subroutine EXCPH_lifetime(k,q,X)
  &                    Er=real(BS_E_in(EXCPH_states(1):EXCPH_states(2))),&
  &                 deg_accuracy=0.001/HA2EV,Include_single_values=.true.)
  !
- do igrp=1,n_deg_grp(1)
-   j_alpha=first_exc_grp(igrp,1)+EXCPH_states(1)-1
-   i_alpha=first_exc_grp(igrp,1)+n_of_exc_grp(igrp,1)+EXCPH_states(1)-2
-   EXC_life_average=sum(EXC_LifeTime(j_alpha:i_alpha))/real(n_of_exc_grp(igrp,1),SP)
-   EXC_LifeTime(j_alpha:i_alpha)=EXC_life_average
-   if (l_EXCPH_offdiago) then
-     EXC_line_average=sum(EXC_LineWidth(j_alpha:i_alpha))/real(n_of_exc_grp(igrp,1),SP) 
-     EXC_LineWidth(j_alpha:i_alpha)=EXC_line_average
-   endif
- enddo
+ 
+ call degeneration_average(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1),&
+ &                        Er=EXC_LifeTime(EXCPH_states(1):EXCPH_states(2)))
+ if (l_EXCPH_offdiago)  call degeneration_average(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1), &
+ &                        Er=EXC_LineWidth(EXCPH_states(1):EXCPH_states(2)))
  !
  ! Convert to final units          
  EXC_LifeTime=EXC_LifeTime*2._SP*pi/real(q%nbz,SP)

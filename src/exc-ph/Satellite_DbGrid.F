@@ -63,7 +63,7 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  !
  real(SP)    :: PH_E,E_alpha,boltzm_factor,weight_dbgd,E_beta,BS_ave_W,BS_ave_W_PH_abs,bose_factor
  complex(SP) :: BS_Sat_E_DbGd,BS_Sat_E_DbGd_PH_abs
- integer     :: nq_around,iq_fg,iE_fg,iq_ibz,iq_db
+ integer     :: iq_fg,iE_fg,iq_ibz,iq_db
  complex(SP) :: pole
  real(SP), external :: get_ph_E_DbGd
  !

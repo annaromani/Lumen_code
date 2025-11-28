@@ -16,17 +16,17 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  use pars,           ONLY:SP,cZERO,schlen,rZERO
  use vec_operate,    ONLY:iku_v_2D_norm,c2a
  use electrons,      ONLY:levels,nel_cond,E_reset
- use R_lattice,      ONLY:bz_samp,bare_qpg,d3k_factor
+ use R_lattice,      ONLY:bz_samp
  use D_lattice,      ONLY:Boltz_Temp
  use X_m,            ONLY:X_t
  use com,            ONLY:msg,of_open_close
  use EXCPH,          ONLY:EXCPH_sum,EXCPH_states,L_kind_in,L_kind_out,BS_E,BS_all_E,BS_E_in,   &
-&                         BS_R_left,BS_R_right,BS_R,BSE_alloc,BSE_free,EXC_occ,alphaQ,q_DbGd,  &
+&                         BSE_alloc,BSE_free,EXC_occ,alphaQ,q_DbGd,  &
 &                         RESIDUALS_and_EIGENVALUES_free, RESIDUALS_and_EIGENVALUES_alloc,EXC_E_DbGd,  &
 &                         l_DbGd_PH_only,l_DbGd_WEIGHTs,l_no_matrix_elements,Sat_alloc,Sat_free, &
 &                         min_EXC_E_DbGd,min_pos_E_DbGd
- use ELPH,           ONLY:use_PH_DbGd,ph_modes
- use BS_solvers,     ONLY:BSS_eh_table,BSS_alloc,BSS_free
+ use ELPH,           ONLY:use_PH_DbGd
+ use BS_solvers,     ONLY:BSS_alloc,BSS_free
  use BS,             ONLY:BSE_prop,BS_dip_size
  use frequency,      ONLY:w_samp
  use parser_m,       ONLY:parser
@@ -46,7 +46,7 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  integer, parameter  :: n_output=7
  real(SP)            :: output_data(n_output),E_fermi_h,E_fermi_e,v_tmp(3)
  character(schlen)   :: headers(n_output)
- integer             :: iw,iq,i_alpha,max_filling,EXC_n_sum,i_beta
+ integer             :: iw,iq,max_filling,EXC_n_sum,i_beta
  integer, allocatable:: EXC_indexes(:)
  character(schlen)   :: dbgd_string
  character(schlen) :: q_point 
