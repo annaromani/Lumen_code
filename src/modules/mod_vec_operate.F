@@ -702,6 +702,18 @@ module vec_operate
      deallocate(l_indx,l_arrout)
    end subroutine i_sort
    !
+   !> @brief Find degeneracy in a sorted energy array
+   !
+   !! @param[in]       n			   number of elements of the array
+   !! @param[in]       Er                          energies array
+   !! @param[in]       Ei                          ????
+   !! @param[in]       deg_accuracy		   degenerate accuracy threasold 
+   !! @param[in]       Include_single_values	   if .true. include in deg-list groups with a single element
+   !!
+   !! @param[out]      first_deg_el		   list of first elements of degenerate sub-spaces
+   !! @param[out]      deg_elmnts	           number of elements of each degenerate sub-space
+   !! @param[out]      deg_grps	           	   number of degenerate sub-spaces
+   ! 
    subroutine degeneration_finder(n,first_deg_el,deg_elmnts,deg_grps,&
 &                                 Ei,Er,deg_accuracy,Include_single_values)
      !
@@ -810,6 +822,28 @@ module vec_operate
      !
    end subroutine
    !
+   ! Average degenerate states in the thir sub-space
+   !
+   subroutine degeneration_average(n,first_deg_el,deg_elmnts,deg_grps,Er)
+     
+     integer,  intent(in)    :: n
+     integer,  intent(in)    :: first_deg_el(n),deg_elmnts(n),deg_grps
+     real(SP), intent(inout) :: Er(n)
+     !
+     ! Work space
+     !
+     integer  :: j_alpha,i_alpha,igrp
+     real(SP) :: ave_energy
+     !
+     do igrp=1,deg_grps
+       j_alpha=first_deg_el(igrp)
+       i_alpha=first_deg_el(igrp)+deg_elmnts(igrp)
+       ave_energy=sum(Er(j_alpha:i_alpha))/real(deg_elmnts(igrp),SP)
+       Er(j_alpha:i_alpha)=ave_energy
+     enddo
+     !  
+   end subroutine
+   !    
    ! Least common multiple (LCM)
    !    
    integer function lcm(a, b)
