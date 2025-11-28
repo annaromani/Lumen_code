@@ -48,7 +48,7 @@ subroutine EXCPH_lifetime(k,q,X)
  integer, external :: io_EXCPH_gkkp,io_ELPH
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
- integer  :: min_pos(1),first_exc_grp(n_exc_in),n_of_exc_grp(n_exc_in),n_deg_grp
+ integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
  logical  :: l_keep_deg,l_extend_output
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
@@ -100,24 +100,19 @@ subroutine EXCPH_lifetime(k,q,X)
    enddo
  endif
  !
- ! Here we find the degenerations of the first n_exc_in values of BS_all_E at gamma
+ ! Here we find the degenerations of the first n_exc_in values of BS_all_E at all q-points
  ! and we set their energies to exactly the same value (average). This is to
- ! improve the quality of the interpolation at gamma in the case of double grid 
+ ! improve the quality of the interpolation in the case of double grid 
  ! (try to avoid unphysical splitting of degenerate states) 
  !
- call degeneration_finder(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
- &                       Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),1),&
- &                 deg_accuracy=deg_exc_thrshld,Include_single_values=.true.)
- !
- call degeneration_average(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
- &                       Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),1))
-! do igrp=1,n_deg_grp
-!   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
-!   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
-!   EXC_energy_average=sum(BS_all_E(j_alpha:i_alpha,1))/real(n_of_exc_grp(igrp),SP)
-!   BS_all_E(j_alpha:i_alpha,1)=EXC_energy_average
-! enddo
- !
+ do iq=1,q%nibz
+   call degeneration_finder(n_exc_in,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq),&
+   &                 deg_accuracy=deg_exc_thrshld,Include_single_values=.true.)
+   !
+   call degeneration_average(n_exc_in,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq))
+ enddo
  !
  ! Load the Exciton-phonon elements and phonon energies
  !
@@ -243,17 +238,17 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  ! Average lifetimes over degenerate groups (use input energies BS_E_in)
  !
- call degeneration_finder(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
+ call degeneration_finder(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1),&
  &                    Er=real(BS_E_in(EXCPH_states(1):EXCPH_states(2))),&
  &                 deg_accuracy=0.001/HA2EV,Include_single_values=.true.)
  !
- do igrp=1,n_deg_grp
-   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
-   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
-   EXC_life_average=sum(EXC_LifeTime(j_alpha:i_alpha))/real(n_of_exc_grp(igrp),SP)
+ do igrp=1,n_deg_grp(1)
+   j_alpha=first_exc_grp(igrp,1)+EXCPH_states(1)-1
+   i_alpha=first_exc_grp(igrp,1)+n_of_exc_grp(igrp,1)+EXCPH_states(1)-2
+   EXC_life_average=sum(EXC_LifeTime(j_alpha:i_alpha))/real(n_of_exc_grp(igrp,1),SP)
    EXC_LifeTime(j_alpha:i_alpha)=EXC_life_average
    if (l_EXCPH_offdiago) then
-     EXC_line_average=sum(EXC_LineWidth(j_alpha:i_alpha))/real(n_of_exc_grp(igrp),SP) 
+     EXC_line_average=sum(EXC_LineWidth(j_alpha:i_alpha))/real(n_of_exc_grp(igrp,1),SP) 
      EXC_LineWidth(j_alpha:i_alpha)=EXC_line_average
    endif
  enddo
