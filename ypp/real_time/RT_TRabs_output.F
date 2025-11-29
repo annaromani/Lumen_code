@@ -93,7 +93,7 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  endif
  !
  ! Epsilon exc-exc
- if (l_ABS.and.trim(how)=="BSE") then
+ if (l_ABS.and.trim(how)=="BS") then
    do i_dir=1,3
      do j_dir=1,3
        if (.not.TRabs_lEPS(i_dir,j_dir)) cycle
