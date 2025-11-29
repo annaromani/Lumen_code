@@ -36,7 +36,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  use D_lattice,       ONLY:lattice,nsym
  use BS,              ONLY:BS_K_dim,BS_bands
  use BS_solvers,      ONLY:BSS_eh_table,BS_mat,BSS_n_eig
- use YPPm,            ONLY:BS_E,DIPs,EXCITONS_user_indexes   !,EXCITONS_n_user_states
+ use YPPm,            ONLY:BS_E,DIPs,exc_kind,EXCITONS_user_indexes   !,EXCITONS_n_user_states
  use YPPm,            ONLY:BANDS_path,BANDS_steps,CIRCUIT_k,BSiq  !,USER_k
  use YPP_interfaces,  ONLY:k_special
  use YPP_real_time,   ONLY:RT_conf,GreenF_T_and_W,TRabs_Exc
@@ -73,6 +73,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  complex(SP),external      ::Lorentzian_FT
  !
  warn=.false.
+ exc_kind="exciton"
  !
  call excitons_read(Xk,Xk,Xen,Xen,1,"check",warn,io_err)
  if (io_err==0) then
