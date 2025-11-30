@@ -245,7 +245,6 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
 #if defined _YPP_RT
  l_flag=l_RT_ARPES
- !if (l_flag)    call RT_transient_ARPES(k,Xk,en,Xen,q)
  if (l_flag)    call RT_transient_ARPES(Xen,Xk,q)
 #endif
  !

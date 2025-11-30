@@ -72,7 +72,7 @@ subroutine build_inverse_BS_eh_table_from_BS_kernel(nk)
    i_sp_c   = BS_blk(i_res_ares)%table(4,i_H)
    i_sp_v   = BS_blk(i_res_ares)%table(5,i_H)
    !
-   BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H
+   BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H+(i_res_ares-1)*BS_K_dim(1)
    !
    !call live_timing(steps=1)
    !

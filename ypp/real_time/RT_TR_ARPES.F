@@ -79,6 +79,8 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  if (io_err==0) then
    call excitons_read(Xk,Xk,Xen,Xen,1,"eigenvalues",warn,io_err)
    call excitons_read(Xk,Xk,Xen,Xen,1,"eigenvectors",warn,io_err)
+ else
+   call error("BSE information not found or not correct")
  endif
  !
  !
@@ -158,6 +160,13 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
      min_exc_E=min(min_exc_E,minval(real(BS_E))) ! I suppose the BSE eigenvalues are real
      call excitons_read(Xk,Xk,Xen,Xen,iq,"clean",warn,io_err)
    enddo
+   !
+   if(TRabs_Exc(1)<=0) TRabs_Exc(1)=1
+   if(TRabs_Exc(2)==0) TRabs_Exc(2)=BSS_n_eig
+   if(TRabs_Exc(2)> BSS_n_eig) then
+     TRabs_Exc(2)=BSS_n_eig
+     call warning(" Number of excitons in the sum reduced to"//trim(intc(BSS_n_eig)))
+   endif
    !
    q_range = (/1,Xq%nibz/)
    l_range= (/TRabs_Exc(1),TRabs_Exc(2)/)

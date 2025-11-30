@@ -66,11 +66,10 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
    iq = 1
  endif
  !
- call                excitons_read(k,Xk,en,Xen,BSiq,"check",.true.,io_err)
- !
- if (io_err==0) call excitons_read(k,Xk,en,Xen,BSiq,"eigenvalues",.true.,io_err)
- !
- if (io_err/=0) then
+ call excitons_read(k,Xk,en,Xen,BSiq,"check",.true.,io_err)
+ if (io_err==0) then
+   call excitons_read(k,Xk,en,Xen,BSiq,"eigenvalues",.true.,io_err)
+ else
    call warning("BSE databases not found.")
 #if defined _YPP_RT
    ! IP Transient absorption 

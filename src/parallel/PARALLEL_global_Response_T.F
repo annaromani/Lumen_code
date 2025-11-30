@@ -54,7 +54,7 @@ subroutine PARALLEL_global_Response_T_base(Xk)
  !
  ! K-points (IBZ)
  !
- call PARALLEL_index(PAR_IND_Kk_ibz,(/nXkibz/),COMM=PAR_COM_Xk_ibz_INDEX,CONSECUTIVE=.FALSE.,NO_EMPTIES=.TRUE.)
+ call PARALLEL_index(PAR_IND_Kk_ibz,(/nXkibz/),COMM=PAR_COM_Xk_ibz_INDEX,CONSECUTIVE=.TRUE.,NO_EMPTIES=.TRUE.)
  PAR_IND_Xk_ibz_ID=PAR_COM_Xk_ibz_INDEX%CPU_id
  PAR_IND_Kk_ibz_ID=PAR_COM_Xk_ibz_INDEX%CPU_id
  PAR_Kk_nibz=PAR_IND_Kk_ibz%n_of_elements(PAR_IND_Kk_ibz_ID+1)
