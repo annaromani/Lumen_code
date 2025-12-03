@@ -15,7 +15,7 @@ subroutine EXCPH_lifetime(k,q,X)
  use units,          ONLY:HA2EV,HA2CMm1
  use pars,           ONLY:SP,cZERO,rZERO,schlen,pi
  use electrons,      ONLY:levels
- use R_lattice,      ONLY:bz_samp
+ use R_lattice,      ONLY:bz_samp,bz_map
  use parser_m,       ONLY:parser
  use com,            ONLY:msg,of_open_close
  use X_m,            ONLY:X_t
@@ -30,6 +30,7 @@ subroutine EXCPH_lifetime(k,q,X)
  use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm,degeneration_average
  use frequency,      ONLY:w_samp
  use stderr,         ONLY:intc
+ use ELPH,           ONLY:ph_modes
  use parallel_m,     ONLY:PP_indexes,myid,PP_indexes_reset
  use parallel_int,   ONLY:PP_redux_wait,PARALLEL_index
  use LIVE_t,         ONLY:live_timing
@@ -49,11 +50,13 @@ subroutine EXCPH_lifetime(k,q,X)
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
  integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
- logical  :: l_keep_deg,l_extend_output
+ logical  :: l_keep_deg,l_extend_output,l_interp_G2
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
  real(SP) , allocatable :: EXC_life_of_q(:,:),EXC_pole_of_q(:,:)
  type(PP_indexes)::px
+ type(bz_map) :: q_map
+ real(SP), allocatable :: Grad_EXCPH_Gkkp_sq(:,:,:,:)
  !
  ! Initialization
  call parser('NoMatrxEl',l_no_matrix_elements)
@@ -114,6 +117,17 @@ subroutine EXCPH_lifetime(k,q,X)
    &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq))
  enddo
  !
+ l_interp_G2=.true.
+ if(l_interp_G2) then
+   !
+   ! Map q-points on a regular grid for linear interpolation of |G^2|
+   !
+   call k_map_nearest_by_dir(q,q_map)
+   !
+   YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
+   !
+ endif
+ !
  ! Load the Exciton-phonon elements and phonon energies
  !
  call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=DUMP,ID=ID_exc_gkkp)
@@ -163,17 +177,7 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    if (.not.px%element_1D(iq_bz)) cycle
    !
-   IO_ACT=manage_action(RD_CL_IF_END,iq_bz,1,q%nbz,PAR_INDEX=px)
-   !
-   call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_bz/),MODE=DUMP,ID=ID_exc_gkkp)
-   io_err=io_EXCPH_gkkp(ID_exc_gkkp)
-   if(io_err/=0) call error('excph_gkkp databases not found!')
-   !
-   !iq_db=DB_Q_map(iq_bz)
-   iq_db=Q_io_map(iq_bz)
-   call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_db/),MODE=DUMP,ID=ID_gkkp)
-   io_err=io_ELPH(ID_gkkp,'gkkp_expanded no_matrix_elements')
-   if(io_err/=0) call error('gkkp_expanded databases not found!')
+   call load_EXCPH(iq_bz)
    !
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
@@ -271,8 +275,28 @@ subroutine EXCPH_lifetime(k,q,X)
  if (l_extend_output) then
    deallocate(EXC_life_of_q)
  endif
+ if(l_interp_G2) then
+   YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
+ endif
  !
  contains
+  !
+  subroutine load_EXCPH(iq_bz_in)
+    implicit none
+    integer, intent(in) iq_bz_in
+    !
+    IO_ACT=manage_action(RD_CL_IF_END,iq_bz_in,1,q%nbz,PAR_INDEX=px)
+    !
+    call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_bz_in/),MODE=DUMP,ID=ID_exc_gkkp)
+    io_err=io_EXCPH_gkkp(ID_exc_gkkp)
+    if(io_err/=0) call error('excph_gkkp databases not found!')
+    !
+    iq_db=Q_io_map(iq_bz_in)
+    call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_db/),MODE=DUMP,ID=ID_gkkp)
+    io_err=io_ELPH(ID_gkkp,'gkkp_expanded no_matrix_elements')
+    if(io_err/=0) call error('gkkp_expanded databases not found!')
+    !
+  end subroutine load_EXCPH 
   !
   function Simple_pole()
     use EXCPH,          ONLY:min_EXC_E,DB_Q_map
