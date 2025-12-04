@@ -120,6 +120,9 @@ subroutine EXCPH_lifetime(k,q,X)
  l_interp_G2=.true.
  if(l_interp_G2) then
    !
+   if(.not.use_PH_DbGd) &
+&     call error("G2 interpolation possible only with double-grid")
+   !
    ! Map q-points on a regular grid for linear interpolation of |G^2|
    !
    call k_map_nearest_by_dir(q,q_map)
@@ -179,6 +182,8 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    call load_EXCPH(iq_bz)
    !
+   if(l_interp_G2) call eval_G2_grad(iq_bz)
+   !
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
      do i_beta=EXCPH_sum(1),EXCPH_sum(2)
@@ -201,8 +206,8 @@ subroutine EXCPH_lifetime(k,q,X)
          !
          if(l_no_matrix_elements) ExcPhM=1._SP 
          !
-         if(.not.use_PH_DbGd) Pole=Simple_pole()
-         if(use_PH_DbGd)      Pole=DbGrid_pole()
+         if(.not.use_PH_DbGd) Pole=Simple_Pole()
+         if(use_PH_DbGd)      Pole=DbGrid_Pole(l_interp_G2)
          !
          EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+ExcPhM*Pole
          if (l_EXCPH_offdiago) then
@@ -281,6 +286,16 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  contains
   !
+  subroutine eval_G2_grad(iq_bz_in)
+    use pars,           ONLY:rZERO
+    implicit none
+    integer, intent(in) :: iq_bz_in
+    !
+    Grad_EXCPH_Gkkp_sq=rZERO
+    !
+    return
+  end subroutine eval_G2_grad
+  !
   subroutine load_EXCPH(iq_bz_in)
     implicit none
     integer, intent(in) :: iq_bz_in
@@ -341,20 +356,21 @@ subroutine EXCPH_lifetime(k,q,X)
     !
   end function Simple_Pole
   !
-  function DbGrid_pole()
+  function DbGrid_Pole(l_interp_EXCPH)
     use EXCPH,          ONLY:min_EXC_E_DbGd,EXC_E_DbGd
     use ELPH,           ONLY:FAN_deltaE_treshold,PH_freqs,PH_freqs_sq,Q_io_map
     use functions,      ONLY:bose_f,boltzman_f,Lorentzian_func
     implicit none
     !
-    real(SP) :: DbGrid_pole
+    logical, intent(in) :: l_interp_EXCPH
+    real(SP) :: DbGrid_Pole
     real(SP) :: E_alpha,E_beta
     real(SP) :: ph_E,N_bose,F_boltz
     integer  :: nq_around,iq_fg,iE_fg
     real(SP) :: weight_dbgd
     real(SP), external :: get_ph_E_DbGd
     !
-    DbGrid_pole=rZERO
+    DbGrid_Pole=rZERO
     !
     E_alpha=real(BS_E_in(i_alpha),SP)
     !
@@ -400,7 +416,7 @@ subroutine EXCPH_lifetime(k,q,X)
       N_bose  =bose_f(ph_E)
       F_boltz=boltzman_f(E_beta-min_EXC_E_DbGd)  ! Bose function? Boltzman function?
       !
-      DbGrid_pole=DbGrid_pole+(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
+      DbGrid_Pole=DbGrid_Pole+(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
 &                                  +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping)
       !
     enddo
