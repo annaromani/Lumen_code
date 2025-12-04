@@ -283,7 +283,7 @@ subroutine EXCPH_lifetime(k,q,X)
   !
   subroutine load_EXCPH(iq_bz_in)
     implicit none
-    integer, intent(in) iq_bz_in
+    integer, intent(in) :: iq_bz_in
     !
     IO_ACT=manage_action(RD_CL_IF_END,iq_bz_in,1,q%nbz,PAR_INDEX=px)
     !
