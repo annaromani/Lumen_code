@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> Pseudo_KB_G_to_R_space
-!>
-!> @param Xk
-!> @param Xen
-!>
 subroutine Pseudo_KB_G_to_R_space(Xk,Xen)
  !
  use pars,          ONLY:SP
@@ -165,9 +160,6 @@ subroutine Pseudo_KB_G_to_R_space(Xk,Xen)
  !
  contains
    !
-!> define_kbv_table
-!>
-!>
    subroutine define_kbv_table()
      !
      use electrons,     ONLY:n_spinor

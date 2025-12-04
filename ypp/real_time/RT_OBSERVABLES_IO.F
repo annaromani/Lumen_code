@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_OBSERVABLES_IO
-!>
-!> @param what
-!> @param Curr
-!> @param Pol
-!> @param IO_error
-!> @param first_sec_only
-!> @param G_lesser_only
-!> @param COM_
-!>
 subroutine RT_OBSERVABLES_IO(what,Curr,Pol,IO_error,first_sec_only,G_lesser_only,COM_)
  !
  use YPP_real_time,  ONLY:RT_conf,OBS_el

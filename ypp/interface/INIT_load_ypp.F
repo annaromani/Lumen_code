@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> INIT_ypp_load
-!>
-!> @param defs
-!>
 subroutine INIT_ypp_load(defs)
  !
  use it_tools,      ONLY:it

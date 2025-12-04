@@ -10,13 +10,6 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 ! 
-!> SERIAL_lin_system_gpu
-!>
-!> @param n
-!> @param nrhs
-!> @param A_d
-!> @param B_d
-!>
 subroutine SERIAL_lin_system_gpu(n,nrhs,A_d,B_d)
  !
  !  Solve the linear system

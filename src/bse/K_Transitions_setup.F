@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_Transitions_setup
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param Dip
-!> @param V_bands
-!> @param C_bands
-!>
 subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
  !
  ! Filling of Transition groups
@@ -239,15 +230,6 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
 end subroutine K_Transitions_setup
 !
 !
-!> K_Transitions_dimensions
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param Dip
-!> @param V_bands
-!> @param C_bands
-!>
 subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
  !
  ! Out: 

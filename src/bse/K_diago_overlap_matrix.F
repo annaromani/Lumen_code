@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM, MG, DS
 ! 
-!> K_diago_overlap_matrix
-!>
-!> @param BS_V_left
-!> @param BS_V_right
-!> @param BS_overlap
-!>
 subroutine K_diago_overlap_matrix(BS_V_left,BS_V_right,BS_overlap)
  !
  use pars,           ONLY:SP,cZERO,cONE

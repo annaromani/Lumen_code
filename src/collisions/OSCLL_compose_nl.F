@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AC
 !
-!> OSCLL_compose_nl
-!>
-!> @param dG
-!> @param H_nl_sc
-!> @param k
-!> @param q
-!> @param E
-!> @param i_k
-!> @param i_sp_pol
-!>
 subroutine OSCLL_compose_nl(dG,H_nl_sc,k,q,E,i_k,i_sp_pol) 
  !
  ! This subroutine calculate the long-range part of the Screened exchange

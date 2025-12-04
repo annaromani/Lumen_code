@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM 
 !
-!> RT_IO_type_time_steps
-!>
-!> @param what
-!>
 subroutine RT_IO_type_time_steps(what)
  !
  use real_time,      ONLY:RT_step,RT_dyn_step

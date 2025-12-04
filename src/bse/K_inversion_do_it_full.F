@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> K_inversion_do_it_full
-!>
-!> @param Lo
-!> @param KERNEL
-!> @param what
-!>
 subroutine K_inversion_do_it_full(Lo,KERNEL,what)
  !
  ! 1./(Lo^{-1}-M)

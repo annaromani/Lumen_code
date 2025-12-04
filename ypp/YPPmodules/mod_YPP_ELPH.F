@@ -68,15 +68,6 @@ module YPP_ELPH
  !
  interface
    !
-!> ELPH_general_gFsq
-!>
-!> @param k
-!> @param en
-!> @param Xk
-!> @param Xen
-!> @param q
-!> @param BS_E_degs
-!>
    subroutine  ELPH_general_gFsq(k,en,Xk,Xen,q,BS_E_degs)
      use R_lattice,     ONLY:bz_samp
      use electrons,     ONLY:levels
@@ -87,14 +78,6 @@ module YPP_ELPH
      integer, optional  :: BS_E_degs(BSS_n_eig)
    end subroutine
    !
-!> ELPH_databases_IO_modes
-!>
-!> @param ph_file
-!> @param n_q
-!> @param q_pt
-!> @param ph_freqs
-!> @param ph_pol
-!>
    subroutine ELPH_databases_IO_modes(ph_file,n_q,q_pt,ph_freqs,ph_pol)
      !
      use pars,           ONLY:schlen,SP 
@@ -110,13 +93,6 @@ module YPP_ELPH
      !
    end subroutine
    !
-!> ELPH_databases_IO_freqs
-!>
-!> @param ph_file
-!> @param n_q
-!> @param q_pt
-!> @param ph_freqs
-!>
    subroutine ELPH_databases_IO_freqs(ph_file,n_q,q_pt,ph_freqs)
      !
      use pars,           ONLY:schlen,SP 
@@ -135,9 +111,6 @@ module YPP_ELPH
  !
  contains
    !
-!> ELPH_DB_alloc
-!>
-!>
    subroutine ELPH_DB_alloc()
      YAMBO_ALLOC(DB_Q_map,(DB_nq))
      DB_Q_map=0
@@ -153,9 +126,6 @@ module YPP_ELPH
      YAMBO_ALLOC(DB_E_k_plus_q,(DB_nb,nkbz))
    end subroutine
    !
-!> ELPH_DB_free
-!>
-!>
    subroutine ELPH_DB_free()  
      YAMBO_FREE(DB_Q_map)
      YAMBO_FREE(DB_K_map)

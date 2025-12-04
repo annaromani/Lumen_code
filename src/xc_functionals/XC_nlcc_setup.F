@@ -9,9 +9,6 @@
 !
 #include <y_memory.h>
 !
-!> XC_nlcc_setup
-!>
-!>
 subroutine XC_nlcc_setup()
  !
  ! reads the non-linear core-correction (NLCC) data

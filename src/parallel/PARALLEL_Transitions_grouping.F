@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_Transitions_grouping
-!>
-!>
 subroutine PARALLEL_Transitions_grouping()
  !
  use pars,          ONLY:SP

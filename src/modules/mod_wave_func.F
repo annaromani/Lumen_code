@@ -129,11 +129,6 @@ module wave_func
  !
  contains
    !
-!> WF_copy
-!>
-!> @param WF_in
-!> @param WF_out
-!>
    subroutine WF_copy(WF_in,WF_out)
      use electrons,  ONLY: n_spinor
      type(WAVEs):: WF_in,WF_out
@@ -172,10 +167,6 @@ module wave_func
 #endif
    end subroutine
    !
-!> WF_derivative_alloc
-!>
-!> @param cart_direction
-!>
    subroutine WF_derivative_alloc(cart_direction)
      use pars,     ONLY : cZERO
      use FFT_m,    ONLY : fft_size
@@ -196,9 +187,6 @@ module wave_func
      endif
    end subroutine
    !
-!> WF_derivative_free
-!>
-!>
    subroutine WF_derivative_free()
      !
      YAMBO_FREE(wf_x)

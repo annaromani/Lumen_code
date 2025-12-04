@@ -23,10 +23,6 @@
 !
 #if defined _RT || defined _NL
 !
-!> Afield_activate
-!>
-!> @param i1
-!>
 subroutine Afield_activate(i1)
      use stderr,         ONLY:intc
      use drivers,        ONLY:l_nl_p_and_p
@@ -50,11 +46,6 @@ subroutine Afield_activate(i1)
 end subroutine
 !
 !
-!> Afield
-!>
-!> @param defs
-!> @param i_field
-!>
 subroutine Afield(defs,i_field)
    !
    use it_tools,      ONLY:it

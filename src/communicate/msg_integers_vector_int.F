@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> msg_integers_vector_int
-!>
-!> @param how
-!> @param mesg
-!> @param val
-!> @param after_msg
-!> @param USE_TABS
-!> @param INDENT
-!> @param MSG_string
-!>
 subroutine msg_integers_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
  !
  use pars,         ONLY:lchlen,schlen,max_open_ofs,repfile_index

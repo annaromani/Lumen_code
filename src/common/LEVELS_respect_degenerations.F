@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> LEVELS_respect_degenerations
-!>
-!> @param E
-!> @param Dip
-!> @param X
-!>
 subroutine LEVELS_respect_degenerations(E,Dip,X)
  !
  use electrons,     ONLY:levels,deg_threshold
@@ -118,11 +112,6 @@ subroutine LEVELS_respect_degenerations(E,Dip,X)
  !
  contains
   !
-!> levels_check
-!>
-!> @param Ein
-!> @param Bin
-!>
   subroutine levels_check(Ein,Bin)
    !
    use R_lattice,     ONLY:nkibz
@@ -154,12 +143,6 @@ subroutine LEVELS_respect_degenerations(E,Dip,X)
    !
   end subroutine
   !
-!> fix_and_message
-!>
-!> @param what
-!> @param IMPOSE
-!> @param B_final
-!>
   subroutine fix_and_message(what,IMPOSE,B_final)
    character(*) ::what
    logical      ::IMPOSE

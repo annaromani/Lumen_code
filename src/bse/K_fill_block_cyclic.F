@@ -2,11 +2,6 @@
 ! License-Identifier: GPL
 ! Copyright (C) 2006 The Yambo Team
 !
-!> K_fill_block_cyclic
-!>
-!> @param i_BS_mat
-!> @param diago_mat
-!>
 subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
   !
   ! Here I fill the kernel (coupling not yet included) in a 

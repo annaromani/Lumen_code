@@ -11,10 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> build_inverse_BS_eh_table_from_BSS_table
-!>
-!> @param nk
-!>
 subroutine build_inverse_BS_eh_table_from_BSS_table(nk)
  !
  use electrons,       ONLY:n_sp_pol
@@ -50,10 +46,6 @@ subroutine build_inverse_BS_eh_table_from_BSS_table(nk)
 end subroutine build_inverse_BS_eh_table_from_BSS_table
 !
 !
-!> build_inverse_BS_eh_table_from_BS_kernel
-!>
-!> @param nk
-!>
 subroutine build_inverse_BS_eh_table_from_BS_kernel(nk)
  !
  use electrons,       ONLY:n_sp_pol
@@ -88,10 +80,6 @@ subroutine build_inverse_BS_eh_table_from_BS_kernel(nk)
 end subroutine build_inverse_BS_eh_table_from_BS_kernel
 !
 !
-!> BS_exchange_oscillators_alloc
-!>
-!> @param iG
-!>
 subroutine BS_exchange_oscillators_alloc(iG)
  use BS,        ONLY:BS_T_grp,BS_n_g_exch
  use gpu_m,     ONLY:have_gpu
@@ -107,10 +95,6 @@ subroutine BS_exchange_oscillators_alloc(iG)
  endif
 end subroutine BS_exchange_oscillators_alloc
 !
-!> BS_correlation_oscillators_alloc
-!>
-!> @param iB
-!>
 subroutine BS_correlation_oscillators_alloc(iB)
  use BS,        ONLY:BS_blk,O_ng
  use gpu_m,     ONLY:have_gpu
@@ -126,10 +110,6 @@ subroutine BS_correlation_oscillators_alloc(iB)
  endif
 end subroutine BS_correlation_oscillators_alloc
 !
-!> BS_exchange_oscillators_free
-!>
-!> @param iG_ref
-!>
 subroutine BS_exchange_oscillators_free(iG_ref)
  use BS,        ONLY:BS_T_grp
  use y_memory_alloc
@@ -144,11 +124,6 @@ subroutine BS_exchange_oscillators_free(iG_ref)
  enddo
 end subroutine BS_exchange_oscillators_free
 !
-!> BS_correlation_oscillators_free
-!>
-!> @param iB_ref
-!> @param l_std_alg
-!>
 subroutine BS_correlation_oscillators_free(iB_ref,l_std_alg)
  use BS,        ONLY:BS_T_grp,l_BSE_minimize_memory,BS_blk,n_BS_blks
  use y_memory_alloc
@@ -178,10 +153,6 @@ subroutine BS_correlation_oscillators_free(iB_ref,l_std_alg)
  enddo
 end subroutine BS_correlation_oscillators_free
 !
-!> TDDFT_oscillators_alloc_L
-!>
-!> @param iGL
-!>
 subroutine TDDFT_oscillators_alloc_L(iGL)
  use electrons, ONLY:n_spin,n_spinor
  use BS,        ONLY:BS_T_grp,BS_n_g_fxc
@@ -200,10 +171,6 @@ subroutine TDDFT_oscillators_alloc_L(iGL)
  endif
 end subroutine TDDFT_oscillators_alloc_L
 !
-!> TDDFT_oscillators_alloc_R
-!>
-!> @param iGR
-!>
 subroutine TDDFT_oscillators_alloc_R(iGR)
  use electrons, ONLY:n_spin,n_spinor
  use BS,        ONLY:BS_T_grp,BS_n_g_fxc
@@ -221,10 +188,6 @@ subroutine TDDFT_oscillators_alloc_R(iGR)
  endif
 end subroutine TDDFT_oscillators_alloc_R
 !
-!> TDDFT_oscillators_free_L
-!>
-!> @param iG_ref
-!>
 subroutine TDDFT_oscillators_free_L(iG_ref)
  use BS,        ONLY:BS_T_grp
  use y_memory_alloc
@@ -239,10 +202,6 @@ subroutine TDDFT_oscillators_free_L(iG_ref)
  enddo
 end subroutine TDDFT_oscillators_free_L
 !
-!> TDDFT_oscillators_free_R
-!>
-!> @param iG_ref
-!>
 subroutine TDDFT_oscillators_free_R(iG_ref)
  use BS,        ONLY:BS_T_grp
  use y_memory_alloc

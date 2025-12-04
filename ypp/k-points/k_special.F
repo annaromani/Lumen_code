@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_special
-!>
-!> @param LIST_only
-!>
 subroutine k_special(LIST_only)
  !
  ! Special k-points. Output in IKU.
@@ -288,11 +284,6 @@ subroutine k_special(LIST_only)
  !
  contains
    !
-!> orthorombic_lengths
-!>
-!> @param xp
-!> @param yp
-!>
    subroutine orthorombic_lengths(xp,yp)
     !
     real(SP) :: dp,xp,yp
@@ -303,12 +294,6 @@ subroutine k_special(LIST_only)
     !
    end subroutine
    !
-!> k_expand_plane
-!>
-!> @param base
-!> @param plane
-!> @param label
-!>
    subroutine k_expand_plane(base,plane,label)
     !
     implicit none
@@ -341,11 +326,6 @@ subroutine k_special(LIST_only)
     !
    end subroutine
    !
-!> k_add
-!>
-!> @param coordinates
-!> @param labels_string
-!>
    subroutine k_add(coordinates,labels_string)
     !
     use stderr,              ONLY:STRING_split
@@ -367,12 +347,6 @@ subroutine k_special(LIST_only)
     !
    end subroutine
    !
-!> k_FC_compose_and_add
-!>
-!> @param coordinates
-!> @param plane
-!> @param labels_string
-!>
    subroutine k_FC_compose_and_add(coordinates,plane,labels_string)
     !
     use stderr,              ONLY:STRING_split

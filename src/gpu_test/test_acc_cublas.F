@@ -32,13 +32,6 @@ program test
   !
 end program test
 
-!> saxpy
-!>
-!> @param nn
-!> @param aa
-!> @param xx
-!> @param yy
-!>
 subroutine saxpy (nn, aa, xx, yy)
   integer :: nn
   real*4 :: aa, xx(nn), yy(nn)

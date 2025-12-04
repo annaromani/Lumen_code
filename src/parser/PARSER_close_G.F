@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARSER_close_G
-!>
-!> @param ng
-!> @param what
-!>
 subroutine PARSER_close_G(ng,what)
  !
  use pars,        ONLY:SP

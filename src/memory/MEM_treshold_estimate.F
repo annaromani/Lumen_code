@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> MEM_treshold_estimate
-!>
-!>
 subroutine MEM_treshold_estimate( )
  !
  use pars,         ONLY:SP

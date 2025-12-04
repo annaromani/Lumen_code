@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details):
 !
-!> el_magnetization
-!>
-!> @param en
-!> @param Xk
-!> @param magn
-!> @param bands
-!>
 subroutine el_magnetization(en,Xk,magn,bands)
  !
  ! Electronic magnetization for electronic Spinors

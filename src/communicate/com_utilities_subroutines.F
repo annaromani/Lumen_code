@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> of_open_close
-!>
-!> @param of_name_extension
-!> @param mode
-!>
 subroutine of_open_close(of_name_extension,mode)
  !
  use pars,            ONLY:lchlen
@@ -140,11 +135,6 @@ subroutine of_open_close(of_name_extension,mode)
 end subroutine of_open_close
 !
 #if !defined _io_lib
-!> write_the_logo
-!>
-!> @param unit_
-!> @param comment_
-!>
 subroutine write_the_logo(unit_,comment_)
  !
  use LIVE_t,       ONLY:LIVE_message
@@ -182,10 +172,6 @@ subroutine write_the_logo(unit_,comment_)
 end subroutine write_the_logo
 #endif
 !
-!> rename_file
-!>
-!> @param name
-!>
 subroutine rename_file(name)
  !
  use pars,       ONLY:lchlen
@@ -209,10 +195,6 @@ subroutine rename_file(name)
  !
 end subroutine rename_file
 !
-!> warning
-!>
-!> @param mesg
-!>
 subroutine warning(mesg)
  !
 #if !defined _io_lib
@@ -236,10 +218,6 @@ subroutine warning(mesg)
  !
 end subroutine warning
 !
-!> error
-!>
-!> @param mesg
-!>
 subroutine error(mesg)
  !
 #if !defined _io_lib
@@ -286,10 +264,6 @@ subroutine error(mesg)
 end subroutine error
 !
 !
-!> exp_user_warning
-!>
-!> @param mesg
-!>
 subroutine exp_user_warning(mesg)
  !
  use com,          ONLY:exp_user
@@ -311,10 +285,6 @@ subroutine exp_user_warning(mesg)
 end subroutine exp_user_warning
 !
 !
-!> yambo_flush
-!>
-!> @param unit
-!>
 subroutine yambo_flush(unit)
   !
   !

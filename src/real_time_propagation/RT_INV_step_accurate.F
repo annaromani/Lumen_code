@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
-!> RT_INV_step_accurate
-!>
-!> @param dG_old
-!> @param dG_inp
-!> @param dG_out
-!> @param ik
-!> @param i_sp_pol
-!> @param deltaT
-!>
 subroutine RT_INV_step_accurate(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  ! The last term in the following come from the fact that G0=G_reference

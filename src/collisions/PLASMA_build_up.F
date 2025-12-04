@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> PLASMA_build_up
-!>
-!> @param E
-!> @param k
-!> @param q
-!>
 subroutine PLASMA_build_up(E,k,q)
  !
  use pars,           ONLY:SP,schlen

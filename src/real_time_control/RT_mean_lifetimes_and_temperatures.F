@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> RT_mean_lifetimes_and_temperatures
-!>
-!> @param LIFE
-!> @param LIFE_ref
-!>
 subroutine RT_mean_lifetimes_and_temperatures( LIFE, LIFE_ref )
  ! 
  use pars,           ONLY:SP,rZERO

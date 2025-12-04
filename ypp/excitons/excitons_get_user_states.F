@@ -21,13 +21,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston,
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> excitons_get_user_states
-!>
-!> @param BS_E_degs
-!> @param Res
-!> @param n_eig
-!> @param recompute
-!>
 subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
  !
  use pars,          ONLY:SP,schlen
@@ -117,11 +110,6 @@ subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
  !
  contains
    !
-!> ADD_me_to_the_list
-!>
-!> @param i_state
-!> @param TMP_index
-!>
    subroutine ADD_me_to_the_list(i_state,TMP_index)
      !
      use YPPm,   ONLY:EXCITONS_n_user_states

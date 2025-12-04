@@ -111,15 +111,6 @@ module global_XC
  !
  contains
    !
-!> setup_global_XC
-!>
-!> @param what
-!> @param kind
-!> @param xc_functional
-!> @param perturbation
-!> @param exx_fraction
-!> @param exx_screening
-!>
    subroutine  setup_global_XC(what,kind,xc_functional,perturbation,exx_fraction,exx_screening)
      character(*)           :: what          
      integer                :: kind          
@@ -185,11 +176,6 @@ module global_XC
      !
    end subroutine
    !
-!> correct_global_XC
-!>
-!> @param what
-!> @param STRING
-!>
    subroutine  correct_global_XC(what,STRING)
     character(*), intent(in) :: what
     character(*), intent(in) :: STRING

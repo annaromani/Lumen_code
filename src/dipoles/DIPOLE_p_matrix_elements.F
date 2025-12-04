@@ -9,18 +9,6 @@
 !
 #include<dev_defs.h>
 !
-!> DIPOLE_p_matrix_elements
-!>
-!> @param Xk
-!> @param iv_wf
-!> @param ic_wf
-!> @param ik
-!> @param rho
-!> @param rho_spinor
-!> @param P2
-!> @param l_eval_P2
-!> @param l_eval_M_spin
-!>
 subroutine DIPOLE_p_matrix_elements(Xk,iv_wf,ic_wf,ik,rho,rho_spinor,P2,l_eval_P2,l_eval_M_spin)
  !
  use pars,          ONLY:SP,cZERO,pi

@@ -11,16 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> WF_shift_kpoint
-!>
-!> @param b_to_shift
-!> @param nb_to_shift
-!> @param ikbz
-!> @param wf_shift
-!> @param Xk
-!> @param WF_k_in
-!> @param WF_k_out
-!>
 subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_out)
  !
  use pars,          ONLY: SP,cZERO

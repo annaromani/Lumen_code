@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CA AM DS
 !
-!> COLLISIONS_compose_sc
-!>
-!> @param G_sex
-!> @param G_coh
-!>
 subroutine COLLISIONS_compose_sc(G_sex,G_coh)
  !
  ! HF(qp_state) = - (0.,1.) * \sum_{n,n',q} Collisions(n,n',q,qp_state) x G_sex/coh(n,n',k-q)

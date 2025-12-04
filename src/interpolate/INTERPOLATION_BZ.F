@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INTERPOLATION_BZ
-!>
-!> @param K
-!> @param NK
-!> @param ID
-!> @param R1D
-!> @param R2D
-!> @param C1D
-!> @param C2D
-!> @param E
-!>
 subroutine INTERPOLATION_BZ(K,NK,ID,R1D,R2D,C1D,C2D,E)
  use pars,        ONLY:SP
  use R_lattice,   ONLY:bz_samp

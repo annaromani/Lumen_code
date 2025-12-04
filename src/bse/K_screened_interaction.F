@@ -11,13 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> K_screened_interaction
-!>
-!> @param X
-!> @param Xw
-!> @param q
-!> @param io_X_err
-!>
 subroutine K_screened_interaction(X,Xw,q,io_X_err)
  !
  use pars,         ONLY:SP

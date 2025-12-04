@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> INIT_RT_ctl_switch
-!>
-!> @param what
-!>
 subroutine INIT_RT_ctl_switch(what)
  !
  implicit none

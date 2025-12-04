@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PLASMA_parallel_setup
-!>
-!> @param EH_gas
-!>
 subroutine PLASMA_parallel_setup(EH_gas)
  !
  use parallel_m,    ONLY:PAR_IND_Plasma,PAR_COM_PLASMA_INDEX,PAR_IND_PLASMA_ID,PAR_PLASMA_index,&

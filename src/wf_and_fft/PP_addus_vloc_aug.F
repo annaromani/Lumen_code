@@ -7,14 +7,6 @@
 !
 !
 !----------------------------------------------------------------------
-!> PP_addus_vloc_aug
-!>
-!> @param becprod
-!> @param ngm
-!> @param nspin_mag
-!> @param ldrho
-!> @param rhog
-!>
 subroutine PP_addus_vloc_aug(becprod,ngm,nspin_mag,ldrho,rhog)
   !----------------------------------------------------------------------
   !

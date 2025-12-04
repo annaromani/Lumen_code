@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_global_Response_G
-!>
-!> @param E
-!> @param Xk
-!> @param q
-!> @param ENVIRONMENT
-!> @param X_type
-!>
 subroutine PARALLEL_global_Response_G(E,Xk,q,ENVIRONMENT,X_type)
  !
  use drivers,       ONLY:l_life

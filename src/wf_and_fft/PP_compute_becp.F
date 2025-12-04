@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PP_compute_becp
-!>
-!> @param becp
-!> @param npwk
-!> @param wf_nb
-!> @param wf_c
-!> @param wf_b_indx
-!>
 subroutine PP_compute_becp(becp, npwk, wf_nb, wf_c, wf_b_indx)
  !
  ! Compute becp = < beta_j | wfc_n > matrix elements

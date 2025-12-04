@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> acknowledge_yambo
-!>
-!>
 subroutine acknowledge_yambo()
  !
  use com,        ONLY:msg

@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG CA   
 !
-!> el_density_vbands
-!>
-!> @param en
-!> @param Xk
-!> @param rho
-!> @param VAL_BANDS
-!>
 subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
  !
  !Electronic density from the time-dependent valence bands 

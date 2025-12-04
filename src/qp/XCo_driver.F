@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> XCo_driver
-!>
-!> @param E
-!> @param k
-!> @param Xk
-!> @param q
-!>
 subroutine XCo_driver(E,k,Xk,q)
  !
  use zeros,         ONLY:zero_dfl

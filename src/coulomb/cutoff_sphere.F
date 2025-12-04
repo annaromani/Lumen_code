@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> cutoff_sphere
-!>
-!>
 subroutine cutoff_sphere()
  !
  use pars,          ONLY:SP,pi

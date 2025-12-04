@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
-!> OVERLAPS_IO
-!>
-!> @param Xk
-!> @param Xen
-!> @param Dip
-!> @param check_read_or_write
-!> @param io_err
-!> @param PAR_K_scheme_kind
-!>
 subroutine OVERLAPS_IO(Xk,Xen,Dip,check_read_or_write,io_err,PAR_K_scheme_kind)
  !
  use pars,        ONLY:SP,cI,cZERO

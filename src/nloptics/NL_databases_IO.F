@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !                  
-!> NL_databases_IO
-!>
-!> @param i_f
-!> @param read_or_write
-!>
 subroutine NL_databases_IO(i_f,read_or_write)
  !
  use IO_int,        ONLY:io_control

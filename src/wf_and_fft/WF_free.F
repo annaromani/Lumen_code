@@ -10,12 +10,6 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-!> WF_free
-!>
-!> @param WF
-!> @param keep_fft
-!> @param keep_states_to_load
-!>
 subroutine WF_free(WF,keep_fft,keep_states_to_load)
  !
  use wave_func,    ONLY:WAVEs

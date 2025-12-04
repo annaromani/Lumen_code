@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> DIPOLE_rotate
-!>
-!> @param ic
-!> @param iv
-!> @param ik_bz
-!> @param i_sp_pol
-!> @param what
-!> @param kpt
-!> @param dipole
-!>
 subroutine DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol,what,kpt,dipole)
  !
  use pars,           ONLY:cZERO,SP

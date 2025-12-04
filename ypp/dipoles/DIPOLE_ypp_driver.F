@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> DIPOLE_ypp_driver
-!>
-!> @param k
-!> @param E
-!> @param q
-!>
 subroutine DIPOLE_ypp_driver(k,E,q)
  !
  use pars,           ONLY:SP,rZERO,schlen

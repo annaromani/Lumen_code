@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 !
-!> SLK_ORTHO_init
-!>
-!> @param ORTHO
-!> @param POOL
-!> @param n_CPU_in
-!>
 subroutine SLK_ORTHO_init( ORTHO, POOL, n_CPU_in )
  !
  ! ... Ortho group initialization

@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_expand
-!>
-!> @param k
-!> @param qp
-!> @param qp_expanded
-!>
 subroutine QP_expand(k,qp,qp_expanded)
  !
  use pars,          ONLY:SP

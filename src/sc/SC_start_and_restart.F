@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> SC_start_and_restart
-!>
-!> @param X
-!> @param E
-!> @param Xk
-!> @param Dip
-!>
 subroutine SC_start_and_restart(X,E,Xk,Dip)
  !
  use pars,           ONLY:schlen

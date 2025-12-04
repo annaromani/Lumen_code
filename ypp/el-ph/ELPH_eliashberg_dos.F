@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_eliashberg_dos
-!>
-!> @param k
-!> @param en
-!> @param q
-!>
 subroutine ELPH_eliashberg_dos(k,en,q)
  !
  use pars,                ONLY:SP,schlen,pi
@@ -257,10 +251,6 @@ subroutine ELPH_eliashberg_dos(k,en,q)
  !
  contains
    !
-!> elph_gamma
-!>
-!> @param iq
-!>
    subroutine elph_gamma(iq)
    !------------------------
    !

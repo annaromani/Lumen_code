@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> electrons_angular_momentum
-!>
-!> @param nkpt_angular
-!> @param nband_angular
-!>
 subroutine electrons_angular_momentum(nkpt_angular,nband_angular)
  !
  ! Important:
@@ -241,9 +236,6 @@ subroutine electrons_angular_momentum(nkpt_angular,nband_angular)
  YAMBO_FREE(x_cc)
  !
  contains
-!> local_alloc
-!>
-!>
    subroutine local_alloc()
      YAMBO_ALLOC(L_tmp,(3,fft_size))
      YAMBO_ALLOC(L_tot,(3,nkpt_tot+1))
@@ -259,9 +251,6 @@ subroutine electrons_angular_momentum(nkpt_angular,nband_angular)
      endif
    end subroutine 
    !
-!> local_free
-!>
-!>
    subroutine local_free()
      YAMBO_FREE(L_tmp)
      YAMBO_FREE(L_tot)

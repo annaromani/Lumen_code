@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_Polarization
-!>
-!> @param en
-!> @param k
-!> @param q
-!>
 subroutine RT_Polarization(en,k,q)
  !
  use pars,           ONLY:cZERO,SP,schlen,rZERO

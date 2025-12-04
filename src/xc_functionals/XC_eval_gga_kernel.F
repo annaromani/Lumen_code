@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> XC_eval_gga_kernel
-!>
-!> @param v1rho
-!> @param v1sigma
-!> @param v2rho2
-!> @param v2rhosigma
-!> @param v2sigma2
-!>
 subroutine XC_eval_gga_kernel(v1rho,v1sigma,v2rho2,v2rhosigma,v2sigma2)
  !
  ! Expression to be derived ...

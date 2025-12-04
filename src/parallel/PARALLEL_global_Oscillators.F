@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 ! 
-!> PARALLEL_global_Oscillators
-!>
-!> @param E
-!> @param Xk
-!> @param q
-!>
 subroutine PARALLEL_global_Oscillators(E,Xk,q)
  !
  use electrons,     ONLY:levels

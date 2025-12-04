@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_SND_RCV_plan
-!>
-!> @param COMM
-!> @param N
-!>
 subroutine PARALLEL_SND_RCV_plan( COMM, N )
  !
  use parallel_m,     ONLY:yMPI_comm,N_SND_RCV_operations,SND_RCV_op
@@ -79,11 +74,6 @@ subroutine PARALLEL_SND_RCV_plan( COMM, N )
  !
  contains
    !
-!> PROPOSE_pair
-!>
-!> @param i_succ
-!> @param EXCLUSIVE
-!>
    subroutine PROPOSE_pair( i_succ , EXCLUSIVE )
      integer :: i_succ,i_try(2),i_c,i_cp
      logical :: EXCLUSIVE

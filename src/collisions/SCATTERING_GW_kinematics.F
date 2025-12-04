@@ -5,19 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> SCATTERING_GW_kinematics
-!>
-!> @param i_q_bz
-!> @param i_m
-!> @param I
-!> @param k
-!> @param q
-!> @param TABLE
-!> @param E
-!> @param N
-!> @param G0
-!> @param Ek
-!>
 subroutine SCATTERING_GW_kinematics(i_q_bz,i_m,I,k,q,TABLE,E,N,G0,Ek,Ekmq,E_diff)
  !
  ! m,k-q   n,k

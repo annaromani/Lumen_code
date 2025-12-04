@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> spline_fit
-!>
-!> @param Ni
-!> @param No
-!> @param Xi
-!> @param Yi
-!> @param Xo
-!> @param Yo
-!>
 subroutine spline_fit(Ni,No,Xi,Yi,Xo,Yo)
  !
  ! Spline are designed for interpolation,

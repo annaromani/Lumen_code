@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CA AM DS
 !
-!> RT_energy_components
-!>
-!> @param en
-!> @param k
-!> @param dG_lesser
-!> @param Energies
-!> @param dE_IP
-!> @param what
-!>
 subroutine RT_energy_components(en,k,dG_lesser,Energies,dE_IP,what)
  !
  use pars,           ONLY:SP,cZERO

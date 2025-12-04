@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM CA
 !
-!> RT_damp_it
-!>
-!> @param damp_type
-!> @param damp_factor
-!> @param ft
-!> @param lda
-!>
 subroutine RT_damp_it(damp_type,damp_factor,ft,lda)
  !
  use YPP_real_time,  ONLY:RT_time,RT_conf

@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> COLLISIONS_basic_operations
-!>
-!> @param what
-!> @param COLL
-!>
 subroutine COLLISIONS_basic_operations( what, COLL )
  !
  ! Here I allocate and define some objects of the COLLISIONS_group kind.

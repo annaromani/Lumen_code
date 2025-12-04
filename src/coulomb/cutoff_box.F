@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> cutoff_box
-!>
-!> @param q
-!> @param is_cut
-!>
 subroutine cutoff_box(q,is_cut)
  !
  ! Vc(q,G)=1/(Vdl Nq)\sum_{q' G'} V(q'+G') F(q'+G',q+G) [3D BOX] 

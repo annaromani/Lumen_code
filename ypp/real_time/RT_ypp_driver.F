@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM CA
 !
-!> RT_ypp_driver
-!>
-!> @param en
-!> @param k
-!> @param q
-!>
 subroutine RT_ypp_driver(en,k,q)
  !
  use R_lattice,      ONLY:bz_samp

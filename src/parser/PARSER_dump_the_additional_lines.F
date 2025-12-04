@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARSER_dump_the_additional_lines
-!>
-!> @param ou
-!>
 subroutine PARSER_dump_the_additional_lines(ou)
  !
  use com,        ONLY:repfile_unit,inpfile_unit

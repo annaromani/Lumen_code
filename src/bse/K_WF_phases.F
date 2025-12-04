@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_WF_phases
-!>
-!> @param Xk
-!>
 subroutine K_WF_phases(Xk)
  !
  ! This routine evaluates the WF phases needed to evaluate the correlation

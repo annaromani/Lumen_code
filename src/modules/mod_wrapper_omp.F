@@ -58,19 +58,6 @@ module wrapper_omp
    ! interface M_by_M 
    !===================
    !
-!> mm_cgemm_omp
-!>
-!> @param TRANSA
-!> @param TRANSB
-!> @param M
-!> @param N
-!> @param K
-!> @param ALPHA
-!> @param A
-!> @param LDA
-!> @param B
-!> @param LDB
-!>
    subroutine mm_cgemm_omp(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
      complex(SP), intent(in)  :: ALPHA,BETA
      integer,     intent(in)  :: K,LDA,LDB,LDC,M,N
@@ -89,15 +76,6 @@ module wrapper_omp
    end subroutine mm_cgemm_omp
    !
 #if !defined _DOUBLE
-!> mm_c_omp_DP
-!>
-!> @param TRANSA
-!> @param TRANSB
-!> @param msize
-!> @param A
-!> @param B
-!> @param C
-!>
    subroutine mm_c_omp_DP(TRANSA,TRANSB,msize,A,B,C)
      integer,  intent(in)  :: msize
      complex(DP), intent(in)  :: A(msize,msize),B(msize,msize)
@@ -113,15 +91,6 @@ module wrapper_omp
    end subroutine mm_c_omp_DP
 #endif
    !
-!> mm_c_omp
-!>
-!> @param TRANSA
-!> @param TRANSB
-!> @param msize
-!> @param A
-!> @param B
-!> @param C
-!>
    subroutine mm_c_omp(TRANSA,TRANSB,msize,A,B,C)
      integer,  intent(in)  :: msize
      complex(SP), intent(in)  :: A(msize,msize),B(msize,msize)
@@ -143,19 +112,6 @@ module wrapper_omp
    ! interface M_by_V 
    !===================
    !
-!> mv_sgemv_omp
-!>
-!> @param TRANS
-!> @param M
-!> @param N
-!> @param ALPHA
-!> @param A
-!> @param LDA
-!> @param X
-!> @param INCX
-!> @param BETA
-!> @param Y
-!>
    subroutine mv_sgemv_omp(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      real(SP), intent(in) :: ALPHA,BETA
      integer,  intent(in) :: INCX,INCY,LDA,M,N
@@ -173,19 +129,6 @@ module wrapper_omp
 #endif
    end subroutine mv_sgemv_omp
    !
-!> mv_cgemv_omp
-!>
-!> @param TRANS
-!> @param M
-!> @param N
-!> @param ALPHA
-!> @param A
-!> @param LDA
-!> @param X
-!> @param INCX
-!> @param BETA
-!> @param Y
-!>
    subroutine mv_cgemv_omp(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      complex(SP), intent(in) :: ALPHA,BETA
      integer,     intent(in) :: INCX,INCY,LDA,M,N
@@ -203,14 +146,6 @@ module wrapper_omp
 #endif
    end subroutine mv_cgemv_omp
    !
-!> mv_c_omp
-!>
-!> @param TRANS
-!> @param msize
-!> @param A
-!> @param X
-!> @param Y
-!>
    subroutine mv_c_omp(TRANS,msize,A,X,Y)
      integer,     intent(in) :: msize
      complex(SP), intent(in) :: A(msize,*),X(*)
@@ -227,14 +162,6 @@ module wrapper_omp
 #endif
    end subroutine mv_c_omp
    !
-!> mv_r_omp
-!>
-!> @param TRANS
-!> @param msize
-!> @param A
-!> @param X
-!> @param Y
-!>
    subroutine mv_r_omp(TRANS,msize,A,X,Y)
      integer,  intent(in) :: msize
      real(SP), intent(in) :: A(msize,*),X(*)
@@ -255,13 +182,6 @@ module wrapper_omp
    ! interface M_plus_alpha_M_omp
    !=========================
    !
-!> MM_caxpy_omp
-!>
-!> @param N
-!> @param CA
-!> @param CX
-!> @param CY
-!>
    subroutine MM_caxpy_omp(N, CA, CX,  CY )
      complex(SP), intent(in) :: CA
      integer,     intent(in) :: N
@@ -291,13 +211,6 @@ module wrapper_omp
    ! interface V_plus_alpha_V_omp
    !=========================
    !
-!> vv_caxpy_omp
-!>
-!> @param N
-!> @param CA
-!> @param CX
-!> @param CY
-!>
    subroutine vv_caxpy_omp(N, CA, CX,  CY )
      complex(SP), intent(in) :: CA
      integer,     intent(in) :: N
@@ -321,13 +234,6 @@ module wrapper_omp
 #endif
    end subroutine vv_caxpy_omp
    !
-!> vv_saxpy_omp
-!>
-!> @param N
-!> @param CA
-!> @param CX
-!> @param CY
-!>
    subroutine vv_saxpy_omp(N, CA, CX, CY )
      real(SP),    intent(in) :: CA
      integer,     intent(in) :: N
@@ -355,12 +261,6 @@ module wrapper_omp
    ! COPY 
    !======
    !
-!> V_copy_omp
-!>
-!> @param N
-!> @param CX
-!> @param CY
-!>
    subroutine V_copy_omp(N,CX,CY)
      integer,    intent(in)  :: N
      complex(SP),intent(in)  :: CX(:)

@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> exciton_WFs
-!>
-!> @param Xk
-!> @param BS_E_degs
-!> @param iq
-!>
 subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  use pars,          ONLY:SP,cZERO,pi,schlen
@@ -549,9 +543,6 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  contains
    !
-!> expand_grid
-!>
-!>
    subroutine expand_grid()
      !
      implicit none

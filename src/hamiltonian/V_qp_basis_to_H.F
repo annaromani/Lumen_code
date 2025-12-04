@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> V_qp_basis_to_H
-!>
-!> @param ik
-!> @param i_sp_pol
-!> @param V
-!> @param H
-!>
 subroutine V_qp_basis_to_H(ik,i_sp_pol,V,H)
  !
  use electrons,      ONLY:spin

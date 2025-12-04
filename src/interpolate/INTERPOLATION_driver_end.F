@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INTERPOLATION_driver_end
-!>
-!> @param ID
-!>
 subroutine INTERPOLATION_driver_end(ID)
  !
  use interpolate_tools,    ONLY:INTERPOLATION_reset

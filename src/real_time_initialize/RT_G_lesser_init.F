@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_G_lesser_init
-!>
-!>
 subroutine RT_G_lesser_init( )
  !
  use pars,           ONLY:SP,rZERO

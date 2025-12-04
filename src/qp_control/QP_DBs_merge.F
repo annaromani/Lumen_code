@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_DBs_merge
-!>
-!> @param n_dbs
-!> @param qp2merge
-!> @param plan_EWZG
-!> @param n_GROUNDS
-!> @param qp
-!> @param OP
-!> @param PRE_FAC
-!> @param FILES
-!>
 subroutine QP_DBs_merge(n_dbs,qp2merge,plan_EWZG,n_GROUNDS,qp,OP,PRE_FAC,FILES)
  !
  use pars,           ONLY:SP
@@ -125,10 +114,6 @@ subroutine QP_DBs_merge(n_dbs,qp2merge,plan_EWZG,n_GROUNDS,qp,OP,PRE_FAC,FILES)
  !
  contains 
    !
-!> WHAT_update
-!>
-!> @param j_db
-!>
    subroutine WHAT_update( j_db )
      integer :: j_db
      WHAT=" "
@@ -138,11 +123,6 @@ subroutine QP_DBs_merge(n_dbs,qp2merge,plan_EWZG,n_GROUNDS,qp,OP,PRE_FAC,FILES)
      if (plan_EWZG(j_db,4)) WHAT=trim(WHAT)//"G"
    end subroutine
    !
-!> PREAPPEND_the_DB_desc
-!>
-!> @param qp_in
-!> @param current_db
-!>
    subroutine PREAPPEND_the_DB_desc( qp_in, current_db )
      type(QP_t)::qp_in
      integer   ::i_desc,current_db
@@ -151,12 +131,6 @@ subroutine QP_DBs_merge(n_dbs,qp2merge,plan_EWZG,n_GROUNDS,qp,OP,PRE_FAC,FILES)
      enddo
    end subroutine
    !
-!> ADD_the_DB_desc
-!>
-!> @param j_db
-!> @param current_db
-!> @param PREPEND
-!>
    subroutine ADD_the_DB_desc( j_db,  current_db, PREPEND )
      integer      :: j_db,current_db
      character(*) :: PREPEND

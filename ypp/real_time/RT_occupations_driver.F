@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_occupations_driver
-!>
-!> @param k
-!> @param q
-!> @param en
-!>
 subroutine RT_occupations_driver(k,q,en)
  !
  use drivers,        ONLY:l_rt_carriers_in_use

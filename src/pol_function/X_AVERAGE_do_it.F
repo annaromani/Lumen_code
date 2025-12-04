@@ -9,11 +9,6 @@
 !
 #include<dev_defs.h>
 !
-!> X_AVERAGE_do_it
-!>
-!> @param what
-!> @param X_par
-!>
 subroutine X_AVERAGE_do_it(what,X_par)
  !
  ! The procedures to copy from Host to Device, that are included here, maybe not needded.

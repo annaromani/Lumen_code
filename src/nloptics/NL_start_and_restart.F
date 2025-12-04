@@ -10,12 +10,6 @@
 !
 #include<y_memory.h>
 !
-!> NL_start_and_restart
-!>
-!> @param E
-!> @param k
-!> @param Dip
-!>
 subroutine NL_start_and_restart(E,k,Dip)
  !
  ! This subroutine initialize some variables and 

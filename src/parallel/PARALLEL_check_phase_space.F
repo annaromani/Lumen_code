@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_check_phase_space
-!>
-!> @param N_PAR_elements
-!> @param WORLD
-!> @param WORLD_size
-!> @param MSG
-!>
 subroutine PARALLEL_check_phase_space(N_PAR_elements,WORLD,WORLD_size,MSG)
  !
  use pars,        ONLY:schlen

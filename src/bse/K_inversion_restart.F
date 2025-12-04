@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_inversion_restart
-!>
-!> @param iq
-!> @param W
-!>
 subroutine K_inversion_restart(iq,W)
  !
  use pars,           ONLY:SP,cZERO
@@ -103,10 +98,6 @@ subroutine K_inversion_restart(iq,W)
  !
  contains
    !
-!> elemental_restart
-!>
-!> @param TYP
-!>
    subroutine elemental_restart(TYP)
      !
      type(K_Inversion_data) :: TYP

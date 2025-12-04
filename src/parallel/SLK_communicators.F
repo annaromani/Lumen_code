@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> SLK_communicators
-!>
-!> @param INTRA_world
-!> @param INTER_world
-!> @param N
-!>
 subroutine SLK_communicators(INTRA_world,INTER_world,N)
  !
  ! Here I have an example with 12 cpu's divided in two INTRA of 6 cpu's. In each INTRA I want to build-up a SLK structure.

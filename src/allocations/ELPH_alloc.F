@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_alloc
-!>
-!> @param what
-!> @param GKKP
-!> @param Nb
-!> @param Nm
-!> @param Nk_mem
-!> @param Nq_mem
-!>
 subroutine ELPH_alloc(what,GKKP,Nb,Nm,Nk_mem,Nq_mem)
  !
  use pars,          ONLY:SP,rZERO,cZERO,schlen

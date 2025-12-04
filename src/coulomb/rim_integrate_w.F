@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> rim_integrate_w
-!>
-!> @param iq
-!> @param qr
-!> @param N_out
-!> @param em1_anis
-!> @param Xw
-!>
 subroutine rim_integrate_w(iq,qr,N_out,em1_anis,Xw)
  !
  use pars,          ONLY:SP,DP,pi

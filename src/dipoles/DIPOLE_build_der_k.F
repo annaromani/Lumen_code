@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> DIPOLE_build_der_k
-!>
-!> @param Xen
-!> @param Xk
-!> @param Dip
-!> @param direction_is_todo
-!>
 subroutine DIPOLE_build_der_k(Xen,Xk,Dip,direction_is_todo)
  !
  ! Build the dipole as k-derivative using
@@ -252,18 +245,6 @@ subroutine DIPOLE_build_der_k(Xen,Xk,Dip,direction_is_todo)
 end subroutine DIPOLE_build_der_k
 !
 !
-!> zeroing_disconnected_blocks
-!>
-!> @param Xen
-!> @param Xk
-!> @param nb
-!> @param ikpbz
-!> @param i_sp_pol
-!> @param deg_table_k
-!> @param deg_thresh
-!> @param U_in
-!> @param U_out
-!>
 subroutine zeroing_disconnected_blocks(Xen,Xk,nb,ikpbz,i_sp_pol,deg_table_k,deg_thresh,U_in,U_out)
  !
  use pars,           ONLY:SP,cZERO

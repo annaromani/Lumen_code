@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> build_xc_spin_map
-!>
-!>
 subroutine build_xc_spin_map()
  !
  ! see http://www.tddft.org/programs/libxc/manual/

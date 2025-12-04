@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> rim
-!>
-!> @param mode
-!> @param Xw
-!>
 subroutine rim(mode,Xw)
  !
  use pars,          ONLY:SP,pi,DP

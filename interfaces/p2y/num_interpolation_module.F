@@ -48,14 +48,6 @@ end type num_interpolation
 contains
 
 
-!> num_interpolation_init
-!>
-!> @param interpolation
-!> @param xmin
-!> @param xmax
-!> @param delta
-!> @param parity
-!>
 subroutine num_interpolation_init(interpolation,xmin,xmax,delta,parity)
 ! Initialise the table.
 ! delta is an excess approximation to the interpoint distance
@@ -88,10 +80,6 @@ subroutine num_interpolation_init(interpolation,xmin,xmax,delta,parity)
 end subroutine num_interpolation_init
 
 !@ MANUAL
-!> num_interpolation_destroy
-!>
-!> @param interpolation
-!>
 subroutine num_interpolation_destroy(interpolation)
 ! Destroys the table
 
@@ -101,14 +89,6 @@ subroutine num_interpolation_destroy(interpolation)
   if (associated(interpolation%y)) deallocate(interpolation%y)
 end subroutine num_interpolation_destroy
 
-!> num_interpolation_little_table
-!>
-!> @param interpolation
-!> @param x
-!> @param order
-!> @param tab_x
-!> @param tab_y
-!>
 subroutine num_interpolation_little_table(interpolation,x,order,tab_x,tab_y)
 ! Private routine to build a small table to be used by the low-level
 ! interpolation routines.

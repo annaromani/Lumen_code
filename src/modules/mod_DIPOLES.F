@@ -87,11 +87,6 @@ module DIPOLES
  !
  contains
    !
-!> DIPOLES_duplicate
-!>
-!> @param Dip_in
-!> @param Dip_out
-!>
    subroutine DIPOLES_duplicate(Dip_in,Dip_out)
      type(DIPOLE_t), intent(in) :: Dip_in
      type(DIPOLE_t), intent(out):: Dip_out
@@ -113,10 +108,6 @@ module DIPOLES
      Dip_out%computed           = Dip_in%computed
    end subroutine DIPOLES_duplicate
    !
-!> DIPOLES_reset
-!>
-!> @param Dip
-!>
    subroutine DIPOLES_reset(Dip) 
      type(DIPOLE_t)::Dip
      Dip%iq=(/1,1/)

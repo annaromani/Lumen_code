@@ -9,19 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> X_GreenF_analytical
-!>
-!> @param iq
-!> @param transitions
-!> @param Xw
-!> @param Xen
-!> @param Xk
-!> @param GreenF
-!> @param ordering
-!> @param space
-!> @param no_occupations
-!> @param X_terminator
-!>
 subroutine X_GreenF_analytical(iq,transitions,Xw,Xen,Xk,GreenF,ordering,space,no_occupations,X_terminator)
  !
  ! Compute the GreenF in frequency space starting from it analytical

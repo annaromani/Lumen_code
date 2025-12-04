@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> INIT_read_command_line
-!>
-!> @param rstr
-!> @param init_
-!>
 subroutine INIT_read_command_line(rstr,init_)
  !
  use pars,           ONLY:schlen

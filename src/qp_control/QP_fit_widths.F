@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> QP_fit_widths
-!>
-!> @param i_ACTION
-!> @param bands
-!> @param en
-!> @param k
-!> @param qp
-!>
 subroutine QP_fit_widths(i_ACTION,bands,en,k,qp)
  !
  ! Performs a linear fit of the QP corrections in the database

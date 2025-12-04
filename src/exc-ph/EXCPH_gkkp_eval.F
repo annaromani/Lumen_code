@@ -12,15 +12,6 @@
 ! The exciton phonon matrix elements are defined as <q=Q,S'|dV_{Q}|q=0,S>
 ! These is for phonon absorption
 !
-!> EXCPH_gkkp_eval
-!>
-!> @param iq_s
-!> @param iq_bz
-!> @param il
-!> @param k
-!> @param q
-!> @param ID_gkkp
-!>
 subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !
  use pars,           ONLY:SP,cZERO,rZERO,cONE

@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> DESC_write
-!>
-!> @param dest
-!> @param prefix
-!> @param desc
-!> @param d_range
-!> @param skip_patt
-!>
 subroutine DESC_write(dest,prefix,desc,d_range,skip_patt)
  !
  use pars,       ONLY:SP,msg_len

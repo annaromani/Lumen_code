@@ -11,15 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> fix_WFs_and_E
-!>
-!> @param E
-!> @param k
-!> @param k_save
-!> @param kpoints_map
-!> @param old_nsym
-!> @param S_contains_TR
-!>
 subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  !
  use pars,                ONLY:LP,SP,lchlen,cZERO
@@ -291,13 +282,6 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  !
 end subroutine
 !
-!> map_energies
-!>
-!> @param E
-!> @param E_new
-!> @param k
-!> @param kpoints_map
-!>
 subroutine map_energies(E,E_new,k,kpoints_map)
  !
  use electrons,           ONLY:levels,E_reset,n_sp_pol

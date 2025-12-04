@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> electrons_dos_setup
-!>
-!> @param E
-!> @param dos_E
-!> @param bands
-!>
 subroutine electrons_dos_setup( E, dos_E , bands )
  !
  use pars,           ONLY:SP

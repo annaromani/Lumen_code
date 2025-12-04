@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> rim_spherical_bose
-!>
-!> @param Np
-!> @param points
-!> @param p_weight
-!> @param radius
-!> @param power
-!> @param il
-!> @param MULTIPLY_BY_Q
-!>
 subroutine rim_spherical_bose(Np,points,p_weight,radius,power,il,MULTIPLY_BY_Q)
  !
  ! Here I want to approx the integral

@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> io_RT_components_header
-!>
-!> @param ID
-!> @param what
-!> @param loading_carr_before_neq
-!> @param io_RT_components
-!>
 subroutine io_RT_components_header(ID,what,loading_carr_before_neq,io_RT_components)
  !
  use pars,           ONLY:IP,SP,LP,IP_YIO,LP_YIO

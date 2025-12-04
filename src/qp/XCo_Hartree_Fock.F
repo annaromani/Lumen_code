@@ -11,14 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> XCo_Hartree_Fock
-!>
-!> @param E
-!> @param k
-!> @param Xk
-!> @param q
-!> @param mode
-!>
 subroutine XCo_Hartree_Fock(E,k,Xk,q,mode)
  !
  ! Hartree-Fock

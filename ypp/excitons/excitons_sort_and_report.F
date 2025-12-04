@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV DS
 !
-!> excitons_sort_and_report
-!>
-!> @param iq
-!> @param Res
-!> @param BS_E
-!> @param BS_E_SOC_corr
-!> @param EXC_spin
-!>
 subroutine excitons_sort_and_report(iq,Res,BS_E,BS_E_SOC_corr,EXC_spin)
  !
  use pars,          ONLY:SP,schlen,pi,zero_dfl

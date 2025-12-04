@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CH DS AF IM
 !
-!> p2y_pseudo
-!>
-!> @param k
-!>
 subroutine p2y_pseudo(k)
  !
  use pw_struct_module
@@ -45,13 +41,6 @@ subroutine p2y_pseudo(k)
  integer, external :: io_USPP_pwscf
  !
  interface
-!> fill_basis
-!>
-!> @param basis
-!> @param struct
-!> @param ik
-!> @param ngmax
-!>
     subroutine fill_basis(basis,struct,ik,ngmax)
       use pw_struct_module
       use pw_basis_module
@@ -61,12 +50,6 @@ subroutine p2y_pseudo(k)
       integer, intent(in) :: ik, ngmax
     end subroutine fill_basis
     !
-!> fill_basis_rho
-!>
-!> @param basis
-!> @param struct
-!> @param ngmax
-!>
     subroutine fill_basis_rho(basis,struct,ngmax)
       use pw_struct_module
       use pw_basis_module
@@ -172,10 +155,6 @@ subroutine p2y_pseudo(k)
  !
 end subroutine p2y_pseudo
 !
-!> fill_struct
-!>
-!> @param struct
-!>
 subroutine fill_struct(struct)
  use pw_struct_module
  use R_lattice,             ONLY : b
@@ -193,11 +172,6 @@ subroutine fill_struct(struct)
  return
 end subroutine fill_struct
 !
-!> fill_atoms
-!>
-!> @param atoms
-!> @param struct
-!>
 subroutine fill_atoms(atoms,struct)
  !
  !type pw_atoms
@@ -238,11 +212,6 @@ subroutine fill_atoms(atoms,struct)
  !
 end subroutine fill_atoms
 !
-!> fill_a_pseudo
-!>
-!> @param psfile
-!> @param pseudo
-!>
 subroutine fill_a_pseudo(psfile,pseudo)
  !
  ! Allocate and fill a single pseudo
@@ -269,13 +238,6 @@ subroutine fill_a_pseudo(psfile,pseudo)
  !
 end subroutine fill_a_pseudo
 !
-!> fill_basis
-!>
-!> @param basis
-!> @param struct
-!> @param ik
-!> @param ngmax
-!>
 subroutine fill_basis(basis,struct,ik,ngmax)
  use pw_struct_module
  use pw_basis_module
@@ -320,12 +282,6 @@ subroutine fill_basis(basis,struct,ik,ngmax)
  return
 end subroutine fill_basis
 
-!> fill_basis_rho
-!>
-!> @param basis
-!> @param struct
-!> @param ngmax
-!>
 subroutine fill_basis_rho(basis,struct,ngmax)
  use pw_struct_module
  use pw_basis_module

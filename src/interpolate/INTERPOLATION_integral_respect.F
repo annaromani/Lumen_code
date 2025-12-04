@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !                  
-!> INTERPOLATION_integral_respect
-!>
-!> @param ID
-!> @param OUT_k
-!> @param OUT
-!> @param NK
-!>
 subroutine INTERPOLATION_integral_respect(ID,OUT_k,OUT,NK)
  !
  use pars,         ONLY:SP

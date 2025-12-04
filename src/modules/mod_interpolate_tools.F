@@ -22,10 +22,6 @@ module interpolate_tools
  !  
  contains
    !
-!> INTERPOLATION_nearest_k_report
-!>
-!> @param ID
-!>
    subroutine INTERPOLATION_nearest_k_report(ID)
      !
      use com,   ONLY:msg
@@ -67,10 +63,6 @@ module interpolate_tools
      !
    end subroutine
    !
-!> INTERPOLATION_reset
-!>
-!> @param ID
-!>
    subroutine INTERPOLATION_reset(ID)
      !
      integer, intent(in) :: ID
@@ -94,14 +86,6 @@ module interpolate_tools
      !
    end subroutine
    !
-!> init_ID
-!>
-!> @param ID
-!> @param dims
-!> @param k
-!> @param operation
-!> @param seed_kind
-!>
    subroutine init_ID(ID,dims,k,operation,seed_kind)
      !
      use R_lattice,   ONLY:bz_samp
@@ -131,10 +115,6 @@ module interpolate_tools
      !
    end subroutine init_ID
    !
-!> get_ID
-!>
-!> @param ID
-!>
    subroutine get_ID(ID)
      !
      integer, intent(out) :: ID
@@ -156,14 +136,6 @@ module interpolate_tools
      !
    end subroutine get_ID
    !
-!> make_star
-!>
-!> @param R_vec
-!> @param nsym
-!> @param symop
-!> @param nstar
-!> @param star_vec
-!>
    subroutine make_star(R_vec,nsym,symop,nstar,star_vec)
      !
      use vec_operate,    ONLY:v_is_zero
@@ -199,11 +171,6 @@ module interpolate_tools
      !
   end subroutine make_star
   !
-!> FILL_SEED_E
-!>
-!> @param ID
-!> @param SEED_E
-!>
   subroutine FILL_SEED_E(ID,SEED_E)
     !
     use electrons, ONLY:levels
@@ -226,11 +193,6 @@ module interpolate_tools
   end subroutine
   !
 #if defined _RT
-!> FILL_SEED_RT
-!>
-!> @param ID
-!> @param SEED_RT
-!>
   subroutine FILL_SEED_RT(ID,SEED_RT)
     !
     use real_time, ONLY:RT_t
@@ -257,11 +219,6 @@ module interpolate_tools
   end subroutine
 #endif
   !
-!> FILL_SEED_QP
-!>
-!> @param ID
-!> @param SEED_QP
-!>
   subroutine FILL_SEED_QP(ID,SEED_QP)
     !
     use electrons, ONLY:spin

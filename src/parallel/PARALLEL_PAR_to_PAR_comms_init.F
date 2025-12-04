@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !    
-!> PARALLEL_PAR_to_PAR_comms_init
-!>
-!>
 subroutine PARALLEL_PAR_to_PAR_comms_init()
  !
  use parallel_m,    ONLY:COMM_reset,PAR_COM_SLK_INDEX_local

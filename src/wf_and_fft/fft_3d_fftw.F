@@ -27,13 +27,6 @@
 !
 !=====================================================================
 !
-!> fft_3d
-!>
-!> @param c
-!> @param n
-!> @param fft_sign
-!> @param fftw_plan
-!>
 subroutine fft_3d(c,n,fft_sign,fftw_plan)
  !
  use pars,          ONLY:DP

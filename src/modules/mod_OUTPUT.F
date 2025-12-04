@@ -35,14 +35,6 @@ module OUTPUT
  !
  interface
    !
-!> OUTPUT_unit_conversion
-!>
-!> @param Ivar
-!> @param Rvar
-!> @param DESC
-!> @param KIND
-!> @param PARSER_call
-!>
    subroutine OUTPUT_unit_conversion(Ivar,Rvar,DESC,KIND,PARSER_call)
      use pars,  ONLY:SP
      real(SP)    ,optional :: Rvar
@@ -52,17 +44,6 @@ module OUTPUT
      logical     ,optional :: PARSER_call
    end subroutine
    !
-!> OUTPUT_driver
-!>
-!> @param file
-!> @param action
-!> @param TITLES
-!> @param I_VALUES
-!> @param R_VALUES
-!> @param ORDER
-!> @param UNIT
-!> @param KIND
-!>
    subroutine OUTPUT_driver(file,action,TITLES,I_VALUES,R_VALUES,ORDER,UNIT,KIND)
      use pars,  ONLY:SP
      character(*)            :: file
@@ -79,11 +60,6 @@ module OUTPUT
  !
  contains
    !
-!> OUTPUT_reset
-!>
-!> @param i_f
-!> @param action
-!>
    subroutine OUTPUT_reset(i_f,action)
      character(*) :: action
      integer      :: ic,i_f

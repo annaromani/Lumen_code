@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM CA
 !
-!> RT_RESTART_database_copy
-!>
-!> @param db
-!>
 subroutine RT_RESTART_database_copy(db)
  !
  use pars,           ONLY:lchlen,schlen,n_max_jobstr

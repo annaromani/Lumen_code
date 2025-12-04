@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> INIT_read_command_line_corr_scatt
-!>
-!> @param KIND
-!> @param STR
-!> @param POS
-!> @param l_ee
-!> @param l_ep
-!> @param l_pe
-!> @param l_eh
-!>
 subroutine INIT_read_command_line_corr_scatt(KIND,STR,POS,l_ee,l_ep,l_pe,l_eh)
  !
  use it_m,           ONLY:nrnlvls

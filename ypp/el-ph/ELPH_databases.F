@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_databases
-!>
-!> @param k
-!> @param E
-!> @param q
-!>
 subroutine ELPH_databases(k,E,q)
  !
  use units,               ONLY:HA2EV

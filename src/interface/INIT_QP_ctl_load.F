@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> INIT_QP_ctl_load
-!>
-!> @param defs
-!> @param ID
-!>
 subroutine INIT_QP_ctl_load(defs,ID)
  !
  use it_tools,      ONLY:it

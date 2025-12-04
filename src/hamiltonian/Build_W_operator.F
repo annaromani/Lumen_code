@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
-!> Build_W_operator
-!>
-!> @param en
-!> @param Xk
-!> @param ik
-!> @param i_sp
-!> @param V_bands
-!> @param Wk
-!>
 subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
  !
  ! Build the Hermitian W operator eq. 62 and 63

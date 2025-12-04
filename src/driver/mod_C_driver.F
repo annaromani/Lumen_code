@@ -21,14 +21,6 @@ module C_driver
  !
  interface  
    !
-!> get_version
-!>
-!> @param version
-!> @param subversion
-!> @param patchlevel
-!> @param revision
-!> @param hash
-!>
    subroutine get_version(version,subversion,patchlevel,revision,hash)
      integer     , intent(out):: version
      integer     , intent(out):: subversion
@@ -37,36 +29,18 @@ module C_driver
      character(*), intent(out):: hash
    end subroutine
    !
-!> get_libraries
-!>
-!> @param libraries
-!>
    subroutine get_libraries(libraries)
      character(*), intent(out):: libraries
    end subroutine
    !
-!> get_running_project
-!>
-!> @param code_project
-!>
    subroutine get_running_project(code_project)
      character(*), intent(out):: code_project
    end subroutine
    !
-!> get_running_tool
-!>
-!> @param code_tool
-!>
    subroutine get_running_tool(code_tool)
      character(*), intent(out):: code_tool
    end subroutine
    !
-!> get_runlevel
-!>
-!> @param component
-!> @param component_id
-!> @param runlevel_id
-!>
    subroutine get_runlevel(component,component_id,runlevel_id)
      character(*), intent(out):: component
      integer,      intent(in) :: component_id

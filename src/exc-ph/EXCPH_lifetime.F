@@ -393,9 +393,6 @@ subroutine EXCPH_lifetime(k,q,X)
     !
   end function DbGrid_pole
   !
-!> print_and_write
-!>
-!>
   subroutine print_and_write()
     use pars,           ONLY:schlen
     use OUTPUT,         ONLY:OUTPUT_driver
@@ -441,10 +438,6 @@ subroutine EXCPH_lifetime(k,q,X)
     !
   end subroutine 
   !
-!> print_LifeTimes_of_q
-!>
-!> @param MODE
-!>
   subroutine print_LifeTimes_of_q(MODE)
     ! MODE="L"[ife]:
     !   - print q-map of lifetimes for each exc_in state for q-space plot

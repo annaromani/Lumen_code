@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> PARALLEL_SETUP_K_scheme
-!>
-!> @param PAR_K_scheme_kind
-!>
 subroutine PARALLEL_SETUP_K_scheme(PAR_K_scheme_kind)
  !
  use R_lattice,    ONLY:nXkibz,nXkbz

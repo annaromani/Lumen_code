@@ -5,19 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> RT_apply
-!>
-!> @param bands
-!> @param E
-!> @param K
-!> @param what
-!> @param VERBOSE
-!> @param IO_COM
-!> @param Time
-!> @param keep_RT_carriers
-!> @param TIMES_ONLY
-!> @param skip_interpolation
-!>
 subroutine RT_apply(bands,E,K,what,VERBOSE,IO_COM,Time,keep_RT_carriers,TIMES_ONLY,skip_interpolation)
  !
  use drivers,        ONLY:l_elel_corr,l_rt_carriers_in_use

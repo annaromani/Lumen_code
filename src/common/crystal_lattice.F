@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> crystal_lattice
-!>
-!>
 subroutine crystal_lattice()
  !
  use pars,           ONLY:SP,schlen

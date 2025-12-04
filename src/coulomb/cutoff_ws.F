@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DVAF
 !
-!> cutoff_ws
-!>
-!> @param q
-!>
 subroutine cutoff_ws(q)
  !
  use pars,          ONLY:DP,SP,PI

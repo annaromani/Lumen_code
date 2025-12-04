@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> eval_Gradient
-!>
-!> @param f
-!> @param f_gradient
-!> @param ng_
-!>
 subroutine eval_Gradient(f,f_gradient,ng_)
  !
  ! The gradient of a periodic function f(r):
@@ -82,11 +76,6 @@ subroutine eval_Gradient(f,f_gradient,ng_)
 end subroutine eval_Gradient
 !
 !
-!> eval_Gradient_wf
-!>
-!> @param wf
-!> @param wf_gradient
-!>
 subroutine eval_Gradient_wf(wf,wf_gradient)
  !
  use pars,          ONLY:SP
@@ -114,11 +103,6 @@ subroutine eval_Gradient_wf(wf,wf_gradient)
 end subroutine eval_Gradient_wf
 !
 !
-!> eval_Gradient_rho_pot
-!>
-!> @param Vrho
-!> @param Vrho_gradient
-!>
 subroutine eval_Gradient_rho_pot(Vrho,Vrho_gradient)
  !
  use pars,          ONLY:SP

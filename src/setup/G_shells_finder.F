@@ -11,9 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> G_shells_finder
-!>
-!>
 subroutine G_shells_finder()
  !
  ! Output: g_rot(nsym,ng_closed)

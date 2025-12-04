@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_driver
-!>
-!> @param Xen
-!> @param Ken
-!> @param Xk
-!> @param q
-!> @param X_static_pp
-!> @param Xw
-!> @param Dip
-!>
 subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
  !
  use pars,           ONLY:IP

@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_Lifetimes_merge_intra_k
-!>
-!> @param LIFE
-!>
 subroutine RT_Lifetimes_merge_intra_k(LIFE)
  !
  use parallel_m,     ONLY:PAR_COM_PLASMA_INDEX,PAR_COM_Q_INDEX,&

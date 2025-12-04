@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AMDSAG
 !
-!> X_Drude
-!>
-!> @param iq
-!> @param Xen
-!> @param Xk
-!> @param Xw
-!> @param Wd
-!> @param drude_GreenF
-!>
 subroutine X_Drude(iq,Xen,Xk,Xw,Wd,drude_GreenF)
  !
  use pars,          ONLY:SP,cZERO

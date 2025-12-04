@@ -11,14 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> X_redux
-!>
-!> @param iq
-!> @param what
-!> @param X_par
-!> @param Xw
-!> @param X
-!>
 subroutine X_redux(iq,what,X_par,Xw,X)
  !
  ! Here we solve the Dyson equation using a combination of Serial(SER)/Parallel(PAR)/SLK environments.
@@ -381,15 +373,6 @@ subroutine X_redux(iq,what,X_par,Xw,X)
  !
 end subroutine
    !
-!> X_redux_build_kernel
-!>
-!> @param KERNEL
-!> @param Xo
-!> @param Xo_rows
-!> @param Xo_cols
-!> @param compute_on_gpu
-!> @param iq
-!>
   subroutine X_redux_build_kernel(KERNEL,Xo,Xo_rows,Xo_cols,compute_on_gpu,iq)
      use R_lattice,     ONLY:bare_qpg, DEV_VAR(bare_qpg)
      use pars,          ONLY:pi,cONE,SP

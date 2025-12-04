@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
-!> V_Hartree
-!>
-!> @param rho
-!> @param vhr
-!>
 subroutine V_Hartree(rho,vhr)
  !
  !  Hartree potential (vhr)

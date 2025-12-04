@@ -197,15 +197,6 @@ integer function io_BSS_diago(iq,i_BS_mat,ID,X_static,bsE,bsRl,bsRr,BsE_corr,&
  !
 end function
 
-!> write_bs_ev_par
-!>
-!> @param iq
-!> @param i_BS_mat
-!> @param neigs_this_cpu
-!> @param neig_shift
-!> @param BS_VR
-!> @param BS_VL
-!>
 subroutine write_bs_ev_par(iq, i_BS_mat, neigs_this_cpu, neig_shift, BS_VR, BS_VL)
   !
   use pars,           ONLY:SP,schlen

@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
-!> RT_carriers_temperature
-!>
-!> @param Tfit
-!> @param EfFit
-!>
 subroutine RT_carriers_temperature(Tfit,EfFit)
  !
  use pars,           ONLY:SP

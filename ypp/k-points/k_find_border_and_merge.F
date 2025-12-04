@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_find_border_and_merge
-!>
-!> @param FineGd_E
-!> @param FineGd_k
-!> @param n_FineGd_DBs
-!> @param FineGd_io_E
-!> @param FineGd_io_k
-!> @param Xk
-!> @param l_skip_border_pts
-!>
 subroutine k_find_border_and_merge(FineGd_E,FineGd_k,n_FineGd_DBs,FineGd_io_E,FineGd_io_k,Xk,l_skip_border_pts)
  !
  use R_lattice, ONLY:bz_samp,k_the_nearest,bz_samp_reset

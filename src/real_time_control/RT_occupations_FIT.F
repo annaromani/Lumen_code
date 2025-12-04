@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> RT_occupations_FIT
-!>
-!> @param T_fit
-!> @param Ef_fit
-!> @param Occ_bk
-!>
 subroutine RT_occupations_FIT(T_fit,Ef_fit,Occ_bk)
  !
  ! Check if both the electrons and the holes are below a given temperature

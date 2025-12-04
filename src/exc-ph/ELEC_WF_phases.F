@@ -28,13 +28,6 @@
 !! Code taken from branch phys-excitons
 !! file ypp/excitons/exciton_symmetries.f90
 !
-!> ELEC_WF_phases
-!>
-!> @param E
-!> @param k
-!> @param l_min_mem
-!> @param ID_phases
-!>
 subroutine ELEC_WF_phases(E,k,l_min_mem,ID_phases)
  !
  use D_lattice,      ONLY:nsym

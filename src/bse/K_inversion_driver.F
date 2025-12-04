@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_inversion_driver
-!>
-!> @param iq
-!> @param W
-!> @param E
-!> @param k
-!> @param q
-!>
 subroutine K_inversion_driver(iq,W,E,k,q) 
  !
  use pars,           ONLY:SP
@@ -292,10 +284,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
  !
  contains 
    !
-!> do_it_FULL
-!>
-!> @param TYP
-!>
    subroutine do_it_FULL(TYP)
      !
      type(K_Inversion_data) :: TYP
@@ -335,10 +323,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
      !
    end subroutine
    !
-!> FULL_INF_freqs
-!>
-!> @param TYP
-!>
    subroutine FULL_INF_freqs(TYP)
      type(K_Inversion_data) :: TYP
      TYP%n_full_inv_freqs=0
@@ -350,10 +334,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
      enddo
    end subroutine
    !
-!> FULL_INF_pre_setup
-!>
-!> @param TYP
-!>
    subroutine FULL_INF_pre_setup(TYP)
      !
      type(K_Inversion_data) :: TYP
@@ -425,10 +405,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
      call timing('Inversion Solver',OPR='stop')
    end subroutine
    !
-!> LOCAL_TYP_clean
-!>
-!> @param TYP
-!>
    subroutine LOCAL_TYP_clean(TYP)
      type(K_Inversion_data) :: TYP
      deallocate(TYP%err,TYP%spectra,TYP%iw_full)

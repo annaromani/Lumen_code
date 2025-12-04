@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> fix_symmetries
-!>
-!> @param old_nsym
-!> @param old_dl_sop
-!> @param old_sop_inv
-!> @param S_contains_TR
-!>
 subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  !
  use pars,                ONLY:LP,SP
@@ -270,12 +263,6 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  !
 end subroutine
 !
-!> atoms_check_symm
-!>
-!> @param symm_to_check
-!> @param n_syms_to_check
-!> @param found_symm
-!>
 subroutine atoms_check_symm(symm_to_check,n_syms_to_check,found_symm)
  use pars,           ONLY:zero_dfl
  use matrix_operate, ONLY:m3inv

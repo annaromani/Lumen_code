@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> p2y_db1
-!>
-!> @param en
-!> @param k
-!>
 subroutine p2y_db1(en,k)
  !
  use P2Ym,                  ONLY : get_dimensions,get_cell,get_atoms,get_symmetries,get_xc,get_k_points,get_more,get_energies,&

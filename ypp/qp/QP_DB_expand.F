@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_DB_expand
-!>
-!> @param k
-!>
 subroutine QP_DB_expand( k )
  !
  use pars,          ONLY:schlen

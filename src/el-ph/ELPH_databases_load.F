@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_databases_load
-!>
-!> @param GKKP_sq
-!> @param E
-!> @param k
-!> @param q
-!> @param n_bands
-!> @param q_range
-!> @param K_mode
-!> @param SCATT_mode
-!>
 subroutine ELPH_databases_load(GKKP_sq,E,k,q,n_bands,q_range,K_mode,SCATT_mode)
  ! 
  ! mode can be combination of

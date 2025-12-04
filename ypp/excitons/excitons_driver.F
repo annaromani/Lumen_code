@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> excitons_driver
-!>
-!> @param k
-!> @param Xk
-!> @param en
-!> @param Xen
-!> @param q
-!>
 subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  use pars,          ONLY:SP,pi,schlen

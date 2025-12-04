@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> Build_F_xc_mat
-!>
-!> @param V_xc
-!> @param F_xc
-!> @param F_xc_mat
-!>
 subroutine Build_F_xc_mat(V_xc,F_xc,F_xc_mat)
  !
  use pars,           ONLY:SP,cZERO,cI

@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> MAG_Hamiltonian
-!>
-!>
 subroutine MAG_Hamiltonian()
  !
  ! WARNING: you need to put you system at the corner of the supercell <---
@@ -240,10 +237,6 @@ subroutine MAG_Hamiltonian()
  !
  contains
    !
-!> local_alloc
-!>
-!> @param level
-!>
    subroutine local_alloc(level)
      integer :: level
      select case(level)
@@ -275,10 +268,6 @@ subroutine MAG_Hamiltonian()
      end select
    end subroutine
    !
-!> local_free
-!>
-!> @param level
-!>
    subroutine local_free(level)
      integer :: level
      select case(level)

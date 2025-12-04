@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> RT_entropy
-!>
-!> @param en
-!> @param k
-!> @param dG_lesser
-!> @param Entr
-!> @param TEntr
-!> @param EnEntr
-!> @param E_IP
-!>
 subroutine RT_entropy(en,k,dG_lesser,Entr,TEntr,EnEntr,E_IP)
  !
  use pars,           ONLY:SP,cZERO,rZERO

@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
-!> RT_INV_step_diago
-!>
-!> @param dG_old
-!> @param dG_inp
-!> @param dG_out
-!> @param ik
-!> @param i_sp_pol
-!> @param deltaT
-!>
 subroutine RT_INV_step_diago(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  ! G(T+dt)-G(T)=-idt/2[H,G(T+dt)+G(T)]-idt[H,G0]

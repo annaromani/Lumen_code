@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_DBs_add_me
-!>
-!> @param qp_base
-!> @param qp2add
-!> @param plan_EWZG
-!> @param SAME_states
-!> @param SAME_desc
-!> @param OP
-!> @param PRE_FAC
-!>
 subroutine QP_DBs_add_me(qp_base,qp2add,plan_EWZG,SAME_states,SAME_desc,OP,PRE_FAC)
  !
  ! This routine just adds to qp_base qp with the plan plan_EWZG
@@ -164,11 +154,6 @@ subroutine QP_DBs_add_me(qp_base,qp2add,plan_EWZG,SAME_states,SAME_desc,OP,PRE_F
  !
  contains 
    !
-!> ADD_descs
-!>
-!> @param STATES
-!> @param qp_in
-!>
    subroutine ADD_descs(STATES,qp_in)
      use descriptors,  ONLY:IO_desc_element_duplicate
      integer    :: i_d_in,i_d_out

@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> excitons_kinematics
-!>
-!> @param Xk
-!> @param eh
-!> @param i_s
-!>
 subroutine excitons_kinematics(Xk,eh,i_s)
  !
  use electrons,     ONLY:spin

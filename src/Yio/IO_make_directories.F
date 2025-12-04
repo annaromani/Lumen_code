@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !    
-!> IO_make_directories
-!>
-!> @param what
-!>
 subroutine IO_make_directories(what)
  !
  use com,        ONLY:com_path,more_io_path

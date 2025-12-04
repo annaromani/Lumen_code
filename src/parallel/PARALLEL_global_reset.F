@@ -9,11 +9,6 @@
 !
 #include <y_memory.h>
 !
-!> PARALLEL_global_reset
-!>
-!> @param ENVIRONMENT
-!> @param X_type
-!>
 subroutine PARALLEL_global_reset(ENVIRONMENT,X_type)
  !
  use R_lattice,     ONLY:bz_samp

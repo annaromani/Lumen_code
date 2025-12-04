@@ -10,12 +10,6 @@
 #include<dev_defs.h>
 !
 !
-!> DIPOLE_shifted_grids
-!>
-!> @param Xen
-!> @param Xk
-!> @param Dip
-!>
 subroutine DIPOLE_shifted_grids(Xen,Xk,Dip)
  !
  ! Using the wfc at the k,k-q points to construct <r>
@@ -335,9 +329,6 @@ subroutine DIPOLE_shifted_grids(Xen,Xk,Dip)
  !
  contains
    !
-!> DB1_reset
-!>
-!>
    subroutine DB1_reset()
      !
      ! Reload g_vec, dl_sop ... from db1 using _shift types
@@ -351,11 +342,6 @@ subroutine DIPOLE_shifted_grids(Xen,Xk,Dip)
      !
    end subroutine
    !
-!> set_parms
-!>
-!> @param grid
-!> @param command
-!>
    subroutine set_parms(grid,command)
      implicit none
      character(len=7), intent(in), optional :: grid, command
@@ -391,12 +377,6 @@ subroutine DIPOLE_shifted_grids(Xen,Xk,Dip)
 end subroutine DIPOLE_shifted_grids
 !
 !
-!> DIPOLE_shifted_grids_as_derk
-!>
-!> @param Xen
-!> @param Xk
-!> @param Dip
-!>
 subroutine DIPOLE_shifted_grids_as_derk(Xen,Xk,Dip)
   !
   ! Using the wfc at the k,k-q points to construct <r>
@@ -699,9 +679,6 @@ subroutine DIPOLE_shifted_grids_as_derk(Xen,Xk,Dip)
   !
   contains
     !
-!> DB1_reset
-!>
-!>
     subroutine DB1_reset()
       !
       ! Reload g_vec, dl_sop ... from db1 using _shift types
@@ -715,11 +692,6 @@ subroutine DIPOLE_shifted_grids_as_derk(Xen,Xk,Dip)
       !
     end subroutine
     !
-!> set_parms
-!>
-!> @param grid
-!> @param command
-!>
     subroutine set_parms(grid,command)
       implicit none
       character(len=7), intent(in), optional :: grid, command

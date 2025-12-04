@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INIT_DephMatrix
-!>
-!>
 subroutine INIT_DephMatrix()
  !
  ! Dephasing Matrix -> input file

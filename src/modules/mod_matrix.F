@@ -70,12 +70,6 @@ module matrix
  !
  contains
    !
-!> MATRIX_copy
-!>
-!> @param M_in
-!> @param M_out
-!> @param ALLOC
-!>
    subroutine MATRIX_copy(M_in,M_out,ALLOC)
      use pars,          ONLY:cZERO
      use gpu_m,         ONLY:have_gpu
@@ -117,10 +111,6 @@ module matrix
      !
    end subroutine 
    !
-!> MATRIX_reset
-!>
-!> @param M_par
-!>
    subroutine MATRIX_reset(M_par)
      use parallel_m, ONLY:COMM_reset
      type(PAR_matrix)   :: M_par

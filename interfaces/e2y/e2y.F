@@ -205,10 +205,6 @@ integer function e2y(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
 end function
 
-!> etsf_long_error
-!>
-!> @param error_data
-!>
  subroutine etsf_long_error(error_data)
    use etsf_io_low_level, only : etsf_io_low_error, etsf_io_low_error_handle
    type(etsf_io_low_error), intent(in)     :: error_data

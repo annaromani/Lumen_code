@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> electrons_dos
-!>
-!> @param Xk
-!> @param Xen
-!>
 subroutine electrons_dos(Xk,Xen)
  !
  use units,          ONLY:HA2EV

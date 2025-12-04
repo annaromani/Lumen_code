@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !                  
-!> INTERPOLATION_nearest_k
-!>
-!> @param K_in
-!> @param V_in
-!> @param K_out
-!> @param V_out
-!>
 subroutine INTERPOLATION_nearest_k(K_in,V_in,K_out,V_out)
  !
  use pars,              ONLY:SP,zero_dfl

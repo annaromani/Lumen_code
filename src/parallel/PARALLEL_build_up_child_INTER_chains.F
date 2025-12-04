@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> PARALLEL_build_up_child_INTER_chains
-!>
-!> @param i_child
-!> @param COMM_child
-!> @param i_father
-!>
 subroutine PARALLEL_build_up_child_INTER_chains(i_child,COMM_child,i_father)
  !
  ! Create hierarchy-based INTER (=non countiguous) communicators

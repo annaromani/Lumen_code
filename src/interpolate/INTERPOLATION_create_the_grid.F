@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CA
 !
-!> INTERPOLATION_create_the_grid
-!>
-!> @param GRID
-!>
 subroutine INTERPOLATION_create_the_grid(GRID)
  !
  use interpolate,          ONLY:GRID_k
@@ -24,12 +20,6 @@ subroutine INTERPOLATION_create_the_grid(GRID)
  !
 end subroutine INTERPOLATION_create_the_grid
 !
-!> INTERPOLATION_grid
-!>
-!> @param K
-!> @param units
-!> @param grid_dim
-!>
 subroutine INTERPOLATION_grid(K,units,grid_dim)
  !
  ! Generate an uniform k-point grid k[grid_dim(:)] in the BZ

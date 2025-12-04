@@ -6,11 +6,6 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 ! 
-!> TIMING_clock_write
-!>
-!> @param obj
-!> @param what
-!>
 subroutine TIMING_clock_write(obj,what)
  !
  use pars,          ONLY:lchlen,DP,schlen
@@ -77,11 +72,6 @@ subroutine TIMING_clock_write(obj,what)
  !
  contains
    !
-!> LINE_add_call_and_average
-!>
-!> @param i_c
-!> @param chin
-!>
    subroutine LINE_add_call_and_average( i_c, chin )
      integer           :: i_c
      CHARACTER(lchlen) :: ch,chin
@@ -91,11 +81,6 @@ subroutine TIMING_clock_write(obj,what)
      chin=ch
    end subroutine LINE_add_call_and_average
    !
-!> LINE_total_time
-!>
-!> @param i_c
-!> @param chin
-!>
    subroutine LINE_total_time( i_c , chin )
      integer           :: i_c
      CHARACTER(lchlen) :: ch,time_str,chin

@@ -11,9 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> build_spin_sop
-!>
-!>
 subroutine build_spin_sop()
  !
  use pars,           ONLY:SP,pi,cI,cONE

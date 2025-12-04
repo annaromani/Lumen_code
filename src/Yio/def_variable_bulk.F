@@ -5,18 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM HM DS
 !
-!> def_variable_bulk
-!>
-!> @param ID
-!> @param VAR
-!> @param VAR_ID
-!> @param VAR_SZ
-!> @param VAR_KIND
-!> @param dim_names
-!> @param par_io_kind
-!> @param silent
-!> @param chunksize
-!>
 subroutine def_variable_bulk(ID,VAR,VAR_ID,VAR_SZ,VAR_KIND,dim_names,par_io_kind,silent,chunksize)
  !
  use netcdf

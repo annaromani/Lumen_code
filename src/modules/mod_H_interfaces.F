@@ -11,16 +11,6 @@ module H_interfaces
  !
  interface
    !
-!> V_real_space_to_H
-!>
-!> @param ik
-!> @param i_sp_pol
-!> @param H
-!> @param WF
-!> @param V_kind
-!> @param V
-!> @param Vxc
-!>
    subroutine V_real_space_to_H(ik,i_sp_pol,H,WF,V_kind,V,Vxc)
      use pars,           ONLY:SP
      use wave_func,      ONLY:WAVEs

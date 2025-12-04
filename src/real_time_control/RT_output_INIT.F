@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_output_INIT
-!>
-!>
 subroutine RT_output_INIT( )
  !
  ! RT File Names & HEADERS

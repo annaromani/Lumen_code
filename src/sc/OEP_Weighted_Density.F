@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
-!> OEP_Weighted_Density
-!>
-!> @param en
-!> @param Xk
-!> @param rho
-!>
 subroutine OEP_Weighted_Density(en,Xk,rho)
  !
  ! Modified el_density sub needed for Bulat Levy modified 

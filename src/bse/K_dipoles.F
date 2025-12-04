@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_dipoles
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param q
-!> @param X_oscillators
-!> @param Dip
-!>
 subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
  !
  use pars,          ONLY:SP,IP,pi,cZERO,cI

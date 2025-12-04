@@ -306,12 +306,6 @@ module BS
      if (I>=BS_T_grp_1st_el(BS_nT_grps-1)) T_group=BS_nT_grps
    end function
    !
-!> BS_Blocks_and_Transitions_alloc
-!>
-!> @param E
-!> @param iT
-!> @param dom_k_T_group
-!>
    subroutine BS_Blocks_and_Transitions_alloc(E,iT,dom_k_T_group)
      !
      use pars,       ONLY:IP,cZERO
@@ -354,9 +348,6 @@ module BS
      !
    end subroutine
    !
-!> BS_Blocks_and_Transitions_free
-!>
-!>
    subroutine BS_Blocks_and_Transitions_free()
      use parallel_m, ONLY:PAR_BS_T_grps_index
      integer :: iT
@@ -410,9 +401,6 @@ module BS
      !
    end function BS_Block_size
    !
-!> BS_Blocks_symmetrize_K
-!>
-!>
    subroutine BS_Blocks_symmetrize_K()
      !
      ! Symmetrize the DIAGONAL blocks only (i_Tk=i_Tp)

@@ -91,10 +91,6 @@ end interface
 
 contains
 
-!> pw_pseudo_init0
-!>
-!> @param pseudo
-!>
 subroutine pw_pseudo_init0(pseudo)
   type (pw_pseudo), intent(out) :: pseudo
   pseudo%is_ncpp = .false.
@@ -114,10 +110,6 @@ subroutine pw_pseudo_init0(pseudo)
   pseudo%qqq_eps=-1.0
 end subroutine pw_pseudo_init0
 
-!> pw_pseudo_init1
-!>
-!> @param pseudo
-!>
 subroutine pw_pseudo_init1(pseudo)
   type (pw_pseudo), intent(out) :: pseudo(:)
   integer ::i
@@ -126,10 +118,6 @@ subroutine pw_pseudo_init1(pseudo)
   end do
 end subroutine pw_pseudo_init1
 
-!> pw_pseudo_destroy0
-!>
-!> @param pseudo
-!>
 subroutine pw_pseudo_destroy0(pseudo)
   type (pw_pseudo), intent(inout) :: pseudo
   integer ::i
@@ -181,10 +169,6 @@ subroutine pw_pseudo_destroy0(pseudo)
   endif
 end subroutine pw_pseudo_destroy0
 
-!> pw_pseudo_destroy1
-!>
-!> @param pseudo
-!>
 subroutine pw_pseudo_destroy1(pseudo)
   type (pw_pseudo), intent(inout) :: pseudo(:)
   integer ::i
@@ -193,12 +177,6 @@ subroutine pw_pseudo_destroy1(pseudo)
   end do
 end subroutine pw_pseudo_destroy1
 
-!> pw_pseudo_set_table
-!>
-!> @param pseudo
-!> @param cutoff
-!> @param cutoff_rho
-!>
 subroutine pw_pseudo_set_table(pseudo,cutoff,cutoff_rho)
   ! use tools_module
   ! use num_module

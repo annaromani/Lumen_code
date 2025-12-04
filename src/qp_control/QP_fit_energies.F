@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QP_fit_energies
-!>
-!> @param i_ACTION
-!> @param bands
-!> @param en
-!> @param qp
-!>
 subroutine QP_fit_energies(i_ACTION,bands,en,qp)
  !
  ! Performs a linear fit of the QP corrections in the database

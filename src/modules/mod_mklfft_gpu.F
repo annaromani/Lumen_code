@@ -45,13 +45,6 @@ use mkl_dfti_omp_offload
  type(dfti_descriptor), pointer :: mklgpu_desc
 
 contains
-!> fft_3d_mklgpu
-!>
-!> @param c_d
-!> @param n
-!> @param fft_sign
-!> @param mklgpu_desc
-!>
 subroutine fft_3d_mklgpu(c_d,n,fft_sign,mklgpu_desc)
  use y_memory_alloc
  !

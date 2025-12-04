@@ -10,13 +10,6 @@
 #include <dev_defs.h>
 #include <y_memory.h>
 !
-!> MATRIX_init
-!>
-!> @param what
-!> @param M_par
-!> @param N
-!> @param Nb
-!>
 subroutine MATRIX_init( what, M_par, N, Nb)
  !
  ! I initialize a general parallel matrix here. Note the meaning of the two COMMS: INTRA and INTER.
@@ -98,9 +91,6 @@ subroutine MATRIX_init( what, M_par, N, Nb)
  !
  contains
    !
-!> rows_and_cols_setup
-!>
-!>
    subroutine rows_and_cols_setup()
      M_par%nrows    = M_par%rows(2)-M_par%rows(1)+1 
      M_par%ncols    = M_par%cols(2)-M_par%cols(1)+1 

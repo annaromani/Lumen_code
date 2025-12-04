@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS AM FP AMS
 !
-!> RT_Fermi_excitation
-!>
-!> @param E
-!> @param k
-!> @param do_kpt
-!> @param SUCCESS
-!>
 subroutine RT_Fermi_excitation(E,k,do_kpt,SUCCESS)
  !
  ! What I want is:
@@ -90,9 +83,6 @@ subroutine RT_Fermi_excitation(E,k,do_kpt,SUCCESS)
  ! 
  contains
    !
-!> pump_Fermi
-!>
-!>
    subroutine pump_Fermi()
      !  
      do i_RT=1,RT_carriers%nstates

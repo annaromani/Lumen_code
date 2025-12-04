@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> SERIAL_inversion
-!>
-!> @param n
-!> @param M
-!> @param det
-!> @param eval_det
-!>
 subroutine SERIAL_inversion(n,M,det,eval_det)
  !
  use pars,           ONLY: SP,cONE

@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> electrons_driver
-!>
-!> @param Xk
-!> @param Xen
-!> @param Xq
-!>
 subroutine electrons_driver(Xk,Xen,Xq)
  !
  Use stderr,         ONLY:intc,STRING_same

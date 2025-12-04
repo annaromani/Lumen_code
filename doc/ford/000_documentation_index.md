@@ -16,6 +16,7 @@ This section provides a comprehensive overview of all available documentation fo
 
 ### Formulas & Quick References
 - [**Formula Quick Reference**](YAMBO_FORMULAS_QUICK_REFERENCE.md) - Essential equations and constants
+- [**Quick Reference Guide**](QUICK_REFERENCE.md) - Developer quick reference card
 
 ## Input/Output System
 

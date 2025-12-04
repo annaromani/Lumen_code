@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_initialize
-!>
-!> @param E
-!> @param k
-!> @param q
-!> @param Dip
-!>
 subroutine RT_initialize(E,k,q,Dip)
  !
  use drivers,        ONLY:l_use_collisions,l_elph_scatt,l_elel_scatt,l_sc_hartree,l_use_Hxc_collisions,&
@@ -508,9 +501,6 @@ subroutine RT_initialize(E,k,q,Dip)
  !
  contains
    !
-!> RT_adjust_equilibrium
-!>
-!>
    subroutine RT_adjust_equilibrium()
      !
      use electrons,          ONLY:spin_occ,n_sp_pol

@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> X_OUTPUT
-!>
-!> @param iq
-!> @param Xen
-!> @param Xk
-!> @param wv
-!> @param X
-!> @param spectra
-!>
 subroutine X_OUTPUT(iq,Xen,Xk,wv,X,spectra)
  !
  use pars,          ONLY:pi,SP

@@ -5,17 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AF AM
 !
-!> PARALLEL_M_by_M
-!>
-!> @param A
-!> @param B
-!> @param C
-!> @param transa
-!> @param transb
-!> @param m
-!> @param n
-!> @param k
-!>
 subroutine PARALLEL_M_by_M(A,B,C,transa,transb,m,n,k)
  !
  !  Perform the parallel matrix multiplication

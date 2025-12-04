@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_random
-!>
-!> @param Xk
-!> @param No_Weight
-!>
 subroutine k_random(Xk,No_Weight)
  !
  use pars,                ONLY:SP,DP,lchlen
@@ -163,9 +158,6 @@ subroutine k_random(Xk,No_Weight)
  !
  contains
    !
-!> print_k
-!>
-!>
    subroutine print_k()
      real(SP)           ::r(3)
      integer            :: ic
@@ -177,11 +169,6 @@ subroutine k_random(Xk,No_Weight)
      enddo
    end subroutine
    !
-!> build_3D_k
-!>
-!> @param k
-!> @param r
-!>
    subroutine build_3D_k(k,r)
      real(DP), external :: dlaran
      real(SP)           :: k(3),r(3)
@@ -195,9 +182,6 @@ subroutine k_random(Xk,No_Weight)
      call k2bz(v_in=r)
    end subroutine
    !
-!> rand_k_expand
-!>
-!>
    subroutine rand_k_expand()
      integer ::i,j,k,N,ic,is
      real(SP)::r_save(BZ_random_nkpts,3)

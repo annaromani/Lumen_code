@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> NL_ypp_driver
-!>
-!> @param en
-!> @param k
-!>
 subroutine NL_ypp_driver(en,k)
  !
  use YPP_real_time,  ONLY:X_order,RT_conf,RT_time,Pol,l_skip_OBS_IO,Pump_path
@@ -270,9 +265,6 @@ subroutine NL_ypp_driver(en,k)
  !
  contains
    !
-!> plot_X_angle
-!>
-!>
    subroutine plot_X_angle()
        !
      ! ... ordering and frequency step (defines the P(t) periodicity)
@@ -361,9 +353,6 @@ subroutine NL_ypp_driver(en,k)
 
    end
      !  
-!> plot_X_effective
-!>
-!>
    subroutine plot_X_effective()
      !
      ! ... ordering and frequency step (defines the P(t) periodicity)

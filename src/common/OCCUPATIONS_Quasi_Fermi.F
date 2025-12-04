@@ -20,14 +20,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> OCCUPATIONS_Quasi_Fermi
-!>
-!> @param E
-!> @param K
-!> @param E_qf
-!> @param E_fermi_h
-!> @param E_fermi_e
-!>
 subroutine OCCUPATIONS_Quasi_Fermi(E,K,E_qf,E_fermi_h,E_fermi_e)
  !
  ! Mode = 0 

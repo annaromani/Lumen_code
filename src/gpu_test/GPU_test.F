@@ -2,10 +2,6 @@
 
 #include <dev_defs.h>
 
-!> GPU_test
-!>
-!> @param N
-!>
 subroutine GPU_test(N)
   use iso_c_binding
   use gpu_m,            ONLY: GPU_test_dim, gpu_devsync, have_gpu

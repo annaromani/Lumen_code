@@ -1,11 +1,4 @@
 # 3 "numrec_polcof.spp"
-!> numrec_polcof_sgl
-!>
-!> @param xa
-!> @param ya
-!> @param n
-!> @param cof
-!>
 subroutine numrec_polcof_sgl(xa,ya,n,cof)
   use numrec_module, only : numrec_polint
   use numrec_kinds
@@ -38,13 +31,6 @@ subroutine numrec_polcof_sgl(xa,ya,n,cof)
   end do
 end subroutine numrec_polcof_sgl
 # 3 "numrec_polcof.spp"
-!> numrec_polcof_dbl
-!>
-!> @param xa
-!> @param ya
-!> @param n
-!> @param cof
-!>
 subroutine numrec_polcof_dbl(xa,ya,n,cof)
   use numrec_module, only : numrec_polint
   use numrec_kinds

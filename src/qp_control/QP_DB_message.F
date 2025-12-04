@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QP_DB_message
-!>
-!> @param i_ACTION
-!> @param qp
-!>
 subroutine QP_DB_message( i_ACTION, qp )
  !
  use pars,     ONLY:lchlen

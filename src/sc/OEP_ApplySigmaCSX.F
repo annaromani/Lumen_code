@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> OEP_ApplySigmaCSX
-!>
-!> @param X
-!> @param Xw
-!> @param E
-!> @param k
-!> @param q
-!> @param U_csx
-!>
 subroutine OEP_ApplySigmaCSX(X,Xw,E,k,q,U_csx)
  !
  !  Apply the NL local sX+cH operator to the valence wfs.

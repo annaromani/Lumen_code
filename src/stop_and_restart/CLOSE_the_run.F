@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> CLOSE_the_run
-!>
-!> @param MEM
-!> @param TIME
-!> @param INIT_stop
-!>
 subroutine CLOSE_the_run(MEM,TIME,INIT_stop)
  !
  use timing_m,       ONLY:timing_deallocate,global_list

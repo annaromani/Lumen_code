@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> plot_cube
-!>
-!>
 subroutine plot_cube()
  !
  use pars,        ONLY:SP,schlen

@@ -8,10 +8,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_Haydock_VEC_COMMs
-!>
-!> @param what
-!>
 subroutine PARALLEL_Haydock_VEC_COMMs(what)
  !
  ! Set up the mask and communicators for the Haydock part.  

@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> MATRIX_BSE_to_PAR
-!>
-!> @param M_bse
-!> @param M_slk
-!>
 subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  !
  ! M_bse (WORLD) ->M_slk (SLK WORLD)
@@ -238,10 +233,6 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  !
  contains
    !
-!> elemental_transfer
-!>
-!> @param mode
-!>
    subroutine elemental_transfer(mode)
      !
      use parallel_int, ONLY:PP_send_and_receive

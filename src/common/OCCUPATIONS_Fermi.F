@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> OCCUPATIONS_Fermi
-!>
-!> @param E
-!> @param K
-!> @param OBJ
-!> @param mode
-!> @param n_bands
-!> @param impose_balance
-!>
 subroutine OCCUPATIONS_Fermi(E,K,OBJ,mode,n_bands,impose_balance)
  !
  ! Mode = "FERMI" 
@@ -351,13 +342,6 @@ subroutine OCCUPATIONS_Fermi(E,K,OBJ,mode,n_bands,impose_balance)
  !
  contains
    !
-!> ef2nel
-!>
-!> @param tTel
-!> @param Ef
-!> @param N_of_el_diff
-!> @param what
-!>
    subroutine ef2nel(tTel,Ef,N_of_el_diff,what)
      !
      implicit none

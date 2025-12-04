@@ -17,15 +17,6 @@
 ! @param[out]      R_PL                luminescence renormalization factor
 ! @param[out]      R_PL_PH_abs         luminescence renormalization factor for phonon-absorption
 !
-!> EXCPH_eval_renorm
-!>
-!> @param iq_bz
-!> @param q
-!> @param R
-!> @param R_PH_abs
-!> @param R_PL
-!> @param R_PL_PH_abs
-!>
 subroutine EXCPH_eval_renorm(iq_bz,q,R,R_PH_abs,R_PL,R_PL_PH_abs)
  !
  use pars,           ONLY:SP,cZERO,rZERO

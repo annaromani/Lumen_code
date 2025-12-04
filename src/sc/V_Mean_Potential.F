@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> V_mean_potential
-!>
-!> @param ik
-!> @param i_sp_pol
-!> @param WFo
-!>
 subroutine V_mean_potential(ik,i_sp_pol,WFo)
  !
  ! Here I implement Eq. 5 of PRL 80, 4265 (1998).

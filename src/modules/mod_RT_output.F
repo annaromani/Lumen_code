@@ -42,11 +42,6 @@ module RT_output_m
  !
  contains
    !
-!> RT_FILE_add
-!>
-!> @param name
-!> @param TITLES
-!>
    subroutine RT_FILE_add(name,TITLES)
      !
      character(*) , OPTIONAL :: name

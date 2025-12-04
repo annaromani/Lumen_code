@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> plot_gnuplot
-!>
-!> @param eval_only
-!>
 subroutine plot_gnuplot(eval_only)
  !
  use pars,        ONLY:SP,schlen

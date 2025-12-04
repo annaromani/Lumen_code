@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> load_cc
-!>
-!> @param manage_zero
-!> @param x_zero_point
-!> @param n_coord
-!>
 subroutine load_cc(manage_zero,x_zero_point,n_coord)
  !
  ! manage_zero:

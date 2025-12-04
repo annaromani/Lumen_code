@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QP_of
-!>
-!> @param qp
-!> @param en
-!> @param QPdb_read_err
-!> @param what
-!>
 subroutine QP_of(qp,en,QPdb_read_err,what)
  !
  use pars,          ONLY:lchlen

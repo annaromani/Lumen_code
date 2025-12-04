@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> SERIAL_diagonalization
-!>
-!> @param n
-!> @param M
-!> @param E
-!> @param V_left
-!> @param V_right
-!>
 subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
  !
  !  The right eigenvector V_right(j) of M satisfies

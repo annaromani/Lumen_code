@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_grids
-!>
-!> @param en
-!> @param k
-!> @param Xk
-!> @param q
-!>
 subroutine k_grids(en,k,Xk,q)
  !
  use pars,                ONLY:SP,schlen,zero_dfl
@@ -366,11 +359,6 @@ subroutine k_grids(en,k,Xk,q)
  !
  contains
    !
-!> reduce_and_print
-!>
-!> @param K_grid
-!> @param GW_grid
-!>
    subroutine reduce_and_print(K_grid,GW_grid)
      !
      use zeros,   ONLY:k_rlu_zero,define_zeros

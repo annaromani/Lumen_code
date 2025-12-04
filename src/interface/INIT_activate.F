@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> INIT_activate
-!>
-!>
 subroutine INIT_activate()
  !
  use BS_solvers,     ONLY:BSS_mode
@@ -617,10 +614,6 @@ subroutine INIT_activate()
  contains
    !
    !
-!> CPU_activate
-!>
-!> @param what
-!>
    subroutine CPU_activate(what)
      character(*) :: what 
 #if defined _MPI
@@ -637,11 +630,6 @@ subroutine INIT_activate()
      !
    end subroutine
    !
-!> X_activate
-!>
-!> @param mode
-!> @param what
-!>
    subroutine X_activate(mode,what)
      character(2)::mode
      character(6)::what(:)

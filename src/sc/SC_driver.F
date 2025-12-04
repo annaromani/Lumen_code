@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> SC_driver
-!>
-!> @param X
-!> @param Xw
-!> @param Xk
-!> @param E
-!> @param k
-!> @param q
-!> @param Dip
-!>
 subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
  !
  use pars,           ONLY:SP,schlen,cZERO,rZERO
@@ -729,9 +719,6 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
  !
  contains
    !
-!> SC_local_alloc
-!>
-!>
    subroutine SC_local_alloc()
      !
      YAMBO_ALLOC(rho_nm1,(fft_size))
@@ -776,9 +763,6 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
      !
    end subroutine
    !
-!> SC_local_free
-!>
-!>
    subroutine SC_local_free()
      !
      YAMBO_FREE(rho_nm1)
@@ -824,9 +808,6 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
      !
    end subroutine
    !
-!> SC_report
-!>
-!>
    subroutine SC_report()
      !     
      ! Before all the DFT energies are shifted the V_xc_sc

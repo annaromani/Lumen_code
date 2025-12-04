@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> XCo_local
-!>
-!> @param E
-!> @param Xk
-!>
 subroutine XCo_local(E,Xk)
  !
  ! Local V_xc
@@ -252,9 +247,6 @@ subroutine XCo_local(E,Xk)
  !
  contains
    !
-!> LOCAL_clean
-!>
-!>
    subroutine LOCAL_clean()
      !
 #if defined _SC || defined _RT

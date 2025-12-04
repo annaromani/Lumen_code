@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_time_configuration_setup
-!>
-!> @param what
-!> @param GENERAL_RT_IO_t
-!>
 subroutine RT_time_configuration_setup(what,GENERAL_RT_IO_t)
  !
  use units,          ONLY:AUT2FS,pi,HA2EV

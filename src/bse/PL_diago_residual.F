@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PL_diago_herm_residual
-!>
-!> @param BS_mat
-!> @param BS_R_PL
-!>
 subroutine PL_diago_herm_residual(BS_mat,BS_R_PL) 
  !
  ! Resonant PL Residuals
@@ -143,13 +138,6 @@ subroutine PL_diago_herm_residual(BS_mat,BS_R_PL)
  !
 end subroutine PL_diago_herm_residual
 
-!> PL_diago_non_herm_residual
-!>
-!> @param BS_V_left
-!> @param BS_V_right
-!> @param BS_R_PL
-!> @param BS_overlap
-!>
 subroutine PL_diago_non_herm_residual(BS_V_left,BS_V_right,BS_R_PL,BS_overlap) 
  !
  ! Non-Hermitian residual

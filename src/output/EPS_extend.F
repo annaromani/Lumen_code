@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> EPS_extend
-!>
-!> @param wv
-!> @param nw
-!> @param iw_ref
-!> @param be_verbose
-!> @param ordering
-!> @param eps
-!> @param eps_extended
-!>
 subroutine EPS_extend(wv,nw,iw_ref,be_verbose,ordering,eps,eps_extended)
  !
  ! extend epsilon to the negative axes if needed

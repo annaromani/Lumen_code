@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> FREQUENCIES_set_reference_point
-!>
-!> @param omega
-!> @param n_freq
-!> @param iw_ref
-!>
 subroutine FREQUENCIES_set_reference_point(omega,n_freq,iw_ref)
  !
  ! Look for the W(iw_ref) closest 0

@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> Dipole_kb_pwscf_def_dim
-!>
-!>
 subroutine Dipole_kb_pwscf_def_dim()
  !
  use pars,          ONLY:SP,pi,cZERO

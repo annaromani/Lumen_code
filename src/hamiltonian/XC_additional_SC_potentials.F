@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> XC_additional_SC_potentials
-!>
-!>
 subroutine XC_additional_SC_potentials()
  !
  use drivers,        ONLY:l_oep_kli,l_oep_exact,l_oep_ceda,l_oep_slater,l_sc_exx

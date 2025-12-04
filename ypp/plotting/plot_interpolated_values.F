@@ -9,19 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> plot_interpolated_values
-!>
-!> @param Xk
-!> @param Xen
-!> @param Ef
-!> @param LOCAL_k
-!> @param IDs
-!> @param dims
-!> @param nquantities
-!> @param nfiles
-!> @param basename
-!> @param int_kind
-!>
 subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfiles,basename,int_kind,i_T)
  !
  use units,          ONLY:HA2EV
@@ -305,13 +292,6 @@ subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfile
 end subroutine plot_interpolated_values
 !
 !
-!> define_grid_map
-!>
-!> @param Xk
-!> @param Local_k
-!> @param Grid_to_path_map
-!> @param n_points_max
-!>
 subroutine define_grid_map(Xk,Local_k,Grid_to_path_map,n_points_max)
  !
  use pars,           ONLY:SP

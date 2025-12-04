@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> COLLISIONS_HXC
-!>
-!> @param X
-!> @param Xk
-!> @param E
-!> @param k
-!> @param q
-!> @param Xw
-!> @param IO_BS_err
-!> @param ID_BS
-!>
 subroutine COLLISIONS_HXC(X,Xk,E,k,q,Xw,IO_BS_err,ID_BS)
  !
  ! HXC collisions 
@@ -409,9 +398,6 @@ subroutine COLLISIONS_HXC(X,Xk,E,k,q,Xw,IO_BS_err,ID_BS)
  !
  contains
    !
-!> map_BSE_to_HXC_collisions
-!>
-!>
    subroutine map_BSE_to_HXC_collisions()
      !
      ! Yambo uses the BSE matrix  with the square root of the occupations
@@ -605,10 +591,6 @@ subroutine COLLISIONS_HXC(X,Xk,E,k,q,Xw,IO_BS_err,ID_BS)
      !
    end subroutine map_BSE_to_HXC_collisions
    !
-!> compute_Hartree_collisions
-!>
-!> @param cc_vv_only
-!>
    subroutine compute_Hartree_collisions(cc_vv_only)
      !
      ! Scattering geometry
@@ -755,10 +737,6 @@ subroutine COLLISIONS_HXC(X,Xk,E,k,q,Xw,IO_BS_err,ID_BS)
      !
    end subroutine compute_Hartree_collisions
    !
-!> compute_MBPT_XC_collisions
-!>
-!> @param cc_vv_only
-!>
    subroutine compute_MBPT_XC_collisions(cc_vv_only)
      !
      ! Scattering geometry

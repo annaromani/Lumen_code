@@ -11,9 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> eval_minus_G
-!>
-!>
 subroutine eval_minus_G()
  !
  ! Output: minus_G(ng_closed)

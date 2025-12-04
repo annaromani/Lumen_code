@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
-!> RT_Observables
-!>
-!> @param en
-!> @param k
-!> @param dG_lesser
-!> @param OBSERVABLES
-!>
 subroutine RT_Observables(en,k,dG_lesser,OBSERVABLES)
  !
  ! This subroutine compute the variation of the energy and its different components,

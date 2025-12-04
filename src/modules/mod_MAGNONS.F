@@ -21,9 +21,6 @@ module MAGNONS
  !
  contains
    !
-!> BSS_MAGN_alloc
-!>
-!>
    subroutine BSS_MAGN_alloc( )
      use pars,       ONLY:cZERO
      use BS,         ONLY:BS_H_dim
@@ -32,9 +29,6 @@ module MAGNONS
      BSS_dipoles_magn = cZERO
    end subroutine
    !
-!> BSS_MAGN_free
-!>
-!>
    subroutine BSS_MAGN_free( )
      if (.not.l_BS_magnons) return
      YAMBO_FREE(BSS_dipoles_magn)

@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG DS IMA
 !
-!> K_dot_product
-!>
-!> @param dot
-!> @param V
-!> @param W
-!> @param i_kind
-!>
 subroutine K_dot_product(dot,V,W,i_kind)
  !
  ! Dot product between distributed vectors 

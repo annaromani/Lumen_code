@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> WF_and_dipole_dimensions
-!>
-!> @param X
-!> @param Xk
-!>
 subroutine WF_and_dipole_dimensions(X,Xk)
  !
  use drivers,      ONLY:l_real_time,l_sc_fock,l_sc_exx,l_sc_coh,l_sc_sex,l_sc_srpa,&

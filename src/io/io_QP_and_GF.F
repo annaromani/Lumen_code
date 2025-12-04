@@ -340,10 +340,6 @@ integer function io_QP_and_GF(what,qp,ID)
  !
  contains 
    !
-!> CLOSE_and_menu
-!>
-!> @param MENU
-!>
    subroutine CLOSE_and_menu(MENU)
      logical :: MENU
      if (MENU) call io_elemental(ID,VAR="",VAR_SZ=0,MENU=1)

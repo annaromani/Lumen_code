@@ -27,12 +27,6 @@
 !
 !=====================================================================
 !
-!> fft_3d
-!>
-!> @param c
-!> @param n
-!> @param fft_sign
-!>
 subroutine fft_3d(c,n,fft_sign)
  !
  use pars,           ONLY:DP

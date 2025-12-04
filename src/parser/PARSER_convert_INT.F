@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARSER_convert_INT
-!>
-!> @param ivar
-!> @param v_descr
-!> @param force_RL
-!>
 subroutine PARSER_convert_INT(ivar,v_descr,force_RL)
  !
  !use units,  ONLY:Gigabyte,Megabyte,Kilobyte

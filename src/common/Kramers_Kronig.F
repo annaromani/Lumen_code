@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> Kramers_Kronig
-!>
-!> @param fi
-!> @param wi
-!> @param ni
-!> @param fo
-!> @param wo
-!> @param no
-!> @param y0
-!>
 subroutine Kramers_Kronig(fi,wi,ni,fo,wo,no,y0)
  !
  ! Calculates Kramers-Kronig transformation:

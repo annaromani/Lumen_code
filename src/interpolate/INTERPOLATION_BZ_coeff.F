@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INTERPOLATION_BZ_coeff
-!>
-!> @param Xk
-!> @param VALUEs
-!> @param engre
-!> @param nvalues
-!> @param Nk
-!> @param ID
-!>
 subroutine INTERPOLATION_BZ_coeff(Xk,VALUEs,engre,nvalues,Nk,ID)
  !
  ! Interpolation scheme (PRB 38 p2721)
@@ -247,15 +238,6 @@ subroutine INTERPOLATION_BZ_coeff(Xk,VALUEs,engre,nvalues,Nk,ID)
    !
   end function roughness_func
   !
-!> k_compare
-!>
-!> @param Xk
-!> @param VALUEs
-!> @param engre
-!> @param nshells
-!> @param nvalues
-!> @param Nk
-!>
   subroutine k_compare(Xk,VALUEs,engre,nshells,nvalues,Nk)
    use units,          ONLY:HA2EV
    use pars,           ONLY:SP,lchlen

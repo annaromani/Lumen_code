@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QP_state_group
-!>
-!> @param N
-!> @param states
-!>
 subroutine QP_state_group(N,states)
  !
  ! Parser of the QP_state logical array and creation of group of indexes

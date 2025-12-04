@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_map_fine_to_coarse_init
-!>
-!> @param Xk
-!> @param Xen
-!> @param FineGd_k
-!> @param FineGd_is_expanded
-!> @param PH_grid
-!>
 subroutine k_map_fine_to_coarse_init(Xk,Xen,FineGd_k,FineGd_is_expanded,PH_grid)
  !
  use pars,                ONLY:SP,pi

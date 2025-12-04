@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> c2y_db1
-!>
-!> @param en
-!> @param k
-!> @param file_name_
-!>
 subroutine c2y_db1(en,k,file_name_)
  !
  use pars,                  ONLY: DP,pi
@@ -341,10 +335,6 @@ subroutine c2y_db1(en,k,file_name_)
  !
 end subroutine
 !
-!> fskip
-!>
-!> @param nrec
-!>
 subroutine fskip(nrec)
  !
  implicit none
@@ -365,11 +355,6 @@ subroutine fskip(nrec)
  write(*,*) "FSKIP, read error"
 end subroutine
 !
-!> assign_z_spec
-!>
-!> @param what
-!> @param Z
-!>
 subroutine assign_z_spec(what,Z)
  !
  implicit none

@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> OEP_exact_inversion
-!>
-!> @param X
-!> @param E
-!> @param k
-!> @param Voep
-!> @param W_x
-!>
 subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
  !
  !  Exact exchange/static RPA potential (voep in direct space)

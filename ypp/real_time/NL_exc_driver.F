@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> NL_exc_driver
-!>
-!> @param en
-!> @param k
-!>
 subroutine NL_exc_driver(en,k)
  !
  use R_lattice,      ONLY:bz_samp

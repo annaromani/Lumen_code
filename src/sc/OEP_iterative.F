@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
-!> OEP_iterative
-!>
-!> @param E
-!> @param k
-!> @param Voep
-!> @param Vslt
-!> @param U
-!> @param rho
-!>
 subroutine OEP_iterative(E,k,Voep,Vslt,U,rho)
  !
  ! Iteratively calculate the OEP potential (or one of its approximations) 

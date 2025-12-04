@@ -58,16 +58,6 @@ module xc_functionals
  !
  interface
    !
-!> XC_potential_driver
-!>
-!> @param en
-!> @param Xk
-!> @param KIND
-!> @param FUNCTIONAL
-!> @param ORDER
-!> @param EXX_FRACTION
-!> @param EXX_SCREENING
-!>
    subroutine XC_potential_driver(en,Xk,KIND,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
      use pars,          ONLY:SP,DP,RZERO
      use R_lattice,     ONLY:bz_samp
@@ -81,15 +71,6 @@ module xc_functionals
      real(SP),      intent(inout),optional :: EXX_FRACTION,EXX_SCREENING
    end subroutine XC_potential_driver
    !
-!> XC_libxc_driver
-!>
-!> @param en
-!> @param Xk
-!> @param FUNCTIONAL
-!> @param ORDER
-!> @param EXX_FRACTION
-!> @param EXX_SCREENING
-!>
    subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
      use pars,          ONLY:SP
      use R_lattice,     ONLY:bz_samp
@@ -123,12 +104,6 @@ module xc_functionals
      !
    end function XC_libxcID
    !
-!> xc_setup_fnctl
-!>
-!> @param f
-!> @param fun
-!> @param nsp
-!>
    subroutine xc_setup_fnctl(f,fun,nsp)
      !
      !use xc_f03_lib_m
@@ -183,12 +158,6 @@ module xc_functionals
      !
    end subroutine xc_setup_fnctl
    !
-!> xc_setup_hyb
-!>
-!> @param f
-!> @param exx_frac
-!> @param exx_screen
-!>
    subroutine xc_setup_hyb(f,exx_frac,exx_screen)
      !
      use pars,         ONLY:DP

@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> fix_PPs
-!>
-!> @param E
-!> @param k
-!> @param k_save
-!> @param kpoints_map
-!> @param old_nsym
-!> @param old_dl_sop
-!> @param old_sop_inv
-!> @param S_contains_TR
-!>
 subroutine fix_PPs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  !
  use pars,                ONLY:LP,SP,lchlen

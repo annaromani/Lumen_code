@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_circuit_made_of_user_points
-!>
-!>
 subroutine k_circuit_made_of_user_points( )
  !
  use pars,           ONLY:SP,schlen

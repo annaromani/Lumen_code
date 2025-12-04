@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> plot_xcrysden
-!>
-!>
 subroutine plot_xcrysden()
  !
  use pars,        ONLY:SP,schlen

@@ -230,10 +230,6 @@ module R_lattice
  !
  contains
    !
-!> qindx_alloc
-!>
-!> @param what
-!>
    subroutine qindx_alloc(what)
      !
      use parallel_m,   ONLY:PAR_K_scheme
@@ -270,10 +266,6 @@ module R_lattice
      !
    end subroutine
    !
-!> qindx_free
-!>
-!> @param what
-!>
    subroutine qindx_free(what)
      !
      character(*), intent(in) :: what
@@ -292,11 +284,6 @@ module R_lattice
      endif
    end subroutine qindx_free
    !
-!> bz_samp_FineGd_alloc
-!>
-!> @param FG
-!> @param N_coarse
-!>
    subroutine bz_samp_FineGd_alloc(FG,N_coarse)
      type(bz_fine_grid)::FG
      integer           ::N_coarse,N_alloc
@@ -320,12 +307,6 @@ module R_lattice
      FG%N_mapped=0
    end subroutine
    !
-!> bz_samp_FineGd_default
-!>
-!> @param FG
-!> @param k
-!> @param nk
-!>
    subroutine bz_samp_FineGd_default(FG,k,nk)
      type(bz_fine_grid)::FG
      type(bz_samp)     ::k
@@ -352,10 +333,6 @@ module R_lattice
      enddo
    end subroutine
    !
-!> bz_samp_FineGd_reset
-!>
-!> @param FG
-!>
    subroutine bz_samp_FineGd_reset(FG)
      type(bz_fine_grid)::FG
      FG%N=0
@@ -367,10 +344,6 @@ module R_lattice
      YAMBO_FREE(FG%N_mapped)
    end subroutine
    !
-!> bz_samp_reset
-!>
-!> @param k
-!>
    subroutine bz_samp_reset(k)
      type(bz_samp)::k
      k%nibz=0
@@ -399,11 +372,6 @@ module R_lattice
      !
    end subroutine bz_samp_reset
    !
-!> bz_samp_duplicate
-!>
-!> @param BZi
-!> @param BZo
-!>
    subroutine bz_samp_duplicate(BZi, BZo)
      type(bz_samp), intent(in)    :: BZi
      type(bz_samp), intent(inout) :: BZo
@@ -437,11 +405,6 @@ module R_lattice
      !
    end subroutine bz_samp_duplicate
    !
-!> bz_samp_duplicate_nosymm
-!>
-!> @param BZi
-!> @param BZo
-!>
    subroutine bz_samp_duplicate_nosymm(BZi, BZo)
      type(bz_samp), intent(in)    :: BZi
      type(bz_samp), intent(inout) :: BZo
@@ -474,12 +437,6 @@ module R_lattice
      BZo%ptbz=BZi%ptbz
    end subroutine bz_samp_duplicate_nosymm
    !
-!> bz_samp_duplicate_Fg
-!>
-!> @param FGi
-!> @param FGo
-!> @param N_coarse
-!>
    subroutine bz_samp_duplicate_Fg(FGi,FGo,N_coarse)
      type(bz_fine_grid), intent(in)  ::FGi
      type(bz_fine_grid), intent(out) ::FGo
@@ -522,9 +479,6 @@ module R_lattice
      !
    end subroutine bz_samp_duplicate_Fg
    !
-!> cutoff_presets
-!>
-!>
    subroutine cutoff_presets()
      Box_length=0.
      cyl_ph_radius=0.

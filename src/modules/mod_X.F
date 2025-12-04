@@ -169,16 +169,6 @@ module X_m
  !
  interface
    !
-!> X_OUTPUT_messages
-!>
-!> @param iq
-!> @param ig
-!> @param Vnl
-!> @param GF
-!> @param ordering
-!> @param Q_plus_G
-!> @param MORE
-!>
    subroutine X_OUTPUT_messages(iq,ig,Vnl,GF,ordering,Q_plus_G,MORE)
      use pars,      ONLY:schlen,SP,msg_len
      integer                :: iq
@@ -190,17 +180,6 @@ module X_m
      character(*), optional :: MORE
    end subroutine
    !
-!> X_OUTPUT_driver
-!>
-!> @param WHAT
-!> @param keys
-!> @param solver
-!> @param IQ
-!> @param IG
-!> @param DESC
-!> @param data
-!> @param indexes
-!>
    subroutine X_OUTPUT_driver(WHAT,keys,solver,IQ,IG,DESC,data,indexes)
      use pars,           ONLY:SP
      use frequency,      ONLY:w_samp
@@ -214,14 +193,6 @@ module X_m
      integer,      optional:: indexes(:)
    end subroutine
    !
-!> X_Double_Grid_setup
-!>
-!> @param iq
-!> @param k
-!> @param k_FGbz
-!> @param nTrans_percent
-!> @param Radius
-!>
    subroutine X_Double_Grid_setup(iq,k,k_FGbz,nTrans_percent,Radius)
      use R_lattice,     ONLY:bz_samp,bz_fine_grid
      use pars,          ONLY:SP
@@ -231,15 +202,6 @@ module X_m
      real(SP),            optional :: nTrans_percent,Radius
    end subroutine
    !
-!> X_redux_build_kernel
-!>
-!> @param KERNEL
-!> @param Xo
-!> @param Xo_rows
-!> @param Xo_cols
-!> @param compute_on_gpu
-!> @param iq
-!>
    subroutine X_redux_build_kernel(KERNEL,Xo,Xo_rows,Xo_cols,compute_on_gpu,iq)
      use matrix,        ONLY:PAR_matrix
      implicit none
@@ -264,10 +226,6 @@ module X_m
      enddo
    end function
    !
-!> X_obs_onoff
-!>
-!> @param WHAT
-!>
    subroutine X_obs_onoff(WHAT)
      use stderr, ONLY:STRING_match
      character(*)   :: WHAT
@@ -278,11 +236,6 @@ module X_m
      enddo
    end subroutine
    !
-!> X_duplicate
-!>
-!> @param Xi
-!> @param Xo
-!>
    subroutine X_duplicate(Xi,Xo)
      type(X_t):: Xi,Xo
      Xo%ng           =Xi%ng
@@ -304,11 +257,6 @@ module X_m
      Xo%KERNEL       =Xi%KERNEL
    end subroutine
    !
-!> X_reset
-!>
-!> @param X
-!> @param type
-!>
    subroutine X_reset(X,type)
      use pars,  ONLY:czero
      integer, optional :: type

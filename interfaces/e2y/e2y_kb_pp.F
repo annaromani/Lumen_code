@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CH
 !
-!> e2y_kb_pp
-!>
-!> @param ikibz
-!> @param ncid
-!>
 subroutine e2y_kb_pp( ikibz, ncid )
   !
   ! Structure of ETSF library data: (fortran order, opp to netcdf order)

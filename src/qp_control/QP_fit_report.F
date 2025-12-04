@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QP_fit_report
-!>
-!> @param i_ACTION
-!> @param bands
-!> @param en
-!> @param k
-!> @param qp
-!>
 subroutine QP_fit_report(i_ACTION,bands,en,k,qp)
  !
  use pars,          ONLY:SP,cONE,lchlen,schlen

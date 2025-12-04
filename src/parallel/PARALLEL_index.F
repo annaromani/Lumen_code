@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_index
-!>
-!> @param px
-!> @param uplim
-!> @param low_range
-!> @param COMM
-!> @param CONSECUTIVE
-!> @param ORDERED
-!> @param NO_EMPTIES
-!> @param MASK
-!>
 subroutine PARALLEL_index(px,uplim,low_range,COMM,CONSECUTIVE,ORDERED,NO_EMPTIES,MASK)
  !
  use pars,        ONLY:SP

@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> DEV_SUB
-!>
-!> @param scatter_Gamp
-!>
 subroutine DEV_SUB(scatter_Gamp)(isc,mode)
  !
  ! INCLUDED in: scatter_Gamp_incl.F

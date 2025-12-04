@@ -7,14 +7,6 @@
 !
 ! This subroutine fill the W_electric matrix 
 !
-!> SC_add_efield
-!>
-!> @param E
-!> @param k
-!> @param i_sp_pol
-!> @param V_bands
-!> @param Pol
-!>
 subroutine SC_add_efield(E,k,i_sp_pol,V_bands,Pol)
  !
  use pars,           ONLY:SP,cZERO

@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> DIPOLE_dimensions
-!>
-!> @param Xen
-!> @param Dip
-!> @param bands
-!> @param q0
-!>
 subroutine DIPOLE_dimensions(Xen,Dip,bands,q0)
  !
  use pars,           ONLY:SP

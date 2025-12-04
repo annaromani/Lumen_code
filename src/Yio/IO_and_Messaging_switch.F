@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> IO_and_Messaging_switch
-!>
-!> @param what
-!> @param CONDITION
-!>
 subroutine IO_and_Messaging_switch(what,CONDITION)
  !
  use pars,           ONLY:schlen

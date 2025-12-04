@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> K_observables
-!>
-!> @param W
-!> @param Xk
-!>
 subroutine K_observables(W,Xk)
  !
 #if defined _SLEPC && !defined _NL

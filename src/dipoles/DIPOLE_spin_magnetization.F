@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> Dipole_spin_magnetization
-!>
-!> @param Xen
-!> @param Xk
-!> @param dip
-!>
 subroutine Dipole_spin_magnetization(Xen,Xk,dip)
  !
  ! This routine returns <sigma>

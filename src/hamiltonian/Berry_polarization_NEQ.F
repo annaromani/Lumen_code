@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !                  
-!> Berry_polarization_NEQ
-!>
-!> @param Xen
-!> @param Xk
-!> @param i_sp_pol
-!> @param V_bands
-!> @param Polarization
-!>
 subroutine Berry_polarization_NEQ(Xen,Xk,i_sp_pol,V_bands,Polarization)
  !
  use pars,           ONLY:SP,cZERO

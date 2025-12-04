@@ -39,18 +39,6 @@ module RT_operations
      character(6),    optional, intent(in) :: Double_Grid
    end subroutine RT_average_operator
    !
-!> RT_update
-!>
-!> @param G_input
-!> @param H_rotation
-!> @param it
-!> @param E
-!> @param k
-!> @param X
-!> @param up_Gref
-!> @param up_DIP
-!> @param an_QP
-!>
    subroutine RT_update(G_input,H_rotation,it,E,k,X,up_Gref,up_DIP,an_QP)
      use pars,       ONLY:SP
      use R_lattice,  ONLY:bz_samp
@@ -169,12 +157,6 @@ module RT_operations
      FIRST_step=integrator_step==1
    end function
    !
-!> ADD_to_saved_values
-!>
-!> @param VAL
-!> @param ARRAY
-!> @param STEPS
-!>
    subroutine ADD_to_saved_values(VAL,ARRAY,STEPS)
      integer  :: STEPS
      real(SP) :: VAL,ARRAY(STEPS)
@@ -185,16 +167,6 @@ module RT_operations
      ARRAY(STEPS)=VAL
    end subroutine
    !
-!> RT_lifetime_to_RT_obj
-!>
-!> @param action
-!> @param i1
-!> @param i2
-!> @param J
-!> @param LIFE
-!> @param LIFE_ref
-!> @param LIFE_obj
-!>
    subroutine RT_lifetime_to_RT_obj(action,i1,i2,J,LIFE,LIFE_ref,LIFE_obj)
      use RT_lifetimes,   ONLY:RT_obj_lifetime
      use real_time,      ONLY:RT_levels

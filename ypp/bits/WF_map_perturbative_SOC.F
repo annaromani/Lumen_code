@@ -10,11 +10,6 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
-!> WF_map_perturbative_SOC
-!>
-!> @param kpt
-!> @param En
-!>
 subroutine WF_map_perturbative_SOC(kpt,En)
  !
  use YPPm,                ONLY:perturbative_SOC_path,SOC_split,SOC_bands_to_map,&

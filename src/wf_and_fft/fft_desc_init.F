@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AF
 !
-!> fft_desc_init
-!>
-!> @param n
-!> @param iGo_max
-!> @param dfft
-!>
 subroutine fft_desc_init(n,iGo_max,dfft)
  !
  ! init dffts as required by the QE FFT lib

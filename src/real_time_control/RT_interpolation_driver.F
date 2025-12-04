@@ -9,19 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_interpolation_driver
-!>
-!> @param bands
-!> @param E
-!> @param K
-!> @param what
-!> @param Time
-!> @param l_f
-!> @param l_E
-!> @param l_W
-!> @param l_B
-!> @param NN
-!>
 subroutine RT_interpolation_driver(bands,E,K,what,Time,l_f,l_E,l_W,l_B,NN,VERB)
  !
  use pars,           ONLY:SP,schlen

@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AC MG 
 !
-!> EXP_op
-!>
-!> @param U
-!> @param H
-!> @param dT
-!>
 subroutine EXP_op(U,H,dT)
   use pars,           ONLY:SP,cI,cZERO,cONE
   use nl_optics,      ONLY:NL_bands

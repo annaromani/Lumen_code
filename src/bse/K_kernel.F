@@ -10,16 +10,6 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-!> K_kernel
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param q
-!> @param X
-!> @param Xw
-!> @param W_bss
-!>
 subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  !
  ! K = <2V-W> for n_spin=1; K=<V-W> for n_spin>1

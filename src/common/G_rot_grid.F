@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> G_rot_grid
-!>
-!> @param is
-!> @param call_kind
-!>
 subroutine G_rot_grid(is,call_kind)
  !
  use pars,         ONLY:SP

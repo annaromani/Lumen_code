@@ -10,15 +10,6 @@
 #include <y_memory.h>
 !#include <netcdf.inc>
 !
-!> setup
-!>
-!> @param en
-!> @param q
-!> @param Xen
-!> @param Ken
-!> @param k
-!> @param Xk
-!>
 subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  use pars,           ONLY:SP,pi,schlen

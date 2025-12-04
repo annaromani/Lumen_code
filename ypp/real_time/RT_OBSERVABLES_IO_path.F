@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_OBSERVABLES_IO_paths
-!>
-!> @param what
-!> @param en
-!>
 subroutine RT_OBSERVABLES_IO_paths(what,en)
  !
  use YPP_interfaces, ONLY:RT_OBSERVABLES_IO

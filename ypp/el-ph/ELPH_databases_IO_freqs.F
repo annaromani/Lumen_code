@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM FP
 !
-!> ELPH_databases_IO_freqs
-!>
-!> @param ph_file
-!> @param n_q
-!> @param q_pt
-!> @param ph_freqs
-!>
 subroutine ELPH_databases_IO_freqs(ph_file,n_q,q_pt,ph_freqs)
  !
  use pars,           ONLY:schlen,SP 

@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> io_RT_components_G_lesser
-!>
-!> @param ID
-!> @param T_size
-!>
 subroutine io_RT_components_G_lesser(ID,T_size)
  !
  use pars,           ONLY:SP,schlen

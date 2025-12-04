@@ -63,9 +63,6 @@ module openmp
  !
  contains
    !
-!> OPENMP_initialize
-!>
-!>
    subroutine OPENMP_initialize( )
      !
 #if !defined _OPENMP
@@ -115,11 +112,6 @@ module openmp
      !
    end subroutine
    !
-!> OPENMP_set_threads
-!>
-!> @param n_threads_in
-!> @param use_nested
-!>
    subroutine OPENMP_set_threads(n_threads_in,use_nested)
      !
      integer, optional :: n_threads_in
@@ -190,10 +182,6 @@ module openmp
      !
    end subroutine
    !
-!> OPENMP_update
-!>
-!> @param master_
-!>
    subroutine OPENMP_update(master_)
      !
      logical, optional :: master_
@@ -215,11 +203,6 @@ module openmp
      !
    end subroutine
    !
-!> OPENMP_locks_reset
-!>
-!> @param INIT
-!> @param nlocks
-!>
    subroutine OPENMP_locks_reset(INIT,nlocks)
      implicit none
      ! 
@@ -257,11 +240,6 @@ module openmp
      ! 
    end subroutine OPENMP_locks_reset
    ! 
-!> OPENMP_compute_mutex
-!>
-!> @param id
-!> @param mtx
-!>
    subroutine OPENMP_compute_mutex(id,mtx)
      implicit none
      integer :: id, mtx

@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM FP
 !
-!> RT_occupations_and_levels_init
-!>
-!> @param bands
-!> @param E
-!> @param k
-!> @param q
-!> @param k_FG
-!> @param E_FG
-!>
 subroutine RT_occupations_and_levels_init(bands,E,k,q,k_FG,E_FG)
  !
  use pars,           ONLY:SP

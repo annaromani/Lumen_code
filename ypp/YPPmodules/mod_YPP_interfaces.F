@@ -13,16 +13,6 @@ module YPP_interfaces
    !
 #if defined _YPP_RT
    !
-!> RT_OBSERVABLES_IO
-!>
-!> @param what
-!> @param J
-!> @param P
-!> @param IO_error
-!> @param first_sec_only
-!> @param G_lesser_only
-!> @param COM_
-!>
    subroutine  RT_OBSERVABLES_IO(what,J,P,IO_error,first_sec_only,G_lesser_only,COM_)
      use YPP_real_time,  ONLY:OBS_el
      use electrons,      ONLY:levels
@@ -35,19 +25,6 @@ module YPP_interfaces
    !
 #endif  
    !
-!> electrons_dos_elemental
-!>
-!> @param k
-!> @param E
-!> @param bands
-!> @param el_dos
-!> @param dos_E
-!> @param spin_fac
-!> @param pdos_fac
-!> @param USE_the_DbGd
-!> @param QUIET
-!> @param FORCE_occ
-!>
    subroutine electrons_dos_elemental(k,E,bands,el_dos,dos_E,spin_fac,pdos_fac,USE_the_DbGd,QUIET,FORCE_occ)
      use pars,           ONLY:SP
      use electrons,      ONLY:levels,n_spin
@@ -65,14 +42,6 @@ module YPP_interfaces
      logical, optional,intent(in) :: USE_the_DbGd,QUIET,FORCE_occ
    end subroutine electrons_dos_elemental
    !
-!> excitons_sort_and_report
-!>
-!> @param iq
-!> @param Res
-!> @param BS_E
-!> @param BS_E_SOC_corr
-!> @param EXC_spin
-!>
    subroutine excitons_sort_and_report(iq,Res,BS_E,BS_E_SOC_corr,EXC_spin)
      use pars,          ONLY:SP
      use BS_solvers,    ONLY:BSS_n_eig
@@ -85,35 +54,15 @@ module YPP_interfaces
      type(EXCITON_spin),optional  :: EXC_spin
    end subroutine
    !
-!> PROJECTION_setup
-!>
-!> @param what
-!> @param bands
-!>
    subroutine PROJECTION_setup( what, bands)
      character(*)       :: what
      integer   ,optional:: bands(2)
    end subroutine
    !
-!> k_special
-!>
-!> @param LIST_only
-!>
    subroutine k_special( LIST_only )
      logical   ,optional:: LIST_only
    end subroutine
    !
-!> PROJECTION_plot
-!>
-!> @param what
-!> @param N
-!> @param Ns
-!> @param bands
-!> @param W
-!> @param TIME
-!> @param OBS_K
-!> @param OBS_B
-!>
    subroutine PROJECTION_plot( what, N , Ns, bands, W, TIME, OBS_K, OBS_B)
      use pars,           ONLY:SP
      use YPPm,           ONLY:PROJECT_N_par

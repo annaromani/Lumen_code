@@ -9,16 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> el_density_and_current
-!>
-!> @param E
-!> @param k
-!> @param rho
-!> @param drho
-!> @param J
-!> @param bands
-!> @param force_spatial_inversion
-!>
 subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
  !
  ! Electronic density (and current).
@@ -359,10 +349,6 @@ subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
 end subroutine
 
 
-!> compute_rho_map
-!>
-!> @param rho
-!>
 subroutine compute_rho_map(rho)
  !
  ! This subroutine defines a grid of sub-points in the whole fft_size

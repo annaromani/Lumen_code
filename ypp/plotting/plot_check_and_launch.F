@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> plot_check_and_launch
-!>
-!> @param check_only
-!>
 subroutine plot_check_and_launch(check_only)
  !
  use pars,        ONLY:SP

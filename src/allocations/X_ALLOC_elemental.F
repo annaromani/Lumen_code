@@ -11,11 +11,6 @@
 #include<y_memory.h>
 !
 !
-!> X_ALLOC_elemental
-!>
-!> @param WHAT
-!> @param DIM
-!>
 subroutine X_ALLOC_elemental(WHAT,DIM)
  !
  use pars,          ONLY:rZERO,cZERO

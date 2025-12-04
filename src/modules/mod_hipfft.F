@@ -99,10 +99,6 @@ MODULE hipfft_m
 
 CONTAINS
 
-!> hipfftcheck
-!>
-!> @param hiperror
-!>
   SUBROUTINE hipfftcheck(hiperror)
       IMPLICIT NONE
 
@@ -120,10 +116,6 @@ contains
 
   !
   ! dummy subroutine to avoid having an empty module
-!> hip_dummy__
-!>
-!> @param i
-!>
   subroutine hip_dummy__(i)
      integer :: i
      i=0 

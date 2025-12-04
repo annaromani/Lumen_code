@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> io_fragment_disconnect
-!>
-!> @param ID
-!> @param ID_frag
-!>
 subroutine io_fragment_disconnect(ID,ID_frag)
  !
  ! This routine closes the fragment. 

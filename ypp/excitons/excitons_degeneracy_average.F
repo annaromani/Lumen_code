@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> excitons_degeneracy_average
-!>
-!> @param N
-!> @param BS_E_degs
-!> @param R
-!> @param C
-!> @param VERB
-!>
 subroutine excitons_degeneracy_average(N,BS_E_degs,R,C,VERB)
  !
  use pars,          ONLY:SP

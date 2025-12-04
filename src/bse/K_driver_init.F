@@ -11,13 +11,6 @@
 #include <petsc/finclude/petscsys.h>
 #endif
 !
-!> K_driver_init
-!>
-!> @param what
-!> @param iq
-!> @param Ken
-!> @param Xk
-!>
 subroutine K_driver_init(what,iq,Ken,Xk)
  !
  use pars,         ONLY:SP,schlen

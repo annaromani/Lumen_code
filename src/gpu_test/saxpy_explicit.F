@@ -2,13 +2,6 @@
 #include <dev_defs.h>
 
 !================================
-!> saxpy_cpu
-!>
-!> @param N
-!> @param a
-!> @param x
-!> @param y
-!>
 subroutine saxpy_cpu(N, a, x, y) 
   !================================
   use iso_c_binding
@@ -26,13 +19,6 @@ subroutine saxpy_cpu(N, a, x, y)
   end subroutine saxpy_cpu
   !
 !================================
-!> saxpy_explicit
-!>
-!> @param N
-!> @param a
-!> @param x
-!> @param y
-!>
 subroutine saxpy_explicit(N, a, x, y) 
   !================================
   use iso_c_binding

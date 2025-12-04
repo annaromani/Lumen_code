@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> MEM_error
-!>
-!> @param what
-!>
 subroutine MEM_error(what)
  !
  use y_memory,       ONLY:MEM_err,MEM_msg

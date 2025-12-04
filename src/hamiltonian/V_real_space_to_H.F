@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> V_real_space_to_H
-!>
-!> @param ik
-!> @param i_sp_pol
-!> @param H
-!> @param WF
-!> @param V_kind
-!> @param V
-!> @param Vxc
-!>
 subroutine V_real_space_to_H(ik,i_sp_pol,H,WF,V_kind,V,Vxc)
  !
  use electrons,      ONLY:n_spin,n_spinor,spin

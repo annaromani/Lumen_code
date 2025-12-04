@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PP_vloc_augment
-!>
-!> @param QP_Vloc
-!> @param Vloc
-!> @param ik
-!> @param ib
-!> @param ibp
-!>
 subroutine PP_vloc_augment(QP_Vloc,Vloc,ik,ib,ibp)
  !
  ! Add the USPP augmentation to the matrix element of a local potential

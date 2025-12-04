@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> PARALLEL_global_BZINDX
-!>
-!> @param E
-!> @param Xk
-!> @param q
-!> @param ENVIRONMENT
-!>
 subroutine PARALLEL_global_BZINDX(E,Xk,q,ENVIRONMENT)
  !
  use electrons,     ONLY:levels

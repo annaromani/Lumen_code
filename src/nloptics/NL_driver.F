@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> NL_driver
-!>
-!> @param E
-!> @param X
-!> @param Xw
-!> @param k
-!> @param q
-!> @param Dip
-!>
 subroutine NL_driver(E,X,Xw,k,q,Dip)
  !
  use pars,           ONLY:pi,SP,cZERO,cONE,schlen
@@ -400,9 +391,6 @@ subroutine NL_driver(E,X,Xw,k,q,Dip)
    !
  end subroutine setup_OSCLL_parallelization
  !
-!> setup_NL_parallelization
-!>
-!>
  subroutine setup_NL_parallelization()
    !
    implicit none

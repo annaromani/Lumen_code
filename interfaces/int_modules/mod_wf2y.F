@@ -11,9 +11,6 @@ module mod_wf2y
  !
  contains
    !
-!> WF_splitter
-!>
-!>
    subroutine WF_splitter()
      !
      use pars,           ONLY:SP

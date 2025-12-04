@@ -12,13 +12,6 @@
 ! (5) Figure out rotations/symmetry of exciton eigenvectors and EPC m.e.
 ! - FP
 !
-!> EXCPH_load_L
-!>
-!> @param iq_bse
-!> @param X
-!> @param what
-!> @param Ltype
-!>
 subroutine EXCPH_load_L(iq_bse,X,what,Ltype)
  !
  use pars,           ONLY:lchlen

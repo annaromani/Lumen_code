@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_global_Real_Time
-!>
-!> @param E
-!> @param Xk
-!> @param q
-!> @param X_type
-!>
 subroutine PARALLEL_global_Real_Time(E,Xk,q,X_type)
  !
  use drivers,       ONLY:l_eval_collisions

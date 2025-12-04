@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> check_for_a_redundant_IO
-!>
-!> @param path_
-!> @param cpu_seen_by_me
-!> @param cpu_seen_by_any
-!>
 subroutine check_for_a_redundant_IO(path_,cpu_seen_by_me,cpu_seen_by_any)
  !
  ! In this routine I check if all cpu

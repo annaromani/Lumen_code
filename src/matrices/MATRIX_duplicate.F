@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> MATRIX_duplicate
-!>
-!> @param operation
-!> @param M_in
-!> @param INDEX_in
-!> @param M_out
-!>
 subroutine MATRIX_duplicate( operation, M_in, INDEX_in, M_out )
  !
  ! operation can be "none/free/+1/-1/-C/+T/+TC"

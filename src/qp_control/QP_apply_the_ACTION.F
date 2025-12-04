@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_apply_the_ACTION
-!>
-!> @param i_ACTION
-!> @param bands
-!> @param E
-!> @param k
-!>
 subroutine QP_apply_the_ACTION(i_ACTION,bands,E,k)
  !
  ! Here I apply the strecth for both QP_action.

@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PROJECTION_setup
-!>
-!> @param what
-!> @param bands
-!>
 subroutine PROJECTION_setup( what ,bands )
  !
  use pars,           ONLY:SP

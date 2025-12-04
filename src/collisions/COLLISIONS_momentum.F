@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> COLLISIONS_momentum
-!>
-!> @param E
-!> @param k
-!> @param q
-!>
 subroutine COLLISIONS_momentum(E,k,q)
  !
  ! Momentum matrix elements

@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> K_inversion_do_it_SLK
-!>
-!> @param Lo
-!> @param what
-!>
 subroutine K_inversion_do_it_SLK(Lo,what)
  !
  ! 1./(Lo^{-1}-M) (using SLK procedures)

@@ -4,13 +4,6 @@
 !
 ! Authors (see AUTHORS file for details): AM MG DS
 !
-!> K_Haydock_gather
-!>
-!> @param V
-!> @param fullV
-!> @param fullV_size
-!> @param n_ColsFG
-!>
 subroutine K_Haydock_gather(V,fullV,fullV_size,n_ColsFG)
  !
  ! Gather the Haydock vector fragments into one 

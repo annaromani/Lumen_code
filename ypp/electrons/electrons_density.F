@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> electrons_density
-!>
-!> @param Xk
-!> @param Xen
-!>
 subroutine electrons_density(Xk,Xen)
  !
  use pars,           ONLY:SP,schlen

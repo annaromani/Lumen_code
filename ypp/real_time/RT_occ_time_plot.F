@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_occ_time_plot
-!>
-!> @param En
-!> @param kpt
-!> @param n_T_steps
-!>
 subroutine RT_occ_time_plot(En,kpt,n_T_steps)
  !
  use drivers,        ONLY:l_elel_scatt,l_elph_scatt
@@ -337,11 +331,6 @@ subroutine RT_occ_time_plot(En,kpt,n_T_steps)
  !
  contains
    !
-!> open_file
-!>
-!> @param fname
-!> @param fname_short
-!>
    subroutine open_file(fname,fname_short)
      !
      character(lchlen)  :: fname_short,fname

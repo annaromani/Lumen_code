@@ -116,11 +116,6 @@ module fields
      enddo
    end function
    !
-!> Efield_duplicate
-!>
-!> @param E1
-!> @param E2
-!>
    subroutine Efield_duplicate(E1,E2)
      type(ext_field) :: E1,E2
      E2%t_initial=E1%t_initial  
@@ -141,10 +136,6 @@ module fields
      E2%ef_pol=E1%ef_pol
    end subroutine
    !
-!> Efield_reset
-!>
-!> @param E
-!>
    subroutine Efield_reset(E)
      type(ext_field) :: E
      E%t_initial    =0._SP
@@ -164,10 +155,6 @@ module fields
      E%versor_circ  =(/0._SP,1._SP,0._SP/)
    end subroutine
    !
-!> A_vecpot_reset
-!>
-!> @param A
-!>
    subroutine A_vecpot_reset(A)
      type(gauge_field) :: A
      A%vecpot_acc=0._SP
@@ -178,10 +165,6 @@ module fields
      A%intensity =0._SP
    end subroutine
    !
-!> compute_intensity
-!>
-!> @param A
-!>
    subroutine compute_intensity(A)
      use pars,   ONLY:SP
      use units,  ONLY:SPEED_OF_LIGHT
@@ -189,10 +172,6 @@ module fields
      A%intensity= (abs(A%vecpot_vel(1))**2+abs(A%vecpot_vel(2))**2+abs(A%vecpot_vel(3))**2)/SPEED_OF_LIGHT/4._SP/pi
    end subroutine compute_intensity
    !
-!> compute_envelop
-!>
-!> @param A
-!>
    subroutine compute_envelop(A)
      use pars,   ONLY:SP
      use units,  ONLY:SPEED_OF_LIGHT

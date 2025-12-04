@@ -19,13 +19,6 @@
 !
 #include<y_memory.h>
 !
-!> En_k_plus_q_interpolate
-!>
-!> @param k
-!> @param q
-!> @param E
-!> @param iqbz
-!>
 subroutine En_k_plus_q_interpolate(k,q,E,iqbz)
  !
  use pars,                ONLY:pi,rZERO

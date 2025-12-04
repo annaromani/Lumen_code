@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> excitons_amplitudes
-!>
-!> @param Xk
-!> @param Xen
-!> @param q
-!> @param BS_E_degs
-!> @param iq
-!>
 subroutine excitons_amplitudes(Xk,Xen,q,BS_E_degs,iq)
  !
  use pars,           ONLY:SP,schlen,pi,cI

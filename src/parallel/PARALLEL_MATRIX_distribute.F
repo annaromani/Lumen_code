@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_MATRIX_distribute
-!>
-!> @param COMM
-!> @param PAR_IND
-!> @param nb
-!> @param PAR_index
-!> @param PAR_ID
-!> @param PAR_n_elements
-!>
 subroutine PARALLEL_MATRIX_distribute(COMM,PAR_IND,nb,PAR_index,PAR_ID,PAR_n_elements)
  !
  use parallel_m,    ONLY:yMPI_comm,PP_indexes
@@ -61,16 +52,6 @@ subroutine PARALLEL_MATRIX_distribute(COMM,PAR_IND,nb,PAR_index,PAR_ID,PAR_n_ele
 end subroutine PARALLEL_MATRIX_distribute
 !
 !
-!> PARALLEL_MATRIX_distribute_cv
-!>
-!> @param COMM
-!> @param PAR_IND
-!> @param nb1
-!> @param nb2
-!> @param PAR_index
-!> @param PAR_ID
-!> @param PAR_n_elements
-!>
 subroutine PARALLEL_MATRIX_distribute_cv(COMM,PAR_IND,nb1,nb2,PAR_index,PAR_ID,PAR_n_elements)
  !
  use parallel_m,    ONLY:yMPI_comm,PP_indexes

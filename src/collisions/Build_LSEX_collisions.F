@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 ! 
-!> Build_LSEX_collisions
-!>
-!> @param k
-!> @param q
-!> @param i_qp
-!> @param COLL
-!>
 subroutine Build_LSEX_collisions(k,q,i_qp,COLL) 
  !
  ! This subroutine calculate the long-range part of the Screened exchange

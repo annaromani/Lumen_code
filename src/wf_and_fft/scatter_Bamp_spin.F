@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> scatter_Bamp_spin
-!>
-!> @param isc
-!> @param which
-!>
 subroutine scatter_Bamp_spin(isc,which)
  !
  ! It computes

@@ -12,10 +12,6 @@
 ! This subroutine works directly with collisions in single-precision
 ! if present
 !
-!> COLLISIONS_compress
-!>
-!> @param COLL
-!>
 subroutine COLLISIONS_compress(COLL)
  !
  use pars,            ONLY:SP,DP,SP6,cZERO

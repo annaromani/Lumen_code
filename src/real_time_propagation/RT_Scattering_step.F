@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> RT_Scattering_step
-!>
-!> @param dG_old
-!> @param dG_inp
-!> @param dG_out
-!> @param ik
-!> @param i_sp_pol
-!> @param deltaT
-!>
 subroutine RT_Scattering_step(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  ! The propagation of the scattering part is done in terms of electrons and holes occupations.

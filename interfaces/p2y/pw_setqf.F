@@ -7,15 +7,6 @@
 !
 !
 !-----------------------------------------------------------------------
-!> setqf
-!>
-!> @param qfcoef
-!> @param rho
-!> @param r
-!> @param nqf
-!> @param ltot
-!> @param mesh
-!>
 SUBROUTINE setqf (qfcoef, rho, r, nqf, ltot, mesh)
   !-----------------------------------------------------------------------
   !

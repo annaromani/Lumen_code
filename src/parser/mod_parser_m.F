@@ -17,18 +17,6 @@ module parser_m
  end interface
  !
  interface 
-!> PARSER_array
-!>
-!> @param mode
-!> @param VAR
-!> @param N
-!> @param M
-!> @param DESC
-!> @param CH_v
-!> @param R_v
-!> @param I_v
-!> @param Kn
-!>
    subroutine PARSER_array(mode,VAR,N,M,DESC,CH_v,R_v,I_v,Kn)
      use pars,  ONLY:SP,lchlen
      implicit none
@@ -45,11 +33,6 @@ module parser_m
  !
  contains
    !
-!> chparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine chparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -63,11 +46,6 @@ module parser_m
      if (trim(res)=='"') res=' '
    end subroutine
    !
-!> chqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine chqparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -82,11 +60,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> chmparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine chmparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -102,11 +75,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> i1qparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine i1qparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -118,11 +86,6 @@ module parser_m
      call OUTPUT_unit_conversion(iVAR=res,DESC=name,PARSER_call=.TRUE.)
    end subroutine
    !
-!> iqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine iqparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -137,11 +100,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> imqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine imqparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -158,11 +116,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> r1qparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine r1qparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -175,11 +128,6 @@ module parser_m
      call OUTPUT_unit_conversion(rVAR=res,DESC=name,PARSER_call=.TRUE.)
    end subroutine
    !
-!> rqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine rqparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -197,11 +145,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> rmqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine rmqparser(name,res)
      use stderr, ONLY : cstr
      implicit none
@@ -221,11 +164,6 @@ module parser_m
      enddo
    end subroutine
    !
-!> lqparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine lqparser(name,res)
      use stderr, ONLY : cstr
      character(*), intent(in) :: name
@@ -233,11 +171,6 @@ module parser_m
      res=(iparse_isdef(cstr(trim(name)))==1)
    end subroutine
    !
-!> c1qparser
-!>
-!> @param name
-!> @param res
-!>
    subroutine c1qparser(name,res)
      use stderr, ONLY : cstr
      implicit none

@@ -6,13 +6,6 @@
 ! Authors (see AUTHORS file for details): CA
 !
 #if defined _FFTW
-!> fft_1d
-!>
-!> @param c
-!> @param n
-!> @param fft_sign
-!> @param fftw_plan
-!>
 subroutine fft_1d(c,n,fft_sign,fftw_plan)
  !
  use pars,ONLY:DP
@@ -38,12 +31,6 @@ subroutine fft_1d(c,n,fft_sign,fftw_plan)
  !
 #else
  !
-!> fft_1d
-!>
-!> @param c
-!> @param n
-!> @param fft_sign
-!>
  subroutine fft_1d(c,n,fft_sign)
  !
  use pars,ONLY:DP

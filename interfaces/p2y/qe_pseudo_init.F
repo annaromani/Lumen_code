@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> qe_pseudo_init
-!>
-!>
 subroutine qe_pseudo_init()
  !
  use pars,              ONLY: DP, pi_DP

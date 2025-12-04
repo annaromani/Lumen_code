@@ -28,11 +28,6 @@ contains
 !  so that if blanks or punctuation characters are to be ignored,
 !  for instance, this needs to be done before calling sort.
 
-!> ch_sort
-!>
-!> @param StringArray
-!> @param CaseInsensitive
-!>
   subroutine ch_sort(StringArray, CaseInsensitive)
 
     character (len = *), dimension (:), intent (inout) :: StringArray
@@ -79,13 +74,6 @@ contains
     end if
   end subroutine quicksort
 
-!> partition
-!>
-!> @param StringArray
-!> @param low
-!> @param high
-!> @param pivotlocation
-!>
   subroutine partition(StringArray, low, high, pivotlocation)
     character (len = *), dimension (:), intent (inout) :: StringArray
     integer, intent (in) :: low, high
@@ -103,11 +91,6 @@ contains
     pivotlocation = lastsmall
   end subroutine partition
 
-!> swap
-!>
-!> @param m
-!> @param n
-!>
   subroutine swap(m, n)
     integer, intent (inout) :: m, n
     integer :: temp

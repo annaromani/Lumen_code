@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_minimal_index_from_overlaping
-!>
-!> @param IND_in
-!> @param IND_out
-!> @param PAR_COMM
-!>
 subroutine PARALLEL_minimal_index_from_overlaping(IND_in,IND_out,PAR_COMM)
  !
  use parallel_m,     ONLY:PP_indexes,yMPI_comm,PAR_INDEX_copy

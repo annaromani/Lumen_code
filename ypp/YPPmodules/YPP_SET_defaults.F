@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DSAM
 !
-!> YPP_SET_defaults
-!>
-!>
 subroutine YPP_SET_defaults()
  !
  use YPPm,           ONLY:DOS_broadening,DOS_E_range,r_fixed,deg_energy ,EXCITON_weight_treshold,&

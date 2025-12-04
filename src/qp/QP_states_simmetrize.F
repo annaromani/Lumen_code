@@ -8,15 +8,6 @@
 !@brief Enforce symmetry between degenerate states 
 !       it may induce errors in case of accidental degeneracies
 !
-!> QP_states_simmetrize
-!>
-!> @param en
-!> @param what
-!> @param V_real
-!> @param V_complex
-!> @param state_is_2do
-!> @param warn_me
-!>
 subroutine QP_states_simmetrize(en,what,V_real,V_complex,state_is_2do,warn_me)
  !
  use pars,          ONLY:SP,schlen

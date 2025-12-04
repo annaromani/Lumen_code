@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AC MG 
 !
-!> INVINT_step
-!>
-!> @param V_out
-!> @param V_in
-!> @param H_in
-!> @param I_in
-!> @param nbf
-!> @param dT
-!>
 subroutine INVINT_step(V_out,V_in,H_in,I_in,nbf,dT)
   !
   use wrapper,        ONLY:M_by_M,M_by_V

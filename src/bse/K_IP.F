@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_IP
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param Dip
-!> @param W_bss
-!>
 subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
  !
  use pars,          ONLY:SP,IP,pi,cZERO,cONE,cI

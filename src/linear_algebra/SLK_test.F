@@ -24,12 +24,6 @@
 !
 #include<y_memory.h>
 !
-!> SLK_test
-!>
-!> @param E
-!> @param k
-!> @param q
-!>
 subroutine SLK_test(E,k,q) 
  ! 
  ! simple program to check parallel linear algebra
@@ -153,11 +147,6 @@ subroutine SLK_test(E,k,q)
 end subroutine SLK_test 
 !
 !====================================
-!> build_matrix
-!>
-!> @param ndim
-!> @param Amat
-!>
  subroutine build_matrix(ndim, Amat )
  !===================================
  !
@@ -205,12 +194,6 @@ end subroutine SLK_test
 end subroutine build_matrix
 !
 !============================================
-!> inverse_check
-!>
-!> @param ndim
-!> @param Amat
-!> @param Ainv
-!>
  subroutine inverse_check( ndim, Amat, Ainv )
  !===========================================
  use pars,       ONLY:SP
@@ -265,14 +248,6 @@ end subroutine build_matrix
 end subroutine inverse_check
 !
 !=========================================================
-!> matrix_check
-!>
-!> @param label
-!> @param ndim1
-!> @param ndim2
-!> @param Amat
-!> @param Bmat
-!>
  subroutine matrix_check( label, ndim1, ndim2, Amat, Bmat)
  !========================================================
  use pars,       ONLY:SP
@@ -304,13 +279,6 @@ end subroutine inverse_check
 end subroutine matrix_check
 !
 !======================================================
-!> matrix_write
-!>
-!> @param filename
-!> @param ndim1
-!> @param ndim2
-!> @param Amat
-!>
  subroutine matrix_write( filename, ndim1, ndim2, Amat)
  !=====================================================
  use pars,       ONLY:SP

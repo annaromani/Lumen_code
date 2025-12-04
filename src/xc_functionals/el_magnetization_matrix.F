@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details):
 !
-!> el_magnetization_matrix
-!>
-!> @param G_lesser
-!> @param en
-!> @param Xk
-!> @param magn
-!> @param lowest_band
-!>
 subroutine el_magnetization_matrix(G_lesser,en,Xk,magn,lowest_band)
  !
  ! Electronic magnetization for electronic Spinors

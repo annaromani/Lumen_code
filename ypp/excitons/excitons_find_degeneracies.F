@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> excitons_find_degeneracies
-!>
-!> @param BS_E
-!> @param BS_E_degs
-!> @param n_eig
-!>
 subroutine excitons_find_degeneracies(BS_E,BS_E_degs,n_eig)
  !
  use pars,          ONLY:SP

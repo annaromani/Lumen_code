@@ -41,12 +41,6 @@ end type pw_atoms
 
 contains
 
-!> pw_atoms_init
-!>
-!> @param atoms
-!> @param struct
-!> @param cutoff_vloc
-!>
 subroutine pw_atoms_init(atoms,struct,cutoff_vloc)
   type (pw_atoms),          intent(out) ::atoms
   type (pw_struct), target, intent(in)  :: struct
@@ -63,10 +57,6 @@ subroutine pw_atoms_init(atoms,struct,cutoff_vloc)
 ! call pw_allocate(atoms%type_map)
 end subroutine pw_atoms_init
 
-!> pw_atoms_destroy
-!>
-!> @param atoms
-!>
 subroutine pw_atoms_destroy(atoms)
   type (pw_atoms), intent(inout) :: atoms
   call pw_pseudo_destroy(atoms%pseudo)
@@ -78,12 +68,6 @@ subroutine pw_atoms_destroy(atoms)
 ! deallocate(atoms%type_map)
 end subroutine pw_atoms_destroy
 
-!> pw_atoms_set_dim
-!>
-!> @param atoms
-!> @param natoms
-!> @param ntypes
-!>
 subroutine pw_atoms_set_dim(atoms,natoms,ntypes)
   type (pw_atoms), intent(inout) :: atoms
   integer,         intent(in)    :: natoms,ntypes

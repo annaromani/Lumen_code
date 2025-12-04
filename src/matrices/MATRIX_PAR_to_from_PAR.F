@@ -109,9 +109,6 @@ subroutine MATRIX_PAR_to_from_PAR( BLC_s, ROWS_s, COLS_s,&
  !
  contains
    !
-!> elemental_transfer
-!>
-!>
    subroutine elemental_transfer( )
      !
      use parallel_int, ONLY:PP_send_and_receive

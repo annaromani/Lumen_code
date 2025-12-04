@@ -9,14 +9,6 @@
 !
 #include <y_memory.h>
 !
-!> MPA_ALLOC_parallel
-!>
-!> @param MPA_E_par
-!> @param MPA_R_par
-!> @param NG
-!> @param NW
-!> @param mode
-!>
 subroutine MPA_ALLOC_parallel(MPA_E_par,MPA_R_par,NG,NW,mode)
   !
   use pars,          ONLY:SP,DP,cZERO,cONE,cI

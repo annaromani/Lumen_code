@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> eval_GradOperator
-!>
-!>
 subroutine eval_GradOperator()
  !
  ! On the fft grid the gradient of a periodic function f(r) acts as

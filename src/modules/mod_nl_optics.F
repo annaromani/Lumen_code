@@ -166,10 +166,6 @@ module nl_optics
  !
  contains
    !
-!> NL_alloc
-!>
-!> @param en
-!>
    subroutine NL_alloc(en)
      !
      use pars,           ONLY:SP
@@ -223,10 +219,6 @@ module nl_optics
      !
    end subroutine NL_alloc
    !
-!> NL_alloc_k_distributed
-!>
-!> @param en
-!>
    subroutine NL_alloc_k_distributed(en)
      !  
      use parallel_m,     ONLY:PAR_Xk_nibz,PAR_Xk_ibz_index

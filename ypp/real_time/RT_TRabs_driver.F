@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_transient_absorption
-!>
-!> @param Xen
-!> @param Xk
-!> @param Xq
-!>
 subroutine RT_transient_absorption(Xen,Xk,Xq)
  !
  use drivers,         ONLY:l_rt_carriers_in_use
@@ -296,12 +290,6 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  !
  contains
    !
-!> build_up_eps_ij
-!>
-!> @param what
-!> @param I
-!> @param J
-!>
    subroutine build_up_eps_ij(what,I,J)
      character(*) :: what
      integer      :: I,J

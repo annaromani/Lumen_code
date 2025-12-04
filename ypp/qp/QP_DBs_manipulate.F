@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_DBs_manipulate
-!>
-!> @param E
-!>
 subroutine QP_DBs_manipulate( E )
  !
  use pars,          ONLY:schlen,msg_len

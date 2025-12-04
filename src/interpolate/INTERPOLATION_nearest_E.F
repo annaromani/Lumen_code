@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !                  
-!> INTERPOLATION_nearest_E
-!>
-!> @param Energy
-!> @param qp
-!> @param E_diff_tresh
-!> @param i_qp_ref
-!> @param i_sp_pol
-!>
 subroutine INTERPOLATION_nearest_E(Energy,qp,E_diff_tresh,i_qp_ref,i_sp_pol)
  !
  use pars,           ONLY:SP

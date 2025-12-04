@@ -6,11 +6,6 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 ! 
-!> TIMING_overview
-!>
-!> @param list
-!> @param main_name
-!>
 subroutine TIMING_overview(list,main_name)
  !
  use pars,          ONLY:DP,lchlen,SP

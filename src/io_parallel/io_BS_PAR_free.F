@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): HM DS
 !
-!> io_BS_PAR_free
-!>
-!> @param ID_head
-!> @param ID
-!> @param mode
-!> @param l_kernel_complete
-!>
 subroutine io_BS_PAR_free(ID_head,ID,mode,l_kernel_complete)
  !
  ! close BSE netcdf parallel file

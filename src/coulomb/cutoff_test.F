@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
-!> cutoff_test
-!>
-!> @param cut_is_sphere
-!> @param cut_is_box
-!> @param cut_is_cyl
-!> @param cut_is_ws
-!> @param cut_is_slab
-!> @param is_cut
-!> @param q
-!>
 subroutine cutoff_test(cut_is_sphere,cut_is_box,cut_is_cyl,cut_is_ws,cut_is_slab,is_cut,q)
  !
  use pars,          ONLY:SP,schlen,pi

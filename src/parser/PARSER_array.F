@@ -5,18 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARSER_array
-!>
-!> @param mode
-!> @param VAR
-!> @param N
-!> @param M
-!> @param DESC
-!> @param CH_v
-!> @param R_v
-!> @param I_v
-!> @param Kn
-!>
 subroutine PARSER_array(mode,VAR,N,M,DESC,CH_v,R_v,I_v,Kn)
  !
  use pars,      ONLY:lchlen,SP,schlen

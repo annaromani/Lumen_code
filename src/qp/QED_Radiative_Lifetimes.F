@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> QED_Radiative_Lifetimes
-!>
-!> @param E
-!> @param k
-!> @param q
-!> @param qp
-!> @param X
-!> @param Dip
-!>
 subroutine QED_Radiative_Lifetimes(E,k,q,qp,X,Dip)
  !
  use units,               ONLY:HA2EV,SPEED_OF_LIGHT

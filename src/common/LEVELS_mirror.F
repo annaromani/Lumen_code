@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> LEVELS_mirror
-!>
-!> @param what
-!> @param E
-!> @param X
-!> @param Dip
-!> @param l_USER_field
-!>
 subroutine LEVELS_mirror(what,E,X,Dip,l_USER_field)
  !
  use electrons,     ONLY:levels
@@ -171,10 +163,6 @@ subroutine LEVELS_mirror(what,E,X,Dip,l_USER_field)
  !
  contains
    !
-!> fix_me
-!>
-!> @param bands
-!>
    subroutine fix_me(bands)
      integer :: bands(2)
      if(all((/bands>0/))) return
@@ -183,10 +171,6 @@ subroutine LEVELS_mirror(what,E,X,Dip,l_USER_field)
      if (bands(2)<0) bands(2)=E%nb
    end subroutine
    !
-!> def_dip_bands
-!>
-!> @param bands_in
-!>
    subroutine def_dip_bands(bands_in)
        integer, intent(in)    :: bands_in(2)
        if (dip_bands_defined) then
@@ -201,10 +185,6 @@ subroutine LEVELS_mirror(what,E,X,Dip,l_USER_field)
 end subroutine
 !
 !
-!> LEVELS_frozen
-!>
-!> @param en
-!>
 subroutine LEVELS_frozen(en)
  !
  use electrons,     ONLY:levels
@@ -258,14 +238,6 @@ subroutine LEVELS_frozen(en)
 end subroutine LEVELS_frozen
 !
 !
-!> LEVELS_frozen_local
-!>
-!> @param TMP_bands
-!> @param TMP_bands_frozen
-!> @param TMP_bands_frozen_ch
-!> @param TMP_kind
-!> @param nb
-!>
 subroutine LEVELS_frozen_local(TMP_bands,TMP_bands_frozen,TMP_bands_frozen_ch,TMP_kind,nb)
  !
  use pars,          ONLY:LP,schlen

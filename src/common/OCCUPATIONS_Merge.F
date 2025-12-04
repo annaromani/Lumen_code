@@ -20,13 +20,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> OCCUPATIONS_Merge
-!>
-!> @param E
-!> @param E_minus
-!> @param E_plus
-!> @param K
-!>
 subroutine OCCUPATIONS_Merge(E,E_minus,E_plus,K)
  !
  use pars,          ONLY:SP,DP

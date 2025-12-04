@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> FREQUENCIES_merge
-!>
-!> @param W1
-!> @param W2
-!> @param table
-!>
 subroutine FREQUENCIES_merge(W1,W2,table)
  !
  ! Merge W1 into W2 and create a table of the W1 points in the new merged type
@@ -106,12 +100,6 @@ subroutine FREQUENCIES_merge(W1,W2,table)
  !
  contains
    !
-!> ADD_it
-!>
-!> @param E
-!> @param i_POS
-!> @param i_REF
-!>
    subroutine ADD_it(E,i_POS,i_REF)
      complex(SP) :: E 
      integer     :: i_POS,i_REF

@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_map_fine_to_coarse_engine
-!>
-!> @param zone
-!> @param pts_fg
-!> @param N_pts_fg
-!> @param pts_cg
-!> @param N_pts_cg
-!> @param MAP
-!>
 subroutine k_map_fine_to_coarse_engine(zone,pts_fg,N_pts_fg,pts_cg,N_pts_cg,MAP)
  !
  use pars,                ONLY:SP,rZERO,zero_dfl
@@ -117,9 +108,6 @@ subroutine k_map_fine_to_coarse_engine(zone,pts_fg,N_pts_fg,pts_cg,N_pts_cg,MAP)
  !
  contains
    !
-!> N_update
-!>
-!>
    subroutine N_update( )
      do i_cg=1,N_pts_cg
        N(i_cg)=count(MAP==i_cg)

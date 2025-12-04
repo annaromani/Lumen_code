@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INIT_QP
-!>
-!> @param comment
-!>
 subroutine INIT_QP(comment)
  !
  ! QP_state -> input file

@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> gauss_leg_grid
-!>
-!> @param x1
-!> @param x2
-!> @param x
-!> @param w
-!> @param n
-!>
 subroutine gauss_leg_grid(x1,x2,x,w,n)
  !-----------------------------------------------------------------
  ! Setup of a Gauss-Legendre grid (taken from Numerical Recipees)

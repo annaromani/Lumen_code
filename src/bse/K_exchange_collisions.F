@@ -9,14 +9,6 @@
 !
 #include<dev_defs.h>
 !
-!> K_exchange_collisions
-!>
-!> @param iq
-!> @param Xk
-!> @param i_T_grp
-!> @param NG
-!> @param l_bs_exch_wf_in_loop
-!>
 subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
  !
  use pars,           ONLY:SP,cZERO

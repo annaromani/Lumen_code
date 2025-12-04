@@ -11,19 +11,6 @@
 !
 !@brief GW self-energy on the real axis
 !
-!> QP_real_axis
-!>
-!> @param X
-!> @param Xen
-!> @param Xk
-!> @param en
-!> @param k
-!> @param q
-!> @param qp
-!> @param Xw
-!> @param Dip
-!> @param GW_iter
-!>
 subroutine QP_real_axis(X,Xen,Xk,en,k,q,qp,Xw,Dip,GW_iter)
  !
  ! This routine calculates 

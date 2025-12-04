@@ -79,19 +79,6 @@ module linear_algebra
  ! Eigensolvers
  !
  interface la_xgeev
-!> zgeev
-!>
-!> @param jobvl
-!> @param jobvr
-!> @param n
-!> @param A
-!> @param lda
-!> @param w
-!> @param vl
-!> @param ldvl
-!> @param vr
-!> @param ldvr
-!>
    subroutine zgeev(jobvl,jobvr,n,A,lda,w,vl,ldvl,vr,ldvr,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real64
      character(1) :: jobvl,jobvr 
@@ -99,19 +86,6 @@ module linear_algebra
      complex(WP)  :: w(*), A(lda,*), vl(ldvl,*), vr(ldvr,*), work(*)
      real(WP)     :: rwork(*)
    end subroutine
-!> cgeev
-!>
-!> @param jobvl
-!> @param jobvr
-!> @param n
-!> @param A
-!> @param lda
-!> @param w
-!> @param vl
-!> @param ldvl
-!> @param vr
-!> @param ldvr
-!>
    subroutine cgeev(jobvl,jobvr,n,A,lda,w,vl,ldvl,vr,ldvr,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real32
      character(1) :: jobvl,jobvr 
@@ -122,19 +96,6 @@ module linear_algebra
  end interface
  !
  interface la_xheev
-!> zheev
-!>
-!> @param jobz
-!> @param uplo
-!> @param n
-!> @param A
-!> @param lda
-!> @param w
-!> @param work
-!> @param lwork
-!> @param rwork
-!> @param info
-!>
    subroutine zheev(jobz,uplo,n,A,lda,w,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real64
      character(1) :: jobz,uplo
@@ -142,19 +103,6 @@ module linear_algebra
      complex(WP)  :: A(lda,*), work(*)
      real(WP)     :: w(*), rwork(*)
    end subroutine
-!> cheev
-!>
-!> @param jobz
-!> @param uplo
-!> @param n
-!> @param A
-!> @param lda
-!> @param w
-!> @param work
-!> @param lwork
-!> @param rwork
-!> @param info
-!>
    subroutine cheev(jobz,uplo,n,A,lda,w,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real32
      character(1) :: jobz,uplo
@@ -179,19 +127,6 @@ module linear_algebra
  ! Singular Value Decomposition
  !
  interface la_xgesvd
-!> zgesvd
-!>
-!> @param jobu
-!> @param jobvt
-!> @param m
-!> @param n
-!> @param A
-!> @param lda
-!> @param s
-!> @param U
-!> @param ldu
-!> @param VT
-!>
    subroutine zgesvd(jobu,jobvt,m,n,A,lda,s,U,ldu,VT,ldvt,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real64
      character(1) :: jobu,jobvt
@@ -199,19 +134,6 @@ module linear_algebra
      complex(WP)  :: A(lda,*), U(ldu,*), VT(ldvt,*), work(*)
      real(WP)     :: s(*), rwork(*)
    end subroutine
-!> cgesvd
-!>
-!> @param jobu
-!> @param jobvt
-!> @param m
-!> @param n
-!> @param A
-!> @param lda
-!> @param s
-!> @param U
-!> @param ldu
-!> @param VT
-!>
    subroutine cgesvd(jobu,jobvt,m,n,A,lda,s,U,ldu,VT,ldvt,work,lwork,rwork,info)
      use iso_fortran_env, ONLY : WP => real32
      character(1) :: jobu,jobvt
@@ -224,30 +146,12 @@ module linear_algebra
  ! Lower/Upper Factorization and Inverison
  !
  interface la_xgetrf
-!> zgetrf
-!>
-!> @param m
-!> @param n
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param info
-!>
    subroutine zgetrf(m,n,A,lda,ipiv,info)
      use iso_fortran_env, ONLY : WP => real64
      integer      :: m,n,lda,info
      integer      :: ipiv(*)
      complex(WP)  :: A(lda,*) 
    end subroutine
-!> cgetrf
-!>
-!> @param m
-!> @param n
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param info
-!>
    subroutine cgetrf(m,n,A,lda,ipiv,info)
      use iso_fortran_env, ONLY : WP => real32
      integer      :: m,n,lda,info
@@ -257,32 +161,12 @@ module linear_algebra
  end interface
  !
  interface la_xgetri
-!> zgetri
-!>
-!> @param n
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param work
-!> @param lwork
-!> @param info
-!>
    subroutine zgetri(n,A,lda,ipiv,work,lwork,info)
      use iso_fortran_env, ONLY : WP => real64
      integer      :: n,lda,info,lwork
      integer      :: ipiv(*)
      complex(WP)  :: A(lda,*), work(*)
    end subroutine
-!> cgetri
-!>
-!> @param n
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param work
-!> @param lwork
-!> @param info
-!>
    subroutine cgetri(n,A,lda,ipiv,work,lwork,info)
      use iso_fortran_env, ONLY : WP => real32
      integer      :: n,lda,info,lwork
@@ -292,18 +176,6 @@ module linear_algebra
  end interface
  !
  interface la_xgetrs
-!> zgetrs
-!>
-!> @param trans
-!> @param n
-!> @param nrhs
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param B
-!> @param ldb
-!> @param info
-!>
    subroutine zgetrs(trans,n,nrhs,A,lda,ipiv,B,ldb,info)
      use iso_fortran_env, ONLY : WP => real64
      character(1) :: trans
@@ -311,18 +183,6 @@ module linear_algebra
      integer      :: ipiv(*)
      complex(WP)  :: A(lda,*), B(ldb,*)
    end subroutine
-!> cgetrs
-!>
-!> @param trans
-!> @param n
-!> @param nrhs
-!> @param A
-!> @param lda
-!> @param ipiv
-!> @param B
-!> @param ldb
-!> @param info
-!>
    subroutine cgetrs(trans,n,nrhs,A,lda,ipiv,B,ldb,info)
      use iso_fortran_env, ONLY : WP => real32
      character(1) :: trans
@@ -352,9 +212,6 @@ module linear_algebra
    ! AUXILIARY FUNCTIONS
    !============================
    !
-!> magma_setup
-!>
-!>
    subroutine magma_setup()
 #ifdef _MAGMA
      call magmaf_init()
@@ -364,10 +221,6 @@ module linear_algebra
      return
    end subroutine
    !
-!> LINEAR_ALGEBRA_WS_reset
-!>
-!> @param WS
-!>
    subroutine LINEAR_ALGEBRA_WS_reset(WS)
      use drivers,   ONLY:l_nl_optics,l_real_time
      type(LALGEBRA_WS) :: WS
@@ -421,11 +274,6 @@ module linear_algebra
      !
    end subroutine
    !
-!> LINEAR_ALGEBRA_error
-!>
-!> @param calling_subr
-!> @param message_
-!>
    subroutine LINEAR_ALGEBRA_error(calling_subr,message_)
      use stderr,  ONLY:STRING_pack
      character(*) calling_subr,message_

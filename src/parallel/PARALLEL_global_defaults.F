@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_global_defaults
-!>
-!> @param ENVIRONMENT
-!>
 subroutine PARALLEL_global_defaults(ENVIRONMENT)
  !
  use drivers,       ONLY:l_sc_run
@@ -122,11 +118,6 @@ subroutine PARALLEL_global_defaults(ENVIRONMENT)
  !
  contains
    !
-!> GIMME_a_parallel_proposal
-!>
-!> @param N_fields
-!> @param FIELDS
-!>
    subroutine GIMME_a_parallel_proposal(N_fields,FIELDS)
      !
      use stderr,      ONLY:STRING_remove
@@ -231,11 +222,6 @@ subroutine PARALLEL_global_defaults(ENVIRONMENT)
    !
 end subroutine
 !
-!> PARALLEL_global_defaults_define_the_basis
-!>
-!> @param NC
-!> @param BASIS
-!>
 subroutine PARALLEL_global_defaults_define_the_basis(NC,BASIS)
   implicit none
   integer, intent(in) :: NC

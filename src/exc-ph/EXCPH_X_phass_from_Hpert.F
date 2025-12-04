@@ -23,12 +23,6 @@
 ! - satellites only (no main peak renormalisation)
 ! - no double grid
 ! 
-!> EXCPH_X_phass_from_Hpert
-!>
-!> @param wv
-!> @param q
-!> @param PL_ii
-!>
 subroutine EXCPH_X_phass_from_Hpert(wv,q,PL_ii)
  !
  use frequency,     ONLY:w_samp

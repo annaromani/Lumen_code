@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> RT_DBs_carriers_setup
-!>
-!> @param en
-!> @param kpt
-!> @param qpt
-!>
 subroutine RT_DBs_carriers_setup(en,kpt,qpt)
  !
  use pars,          ONLY:SP,schlen
@@ -96,12 +90,6 @@ subroutine RT_DBs_carriers_setup(en,kpt,qpt)
 end subroutine RT_DBs_carriers_setup
 !
 !
-!> RT_select_k_space
-!>
-!> @param E_RT
-!> @param kpt
-!> @param do_kpt
-!>
 subroutine RT_select_k_space(E_RT,kpt,do_kpt)
  !
  use com,            ONLY:msg
@@ -163,12 +151,6 @@ subroutine RT_select_k_space(E_RT,kpt,do_kpt)
  !
  contains
    !
-!> NEAR_k_report
-!>
-!> @param ik
-!> @param u_k
-!> @param label
-!>
    subroutine NEAR_k_report( ik, u_k, label )
      use pars,           ONLY:schlen
      integer           :: ik,i_c,i_v

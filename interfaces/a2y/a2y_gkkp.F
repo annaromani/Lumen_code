@@ -25,12 +25,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> a2y_gkkp_header
-!>
-!> @param i_sp_pol
-!> @param ncid
-!> @param grpid
-!>
 subroutine a2y_gkkp_header(i_sp_pol,ncid,grpid)
  !
  use netcdf
@@ -105,9 +99,6 @@ subroutine a2y_gkkp_header(i_sp_pol,ncid,grpid)
   !
   ! K-points (convert to new units)
   !===========================================================
-!> import_kpoints_group
-!>
-!>
   subroutine import_kpoints_group()
    use pars,                 only : pi
    use R_lattice,            only : b
@@ -167,9 +158,6 @@ subroutine a2y_gkkp_header(i_sp_pol,ncid,grpid)
   !
   ! Q-points (convert to new units)
   !=================================
-!> import_qpoints_group
-!>
-!>
   subroutine import_qpoints_group()
    use pars,                 only : pi
    use R_lattice,            only : b
@@ -230,9 +218,6 @@ subroutine a2y_gkkp_header(i_sp_pol,ncid,grpid)
   !
   ! PH_frequencies
   !=================
-!> import_ph_frequencies
-!>
-!>
   subroutine import_ph_frequencies()
    use pars,                 only : pi
    use R_lattice,            only : b
@@ -269,13 +254,6 @@ end subroutine a2y_gkkp_header
  ! call io_bulk(ID_frag,R3=GKKP%E_kpq(iq)%E)
  !
  !
-!> a2y_gkkp
-!>
-!> @param iq
-!> @param i_sp_pol
-!> @param ncid
-!> @param grpid
-!>
 subroutine a2y_gkkp(iq,i_sp_pol,ncid,grpid)
  !
  ! Reads and returns g_kkp matrix elements for each q point

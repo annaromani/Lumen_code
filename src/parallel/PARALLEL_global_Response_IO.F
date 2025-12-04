@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> PARALLEL_global_Response_IO
-!>
-!>
 subroutine PARALLEL_global_Response_IO( )
  !
  ! io_RESPONSE check

@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> DIPOLE_kb_init
-!>
-!> @param Xen
-!> @param Dip
-!> @param io_err
-!> @param ID
-!>
 subroutine DIPOLE_kb_init(Xen,Dip,io_err,ID)
  !
  use pars,                ONLY:SP,pi

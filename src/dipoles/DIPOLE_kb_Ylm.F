@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> Dipole_kb_Ylm
-!>
-!> @param Ylm
-!> @param dYlm
-!> @param Ygrad
-!> @param lang
-!> @param k
-!>
 subroutine Dipole_kb_Ylm(Ylm,dYlm,Ygrad,lang,k)
  !
  ! Ylm(il,im) := Spherical harmonic 

@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_state_print
-!>
-!> @param qp
-!>
 subroutine QP_state_print(qp)
  !
  ! Print the contents of the QP_state logical array

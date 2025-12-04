@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): CH DS
 !
-!> e2y_db1
-!>
-!> @param en
-!> @param k
-!> @param ncid
-!>
 subroutine e2y_db1(en,k,ncid)
  !
  ! For version 1.0.3 of ETSF library, downloadable from

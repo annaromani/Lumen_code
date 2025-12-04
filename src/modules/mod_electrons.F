@@ -113,11 +113,6 @@ module electrons
  ! 
  contains
    !
-!> E_duplicate
-!>
-!> @param Ei
-!> @param Eo
-!>
    subroutine E_duplicate(Ei,Eo)
      type(levels):: Ei,Eo
      !
@@ -212,10 +207,6 @@ module electrons
      !
    end subroutine
    !
-!> E_reset
-!>
-!> @param E
-!>
    subroutine E_reset(E)
      type(levels)::E
      !
@@ -249,10 +240,6 @@ module electrons
      !
    end subroutine
    !
-!> FineGd_E_components_alloc
-!>
-!> @param E
-!>
    subroutine FineGd_E_components_alloc(E)
      !
      type(levels)::E
@@ -268,11 +255,6 @@ module electrons
      !
    end subroutine
    !
-!> FineGd_E_components_reset
-!>
-!> @param E
-!> @param FULL_RESET
-!>
    subroutine FineGd_E_components_reset(E,FULL_RESET)
      !
      type(levels)::E
@@ -290,10 +272,6 @@ module electrons
      !
    end subroutine
    !
-!> get_spin_majority
-!>
-!> @param E
-!>
    subroutine get_spin_majority(E)
      !
      type(levels),intent(in) ::E

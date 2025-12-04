@@ -9,14 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_map_fine_to_coarse
-!>
-!> @param zone
-!> @param Xk
-!> @param FG
-!> @param FineGd_k
-!> @param Xen
-!>
 subroutine k_map_fine_to_coarse(zone,Xk,FG,FineGd_k,Xen)
  !
  use pars,                ONLY:SP

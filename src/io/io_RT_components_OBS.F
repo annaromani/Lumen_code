@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> io_RT_components_OBS
-!>
-!> @param ID
-!> @param what
-!>
 subroutine io_RT_components_OBS(ID,what)
  !
  use pars,        ONLY:SP,schlen

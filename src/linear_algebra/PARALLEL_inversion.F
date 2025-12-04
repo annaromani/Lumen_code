@@ -24,11 +24,6 @@
 !
 #include<y_memory.h>
 !
-!> PARALLEL_inversion
-!>
-!> @param M
-!> @param N
-!>
 subroutine PARALLEL_inversion(M,N)
  !
  ! perform the inversion by using scalapack

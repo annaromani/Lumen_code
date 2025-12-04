@@ -21,11 +21,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> io_RT_components_V_bands
-!>
-!> @param ID
-!> @param T_size
-!>
 subroutine io_RT_components_V_bands(ID,T_size)
  !
  use pars,           ONLY:SP,schlen

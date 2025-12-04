@@ -5,19 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> SC_add_XC
-!>
-!> @param X
-!> @param Xw
-!> @param Xk
-!> @param E
-!> @param k
-!> @param q
-!> @param iteration
-!> @param V_xc_nm1
-!> @param ELEC
-!> @param HOLE
-!>
 subroutine SC_add_XC(X,Xw,Xk,E,k,q,iteration,V_xc_nm1,ELEC,HOLE,DELTA)
  !
  ! The definition of the XC part is the same in the two approches. The only

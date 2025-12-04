@@ -54,10 +54,6 @@ module mpa_m
  !
 contains
  !
-!> MPA_alloc
-!>
-!> @param d
-!>
  subroutine MPA_alloc(d)
    implicit none
    integer :: d(4)
@@ -66,19 +62,10 @@ contains
    YAMBO_ALLOC(MPA_freqs,(d(4)))
  end subroutine
 
-!> MPA_free
-!>
-!>
  subroutine MPA_free()
    YAMBO_FREE(MPA_freqs)
  end subroutine
  !
-!> mpa_cond1
-!>
-!> @param z
-!> @param E
-!> @param PPcond_rate
-!>
  subroutine mpa_cond1(z, E, PPcond_rate)
    !
    complex(SP), intent(in)     :: z(2)
@@ -140,14 +127,6 @@ contains
    !
  endfunction pole_is_out
  !
-!> mpa_cond
-!>
-!> @param np
-!> @param npr
-!> @param z
-!> @param E
-!> @param PPcond
-!>
  subroutine mpa_cond(np, npr, z, E, PPcond)
    !
    integer,     intent(in)     :: np
@@ -192,13 +171,6 @@ contains
    !
  end subroutine mpa_cond
  !
-!> mpa_E_1p_solver
-!>
-!> @param z
-!> @param x
-!> @param E
-!> @param PPcond_rate
-!>
  subroutine mpa_E_1p_solver(z, x, E, PPcond_rate) 
    !
    ! DALV: analytical form of the E position of the 1 pole solution
@@ -215,15 +187,6 @@ contains
    !
  end subroutine mpa_E_1p_solver
  !
-!> mpa_R_fit
-!>
-!> @param np
-!> @param npr
-!> @param w
-!> @param xq
-!> @param R
-!> @param E
-!>
  subroutine mpa_R_fit(np,npr, w, xq, R, E)
    implicit none
    integer,     intent(in)   :: np, npr
@@ -263,15 +226,6 @@ contains
    !
  end subroutine mpa_R_fit
  !
-!> mpa_R_solver
-!>
-!> @param np
-!> @param w
-!> @param xq
-!> @param R
-!> @param E
-!> @param rcond
-!>
  subroutine mpa_R_solver(np, w, xq, R, E, rcond)
    implicit none
    integer,     intent(in)   :: np
@@ -305,16 +259,6 @@ contains
    !
  end subroutine mpa_R_solver
  !
-!> mpa_E_solver
-!>
-!> @param np
-!> @param npr
-!> @param z
-!> @param xq
-!> @param E
-!> @param PPcond
-!> @param econd
-!>
  subroutine mpa_E_solver(np, npr, z, xq, E, PPcond, econd)
    implicit none
    integer,     intent(in)   :: np
@@ -418,15 +362,6 @@ contains
    !
  end subroutine mpa_E_solver
  !
-!> mpa_E_solver_Pade
-!>
-!> @param np
-!> @param npr
-!> @param z
-!> @param X
-!> @param E
-!> @param PPcond
-!>
  subroutine mpa_E_solver_Pade(np, npr, z, X, E, PPcond)
    implicit none
    integer,     intent(in)   :: np
@@ -497,19 +432,6 @@ contains
    !
  end subroutine mpa_E_solver_Pade
  !
-!> mpa_RE_solver
-!>
-!> @param np
-!> @param w
-!> @param x
-!> @param R
-!> @param E
-!> @param mpa_sol
-!> @param MPred
-!> @param PPcond_rate
-!> @param MP_err
-!> @param cond_num
-!>
  subroutine mpa_RE_solver(np, w, x, R, E,mpa_sol,MPred,PPcond_rate,MP_err,cond_num)
    implicit none
    !
@@ -598,14 +520,6 @@ contains
  ! ------- DALV: Not in use ---------------------------------------
  ! ----------------------------------------------------------------
  !
-!> mpa_RE_1p_solver
-!>
-!> @param z
-!> @param x
-!> @param R
-!> @param E
-!> @param PPcond_rate
-!>
  subroutine mpa_RE_1p_solver(z, x, R, E, PPcond_rate) 
    !
    ! DALV: analytical form of the 1 pole solution
@@ -626,13 +540,6 @@ contains
  end subroutine mpa_RE_1p_solver
  !
  !
-!> mpa_RQ_2p_solver
-!>
-!> @param w
-!> @param x
-!> @param r
-!> @param q
-!>
  subroutine mpa_RQ_2p_solver(w, x, r, q) 
    implicit none
    !
@@ -754,13 +661,6 @@ contains
  end function
  !
  !
-!> mpa_RQ_3p_solver
-!>
-!> @param w
-!> @param x
-!> @param r
-!> @param q
-!>
  subroutine mpa_RQ_3p_solver(w, x, r, q) 
    implicit none
    complex(SP), intent(in)   :: w(6)

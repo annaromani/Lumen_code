@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INTERPOLATION_BZ_setup
-!>
-!> @param Xk
-!>
 subroutine INTERPOLATION_BZ_setup(Xk)
  !
  ! Code inspired by BolzTraP

@@ -222,13 +222,6 @@ module vec_operate
      !
    end 
    !
-!> v_rotate
-!>
-!> @param plane
-!> @param t
-!> @param v_in
-!> @param v_out
-!>
    subroutine v_rotate(plane,t,v_in,v_out)
      !
      ! Rotates v_in of angle t in the 'plane'
@@ -267,13 +260,6 @@ module vec_operate
      !
    end subroutine v_rotate
    !
-!> c2a_scal
-!>
-!> @param b_in
-!> @param v_in
-!> @param v_out
-!> @param mode
-!>
    subroutine c2a_scal(b_in,v_in,v_out,mode) !_scal
      !
      ! rlu = Reduced Lattice Units (crystal coordinated in Quantum-Espresso)
@@ -335,14 +321,6 @@ module vec_operate
      endif
    end subroutine c2a_scal 
    !
-!> c2a_vec
-!>
-!> @param b_in
-!> @param nvec
-!> @param v_in
-!> @param v_out
-!> @param mode
-!>
    subroutine c2a_vec(b_in,nvec,v_in,v_out,mode)
      !
      ! mode = 'k/r c2a' 'k/r a2c' (cc  <-> rlu)
@@ -406,9 +384,6 @@ module vec_operate
      endif
    end subroutine c2a_vec
    !
-!> define_b_and_DL_vol
-!>
-!>
    subroutine define_b_and_DL_vol()
      !
      use pars,        ONLY:pi
@@ -434,12 +409,6 @@ module vec_operate
      !
    end subroutine
    !
-!> k2bz
-!>
-!> @param v_in
-!> @param v_out
-!> @param b_in
-!>
    subroutine k2bz(v_in,v_out,b_in) 
      !
      ! k is iku 
@@ -476,11 +445,6 @@ module vec_operate
      !
    end subroutine k2bz
    !
-!> rlu_k2bz
-!>
-!> @param v_in
-!> @param v_out
-!>
    subroutine rlu_k2bz(v_in,v_out) 
      !
      real(SP)           :: v_in(3)
@@ -529,12 +493,6 @@ module vec_operate
      !
    end function get_neighbor
    !
-!> get_id_perpendicular
-!>
-!> @param id1
-!> @param id2
-!> @param id3
-!>
    subroutine get_id_perpendicular(id1,id2,id3)
      implicit none
      integer, intent(in)  :: id1
@@ -553,14 +511,6 @@ module vec_operate
      !
    end subroutine get_id_perpendicular
    !
-!> r_sort
-!>
-!> @param arrin
-!> @param arrout
-!> @param indx
-!> @param indx_m1
-!> @param r_zero
-!>
    subroutine r_sort(arrin,arrout,indx,indx_m1,r_zero)                             
      !
      ! Sort real(dt) values from arrin into array 
@@ -669,13 +619,6 @@ module vec_operate
      !
    end function GreatestCommonDivisor
    !
-!> i_sort
-!>
-!> @param arrin
-!> @param arrout
-!> @param indx
-!> @param indx_m1
-!>
    subroutine i_sort(arrin,arrout,indx,indx_m1)                             
      !
      ! Sort integer values from arrin into array 

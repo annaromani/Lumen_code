@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
-!> RT_Ext_fields
-!>
-!> @param A
-!> @param time
-!> @param i_f
-!>
 subroutine RT_Ext_fields(A,time,i_f)
  !
  ! The external and total fields in Yambo are defined and organized as follow:
@@ -95,11 +89,6 @@ subroutine RT_Ext_fields(A,time,i_f)
 end subroutine RT_Ext_fields
 !
 !
-!> RT_Ext_fields_sum
-!>
-!> @param A
-!> @param time
-!>
 subroutine RT_Ext_fields_sum(A,time)
  !
  use pars,           ONLY:SP,cZERO,rZERO

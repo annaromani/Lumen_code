@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> io_disconnect
-!>
-!> @param ID
-!> @param FORCE
-!>
 subroutine io_disconnect(ID,FORCE)
  !
  use IO_m,       ONLY:netcdf_call,PLAIN_file_is_open,NETCDF_file_is_open,io_unit,io_type,&

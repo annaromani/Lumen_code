@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM 
 !
-!> RT_time_step_update
-!>
-!> @param E
-!>
 subroutine RT_time_step_update( E )
  !
  use pars,           ONLY:SP,cZERO

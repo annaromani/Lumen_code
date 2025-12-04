@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DV
 !
-!> SC_precondition
-!>
-!> @param delta_rho
-!>
 subroutine SC_precondition(delta_rho)
   !
   ! Thomas Fermi precondition for the mixing of the charge density

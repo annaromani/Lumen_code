@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_inversion_Lo
-!>
-!> @param iq
-!> @param W
-!> @param E
-!> @param k
-!> @param Lo_dim
-!> @param Lo
-!>
 subroutine K_inversion_Lo(iq,W,E,k,Lo_dim,Lo) 
  !
  use pars,           ONLY:SP,cZERO,cI,pi,rZERO,schlen

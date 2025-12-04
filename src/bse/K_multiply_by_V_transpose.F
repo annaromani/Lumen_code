@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM MG DS IMA
 !
-!> K_multiply_by_V_transpose
-!>
-!> @param Vi
-!> @param Vo
-!> @param iter_par
-!> @param iq
-!>
 subroutine K_multiply_by_V_transpose(Vi,Vo,iter_par,iq)
  !
  ! Given K distributed on the processors, and Vi distributed on the processors

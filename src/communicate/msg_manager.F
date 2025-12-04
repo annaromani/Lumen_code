@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> msg_manager
-!>
-!> @param how
-!> @param OUT_msg
-!> @param REP_msg
-!> @param LOG_msg
-!> @param STD_msg
-!> @param NEW_lines
-!>
 subroutine msg_manager(how,OUT_msg,REP_msg,LOG_msg,STD_msg,NEW_lines)
  !
  ! how = '(n)s(n)' '(n)r(n)' '(n)l(n)' 'o PATTERN'

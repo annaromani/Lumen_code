@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
-!> RT_manual_excitation
-!>
-!> @param E_RT
-!> @param k
-!> @param do_kpt
-!> @param SUCCESS
-!>
 subroutine RT_manual_excitation(E_RT,k,do_kpt,SUCCESS)
  !
  use pars,           ONLY:SP

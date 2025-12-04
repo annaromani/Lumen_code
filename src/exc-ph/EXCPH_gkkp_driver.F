@@ -250,9 +250,6 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !
  contains
    !
-!> get_excph_q_momenta
-!>
-!>
    subroutine get_excph_q_momenta()
      !    
      integer iq,i_star,iq_s,iq_bz
@@ -275,9 +272,6 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
      !
    end subroutine get_excph_q_momenta
    !
-!> build_k_plus_q_table
-!>
-!>
    subroutine build_k_plus_q_table()
      !      
      use parallel_int,        ONLY:PARALLEL_global_indexes

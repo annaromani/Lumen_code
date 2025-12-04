@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_OBSERVABLES_damp_and_write
-!>
-!> @param OBS
-!> @param RT
-!> @param IO_skip
-!>
 subroutine RT_OBSERVABLES_damp_and_write(OBS,RT,IO_skip)
  !
  use YPP_real_time,  ONLY:l_force_min_damp,RT_time,OBS_el,RT_ctl

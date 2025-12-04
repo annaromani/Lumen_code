@@ -9,13 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> TDDFT_BSK_disk_2_FXC
-!>
-!> @param iq
-!> @param Xk
-!> @param W
-!> @param X_static
-!>
 subroutine TDDFT_BSK_disk_2_FXC(iq,Xk,W,X_static)
  !
  use pars,          ONLY:SP,pi

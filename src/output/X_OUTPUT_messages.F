@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> X_OUTPUT_messages
-!>
-!> @param iq
-!> @param ig
-!> @param Vnl
-!> @param GF
-!> @param ordering
-!> @param Q_plus_G
-!> @param MORE
-!>
 subroutine X_OUTPUT_messages(iq,ig,Vnl,GF,ordering,Q_plus_G,MORE)
  !
  use pars,           ONLY:schlen,SP

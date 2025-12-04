@@ -107,9 +107,6 @@ MODULE qeh5_base_module
   CONTAINS 
   !
   !----------------------------------------------------------
-!> initialize_hdf5
-!>
-!>
   SUBROUTINE initialize_hdf5()
     !--------------------------------------------------------
     IMPLICIT NONE
@@ -119,9 +116,6 @@ MODULE qeh5_base_module
 END SUBROUTINE initialize_hdf5
 
   !-------------------------------
-!> finalize_hdf5
-!>
-!>
   SUBROUTINE finalize_hdf5()
     !------------------------------
     IMPLICIT NONE
@@ -148,13 +142,6 @@ END SUBROUTINE finalize_hdf5
   END FUNCTION get_file_hid
 
   !------------------------------------------------------- 
-!> qeh5_openfile
-!>
-!> @param h5file
-!> @param file
-!> @param action
-!> @param error
-!>
   SUBROUTINE  qeh5_openfile(h5file, file, action , error)
     !-----------------------------------------------------
     IMPLICIT NONE 
@@ -191,10 +178,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE  qeh5_openfile  
 
   !--------------------------------------------
-!> qeh5_closefile
-!>
-!> @param h5file
-!>
   SUBROUTINE qeh5_closefile ( h5file ) 
     !-----------------------------------------
     IMPLICIT NONE 
@@ -213,11 +196,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_closefile
  
   !-------------------------------------------------
-!> set_dataset_name
-!>
-!> @param name
-!> @param h5_dataset
-!>
   SUBROUTINE set_dataset_name(name, h5_dataset) 
     !-----------------------------------------------
     IMPLICIT NONE
@@ -227,10 +205,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE set_dataset_name
 
   !-------------------------------------------------
-!> close_dataset
-!>
-!> @param h5_dataset
-!>
   SUBROUTINE close_dataset( h5_dataset )
      !-----------------------------------------------
      IMPLICIT NONE
@@ -268,12 +242,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE close_dataset 
 
   !-------------------------------------------------------------------
-!> qeh5_open_group
-!>
-!> @param h5_parent
-!> @param group_name
-!> @param h5_group
-!>
   SUBROUTINE qeh5_open_group( h5_parent , group_name, h5_group) 
     !-----------------------------------------------------------------
     IMPLICIT NONE 
@@ -294,14 +262,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_open_group
 
   !----------------------------------------------------------------------------
-!> qeh5_open_dataset
-!>
-!> @param h5_parent
-!> @param h5_dataset
-!> @param action
-!> @param name
-!> @param error
-!>
   SUBROUTINE qeh5_open_dataset ( h5_parent, h5_dataset, action , name, error ) 
     !--------------------------------------------------------------------------
     IMPLICIT NONE 
@@ -348,13 +308,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_open_dataset                    
   
   !-------------------------------------------------------------------
-!> prepare_dataspace
-!>
-!> @param h5_dataset
-!> @param rank
-!> @param dimensions
-!> @param mode
-!>
   SUBROUTINE prepare_dataspace(  h5_dataset, rank, dimensions, mode )
     !----------------------------------------------------------------- 
     IMPLICIT NONE 
@@ -379,10 +332,6 @@ END SUBROUTINE finalize_hdf5
     !
     CONTAINS
     !------------------------------------
-!> block
-!>
-!> @param dataspace
-!>
        SUBROUTINE block ( dataspace )                                          
           IMPLICIT NONE                                                        
           TYPE(qeh5_dataspace )    :: dataspace                                
@@ -396,14 +345,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE prepare_dataspace
   
   !----------------------------------------------------------------------------
-!> qeh5_wplan_real
-!>
-!> @param h5_dataset
-!> @param real_data
-!> @param rank
-!> @param dimensions
-!> @param mode
-!>
   SUBROUTINE qeh5_wplan_real( h5_dataset, real_data, rank, dimensions, mode ) 
     !--------------------------------------------------------------------------
     IMPLICIT NONE 
@@ -425,14 +366,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_wplan_real 
   
   !-----------------------------------------------------------------------------------
-!> qeh5_wplan_complex
-!>
-!> @param h5_dataset
-!> @param complex_data
-!> @param rank
-!> @param dimensions
-!> @param mode
-!>
   SUBROUTINE qeh5_wplan_complex  ( h5_dataset, complex_data, rank, dimensions, mode )
     !---------------------------------------------------------------------------------
     IMPLICIT NONE
@@ -456,14 +389,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_wplan_complex 
  
   !------------------------------------------------------------------------------------
-!> qeh5_wplan_integer
-!>
-!> @param h5_dataset
-!> @param integer_data
-!> @param rank
-!> @param dimensions
-!> @param mode
-!>
   SUBROUTINE qeh5_wplan_integer ( h5_dataset, integer_data, rank, dimensions, mode )  
     !----------------------------------------------------------------------------------
     IMPLICIT NONE 
@@ -484,11 +409,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_wplan_integer
   
   !----------------------------------------------------------
-!> qeh5_read_real
-!>
-!> @param real_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_read_real ( real_data, h5_dataset)
     !--------------------------------------------------------
     IMPLICIT NONE
@@ -508,11 +428,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_read_real
 
   !----------------------------------------------------------
-!> qeh5_read_complex
-!>
-!> @param complex_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_read_complex ( complex_data, h5_dataset)
     !--------------------------------------------------------
     IMPLICIT NONE
@@ -532,11 +447,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_read_complex          
 
   !-----------------------------------------------------------
-!> qeh5_read_integer
-!>
-!> @param integer_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_read_integer ( integer_data, h5_dataset)
     !---------------------------------------------------------
     IMPLICIT NONE
@@ -558,11 +468,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE  qeh5_read_integer
 
   !-----------------------------------------------------------
-!> qeh5_read_integer_2
-!>
-!> @param integer_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_read_integer_2 ( integer_data, h5_dataset)
     !---------------------------------------------------------
     IMPLICIT NONE
@@ -587,11 +492,6 @@ END SUBROUTINE finalize_hdf5
 
 
   !--------------------------------------------------------
-!> qeh5_write_real
-!>
-!> @param real_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_real( real_data, h5_dataset ) 
     !------------------------------------------------------
     IMPLICIT NONE
@@ -612,11 +512,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_real  
 
   !-------------------------------------------------------
-!> qeh5_write_real_2
-!>
-!> @param real_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_real_2( real_data, h5_dataset ) 
     !-----------------------------------------------------
     IMPLICIT NONE
@@ -637,11 +532,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_real_2  
   
 
-!> qeh5_write_real_3
-!>
-!> @param real_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_real_3( real_data, h5_dataset ) 
     IMPLICIT NONE
     REAL(DP), TARGET, INTENT(INOUT)          ::  real_data(1,1,1) 
@@ -661,11 +551,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_real_3  
 
   !--------------------------------------------------------------
-!> qeh5_write_complex
-!>
-!> @param complex_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_complex( complex_data, h5_dataset )
    !-------------------------------------------------------------
    IMPLICIT NONE
@@ -687,11 +572,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_complex
 
   !------------------------------------------------------------
-!> qeh5_write_complex_2
-!>
-!> @param complex_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_complex_2( complex_data, h5_dataset )
    !-----------------------------------------------------------
    IMPLICIT NONE
@@ -712,11 +592,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_complex_2
 
 
-!> qeh5_write_complex_3
-!>
-!> @param complex_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_complex_3( complex_data, h5_dataset )
     IMPLICIT NONE
     COMPLEX(DP), TARGET, INTENT(INOUT)       ::  complex_data(1,1,1)
@@ -737,11 +612,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_complex_3
 
   !----------------------------------------------------------
-!> qeh5_write_integer
-!>
-!> @param integer_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_integer( integer_data, h5_dataset )
    !---------------------------------------------------------
    IMPLICIT NONE
@@ -763,11 +633,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_integer
 
   !-------------------------------------------------------------
-!> qeh5_write_integer_2
-!>
-!> @param integer_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_integer_2( integer_data, h5_dataset )
    !------------------------------------------------------------
    IMPLICIT NONE
@@ -788,11 +653,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE qeh5_write_integer_2
 
   !--------------------------------------------------------------
-!> qeh5_write_integer_3
-!>
-!> @param integer_data
-!> @param h5_dataset
-!>
   SUBROUTINE qeh5_write_integer_3( integer_data, h5_dataset )
     !------------------------------------------------------------
     IMPLICIT NONE
@@ -814,12 +674,6 @@ END SUBROUTINE finalize_hdf5
 !
 
   !-------------------------------------------------------
-!> add_attribute_string
-!>
-!> @param h5_hid
-!> @param name
-!> @param text
-!>
   SUBROUTINE add_attribute_string ( h5_hid, name, text) 
    !------------------------------------------------------
    IMPLICIT NONE
@@ -850,14 +704,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE add_attribute_string
 
   !---------------------------------------------------------------------
-!> add_array_attribute_i
-!>
-!> @param h5_hid
-!> @param name
-!> @param value
-!> @param rank
-!> @param dims
-!>
   SUBROUTINE add_array_attribute_i ( h5_hid, name, value, rank, dims )
      !--------------------------------------------------------------------
      IMPLICIT NONE 
@@ -869,14 +715,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE add_array_attribute_i
 
   !---------------------------------------------------------------
-!> add_attribute_i
-!>
-!> @param h5_hid
-!> @param name
-!> @param value
-!> @param rank
-!> @param dims
-!>
   SUBROUTINE add_attribute_i ( h5_hid, name, value, rank, dims )
      !------------------------------------------------------------
      IMPLICIT NONE
@@ -922,14 +760,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE add_attribute_i
 
   !-------------------------------------------------------------------
-!> add_array_attribute_r
-!>
-!> @param h5_hid
-!> @param name
-!> @param value
-!> @param rank
-!> @param dims
-!>
   SUBROUTINE add_array_attribute_r ( h5_hid, name, value, rank, dims)
      !---------------------------------------------------------------
      IMPLICIT NONE
@@ -941,14 +771,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE add_array_attribute_r
 
   !---------------------------------------------------------------
-!> add_attribute_r
-!>
-!> @param h5_hid
-!> @param name
-!> @param value
-!> @param rank
-!> @param dims
-!>
   SUBROUTINE add_attribute_r ( h5_hid, name, value, rank, dims )
      !-----------------------------------------------------------
      IMPLICIT NONE
@@ -992,14 +814,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE add_attribute_r
 
   !-------------------------------------------------------------------------------------
-!> read_integer_array_attribute
-!>
-!> @param h5_hid
-!> @param attribute
-!> @param value
-!> @param rank
-!> @param dimensions
-!>
   SUBROUTINE read_integer_array_attribute ( h5_hid, attribute, value, rank, dimensions) 
      !----------------------------------------------------------------------------------
      IMPLICIT NONE 
@@ -1013,14 +827,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE read_integer_array_attribute     
 
   !-------------------------------------------------------------------------------
-!> read_integer_attribute
-!>
-!> @param h5_hid
-!> @param attribute
-!> @param value
-!> @param rank
-!> @param dimensions
-!>
   SUBROUTINE read_integer_attribute ( h5_hid, attribute, value, rank, dimensions) 
      !----------------------------------------------------------------------------
      IMPLICIT NONE 
@@ -1056,14 +862,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE read_integer_attribute         
 
   !------------------------------------------------------------------------------------
-!> read_real_array_attribute
-!>
-!> @param h5_hid
-!> @param attribute
-!> @param value
-!> @param rank
-!> @param dimensions
-!>
   SUBROUTINE read_real_array_attribute ( h5_hid, attribute, value, rank, dimensions )
      !---------------------------------------------------------------------------------
      IMPLICIT NONE 
@@ -1076,14 +874,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE read_real_array_attribute
 
   !------------------------------------------------------------------------------  
-!> read_real_attribute
-!>
-!> @param h5_hid
-!> @param attribute
-!> @param value
-!> @param rank
-!> @param dimensions
-!>
   SUBROUTINE read_real_attribute ( h5_hid, attribute, value, rank, dimensions) 
      !--------------------------------------------------------------------------
      IMPLICIT NONE 
@@ -1120,13 +910,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE read_real_attribute      
   
   !-----------------------------------------------------------------
-!> read_string_attribute
-!>
-!> @param h5_hid
-!> @param attribute
-!> @param text
-!> @param maxlen
-!>
   SUBROUTINE read_string_attribute(h5_hid, attribute, text, maxlen) 
      !--------------------------------------------------------------
      IMPLICIT NONE 
@@ -1167,14 +950,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE read_string_attribute 
   
   !--------------------------------------------------------------------
-!> set_hyperslab
-!>
-!> @param dataspace
-!> @param offset
-!> @param count
-!> @param stride
-!> @param block
-!>
   SUBROUTINE set_hyperslab (dataspace, offset, count, stride, block )
      !-----------------------------------------------------------------
      IMPLICIT NONE 
@@ -1208,14 +983,6 @@ END SUBROUTINE finalize_hdf5
   END SUBROUTINE set_hyperslab
    
   !------------------------------------------------------------------------------- 
-!> qeh5_set_memory_hyperslab
-!>
-!> @param dataset
-!> @param offset
-!> @param count
-!> @param stride
-!> @param block
-!>
   SUBROUTINE qeh5_set_memory_hyperslab (dataset, offset, count, stride, block ) 
      !----------------------------------------------------------------------------
      IMPLICIT NONE
@@ -1225,14 +992,6 @@ END SUBROUTINE finalize_hdf5
      CALL set_hyperslab (dataset%memspace, offset, count, stride, block )
      END SUBROUTINE qeh5_set_memory_hyperslab
      ! 
-!> qeh5_set_file_hyperslab
-!>
-!> @param dataset
-!> @param offset
-!> @param count
-!> @param stride
-!> @param block
-!>
      SUBROUTINE qeh5_set_file_hyperslab (dataset, offset, count, stride, block )
      IMPLICIT NONE
      TYPE(qeh5_dataset),INTENT(INOUT)            :: dataset

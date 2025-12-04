@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 !
-!> PARALLEL_assign_LA_COMMs
-!>
-!> @param ENVIRONMENT
-!> @param idriver
-!> @param Ncpu_in
-!>
 subroutine PARALLEL_assign_LA_COMMs(ENVIRONMENT,idriver,Ncpu_in)
  !
  use parallel_m,    ONLY:PAR_COM_WORLD,PAR_COM_NULL,&

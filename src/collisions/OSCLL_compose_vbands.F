@@ -20,16 +20,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> OSCLL_compose_vbands
-!>
-!> @param V_input
-!> @param H_nl_sc
-!> @param k
-!> @param q
-!> @param E
-!> @param i_k
-!> @param i_sp_pol
-!>
 subroutine OSCLL_compose_vbands(V_input,H_nl_sc,k,q,E,i_k,i_sp_pol) 
  !
  ! This subroutine calculate the long-range part of the Screened exchange

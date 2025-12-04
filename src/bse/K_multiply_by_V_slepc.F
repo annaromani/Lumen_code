@@ -13,13 +13,6 @@
 #include <slepc/finclude/slepcsys.h>
 #include <slepc/finclude/slepceps.h>
 !
-!> K_multiply_by_V_slepc
-!>
-!> @param slepc_mat
-!> @param vi
-!> @param vo
-!> @param ierr
-!>
 subroutine K_multiply_by_V_slepc(slepc_mat,vi,vo,ierr)
  !
  ! Interface with the K_multiply_by_V from the Haydock method

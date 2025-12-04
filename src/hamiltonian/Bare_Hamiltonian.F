@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> Bare_Hamiltonian
-!>
-!> @param E
-!> @param Xk
-!> @param k
-!>
 subroutine Bare_Hamiltonian(E,Xk,k)
  !
  use pars,           ONLY:cZERO

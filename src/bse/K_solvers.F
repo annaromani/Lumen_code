@@ -9,15 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> K_solvers
-!>
-!> @param iq
-!> @param Ken
-!> @param Xk
-!> @param q
-!> @param X_static
-!> @param W_bss
-!>
 subroutine K_solvers(iq,Ken,Xk,q,X_static,W_bss)
  !
  use stderr,         ONLY:intc

@@ -27,16 +27,6 @@
 !
 ! Excitonic occupation, following PRB 99, 081109(R) 2019
 !
-!> EXC_occupations
-!>
-!> @param E_QF
-!> @param k
-!> @param q
-!> @param iq_ibz
-!> @param EXC_n_states
-!> @param EXC_indexes
-!> @param EXC_occ
-!>
 subroutine EXC_occupations(E_QF,k,q,iq_ibz,EXC_n_states,EXC_indexes,EXC_occ)
  !
  use pars,           ONLY:SP,cZERO,rZERO,cONE

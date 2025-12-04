@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_update_TIME_CONF_descriptions
-!>
-!>
 subroutine RT_update_TIME_CONF_descriptions( )
  ! 
  use units,          ONLY:AUT2FS

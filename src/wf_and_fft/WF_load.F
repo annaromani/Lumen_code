@@ -633,11 +633,6 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
  !
  contains
    !
-!> check_bounds
-!>
-!> @param WF_
-!> @param flag_
-!>
    subroutine check_bounds(WF_,flag_)
      type(WAVEs)  :: WF_
      logical      :: flag_
@@ -646,11 +641,6 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
 &                sp_pol_to_load_(1)>=WF_%sp_pol(1),sp_pol_to_load_(2)<=WF_%sp_pol(2)/))
    end subroutine
    !
-!> check_states
-!>
-!> @param WF_
-!> @param flag_
-!>
    subroutine check_states(WF_,flag_)
      type(WAVEs)  :: WF_
      logical      :: flag_

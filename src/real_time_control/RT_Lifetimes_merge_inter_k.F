@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> RT_Lifetimes_merge_inter_k
-!>
-!> @param LIFE
-!>
 subroutine RT_Lifetimes_merge_inter_k(LIFE)
  !
  use parallel_m,     ONLY:PAR_IND_Xk_ibz,N_SND_RCV_operations,SND_RCV_op,&

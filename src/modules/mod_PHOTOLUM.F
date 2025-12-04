@@ -34,9 +34,6 @@ module PHOTOLUM
  !
  contains
    !
-!> PL_init
-!>
-!>
    subroutine PL_init( )
      use pars,       ONLY:pi,rZERO
      use units,      ONLY:SPEED_OF_LIGHT
@@ -49,9 +46,6 @@ module PHOTOLUM
      if (.not.l_BS_trace) PL_weights=(/1._SP,0._SP,0._SP/)
    end subroutine
    !
-!> BSS_PL_alloc
-!>
-!>
    subroutine BSS_PL_alloc( )
      use pars,       ONLY:cZERO,rZERO
      use BS,         ONLY:BS_H_dim,BS_K_dim,BS_dip_size
@@ -62,9 +56,6 @@ module PHOTOLUM
      BSS_PL_f = rZERO
    end subroutine
    !
-!> BSS_PL_free
-!>
-!>
    subroutine BSS_PL_free( )
      if (.not.l_BS_photolum) return
      if (allocated(BSS_dipoles_PL)) then

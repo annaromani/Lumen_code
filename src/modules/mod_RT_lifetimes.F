@@ -91,11 +91,6 @@ module RT_lifetimes
  !
  contains
    !
-!> RT_EL_lifetimes_alloc
-!>
-!> @param D1
-!> @param D2
-!>
    subroutine RT_EL_lifetimes_alloc(D1,D2)
      use D_lattice, ONLY:Bose_Temp
      integer :: D1(2),D2
@@ -119,11 +114,6 @@ module RT_lifetimes
      SAVED_times=rZERO
    end subroutine
    !
-!> RT_PH_lifetimes_alloc
-!>
-!> @param D1
-!> @param D2
-!>
    subroutine RT_PH_lifetimes_alloc(D1,D2)
      integer :: D1(2),D2
      if (l_phel_scatt) then
@@ -132,9 +122,6 @@ module RT_lifetimes
      endif
    end subroutine
    !
-!> RT_ALL_lifetimes_free
-!>
-!>
    subroutine RT_ALL_lifetimes_free( )
      if (l_elph_scatt)     call RT_lifetime_free(RT_EP_emit_life)
      if (l_elph_scatt)     call RT_lifetime_free(RT_EP_abs_life)
@@ -147,13 +134,6 @@ module RT_lifetimes
      YAMBO_FREE(SAVED_times)
    end subroutine
    !
-!> RT_lifetime_alloc
-!>
-!> @param KIND
-!> @param LIFE
-!> @param D1
-!> @param D2
-!>
    subroutine RT_lifetime_alloc(KIND,LIFE,D1,D2)
      character(*)      :: KIND
      type(RT_lifetime) :: LIFE
@@ -175,10 +155,6 @@ module RT_lifetimes
      LIFE%Tfit=rZERO
    end subroutine
    !
-!> RT_lifetime_free
-!>
-!> @param LIFE
-!>
    subroutine RT_lifetime_free(LIFE)
      type(RT_lifetime) :: LIFE
      LIFE%KIND="none"
@@ -189,12 +165,6 @@ module RT_lifetimes
      YAMBO_FREE(LIFE%emit_save)
    end subroutine
    !
-!> RT_obj_lifetime_alloc
-!>
-!> @param KIND
-!> @param LIFE
-!> @param Ns
-!>
    subroutine RT_obj_lifetime_alloc(KIND,LIFE,Ns)
      character(*)          :: KIND
      type(RT_obj_lifetime) :: LIFE
@@ -213,10 +183,6 @@ module RT_lifetimes
      LIFE%active   =.TRUE.
    end subroutine
    !
-!> RT_obj_lifetime_free
-!>
-!> @param LIFE
-!>
    subroutine RT_obj_lifetime_free(LIFE)
      type(RT_obj_lifetime) :: LIFE
      if (.not.LIFE%active) return

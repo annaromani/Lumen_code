@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> a2y_db1
-!>
-!> @param en
-!> @param k
-!> @param ncid
-!>
 subroutine a2y_db1(en,k,ncid)
  !
  use netcdf
@@ -546,17 +540,6 @@ contains
   ! 
   ! Maps G vectors defined in the kg_k to a fftbox of n1,n2,n3
   !
-!> gsphere_abinit
-!>
-!> @param n1
-!> @param n2
-!> @param n3
-!> @param kg_k
-!> @param npw
-!> @param istwf_k
-!> @param map
-!> @param inv_map
-!>
   subroutine gsphere_abinit(n1,n2,n3,kg_k,npw,istwf_k,map,inv_map)
 
   implicit none

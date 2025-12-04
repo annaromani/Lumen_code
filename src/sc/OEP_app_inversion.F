@@ -10,15 +10,6 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
-!> OEP_app_inversion
-!>
-!> @param E
-!> @param k
-!> @param Vkli
-!> @param Vslt
-!> @param U
-!> @param rho
-!>
 subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  !
  !  Exchange KLI/CEDA

@@ -5,9 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> SET_logicals
-!>
-!>
 subroutine SET_logicals()
  !
  use pars,       ONLY:schlen,n_max_DB_IO_off_fields

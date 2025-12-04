@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> xc_rpa_kp
-!>
-!> @param rs
-!> @param exc
-!>
 subroutine xc_rpa_kp(rs,exc)
  !
  ! RPA+ : Kurth, Perdew PRB, 59 (1999)

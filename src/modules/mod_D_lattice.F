@@ -101,10 +101,6 @@ module D_lattice
  !
  contains
    !
-!> symmetry_group_table
-!>
-!> @param msg_where
-!>
    subroutine symmetry_group_table(msg_where)
      !
      use pars,           ONLY:SP,IP
@@ -148,9 +144,6 @@ module D_lattice
      !
    end subroutine symmetry_group_table
    !
-!> atoms_spatial_inversion
-!>
-!>
    subroutine atoms_spatial_inversion()
      use pars,           ONLY:zero_dfl
      use matrix_operate, ONLY:m3inv
@@ -189,9 +182,6 @@ module D_lattice
      !
    end subroutine atoms_spatial_inversion
    !
-!> symmetry_equiv_atoms
-!>
-!>
    subroutine symmetry_equiv_atoms()
      use pars,           ONLY:zero_dfl
      use matrix_operate, ONLY:m3inv
@@ -256,13 +246,6 @@ module D_lattice
      !
    end subroutine symmetry_equiv_atoms
 
-!> atom_mapper
-!>
-!> @param nat
-!> @param tau
-!> @param tau_units
-!> @param map
-!>
    subroutine atom_mapper(nat,tau,tau_units,map)
      use pars,           ONLY:zero_dfl
      implicit none
@@ -334,9 +317,6 @@ module D_lattice
      atomic_number = 0
    end function
    !
-!> load_PT_elements
-!>
-!>
    subroutine load_PT_elements()
      PT_elements(0)    ='**'
      PT_elements(1:2)  =(/'H ',                              'He'/)

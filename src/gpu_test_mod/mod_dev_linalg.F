@@ -14,13 +14,6 @@ module dev_linalg_m
 
 contains
 
-!> saxpy_cpu
-!>
-!> @param N
-!> @param a
-!> @param x
-!> @param y
-!>
   subroutine saxpy_cpu(N, a, x, y) 
   implicit none
     integer  :: N
@@ -34,13 +27,6 @@ contains
     !
   end subroutine saxpy_cpu
   !
-!> saxpy_gpu
-!>
-!> @param N
-!> @param a
-!> @param x
-!> @param y
-!>
   subroutine saxpy_gpu(N, a, x, y) 
   implicit none
     integer  :: N
@@ -62,15 +48,6 @@ contains
   end subroutine saxpy_gpu
   !
   !
-!> dev_saxpy
-!>
-!> @param N
-!> @param a
-!> @param x
-!> @param inc_x
-!> @param y
-!> @param inc_y
-!>
   subroutine dev_saxpy(N,a,x,inc_x,y,inc_y)
   implicit none
     integer  :: N, inc_x, inc_y

@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> initverbosity
-!>
-!> @param var_name
-!> @param var_id
-!> @param var_type
-!> @param defs
-!> @param verbosity_level
-!>
 subroutine initverbosity(var_name,var_id,var_type,defs,verbosity_level)
  !
  use it_tools

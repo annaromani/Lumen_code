@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_reduce
-!>
-!> @param k
-!> @param FORCE_BZ
-!>
 subroutine k_reduce(k,FORCE_BZ)
  !
  ! Input:

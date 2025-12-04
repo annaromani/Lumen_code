@@ -9,17 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_TRabs_residuals
-!>
-!> @param what
-!> @param N_trans
-!> @param N_dirs
-!> @param DIP_dir
-!> @param Xen
-!> @param Xk
-!> @param nb
-!> @param l_EQ
-!>
 subroutine RT_TRabs_residuals(what,N_trans,N_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
  !
  use pars,            ONLY:SP,pi,cI

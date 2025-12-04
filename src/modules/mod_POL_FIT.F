@@ -41,16 +41,6 @@ module POL_FIT_m
  !
  contains
    !
-!> POL_LK_fit
-!>
-!> @param N
-!> @param X
-!> @param Y
-!> @param order
-!> @param Tt
-!> @param EPS
-!> @param t_zero
-!>
    subroutine POL_LK_fit(N,X,Y,order,Tt,EPS,t_zero)
     !
     use pars,       ONLY:SP
@@ -114,13 +104,6 @@ module POL_FIT_m
     !
    end subroutine POL_LK_fit
    !  
-!> POL_Gilbreth_fit
-!>
-!> @param x
-!> @param y
-!> @param sig
-!> @param a
-!>
    subroutine POL_Gilbreth_fit(x,y,sig,a)
     !
     ! Fit data to a polynomial a_0 + a_1 x + ... + a_d x**d
@@ -193,13 +176,6 @@ module POL_FIT_m
     !
   end subroutine POL_Gilbreth_fit
   !
-!> DQRF
-!>
-!> @param A
-!> @param Q
-!> @param R
-!> @param work
-!>
   subroutine DQRF(A,Q,R,work)
     ! Compute the QR factorization of a general real matrix A:
     !   A = Q R

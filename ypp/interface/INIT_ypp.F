@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INIT_ypp
-!>
-!> @param E
-!> @param instr
-!> @param FINALIZE
-!>
 subroutine INIT_ypp(E,instr,FINALIZE)
  !
  use units,          ONLY:FS2AUT
@@ -821,10 +815,6 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  !
  contains
    !
-!> call_INIT_load
-!>
-!> @param mode
-!>
    subroutine call_INIT_load(mode) 
      character(*)::mode
      !
@@ -852,11 +842,6 @@ subroutine INIT_ypp(E,instr,FINALIZE)
      !
    end subroutine
    !
-!> USER_vector_handle
-!>
-!> @param field
-!> @param M
-!>
    subroutine USER_vector_handle(field,M)
      !
      use parser_m,       ONLY:PARSER_array

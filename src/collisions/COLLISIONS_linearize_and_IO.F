@@ -9,16 +9,6 @@
 !
 #include<collisions.h>
 !
-!> COLLISIONS_linearize_and_IO
-!>
-!> @param what
-!> @param i_coll
-!> @param last_coll
-!> @param COLL_grp
-!> @param COLL_element
-!> @param COLL_ID
-!> @param COMM
-!>
 subroutine COLLISIONS_linearize_and_IO(what,i_coll,last_coll,COLL_grp,COLL_element,COLL_ID,COMM)
  !
  use pars,            ONLY:SP,cZERO

@@ -292,15 +292,6 @@ module YPPm
  !
  interface
    !
-!> k_grid_printer
-!>
-!> @param nk
-!> @param k
-!> @param coo_in
-!> @param form
-!> @param wk
-!> @param coo_out
-!>
    subroutine k_grid_printer(nk,k,coo_in,form,wk,coo_out)
      use pars,          ONLY:SP
      integer               ::nk
@@ -311,14 +302,6 @@ module YPPm
      character(*),optional ::coo_out
    end subroutine
    !
-!> excitons_degeneracy_average
-!>
-!> @param N
-!> @param BS_E_degs
-!> @param R
-!> @param C
-!> @param VERB
-!>
    subroutine excitons_degeneracy_average(N,BS_E_degs,R,C,VERB)
      use pars,          ONLY:SP
      use BS_solvers,    ONLY:BSS_n_eig
@@ -333,11 +316,6 @@ module YPPm
  !
  contains
    !
-!> K_transform
-!>
-!> @param k
-!> @param in_mode
-!>
    subroutine K_transform(k,in_mode)
      !
      use stderr,       ONLY:STRING_same

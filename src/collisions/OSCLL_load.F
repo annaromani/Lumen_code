@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 ! 
-!> OSCLL_load
-!>
-!> @param q
-!> @param k
-!>
 subroutine OSCLL_load(q,k) 
  !
  ! Evaluate oscillators for the Local-SEX

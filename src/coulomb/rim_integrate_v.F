@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> rim_integrate_v
-!>
-!> @param iq
-!> @param qr
-!> @param em1_anis
-!> @param N_out
-!> @param N_out_G
-!> @param G_radii
-!> @param G_circ
-!>
 subroutine rim_integrate_v(iq,qr,em1_anis,N_out,N_out_G,G_radii,G_circ)
  !
  use pars,          ONLY:SP,DP,pi,pi_DP

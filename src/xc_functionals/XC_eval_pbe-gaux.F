@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DV
 !
-!> XC_eval_pbegaux
-!>
-!> @param spin_rho_DP
-!> @param sigma
-!> @param exsr
-!> @param vx1
-!> @param vx2
-!>
 subroutine XC_eval_pbegaux(spin_rho_DP,sigma,exsr,vx1,vx2)
 
 use D_lattice,   ONLY:DL_vol
@@ -89,15 +81,6 @@ integer  :: ir
       end subroutine pbexgau_lsd
 !
 
-!> pbexgau
-!>
-!> @param RHO
-!> @param GRHO
-!> @param sxsr
-!> @param v1xsr
-!> @param v2xsr
-!> @param alpha_gau
-!>
 subroutine pbexgau(RHO,GRHO,sxsr,v1xsr,v2xsr,alpha_gau)
 !-----------------------------------------------------------------------
 !
@@ -139,15 +122,6 @@ subroutine pbexgau(RHO,GRHO,sxsr,v1xsr,v2xsr,alpha_gau)
 
 !
 !-----------------------------------------------------------------------
-!> pbe_gauscheme
-!>
-!> @param rho
-!> @param s
-!> @param alpha_gau
-!> @param Fx
-!> @param dFxdr
-!> @param dFxds
-!>
       subroutine pbe_gauscheme(rho,s,alpha_gau,Fx,dFxdr,dFxds)
 !--------------------------------------------------------------------
 

@@ -21,12 +21,6 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston,
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
-!> RT_load_field_from_file_init
-!>
-!> @param filename1
-!> @param filename2
-!> @param Integr_nfrac
-!>
 subroutine RT_load_field_from_file_init(filename1,filename2,Integr_nfrac)
  !
  use pars,       ONLY:SP
@@ -68,12 +62,6 @@ subroutine RT_load_field_from_file_init(filename1,filename2,Integr_nfrac)
 end subroutine RT_load_field_from_file_init
 !
 !
-!> RT_load_field_from_file
-!>
-!> @param filename1
-!> @param filename2
-!> @param i_field
-!>
 subroutine RT_load_field_from_file(filename1,filename2,i_field)
  !
  use real_time,  ONLY:RT_step
@@ -131,10 +119,6 @@ subroutine RT_load_field_from_file(filename1,filename2,i_field)
 end subroutine RT_load_field_from_file
 !
 !
-!> RT_print_field_to_file_init
-!>
-!> @param i_field
-!>
 subroutine RT_print_field_to_file_init(i_field)
  !
  ! I think this subroutine is not used

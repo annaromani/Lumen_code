@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> fix_QP_DBs
-!>
-!> @param k
-!> @param k_save
-!> @param kpoints_map
-!>
 subroutine fix_QP_DBs(k,k_save,kpoints_map)
  !
  use pars,                ONLY:lchlen

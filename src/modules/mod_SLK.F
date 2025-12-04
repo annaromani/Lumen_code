@@ -64,10 +64,6 @@ module SLK_m
  !
  contains
    !
-!> SLK_POOL_clean_up
-!>
-!> @param POOL
-!>
    subroutine SLK_POOL_clean_up(POOL)
      type(POOL_group) :: POOL
      POOL%CPU_id      = 0
@@ -76,11 +72,6 @@ module SLK_m
      POOL%INTRA_comm  = 0
    end subroutine
    !
-!> SLK_POOL_init
-!>
-!> @param POOL
-!> @param COMM
-!>
    subroutine SLK_POOL_init(POOL,COMM)
      use parallel_m, ONLY:myid
      type(POOL_group) :: POOL
@@ -91,10 +82,6 @@ module SLK_m
      POOL%INTRA_comm  = COMM%COMM
    end subroutine
    !
-!> SLK_ORTHO_GROUP_clean_up
-!>
-!> @param ORTHO
-!>
    subroutine SLK_ORTHO_GROUP_clean_up(ORTHO)
      type(ORTHO_group) :: ORTHO
      ORTHO%grid(2)       = 1        

@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
-!> RT_output_and_IO_driver
-!>
-!> @param what
-!> @param E
-!> @param k
-!> @param OBSERVABLES
-!>
 subroutine RT_output_and_IO_driver(what,E,k,OBSERVABLES)
  !
  use pars,           ONLY:SP

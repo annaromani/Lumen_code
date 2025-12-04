@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> el_density_matrix
-!>
-!> @param G_lesser
-!> @param en
-!> @param Xk
-!> @param rho
-!> @param lowest_band
-!>
 subroutine el_density_matrix(G_lesser,en,Xk,rho,lowest_band)
  !
  ! Electronic density matrix including the off-diagonal

@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_plot_gkkp
-!>
-!> @param k
-!> @param E
-!> @param q
-!>
 subroutine ELPH_plot_gkkp(k,E,q)
  !
  use pars,                ONLY:SP,pi,schlen

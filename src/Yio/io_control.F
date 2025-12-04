@@ -5,16 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> io_control
-!>
-!> @param ACTION
-!> @param MODE
-!> @param COM
-!> @param SEC
-!> @param ID
-!> @param COMM
-!> @param DO_IT
-!>
 subroutine io_control(ACTION,MODE,COM,SEC,ID,COMM,DO_IT)
  !
  ! Handle different kind of I/O accesses:
@@ -124,9 +114,6 @@ subroutine io_control(ACTION,MODE,COM,SEC,ID,COMM,DO_IT)
  !
  contains
    !
-!> set_action_mode_com_and_sec
-!>
-!>
    subroutine set_action_mode_com_and_sec()
      !
      io_action(ID)=ACTION

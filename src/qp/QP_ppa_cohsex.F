@@ -28,17 +28,6 @@
 #include<y_memory.h>
 !
 !
-!> QP_ppa_cohsex
-!>
-!> @param X
-!> @param Xk
-!> @param E
-!> @param k
-!> @param q
-!> @param qp
-!> @param Xw
-!> @param GW_iter
-!>
 subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  ! Plasmon Pole & COHSEX Correlation Self-Energy

@@ -66,10 +66,6 @@ module matrix_operate
      !
    end function hermitian
    !
-!> mat_transpose
-!>
-!> @param M
-!>
    subroutine mat_transpose(M) 
      complex(SP) :: M(:,:)
      integer     :: D,i1
@@ -89,12 +85,6 @@ module matrix_operate
      !$omp end parallel
    end subroutine
    !
-!> mat_r2c_ordered
-!>
-!> @param mr
-!> @param mc
-!> @param m_order
-!>
    subroutine mat_r2c_ordered(mr,mc,m_order) 
      !
      ! Copy mr in mc using m_order indexes for mc
@@ -115,12 +105,6 @@ module matrix_operate
      !
    end subroutine
    !
-!> mat_r2c
-!>
-!> @param mr
-!> @param mc
-!> @param shift
-!>
    subroutine mat_r2c(mr,mc,shift)
      !
      ! Copy mr in mc 
@@ -142,11 +126,6 @@ module matrix_operate
      !
    end subroutine
    !
-!> mat_c2r
-!>
-!> @param mc
-!> @param mr
-!>
    subroutine mat_c2r(mc,mr)
      !
      ! Copy mc in mr
@@ -165,11 +144,6 @@ module matrix_operate
      !
    end subroutine
    !
-!> m3inv
-!>
-!> @param m
-!> @param m_inv
-!>
    subroutine m3inv(m,m_inv)
      !
      ! Analitic inverse of a real 3x3 matrix
@@ -194,11 +168,6 @@ module matrix_operate
      !
    end subroutine
    !
-!> m3inv_c
-!>
-!> @param m
-!> @param m_inv
-!>
    subroutine m3inv_c(m,m_inv)
      !
      ! Analitic inverse of a complex 3x3 matrix

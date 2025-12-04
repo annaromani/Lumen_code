@@ -5,14 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AC MG 
 !
-!> RK_basestep
-!>
-!> @param K_out
-!> @param V_in
-!> @param H_in
-!> @param I_in
-!> @param nbf
-!>
 subroutine RK_basestep(K_out,V_in,H_in,I_in,nbf)
   use pars,           ONLY:SP,cI,cZERO
   use nl_optics,      ONLY:NL_bands

@@ -5,15 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM DS AF
 !
-!> K_restart
-!>
-!> @param iq
-!> @param X
-!> @param ID_head
-!> @param ID
-!> @param ID_compr
-!> @param l_partial_kernel_loaded
-!>
 subroutine K_restart(iq,X,ID_head,ID,ID_compr,l_partial_kernel_loaded)
  !
  use pars,         ONLY:SP,schlen

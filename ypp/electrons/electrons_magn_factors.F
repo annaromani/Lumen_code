@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details):
 !
-!> electrons_magn_factors
-!>
-!> @param kpts
-!> @param bands
-!> @param magn_factors
-!>
 subroutine electrons_magn_factors(kpts,bands,magn_factors)
  !
  use pars,           ONLY:SP

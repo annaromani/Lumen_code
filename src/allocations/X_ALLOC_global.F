@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> X_ALLOC_global
-!>
-!> @param WHAT
-!> @param W
-!>
 subroutine X_ALLOC_global(WHAT,W)
  !
  use pars,          ONLY:cZERO

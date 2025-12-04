@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> TDDFT_ALDA_G_space
-!>
-!> @param E
-!> @param k
-!>
 subroutine TDDFT_ALDA_G_space(E,k)
  !
  use pars,          ONLY:DP,SP

@@ -25,9 +25,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_fields
-!>
-!>
 subroutine RT_fields()
  !
  use units,          ONLY:AUT2FS
@@ -87,10 +84,6 @@ subroutine RT_fields()
 end subroutine RT_fields
 !
 !
-!> RT_Field_w_load
-!>
-!> @param i_field
-!>
 subroutine RT_Field_w_load(i_field)
  !
  use YPP_real_time,  ONLY:RT_conf,ElField
@@ -108,10 +101,6 @@ subroutine RT_Field_w_load(i_field)
 end subroutine RT_Field_w_load
 !
 !
-!> RT_Field_t_to_w
-!>
-!> @param i_field
-!>
 subroutine RT_Field_t_to_w(i_field)
  !
  use units,          ONLY:FS2AUT
@@ -149,12 +138,6 @@ subroutine RT_Field_t_to_w(i_field)
 end subroutine RT_Field_t_to_w
 !
 !
-!> RT_print_Elfield
-!>
-!> @param i_field
-!> @param mode
-!> @param Elfield
-!>
 subroutine RT_print_Elfield(i_field,mode,Elfield)
  !
  use units,          ONLY:FS2AUT

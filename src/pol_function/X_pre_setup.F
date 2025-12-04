@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> X_pre_setup
-!>
-!> @param Xen
-!> @param Xk
-!> @param X
-!>
 subroutine X_pre_setup(Xen,Xk,X)
  !
  use pars,          ONLY:SP,lchlen

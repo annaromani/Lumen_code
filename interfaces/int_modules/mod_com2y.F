@@ -23,10 +23,6 @@ module mod_com2y
  !
  contains
    !
-!> interface_presets
-!>
-!> @param in_string
-!>
    subroutine interface_presets(in_string)
      !
      use stderr,         ONLY:STRING_split
@@ -61,13 +57,6 @@ module mod_com2y
      !
    end subroutine
    !
-!> symmetries_check_and_load
-!>
-!> @param int_sop
-!> @param nsym_
-!> @param trevsym
-!> @param t_rev
-!>
    subroutine symmetries_check_and_load(int_sop,nsym_,trevsym,t_rev)
      !
      use com,       ONLY:msg
@@ -227,11 +216,6 @@ module mod_com2y
      !
    end subroutine
    !
-!> print_interface_dimensions
-!>
-!> @param en
-!> @param k
-!>
    subroutine print_interface_dimensions(en,k)
      use com,                   ONLY : msg
      use electrons,             ONLY : levels, default_nel, n_spin, n_sp_pol, &

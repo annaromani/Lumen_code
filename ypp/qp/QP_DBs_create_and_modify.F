@@ -9,11 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> QP_DBs_create_and_modify
-!>
-!> @param en
-!> @param k
-!>
 subroutine QP_DBs_create_and_modify(en,k)
  !
  use pars,          ONLY:SP

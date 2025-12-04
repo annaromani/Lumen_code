@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> ELPH_gsqF_to_Sigma
-!>
-!> @param en
-!> @param q
-!> @param l_GF_from_CA
-!> @param Sc_W
-!>
 subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
  !
  use pars,          ONLY:SP,DP,cZERO,pi

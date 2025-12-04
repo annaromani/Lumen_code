@@ -13,10 +13,6 @@
 !
 ! Copyright (C) 2002 M. Marques, A. Castro, A. Rubio, G. Bertsch
 !
-!> RT_X_LRR_real_field
-!>
-!> @param en
-!>
 subroutine RT_X_LRR_real_field(en)
  !
  use YPP_real_time,  ONLY:RT_conf,Use_FFT,l_force_min_damp,RT_time,Pol,Curr,ElField,&

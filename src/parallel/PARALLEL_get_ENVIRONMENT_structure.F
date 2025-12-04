@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_get_ENVIRONMENT_structure
-!>
-!> @param ENVIRONMENT
-!>
 subroutine PARALLEL_get_ENVIRONMENT_structure(ENVIRONMENT)
  !
  use pars,         ONLY:schlen

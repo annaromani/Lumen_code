@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> RT_k_grid
-!>
-!> @param E
-!> @param k
-!> @param q
-!>
 subroutine RT_k_grid(E,k,q)
  !
  use pars,           ONLY:SP

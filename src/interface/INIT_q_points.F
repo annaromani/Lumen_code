@@ -9,9 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> INIT_q_points
-!>
-!>
 subroutine INIT_q_points( )
  !
  ! This routine:

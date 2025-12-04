@@ -5,11 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> PARALLEL_and_IO_Setup
-!>
-!> @param en
-!> @param k
-!>
 subroutine PARALLEL_and_IO_Setup(en,k)
  !
  use pars,           ONLY:lchlen,SP,DP

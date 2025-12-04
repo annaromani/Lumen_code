@@ -5,12 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> K_eps_interpolate
-!>
-!> @param nW
-!> @param W
-!> @param err
-!>
 subroutine K_eps_interpolate(nW,W,err)
  !
  use pars,         ONLY:SP,cI

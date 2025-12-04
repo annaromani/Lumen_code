@@ -5,13 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): HM DS
 !
-!> io_BS_PAR_block
-!>
-!> @param iq
-!> @param i_block
-!> @param ID
-!> @param mode
-!>
 subroutine io_BS_PAR_block(iq,i_block,ID,mode)
  !
  ! Write one block of the BSE matrix to disk
@@ -235,12 +228,6 @@ subroutine io_BS_PAR_block(iq,i_block,ID,mode)
 end subroutine
 !
 !
-!> read_BS_PAR_collisions
-!>
-!> @param iq
-!> @param i_block
-!> @param ID
-!>
 subroutine read_BS_PAR_collisions(iq,i_block,ID)
  !
  use BS,            ONLY:BS_blk
@@ -285,11 +272,6 @@ subroutine read_BS_PAR_collisions(iq,i_block,ID)
 end subroutine read_BS_PAR_collisions
 !
 !
-!> read_BS_table
-!>
-!> @param iq
-!> @param ID
-!>
 subroutine read_BS_table(iq,ID)
  !
  use pars,          ONLY:max_io_vars_open

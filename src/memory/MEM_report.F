@@ -5,10 +5,6 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
-!> MEM_report
-!>
-!> @param REPORT
-!>
 subroutine MEM_report( REPORT )
  !
  use pars,         ONLY:SP,lchlen
@@ -77,11 +73,6 @@ subroutine MEM_report( REPORT )
  !
  contains
    !
-!> plot_the_element
-!>
-!> @param M
-!> @param what
-!>
    subroutine plot_the_element(M,what)
      type(MEM_element) :: M
      character(*)      :: what

@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> k_small_group
-!>
-!> @param k
-!>
 subroutine k_small_group(k)
  !
  ! Outputs:

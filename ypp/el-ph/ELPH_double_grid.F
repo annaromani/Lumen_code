@@ -9,12 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> ELPH_double_grid
-!>
-!> @param k
-!> @param E
-!> @param q
-!>
 subroutine ELPH_double_grid(k,E,q)
  !
  use pars,                ONLY:SP,pi,schlen

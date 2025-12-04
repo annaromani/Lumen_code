@@ -9,10 +9,6 @@
 !
 #include<y_memory.h>
 !
-!> PP_scatterBamp_init
-!>
-!> @param isc
-!>
 subroutine PP_scatterBamp_init(isc)
  !
  ! init USPP workspace in isc scatterBamp argument
