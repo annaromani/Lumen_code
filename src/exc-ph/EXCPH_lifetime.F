@@ -122,6 +122,8 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    if(.not.use_PH_DbGd) &
 &     call error("G2 interpolation possible only with double-grid")
+   if(l_EXCPH_offdiago) &
+&     call error("G2 interpolation not compatible with EXCPH off-diagoanl")
    !
    ! Map q-points on a regular grid for linear interpolation of |G^2|
    !
@@ -209,7 +211,15 @@ subroutine EXCPH_lifetime(k,q,X)
          if(.not.use_PH_DbGd) Pole=Simple_Pole()
          if(use_PH_DbGd)      Pole=DbGrid_Pole(l_interp_G2)
          !
-         EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+ExcPhM*Pole
+         if(l_interp_G2) then
+           !      
+           ! If we interpoalte the numberator it will automatically
+           ! included in the Pole variable
+           !
+           EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+Pole
+         else
+           EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+ExcPhM*Pole
+         endif
          if (l_EXCPH_offdiago) then
            EXC_LineWidth(i_alpha)=EXC_LineWidth(i_alpha)+REAL(ExcPhW,SP)*Pole
          endif
@@ -369,10 +379,13 @@ subroutine EXCPH_lifetime(k,q,X)
     integer  :: nq_around,iq_fg,iE_fg
     real(SP) :: weight_dbgd
     real(SP), external :: get_ph_E_DbGd
+    real(SP) :: q_fg(3),q_cg(3),G2_var
     !
     DbGrid_Pole=rZERO
     !
     E_alpha=real(BS_E_in(i_alpha),SP)
+    !
+    q_cg=q%ptbz(iq_bz) ! Units to be checked
     !
     nq_around  =q%FGbz%k_range(iq_bz,2)-q%FGbz%k_range(iq_bz,1) 
     weight_dbgd=1._SP/real(nq_around+1._SP,SP)                  
@@ -391,6 +404,8 @@ subroutine EXCPH_lifetime(k,q,X)
         !
         E_beta=BS_all_E(i_beta,iq)  ! Getting this in the IBZ for the equivalent iq to iq_bz
         !
+        q_fg =q%FGbz%pt(iq_fg,:)                 ! q-point for the G2 interpolation
+        !
         ! If there is the double-grid I read the gamma phonons from there
         ! because they include the LO-TO splitting and the acustic sum rule
         !
@@ -398,6 +413,9 @@ subroutine EXCPH_lifetime(k,q,X)
         !
       else
         iE_fg=q%FGbz%E_map(iq_fg)                ! Map w(q) from BZ to IBZ
+        !
+        q_fg =q%FGbz%pt(iq_fg,:)                 ! q-point for the G2 interpolation
+        !
         ph_E =PH_freqs%FG%E(il,iE_fg,1)          ! w(q_db) phonon energy in the D-Grid
         !
         E_beta=EXC_E_DbGd(i_beta,iq_fg)          ! E(q_bz) exciton energy in the D-Grid
@@ -416,8 +434,18 @@ subroutine EXCPH_lifetime(k,q,X)
       N_bose  =bose_f(ph_E)
       F_boltz=boltzman_f(E_beta-min_EXC_E_DbGd)  ! Bose function? Boltzman function?
       !
-      DbGrid_Pole=DbGrid_Pole+(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
-&                                  +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping)
+      if(l_interp_EXCPH) then
+        !      
+        ! EXCPH_gkkp(q_fg)=EXCPH_gkkp(q(cg)+\Delta_q(:)*\Grad EXCPH_gkkp(:)
+        !
+        G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)+sum((q_fg(:)-q_cg(:))*Grad_EXCPH_Gkkp_sq(il,i_beta,i_alpha,:)
+        !
+      else
+        G2_var=1._SP      
+      endif
+      !
+      DbGrid_Pole=DbGrid_Pole+G2_var*(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
+&                                   +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping)
       !
     enddo
     !
