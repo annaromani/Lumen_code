@@ -9,6 +9,9 @@
 !
 #include<y_memory.h>
 !
+!> RT_Integrator_init
+!>
+!>
 subroutine RT_Integrator_init()
  ! 
  use pars,           ONLY:SP,cONE,cZERO

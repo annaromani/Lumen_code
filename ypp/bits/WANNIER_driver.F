@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> WANNIER_driver
+!>
+!> @param k
+!> @param E
+!>
 subroutine WANNIER_driver(k,E)
  !
  ! Latest update: September 14th, 2016 by Antimo Marrazzo (antimo.marrazzo@epfl.ch)
@@ -85,6 +90,12 @@ subroutine WANNIER_driver(k,E)
  !
  contains
  !
+!> scan_file_to
+!>
+!> @param keyword
+!> @param found
+!> @param iun_nnkp
+!>
  subroutine scan_file_to(keyword,found,iun_nnkp)
    !
    !-----------------------------------------------------------------------

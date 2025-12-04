@@ -34,6 +34,19 @@ module descriptors
  !
  contains
    !
+!> IO_desc_add
+!>
+!> @param desc
+!> @param kind
+!> @param str
+!> @param SZ
+!> @param term
+!> @param check
+!> @param ops
+!> @param I
+!> @param R
+!> @param D
+!>
    subroutine IO_desc_add(desc,kind,str,SZ,term,check,ops,I,R,D,C,S,L)
      type(IO_desc),    intent(inout)  :: desc
      character(1)                     :: kind
@@ -91,6 +104,14 @@ module descriptors
      !
    end subroutine
    !
+!> IO_desc_element_duplicate
+!>
+!> @param desc_in
+!> @param desc_out
+!> @param i_d_in
+!> @param i_d_out
+!> @param PREPEND
+!>
    subroutine IO_desc_element_duplicate(desc_in,desc_out,i_d_in,i_d_out,PREPEND)
      type(IO_desc),         intent(in)    :: desc_in
      type(IO_desc),         intent(inout) :: desc_out
@@ -115,6 +136,13 @@ module descriptors
      desc_out%lval(i_d_out)   = desc_in%lval(i_d_in)
    end subroutine
    !
+!> IO_desc_duplicate
+!>
+!> @param desc_in
+!> @param desc_out
+!> @param offset
+!> @param PREPEND
+!>
    subroutine IO_desc_duplicate(desc_in,desc_out,offset,PREPEND)
      type(IO_desc),    intent(in)        :: desc_in
      type(IO_desc),    intent(inout)     :: desc_out
@@ -131,6 +159,12 @@ module descriptors
      enddo
    end subroutine
    !
+!> IO_desc_append
+!>
+!> @param desc_in
+!> @param desc_out
+!> @param PREPEND
+!>
    subroutine IO_desc_append(desc_in,desc_out,PREPEND)
      type(IO_desc),    intent(in)      :: desc_in
      type(IO_desc),    intent(inout)   :: desc_out
@@ -142,6 +176,10 @@ module descriptors
      desc_out%n = desc_out%n+desc_in%n 
    end subroutine
    !
+!> IO_desc_reset
+!>
+!> @param desc
+!>
    subroutine IO_desc_reset(desc)
      type(IO_desc), intent(out) :: desc
      desc%n    = 0

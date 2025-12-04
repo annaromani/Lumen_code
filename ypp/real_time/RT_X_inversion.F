@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> RT_X_inversion
+!>
+!> @param RT_P_Probe
+!> @param Susceptibility
+!> @param Harmonic_Frequency
+!> @param X_effective
+!>
 subroutine RT_X_inversion(RT_P_Probe,Susceptibility,Harmonic_Frequency,X_effective)
  !
  use pars,           ONLY:SP,pi

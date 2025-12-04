@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> K_Haydock
+!>
+!> @param iq
+!> @param W
+!> @param OBS
+!> @param Xk
+!>
 subroutine K_Haydock(iq,W,OBS,Xk)
  !
  use pars,           ONLY:SP,schlen,cI,cZERO,cONE

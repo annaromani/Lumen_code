@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> of_netcdf_shadow_real
+!>
+!> @param i1
+!> @param mesg
+!> @param val
+!> @param nval
+!>
 subroutine of_netcdf_shadow_real(i1,mesg,val,nval)
  !
  use pars,     ONLY:SP,schlen
@@ -82,6 +89,12 @@ subroutine of_netcdf_shadow_real(i1,mesg,val,nval)
 end subroutine of_netcdf_shadow_real
 !
 !
+!> of_netcdf_shadow_char
+!>
+!> @param i1
+!> @param nval
+!> @param val
+!>
 subroutine of_netcdf_shadow_char(i1,nval,val)
  !
  use pars,     ONLY:schlen

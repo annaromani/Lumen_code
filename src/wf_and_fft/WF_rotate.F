@@ -10,6 +10,14 @@
 #include<dev_defs.h>
 !
  !
+!> WF_rotate
+!>
+!> @param ik
+!> @param i_sp_pol
+!> @param WFo
+!> @param wf_size
+!> @param space
+!>
 subroutine WF_rotate(ik,i_sp_pol,WFo,wf_size,space)
  !
  ! <r|n'>= <m|n'><r|m>

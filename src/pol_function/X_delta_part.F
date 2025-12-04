@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> X_delta_part
+!>
+!> @param NG
+!> @param NW
+!> @param X
+!> @param Gamp
+!>
 subroutine X_delta_part(NG,NW,X,Gamp)
  !
  ! The goal of this routine is to construct the "delta-like" part

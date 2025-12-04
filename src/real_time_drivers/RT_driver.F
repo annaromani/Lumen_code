@@ -9,6 +9,51 @@
 !
 #include<y_memory.h>
 !
+!> **RT_driver - Real-Time Propagation Master Loop**
+!>
+!> Orchestrates real-time propagation of non-equilibrium Green's functions.
+!> Main entry point for yambo_rt calculations. Drives the time evolution
+!> of the electron density matrix under external fields and scattering.
+!>
+!> **Physical System**:
+!> Solves Kadanoff-Baym equations with time-diagonal approximation:
+!>   i∂_t G(t) - [H(t), G(t)] = S_xc(t)
+!> where G is the lesser Green's function, H is the single-particle Hamiltonian,
+!> and S_xc is the collision self-energy.
+!>
+!> **Main Algorithm**:
+!> 1. RT_initialize: Setup initial G and Hamiltonian
+!> 2. Time loop: Propagate G(t) → G(t+dt)
+!>    a. RT_Hamiltonian: Compute H(t) from charge density
+!>    b. Propagator: Advance Green's function
+!>    c. RT_occupations_eval: Extract occupations
+!>    d. RT_observables: Compute j(t), P(t), E(t)
+!> 3. Save results and observables
+!>
+!> **Key Components**:
+!> - Hartree potential: Updated dynamically from ρ(r,t)
+!> - XC potential: TDDFT or static collision kernel
+!> - External field: E(t) coupling in velocity/length gauge
+!> - Scattering: Static kernel K_eq for relaxation/dephasing
+!>
+!> **Output**:
+!> - Occupations vs time: f_n(k,t)
+!> - Current density: j(t)
+!> - Polarization: P(t)
+!> - Energy: E(t)
+!> - Restart files for continuation
+!>
+!> **Important Files Referenced**:
+!> - See: YAMBO_CODE_FLOW_ARCHITECTURE.md for workflow diagrams
+!> - See: YAMBO_RT_NEGF_IMPLEMENTATION.md for implementation details
+!> - See: YAMBO_RT_NEGF_THEORY.md for theoretical background
+!>
+!> @param E Electronic structure (levels, bands, energies)
+!> @param X Response functions (polarization, screening)
+!> @param k K-point grid
+!> @param q Q-point grid
+!> @param Dip Dipole elements (transition matrix elements)
+!>
 subroutine RT_driver(E,X,k,q,Dip)
  !
  use pars,           ONLY:SP,lchlen
@@ -332,6 +377,9 @@ if (l_phel_scatt)                   sec_title=trim(sec_title)//'+ph-el'
  !
  contains
    !
+!> CLOSE_and_clean
+!>
+!>
    subroutine CLOSE_and_clean( )
      call RT_free( )
      call RT_control_free("all")
@@ -344,6 +392,10 @@ if (l_phel_scatt)                   sec_title=trim(sec_title)//'+ph-el'
      if (allocated(HXC_COLL_element))    call COLLISIONS_alloc_and_free("SEX","v1 table","clean",0)
    end subroutine
    !
+!> RT_timing
+!>
+!> @param steps
+!>
    subroutine RT_timing(steps)
      !
      integer, intent(in) :: steps

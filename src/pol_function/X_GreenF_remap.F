@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> X_GreenF_remap
+!>
+!> @param bands
+!> @param E
+!> @param W
+!>
 subroutine X_GreenF_remap(bands,E,W)
  !
  use pars,          ONLY:SP,pi

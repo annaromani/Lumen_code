@@ -6,6 +6,11 @@
 !
 ! Authors (see AUTHORS file for details): AF
 !
+!> PP_PWscf_comp_nlcc
+!>
+!> @param basis
+!> @param atoms
+!>
 subroutine PP_PWscf_comp_nlcc(basis,atoms)
   use pw_basis_module
   use pw_wfc_module

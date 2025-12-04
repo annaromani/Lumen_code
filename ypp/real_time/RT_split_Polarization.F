@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> RT_split_Polarization
+!>
+!> @param nh
+!> @param nt
+!> @param W
+!> @param X
+!> @param P
+!> @param what
+!>
 subroutine RT_split_Polarization(nh,nt,W,X,P,what)
  !
  use pars,           ONLY:SP,cI,schlen,DP

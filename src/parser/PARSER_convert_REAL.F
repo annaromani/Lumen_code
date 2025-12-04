@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARSER_convert_REAL
+!>
+!> @param rfac
+!> @param v_descr
+!>
 subroutine PARSER_convert_REAL(rfac,v_descr)
  !
  use pars,   ONLY:SP

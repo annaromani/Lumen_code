@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM MG DS IMA
 !
+!> K_multiply_by_V
+!>
+!> @param Vi
+!> @param Vo
+!> @param iter_par
+!> @param iq
+!> @param mode
+!>
 subroutine K_multiply_by_V(Vi,Vo,iter_par,iq,mode)
  !
  ! Given K distributed on the processors, and Vi distributed on the processors

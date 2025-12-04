@@ -13,6 +13,12 @@
 #include <slepc/finclude/slepcsys.h>
 #include <slepc/finclude/slepceps.h>
 !
+!> K_stored_in_a_nest_matrix
+!>
+!> @param i_BS_mat
+!> @param iq
+!> @param slepc_mat
+!>
 subroutine K_stored_in_a_nest_matrix(i_BS_mat,iq,slepc_mat)
  !
  ! BS_K_coupling and l_BS_ares_from_res are assumed TRUE

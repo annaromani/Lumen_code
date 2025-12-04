@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> EPS_2_moke
+!>
+!> @param wv
+!> @param nw
+!> @param eps_ii
+!> @param eps_ij
+!> @param moke
+!>
 subroutine EPS_2_moke(wv,nw,eps_ii,eps_ij,moke)
  ! 
  use pars,          ONLY:SP,cZERO

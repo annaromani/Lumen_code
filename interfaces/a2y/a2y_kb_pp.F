@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): CH HM
 !
+!> a2y_kb_pp
+!>
+!> @param ikibz
+!> @param ncid
+!>
 subroutine a2y_kb_pp( ikibz, ncid )
   !
   ! Structure of ETSF library data: (fortran order, opp to netcdf order)
@@ -76,6 +81,12 @@ end subroutine a2y_kb_pp
 
 
 
+!> a2y_kb_pp_wfk
+!>
+!> @param ikibz
+!> @param i_sp_pol
+!> @param ncid
+!>
 subroutine a2y_kb_pp_wfk( ikibz, i_sp_pol, ncid )
   !
   ! Structure of KB form factors in WFK file

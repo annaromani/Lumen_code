@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QP_W2Sc
+!>
+!> @param iqbz
+!> @param k
+!> @param E
+!> @param Xw
+!> @param Sc_W
+!>
 subroutine QP_W2Sc(iqbz,k,E,Xw,Sc_W)
  !
  ! Performs the complex Hilbert transform corresponding to

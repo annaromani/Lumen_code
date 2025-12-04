@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> Build_tilde_vbands
+!>
+!> @param en
+!> @param Xk
+!> @param ikbz
+!> @param i_sp
+!> @param istep
+!> @param id_red
+!> @param V_bands
+!> @param V_tilde
+!>
 subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
  !
  ! Build the \tilde Valence bands as defined in Eq. 53 of

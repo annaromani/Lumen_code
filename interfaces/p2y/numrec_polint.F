@@ -1,4 +1,13 @@
 # 3 "numrec_polint.spp"
+!> numrec_polint_sgl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param x
+!> @param y
+!> @param dy
+!>
 subroutine numrec_polint_sgl(xa,ya,n,x,y,dy)
   use numrec_kinds
   implicit none
@@ -45,6 +54,15 @@ subroutine numrec_polint_sgl(xa,ya,n,x,y,dy)
   return
 end subroutine numrec_polint_sgl
 # 3 "numrec_polint.spp"
+!> numrec_polint_dbl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param x
+!> @param y
+!> @param dy
+!>
 subroutine numrec_polint_dbl(xa,ya,n,x,y,dy)
   use numrec_kinds
   implicit none

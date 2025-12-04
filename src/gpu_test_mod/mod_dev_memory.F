@@ -26,6 +26,12 @@ contains
   !
   ! alloc & free
   !
+!> dev_mem_alloc_r1
+!>
+!> @param var
+!> @param N
+!> @param ierr
+!>
   subroutine dev_mem_alloc_r1(var,N,ierr)
     implicit none
     real(SP), allocatable DEV_ATTR :: var(:)
@@ -41,6 +47,11 @@ contains
     return
   end subroutine dev_mem_alloc_r1
   !
+!> dev_mem_free_r1
+!>
+!> @param var
+!> @param ierr
+!>
   subroutine dev_mem_free_r1(var,ierr)
     implicit none
     real(SP), allocatable DEV_ATTR :: var(:)

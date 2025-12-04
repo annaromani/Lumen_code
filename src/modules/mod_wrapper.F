@@ -168,6 +168,19 @@ module wrapper
    ! interface M_by_M 
    !===================
    !
+!> mm_cgemm
+!>
+!> @param TRANSA
+!> @param TRANSB
+!> @param M
+!> @param N
+!> @param K
+!> @param ALPHA
+!> @param A
+!> @param LDA
+!> @param B
+!> @param LDB
+!>
    subroutine mm_cgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
      implicit none
      !
@@ -194,6 +207,15 @@ module wrapper
 #endif
    end subroutine mm_cgemm
    !
+!> mm_c
+!>
+!> @param TRANSA
+!> @param TRANSB
+!> @param msize
+!> @param A
+!> @param B
+!> @param C
+!>
    subroutine mm_c(TRANSA,TRANSB,msize,A,B,C)
      integer,     intent(in)  :: msize
      complex(SP), intent(in)  :: A(msize,msize),B(msize,msize)
@@ -206,6 +228,16 @@ module wrapper
 #endif
    end subroutine mm_c
    !
+!> mm_cg
+!>
+!> @param TRANSA
+!> @param TRANSB
+!> @param msize
+!> @param A
+!> @param B
+!> @param BETA
+!> @param C
+!>
    subroutine mm_cg(TRANSA,TRANSB,msize,A,B,BETA,C)
      complex(SP), intent(in)  :: BETA
      integer,     intent(in)  :: msize
@@ -223,6 +255,19 @@ module wrapper
    ! interface M_by_V 
    !===================
    !
+!> mv_sgemv
+!>
+!> @param TRANS
+!> @param M
+!> @param N
+!> @param ALPHA
+!> @param A
+!> @param LDA
+!> @param X
+!> @param INCX
+!> @param BETA
+!> @param Y
+!>
    subroutine mv_sgemv(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      real(SP), intent(in) :: ALPHA,BETA
      integer,  intent(in) :: INCX,INCY,LDA,M,N
@@ -236,6 +281,19 @@ module wrapper
 #endif
    end subroutine mv_sgemv
    !
+!> mv_sgemv_gpu
+!>
+!> @param TRANS
+!> @param M
+!> @param N
+!> @param ALPHA
+!> @param A
+!> @param LDA
+!> @param X
+!> @param INCX
+!> @param BETA
+!> @param Y
+!>
    subroutine mv_sgemv_gpu(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      real(SP), intent(in) :: ALPHA,BETA
      integer,  intent(in) :: INCX,INCY,LDA,M,N
@@ -246,6 +304,19 @@ module wrapper
      call devxlib_xGEMV_gpu(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
    end subroutine mv_sgemv_gpu
    !
+!> mv_cgemv
+!>
+!> @param TRANS
+!> @param M
+!> @param N
+!> @param ALPHA
+!> @param A
+!> @param LDA
+!> @param X
+!> @param INCX
+!> @param BETA
+!> @param Y
+!>
    subroutine mv_cgemv(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      complex(SP), intent(in) :: ALPHA,BETA
      integer,     intent(in) :: INCX,INCY,LDA,M,N
@@ -259,6 +330,19 @@ module wrapper
 #endif
    end subroutine mv_cgemv
    !
+!> mv_cgemv_gpu
+!>
+!> @param TRANS
+!> @param M
+!> @param N
+!> @param ALPHA
+!> @param A
+!> @param LDA
+!> @param X
+!> @param INCX
+!> @param BETA
+!> @param Y
+!>
    subroutine mv_cgemv_gpu(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
      complex(SP), intent(in) :: ALPHA,BETA
      integer,     intent(in) :: INCX,INCY,LDA,M,N
@@ -269,6 +353,14 @@ module wrapper
      call devxlib_xGEMV_gpu(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
    end subroutine mv_cgemv_gpu
    !
+!> mv_c
+!>
+!> @param TRANS
+!> @param msize
+!> @param A
+!> @param X
+!> @param Y
+!>
    subroutine mv_c(TRANS,msize,A,X,Y)
      integer,     intent(in) :: msize
      complex(SP), intent(in) :: A(msize,*),X(*)
@@ -281,6 +373,14 @@ module wrapper
 #endif
    end subroutine mv_c
    !
+!> mv_c_gpu
+!>
+!> @param TRANS
+!> @param msize
+!> @param A
+!> @param X
+!> @param Y
+!>
    subroutine mv_c_gpu(TRANS,msize,A,X,Y)
      integer,              intent(in) :: msize
      complex(SP) DEV_ATTR, intent(in) :: A(msize,msize),X(msize)
@@ -291,6 +391,14 @@ module wrapper
      !
    end subroutine mv_c_gpu
    !
+!> mv_r
+!>
+!> @param TRANS
+!> @param msize
+!> @param A
+!> @param X
+!> @param Y
+!>
    subroutine mv_r(TRANS,msize,A,X,Y)
      integer,  intent(in) :: msize
      real(SP), intent(in) :: A(msize,*),X(*)
@@ -307,6 +415,13 @@ module wrapper
    ! interface M_plus_alpha_M
    !=========================
    !
+!> MM_caxpy
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param CY
+!>
    subroutine MM_caxpy(N, CA, CX,  CY )
      complex(SP), intent(in) :: CA
      integer,     intent(in) :: N
@@ -323,6 +438,13 @@ module wrapper
    ! interface V_plus_alpha_V
    !=========================
    !
+!> vv_c
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param CY
+!>
    subroutine vv_c(N, CA, CX,  CY )
      complex(SP), intent(in) :: CA
      integer,     intent(in) :: N
@@ -336,6 +458,15 @@ module wrapper
    end subroutine vv_c
 
    !
+!> vv_caxpy
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param INCX
+!> @param CY
+!> @param INCY
+!>
    subroutine vv_caxpy(N, CA, CX, INCX,  CY, INCY )
      complex(SP), intent(in) :: CA
      integer,     intent(in) :: N
@@ -349,6 +480,13 @@ module wrapper
 #endif
    end subroutine vv_caxpy
    !
+!> vv_c_gpu
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param CY
+!>
    subroutine vv_c_gpu(N, CA, CX, CY )
      complex(SP),          intent(in)  :: CA
      integer,              intent(in)  :: N
@@ -358,6 +496,13 @@ module wrapper
      call devxlib_xAXPY_gpu(N,CA,CX,1,CY,1)
    end subroutine vv_c_gpu
    !
+!> vv_s
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param CY
+!>
    subroutine vv_s(N, CA, CX, CY )
      real(SP),    intent(in) :: CA
      integer,     intent(in) :: N
@@ -370,6 +515,15 @@ module wrapper
 #endif
    end subroutine vv_s   
    !
+!> vv_saxpy
+!>
+!> @param N
+!> @param CA
+!> @param CX
+!> @param INCX
+!> @param CY
+!> @param INCY
+!>
    subroutine vv_saxpy(N, CA, CX, INCX, CY, INCY )
      real(SP),    intent(in) :: CA
      integer,     intent(in) :: N
@@ -388,6 +542,12 @@ module wrapper
    ! COPY 
    !======
    !
+!> V_copy
+!>
+!> @param N
+!> @param CX
+!> @param CY
+!>
    subroutine V_copy(N,CX,CY)
      integer,    intent(in)  :: N
      complex(SP),intent(in)  :: CX(*)
@@ -691,6 +851,13 @@ module wrapper
      !
    end function
    !
+!> V_by_V_pwise_cpu
+!>
+!> @param N
+!> @param CZ
+!> @param CX
+!> @param CY
+!>
    subroutine V_by_V_pwise_cpu(N,CZ,CX,CY)
      integer,    intent(in) :: N
      complex(SP),intent(in) :: CX(:),CY(:)
@@ -703,6 +870,13 @@ module wrapper
      enddo
    end subroutine V_by_V_pwise_cpu
    !
+!> V_by_V_pwise_gpu
+!>
+!> @param N
+!> @param CZ
+!> @param CX
+!> @param CY
+!>
    subroutine V_by_V_pwise_gpu(N,CZ,CX,CY)
      integer,              intent(in) :: N
      complex(SP) DEV_ATTR, intent(in) :: CX(N),CY(N)

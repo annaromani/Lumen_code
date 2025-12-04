@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_barriers
+!>
+!>
 subroutine INIT_barriers()
  !
  use drivers,    ONLY:l_acfdt,l_bse,l_bss,l_cohsex,l_elph_corr,l_gw0,l_phel_corr,&

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_QP_ctl_switch
+!>
+!> @param what
+!>
 subroutine INIT_QP_ctl_switch(what)
  !
  use electrons,  ONLY:n_sp_pol

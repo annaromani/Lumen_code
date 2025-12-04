@@ -118,6 +118,14 @@ module QP_m
  !
  interface
    !
+!> XCo_Hartree_Fock
+!>
+!> @param E
+!> @param k
+!> @param Xk
+!> @param q
+!> @param mode
+!>
    subroutine XCo_Hartree_Fock(E,k,Xk,q,mode)
      use pars,          ONLY:SP,schlen,DP,pi
      use electrons,     ONLY:levels,spin_occ,spin
@@ -128,6 +136,15 @@ module QP_m
      character(*),optional ::mode
    end subroutine XCo_Hartree_Fock
    !
+!> QP_states_simmetrize
+!>
+!> @param en
+!> @param what
+!> @param V_real
+!> @param V_complex
+!> @param state_is_2do
+!> @param warn_me
+!>
    subroutine QP_states_simmetrize(en,what,V_real,V_complex,state_is_2do,warn_me)
      use pars,          ONLY:SP
      use electrons,     ONLY:levels
@@ -142,6 +159,12 @@ module QP_m
  !
  contains
    !
+!> QP_XCo_alloc
+!>
+!> @param l_Vxc
+!> @param l_Vnl_xc
+!> @param l_screen_hyb
+!>
    subroutine QP_XCo_alloc(l_Vxc,l_Vnl_xc,l_screen_hyb)
    implicit none
      logical, optional, intent(in) :: l_Vxc,l_Vnl_xc,l_screen_hyb
@@ -168,6 +191,12 @@ module QP_m
      if (l_screen_hyb_) QP_Vnl_sex=cZERO
    end subroutine 
    !
+!> QP_XCo_free
+!>
+!> @param l_Vxc
+!> @param l_Vnl_xc
+!> @param l_screen_hyb
+!>
    subroutine QP_XCo_free(l_Vxc,l_Vnl_xc,l_screen_hyb)
    implicit none
      logical, optional, intent(in) :: l_Vxc,l_Vnl_xc,l_screen_hyb
@@ -227,12 +256,23 @@ module QP_m
    ! Time-Ordering
    !----------------
    !
+!> QP_SET_temperature_pre_factor
+!>
+!>
    subroutine QP_SET_temperature_pre_factor( )
      use drivers,  ONLY:Finite_Tel
      QP_time_order_sign=-1                ! T-order
      if (Finite_Tel) QP_time_order_sign=1 ! Retared
    end subroutine
    !
+!> QP_copy
+!>
+!> @param qp_in
+!> @param qp
+!> @param what
+!> @param OP
+!> @param pre_factor
+!>
    subroutine QP_copy(qp_in,qp,what,OP,pre_factor)
      use pars,          ONLY:SP,cI,rONE,rZERO
      use electrons,     ONLY:n_sp_pol
@@ -280,6 +320,10 @@ module QP_m
      endif
    end subroutine
    !
+!> QP_alloc
+!>
+!> @param qp
+!>
    subroutine QP_alloc(qp)
      use electrons, ONLY:n_sp_pol
      type(QP_t)::qp
@@ -296,6 +340,10 @@ module QP_m
      endif
    end subroutine
    !
+!> QP_reset
+!>
+!> @param qp
+!>
    subroutine QP_reset(qp)
      type(QP_t)::qp
      qp%nk=0

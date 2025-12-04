@@ -6,6 +6,15 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !-----------------------------------------------------------------------
 !
+!> block_distribute
+!>
+!> @param nat
+!> @param me_image
+!> @param nproc_image
+!> @param ia_s
+!> @param ia_e
+!> @param mykey
+!>
 subroutine block_distribute( nat, me_image, nproc_image, ia_s, ia_e, mykey )
  !
  integer, INTENT(IN)  :: nat, me_image, nproc_image  
@@ -53,6 +62,13 @@ subroutine block_distribute( nat, me_image, nproc_image, ia_s, ia_e, mykey )
  !
 end subroutine
 !
+!> GRID2D_DIMS
+!>
+!> @param grid_shape
+!> @param nproc
+!> @param nprow
+!> @param npcol
+!>
 subroutine GRID2D_DIMS( grid_shape, nproc, nprow, npcol )
  !
  ! This subroutine factorizes the number of processors (NPROC)
@@ -84,6 +100,15 @@ subroutine GRID2D_DIMS( grid_shape, nproc, nprow, npcol )
  !
 end subroutine
 !
+!> GRID2D_COORDS
+!>
+!> @param order
+!> @param rank
+!> @param nprow
+!> @param npcol
+!> @param row
+!> @param col
+!>
 subroutine GRID2D_COORDS( order, rank, nprow, npcol, row, col )
  !
  !  this subroutine compute the cartesian coordinetes "row" and "col"
@@ -118,6 +143,15 @@ subroutine GRID2D_COORDS( order, rank, nprow, npcol, row, col )
  !
 end subroutine
 !
+!> GRID2D_RANK
+!>
+!> @param order
+!> @param nprow
+!> @param npcol
+!> @param row
+!> @param col
+!> @param rank
+!>
 subroutine GRID2D_RANK( order, nprow, npcol, row, col, rank )
  !
  !  this subroutine compute the processor MPI task id "rank" of the processor  

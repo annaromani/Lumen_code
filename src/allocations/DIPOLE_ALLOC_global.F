@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> DIPOLE_ALLOC_global
+!>
+!> @param D
+!> @param NK
+!>
 subroutine DIPOLE_ALLOC_global(D,NK)
  !
  ! Here all DIPOLE observables are allocated except the S_overlap matrix

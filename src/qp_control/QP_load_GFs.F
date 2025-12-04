@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> QP_load_GFs
+!>
+!> @param bands
+!> @param qp
+!> @param E
+!>
 subroutine QP_load_GFs(bands,qp,E)
  !
  ! Using qp%GreenF/qp%GreenF_W I define here the Green Functions

@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QP_Green_Function
+!>
+!> @param qp
+!> @param E
+!> @param GFdb_read_err
+!>
 subroutine QP_Green_Function(qp,E,GFdb_read_err)
  !
  ! This routine calcualtes a modified definition of the GF that

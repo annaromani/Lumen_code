@@ -9,6 +9,17 @@
 !
 #include <y_memory.h>
 !
+!> PARALLEL_distribute_BZk_using_IBZk
+!>
+!> @param COMM
+!> @param K
+!> @param IND_ibz
+!> @param IBZ_id
+!> @param IND_out
+!> @param BZ_id
+!> @param BZ_index
+!> @param PAR_n_bz
+!>
 subroutine PARALLEL_distribute_BZk_using_IBZk(COMM,K,IND_ibz,IBZ_id,IND_out,BZ_id,BZ_index,PAR_n_bz)
  !
  use R_lattice,     ONLY:bz_samp

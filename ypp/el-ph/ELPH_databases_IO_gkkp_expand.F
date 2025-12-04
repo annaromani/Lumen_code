@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_databases_IO_gkkp_expand
+!>
+!> @param mode
+!> @param iq
+!> @param iq_s
+!> @param k
+!> @param q
+!> @param qindx_ID
+!> @param qindx_ID_frag
+!> @param GKKP
+!>
 subroutine ELPH_databases_IO_gkkp_expand(mode,iq,iq_s,k,q,qindx_ID,qindx_ID_frag,GKKP)
  !
  use pars,                ONLY:SP
@@ -224,6 +235,9 @@ subroutine ELPH_databases_IO_gkkp_expand(mode,iq,iq_s,k,q,qindx_ID,qindx_ID_frag
  !
  contains
    !
+!> q_small
+!>
+!>
    subroutine q_small( )
    !---------------------
      use pars,           ONLY:SP

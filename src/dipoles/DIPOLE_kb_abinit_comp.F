@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> Dipole_kb_abinit_comp
+!>
+!> @param npp
+!> @param npp_tab
+!> @param ia
+!> @param is
+!> @param ik
+!> @param i_sp_pol
+!> @param Xk
+!> @param kbv
+!>
 subroutine Dipole_kb_abinit_comp(npp,npp_tab,ia,is,ik,i_sp_pol,Xk,kbv)
  !
  use pars,          ONLY:SP,pi,cZERO

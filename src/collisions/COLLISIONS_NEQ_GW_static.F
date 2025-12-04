@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> COLLISIONS_NEQ_GW_static
+!>
+!> @param X
+!> @param Xk
+!> @param E
+!> @param k
+!> @param q
+!> @param Xw
+!>
 subroutine COLLISIONS_NEQ_GW_static(X,Xk,E,k,q,Xw)
  !
  ! NEQ GW collisions 

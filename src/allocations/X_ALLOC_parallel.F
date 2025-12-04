@@ -10,6 +10,13 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!> X_ALLOC_parallel
+!>
+!> @param X_par
+!> @param NG
+!> @param NW
+!> @param mode
+!>
 subroutine X_ALLOC_parallel(X_par,NG,NW,mode)
  !
  use pars,          ONLY:cZERO

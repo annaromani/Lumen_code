@@ -104,6 +104,11 @@ module collision_ext
  !
  contains
    !
+!> COLLISIONS_naming
+!>
+!> @param H_SE_kind
+!> @param what
+!>
    subroutine COLLISIONS_naming( H_SE_kind , what )
      !
      ! In this routine I define the %name/%kind of the COLLISIONS.

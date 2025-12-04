@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+!> RT_INV_step_std
+!>
+!> @param dG_old
+!> @param dG_inp
+!> @param dG_out
+!> @param ik
+!> @param i_sp_pol
+!> @param deltaT
+!>
 subroutine RT_INV_step_std(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  use pars,           ONLY:SP,cI

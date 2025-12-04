@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_scheme_initialize
+!>
+!> @param WHAT
+!> @param ENVIRONMENT
+!> @param PARALL_PARs
+!> @param N
+!> @param TABLE
+!> @param MATRIX
+!>
 subroutine PARALLEL_scheme_initialize(WHAT,ENVIRONMENT,PARALL_PARs,N,TABLE,MATRIX)
  !
  use parallel_m,   ONLY:PAR_scheme

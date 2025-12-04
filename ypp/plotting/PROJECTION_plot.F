@@ -9,6 +9,17 @@
 !
 #include<y_memory.h>
 !
+!> PROJECTION_plot
+!>
+!> @param what
+!> @param N
+!> @param Ns
+!> @param bands
+!> @param W
+!> @param TIME
+!> @param OBS_K
+!> @param OBS_B
+!>
 subroutine PROJECTION_plot( what, N, Ns, bands, W, TIME, OBS_K, OBS_B)
  !
  use pars,           ONLY:SP,schlen

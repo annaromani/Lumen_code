@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> FREQUENCIES_Green_Function
+!>
+!> @param iqp
+!> @param W
+!> @param E
+!> @param Spectral_Function
+!>
 subroutine FREQUENCIES_Green_Function(iqp,W,E,Spectral_Function)
  !
  use pars,       ONLY:SP,cI

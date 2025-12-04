@@ -12,6 +12,10 @@
 ! - io_COLLISIONS        (serial I/O) or
 ! - io_COLLISIONS_header (parallel I/O case)
 !
+!> COLLISIONS_load
+!>
+!> @param CHECK_EXISTENCE_ONLY
+!>
 subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  !
  ! Load all collisions contribution from any kind of self-energy 
@@ -168,6 +172,10 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  !
  contains
    !
+!> local_IO
+!>
+!> @param COLL
+!>
    subroutine local_IO( COLL )
      !
      implicit none

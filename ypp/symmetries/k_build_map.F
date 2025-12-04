@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+!> k_build_map
+!>
+!> @param k
+!> @param k_save
+!> @param kpoints_map
+!>
 subroutine k_build_map(k,k_save,kpoints_map)
  !
  use pars,                ONLY:SP

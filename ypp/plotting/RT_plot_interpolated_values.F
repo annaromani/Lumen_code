@@ -5,6 +5,18 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> RT_plot_interpolated_values
+!>
+!> @param CIRCUIT_E
+!> @param RT_E
+!> @param CIRCUIT_dE
+!> @param i_T
+!> @param ID_circuit
+!> @param ID_spin
+!> @param Max_occ
+!> @param WARN_elec
+!> @param WARN_hole
+!>
 subroutine RT_plot_interpolated_values(CIRCUIT_E,RT_E,CIRCUIT_dE,i_T,ID_circuit,ID_spin,Max_occ,WARN_elec,WARN_hole)
  !
  ! Output: bands on circuit

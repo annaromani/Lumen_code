@@ -44,6 +44,11 @@ contains
  !    Select and open XML files                                        *
  !---------------------------------------------------------------------*
  !
+!> pw_init
+!>
+!> @param instr
+!> @param indir
+!>
  subroutine pw_init(instr,indir)
    !
    use pars,  ONLY:lchlen
@@ -170,6 +175,11 @@ contains
  !    Read dimensions                                                  *
  !---------------------------------------------------------------------*
  !
+!> get_dimensions
+!>
+!> @param en
+!> @param k
+!>
  subroutine get_dimensions(en,k)
    !
    use electrons,             ONLY : default_nel, n_spin, n_sp_pol, &
@@ -548,6 +558,10 @@ contains
  !    Read K-point data                                                *
  !---------------------------------------------------------------------*
  !
+!> get_k_points
+!>
+!> @param k
+!>
  subroutine get_k_points(k)
    ! 
    use R_lattice,   ONLY:bz_samp
@@ -678,6 +692,10 @@ contains
  !    Read IGK arrays                                                  *
  !---------------------------------------------------------------------*
  !
+!> get_IGK
+!>
+!> @param k
+!>
  subroutine get_IGK(k)
    use wave_func,             ONLY : wf_nc_k, wf_ncx, wf_igk, wf_ng
    use R_lattice,             ONLY : bz_samp, ng_vec
@@ -785,6 +803,11 @@ contains
  !    Read eigenvalues                                                 *
  !---------------------------------------------------------------------*
  !
+!> get_energies
+!>
+!> @param en
+!> @param k
+!>
  subroutine get_energies(en,k)
    !
    use electrons,  ONLY : levels, n_sp_pol
@@ -937,6 +960,11 @@ contains
 
  end subroutine get_xc
  !
+!> p2y_get_dftdata_fmt
+!>
+!> @param dftdata_fmt
+!> @param indir
+!>
  subroutine p2y_get_dftdata_fmt(dftdata_fmt,indir)
     !
     implicit none

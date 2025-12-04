@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> INIT_RT_ctl_load
+!>
+!> @param defs
+!> @param i_type
+!>
 subroutine INIT_RT_ctl_load(defs,i_type)
  !
  ! Note that this routine is called in 'load' mode BEFORE

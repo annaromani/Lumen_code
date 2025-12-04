@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> XC_potentials
+!>
+!> @param POTENTIALS_string
+!>
 subroutine XC_potentials(POTENTIALS_string)
  !
  use pars,           ONLY:schlen

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> electrons_bands
+!>
+!> @param Xk
+!> @param Xen
+!>
 subroutine electrons_bands(Xk,Xen)
  !
  ! Levels produced by this routine:

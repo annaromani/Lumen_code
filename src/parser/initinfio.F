@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> initinfio
+!>
+!> @param defs
+!> @param ou
+!>
 subroutine initinfio(defs,ou)
  !
  !@@@@@@@@@@@@@@@@@@@@@

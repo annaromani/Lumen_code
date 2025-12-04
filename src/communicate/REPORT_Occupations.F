@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> REPORT_Occupations
+!>
+!> @param what
+!> @param E
+!>
 subroutine REPORT_Occupations(what,E)
  !
  use pars,          ONLY:SP,schlen

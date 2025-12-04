@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): CA AM FP
 !
+!> ELPH_databases_IO_modes
+!>
+!> @param ph_file
+!> @param n_q
+!> @param q_pt
+!> @param ph_freqs
+!> @param ph_pol
+!>
 subroutine ELPH_databases_IO_modes(ph_file,n_q,q_pt,ph_freqs,ph_pol)
  !
  use pars,           ONLY:schlen,SP 

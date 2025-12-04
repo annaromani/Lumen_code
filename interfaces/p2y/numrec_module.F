@@ -11,6 +11,15 @@ public :: numrec_locate
 
 interface numrec_polint
 # 17 "numrec_module.spp"
+!> numrec_polint_sgl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param x
+!> @param y
+!> @param dy
+!>
 subroutine numrec_polint_sgl(xa,ya,n,x,y,dy)
   use numrec_kinds
   implicit none
@@ -22,6 +31,15 @@ subroutine numrec_polint_sgl(xa,ya,n,x,y,dy)
   real(sgl), intent(out) :: dy
 end subroutine numrec_polint_sgl
 # 17 "numrec_module.spp"
+!> numrec_polint_dbl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param x
+!> @param y
+!> @param dy
+!>
 subroutine numrec_polint_dbl(xa,ya,n,x,y,dy)
   use numrec_kinds
   implicit none
@@ -37,6 +55,14 @@ end interface
 
 interface numrec_ddpoly
 # 84 "numrec_module.spp"
+!> numrec_ddpoly_sgl
+!>
+!> @param c
+!> @param nc
+!> @param x
+!> @param pd
+!> @param nd
+!>
 subroutine numrec_ddpoly_sgl(c,nc,x,pd,nd)
   use numrec_kinds
   implicit none
@@ -47,6 +73,14 @@ subroutine numrec_ddpoly_sgl(c,nc,x,pd,nd)
   real(sgl), intent(out) :: pd(nd)
 end subroutine numrec_ddpoly_sgl
 # 84 "numrec_module.spp"
+!> numrec_ddpoly_dbl
+!>
+!> @param c
+!> @param nc
+!> @param x
+!> @param pd
+!> @param nd
+!>
 subroutine numrec_ddpoly_dbl(c,nc,x,pd,nd)
   use numrec_kinds
   implicit none
@@ -61,6 +95,13 @@ end interface
 
 interface numrec_polcof
 # 98 "numrec_module.spp"
+!> numrec_polcof_sgl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcof_sgl(xa,ya,n,cof)
   use numrec_kinds
   implicit none
@@ -70,6 +111,13 @@ subroutine numrec_polcof_sgl(xa,ya,n,cof)
   real(sgl), intent(out) :: cof(n)
 end subroutine numrec_polcof_sgl
 # 98 "numrec_module.spp"
+!> numrec_polcof_dbl
+!>
+!> @param xa
+!> @param ya
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcof_dbl(xa,ya,n,cof)
   use numrec_kinds
   implicit none
@@ -83,6 +131,13 @@ end interface
 
 interface numrec_polcoe
 # 112 "numrec_module.spp"
+!> numrec_polcoe_REALsgl
+!>
+!> @param x
+!> @param y
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcoe_REALsgl(x,y,n,cof)
   use numrec_kinds
   implicit none
@@ -92,6 +147,13 @@ subroutine numrec_polcoe_REALsgl(x,y,n,cof)
   REAL(sgl), intent(out) :: cof(n)
 end subroutine numrec_polcoe_REALsgl
 # 112 "numrec_module.spp"
+!> numrec_polcoe_REALdbl
+!>
+!> @param x
+!> @param y
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcoe_REALdbl(x,y,n,cof)
   use numrec_kinds
   implicit none
@@ -101,6 +163,13 @@ subroutine numrec_polcoe_REALdbl(x,y,n,cof)
   REAL(dbl), intent(out) :: cof(n)
 end subroutine numrec_polcoe_REALdbl
 # 112 "numrec_module.spp"
+!> numrec_polcoe_COMPLEXsgl
+!>
+!> @param x
+!> @param y
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcoe_COMPLEXsgl(x,y,n,cof)
   use numrec_kinds
   implicit none
@@ -110,6 +179,13 @@ subroutine numrec_polcoe_COMPLEXsgl(x,y,n,cof)
   COMPLEX(sgl), intent(out) :: cof(n)
 end subroutine numrec_polcoe_COMPLEXsgl
 # 112 "numrec_module.spp"
+!> numrec_polcoe_COMPLEXdbl
+!>
+!> @param x
+!> @param y
+!> @param n
+!> @param cof
+!>
 subroutine numrec_polcoe_COMPLEXdbl(x,y,n,cof)
   use numrec_kinds
   implicit none
@@ -123,6 +199,13 @@ end interface
 
 interface numrec_locate
 # 60 "numrec_module.spp"
+!> numrec_locate_sgl
+!>
+!> @param xx
+!> @param n
+!> @param x
+!> @param j
+!>
 subroutine numrec_locate_sgl(xx,n,x,j)
   use numrec_kinds
   implicit none
@@ -132,6 +215,13 @@ subroutine numrec_locate_sgl(xx,n,x,j)
   integer,     intent(out) :: j
 end subroutine numrec_locate_sgl
 # 60 "numrec_module.spp"
+!> numrec_locate_dbl
+!>
+!> @param xx
+!> @param n
+!> @param x
+!> @param j
+!>
 subroutine numrec_locate_dbl(xx,n,x,j)
   use numrec_kinds
   implicit none

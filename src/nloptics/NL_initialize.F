@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> NL_initialize
+!>
+!> @param E
+!> @param k
+!>
 subroutine NL_initialize(E,k)
  ! 
  use pars,           ONLY:SP,DP,pi,n_fields_defs_max,schlen

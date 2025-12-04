@@ -7,6 +7,18 @@
 !
 !@brief Newton solver for the quasi-particle equation
 !
+!> QP_newton
+!>
+!> @param X
+!> @param Xen
+!> @param Xk
+!> @param en
+!> @param k
+!> @param q
+!> @param qp
+!> @param Xw
+!> @param Dip
+!>
 subroutine QP_newton(X,Xen,Xk,en,k,q,qp,Xw,Dip)
  !
  use pars,          ONLY:SP,cZERO

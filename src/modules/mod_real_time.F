@@ -292,6 +292,10 @@ module real_time
    ! RT_OBJECTS
    !------------
    !
+!> RT_obj_alloc
+!>
+!> @param RT
+!>
    subroutine RT_obj_alloc(RT)
      !
      use D_lattice, ONLY:Bose_Temp
@@ -337,6 +341,10 @@ module real_time
      RT%delta_E=0._SP
    end subroutine
    !
+!> RT_obj_free
+!>
+!> @param RT
+!>
    subroutine RT_obj_free(RT)
      type(RT_t)::RT
      RT%nk=0

@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_databases_symmetrize
+!>
+!> @param mode
+!> @param E
+!> @param k
+!> @param q
+!> @param ik_bz
+!> @param iq
+!> @param n_bands
+!> @param GKKP
+!>
 subroutine ELPH_databases_symmetrize(mode,E,k,q,ik_bz,iq,n_bands,GKKP)
  ! 
  use pars,           ONLY:SP

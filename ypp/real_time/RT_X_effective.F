@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> RT_X_effective
+!>
+!> @param en
+!>
 subroutine RT_X_effective(en)
  !
  use pars,           ONLY:SP,lchlen,pi,schlen,cZERO,n_fields_defs_max
@@ -361,6 +365,9 @@ subroutine RT_X_effective(en)
  !
  contains
    !
+!> clean_ALLOC
+!>
+!>
    subroutine clean_ALLOC()
      YAMBO_FREE(RT_P_probe)
      YAMBO_FREE(RT_P_pump)
@@ -371,6 +378,9 @@ subroutine RT_X_effective(en)
      YAMBO_FREE(RT_P_save)
    end subroutine
    !
+!> plot_X_effective
+!>
+!>
    subroutine plot_X_effective()
      !
      character(2) :: chart_string

@@ -79,6 +79,10 @@ module hamiltonian
    end function B_mat_index_cv
    !
    !
+!> H_QP_table_setup
+!>
+!> @param E
+!>
    subroutine H_QP_table_setup(E)
      use drivers,        ONLY:l_use_collisions
      use R_lattice,      ONLY:nkibz
@@ -106,6 +110,12 @@ module hamiltonian
      !
    end subroutine
    !
+!> H_alloc
+!>
+!> @param E
+!> @param l_real_space
+!> @param l_rotation_matrix
+!>
    subroutine H_alloc(E,l_real_space,l_rotation_matrix)
      use pars,           ONLY:SP
      use drivers,        ONLY:l_nl_optics,l_sc_run
@@ -152,6 +162,9 @@ module hamiltonian
      !
    end subroutine
    !
+!> H_free
+!>
+!>
    subroutine H_free()
      use xc_functionals, ONLY:magn,V_xc
      use ALLOC,          ONLY:X_ALLOC_elemental

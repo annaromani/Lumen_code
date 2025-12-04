@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> rim_spherical
+!>
+!> @param Np
+!> @param points
+!> @param p_weight
+!> @param radius
+!> @param power
+!> @param MULTIPLY_BY_Q
+!>
 subroutine rim_spherical(Np,points,p_weight,radius,power,MULTIPLY_BY_Q)
  !
  ! Here I want to approx the integral

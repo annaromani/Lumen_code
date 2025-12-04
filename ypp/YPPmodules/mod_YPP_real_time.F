@@ -163,6 +163,11 @@ module YPP_real_time
  !
  interface
    !
+!> RT_IO_carriers
+!>
+!> @param Time
+!> @param imposed_COM
+!>
    subroutine RT_IO_carriers(Time,imposed_COM)
      use pars,       ONLY:SP
      real(SP), optional, intent(inout) :: Time
@@ -173,6 +178,11 @@ module YPP_real_time
  !
  contains 
    !
+!> RT_conf_duplicate
+!>
+!> @param Cin
+!> @param Cout
+!>
    subroutine RT_conf_duplicate(Cin,Cout)
      type(RT_ctl) :: Cin,Cout
      Cout%delta_W=Cin%delta_W
@@ -188,6 +198,10 @@ module YPP_real_time
      Cout%damping=Cin%damping   
    end subroutine
    !
+!> OBS_el_free
+!>
+!> @param FT
+!>
    subroutine OBS_el_free(FT)
      type(OBS_el) :: FT
      YAMBO_FREE(FT%F_w)
@@ -206,6 +220,10 @@ module YPP_real_time
      if (j==3) TRabs_EPS_label=TRabs_EPS_label(1:1)//"z" 
    end function
    !
+!> gimme_a_G_Time_Point
+!>
+!> @param i_T
+!>
    subroutine gimme_a_G_Time_Point(i_T)
      use real_time,  ONLY:G_MEM_steps
      use RT_control, ONLY:Gless_RT_IO_t

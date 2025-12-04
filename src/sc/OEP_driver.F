@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> OEP_driver
+!>
+!> @param X
+!> @param Xw
+!> @param E
+!> @param k
+!> @param q
+!> @param V_oep
+!>
 subroutine OEP_driver(X,Xw,E,k,q,V_oep)
  !
  ! Driver for OEP potentials. Variables: 

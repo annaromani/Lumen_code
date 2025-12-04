@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> DIPOLE_covariant
+!>
+!> @param Xen
+!> @param Xk
+!> @param Dip
+!> @param direction_is_todo
+!>
 subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
  !
  ! Build the covariant dipole operator at zero field

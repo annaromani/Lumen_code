@@ -73,6 +73,11 @@ module collision_el
  !
  contains
    !
+!> elemental_collision_copy
+!>
+!> @param I
+!> @param O
+!>
    subroutine elemental_collision_copy(I,O)
      type(elemental_collision), target::I,O
      O%is=I%is
@@ -80,6 +85,10 @@ module collision_el
      O%qs=I%qs
    end subroutine
    !
+!> elemental_collision_free
+!>
+!> @param ggw
+!>
    subroutine elemental_collision_free(ggw)
      type(elemental_collision), target::ggw
      logical :: l_allocated

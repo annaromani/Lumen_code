@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> K_OUTPUT
+!>
+!> @param iq
+!> @param W
+!> @param WHAT
+!> @param OBS
+!>
 subroutine K_OUTPUT(iq,W,WHAT,OBS)
  !
  use pars,           ONLY:pi,DP,SP,cI,cZERO,schlen
@@ -321,6 +328,11 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
  !
  contains 
    !
+!> ELEMENTAL_dump
+!>
+!> @param OBS_local
+!> @param F
+!>
    subroutine ELEMENTAL_dump(OBS_local,F)
      character(*) :: OBS_local
      integer      :: iw,I
@@ -342,6 +354,11 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
    end subroutine ELEMENTAL_dump
    !
    !
+!> get_from_Lbar_or_Lfull_inverted
+!>
+!> @param spec_o
+!> @param spec_i
+!>
    subroutine get_from_Lbar_or_Lfull_inverted(spec_o,spec_i)
      !
      complex(DP), intent(in)  :: spec_i(BSS_n_freqs,3)
@@ -362,6 +379,11 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
    end subroutine get_from_Lbar_or_Lfull_inverted
    !
    !
+!> get_from_Lfull_or_Lbar_inverted
+!>
+!> @param spec_o
+!> @param spec_i
+!>
    subroutine get_from_Lfull_or_Lbar_inverted(spec_o,spec_i)
      !
      complex(DP), intent(in)  :: spec_i(BSS_n_freqs,3)
@@ -383,6 +405,11 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
    end subroutine get_from_Lfull_or_Lbar_inverted
    !
    !
+!> get_eel_from_spectra
+!>
+!> @param spec_o
+!> @param spec_i
+!>
    subroutine get_eel_from_spectra(spec_o,spec_i)
      !
      complex(SP), intent(in)  :: spec_i(BSS_n_freqs,3)
@@ -426,6 +453,10 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
    end subroutine get_eel_from_spectra
    !
    !
+!> add_drude_term
+!>
+!> @param spec_io
+!>
    subroutine add_drude_term(spec_io)
      !
      complex(SP), intent(inout)  :: spec_io(BSS_n_freqs,3)
@@ -455,6 +486,11 @@ if (X_do_obs("MEorb"))  call ELEMENTAL_dump("MEorb",  X_meorb(:,2:))
      !
    end subroutine add_drude_term
    !
+!> ELEMENTAL_dump_real
+!>
+!> @param OBS_local
+!> @param F
+!>
    subroutine ELEMENTAL_dump_real(OBS_local,F)
      character(*) :: OBS_local
      integer      :: iw,I

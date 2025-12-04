@@ -167,6 +167,12 @@ integer function io_Double_Grid(E,Xk,ID,what)
  !
  contains
    !
+!> elemental_IO
+!>
+!> @param FG
+!> @param what
+!> @param kind
+!>
    subroutine elemental_IO(FG,what,kind)
      !
      use R_lattice,  ONLY:bz_fine_grid

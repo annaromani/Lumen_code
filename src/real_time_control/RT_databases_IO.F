@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !                  
+!> RT_databases_IO
+!>
+!> @param E
+!> @param DO_IT
+!>
 subroutine RT_databases_IO(E,DO_IT)
  !
  use electrons,      ONLY:n_spin,levels
@@ -319,6 +324,15 @@ subroutine RT_databases_IO(E,DO_IT)
  !
  contains
    !
+!> elemental_G_lesser_IO
+!>
+!> @param idb_G_RES
+!> @param G_RES_ACT
+!> @param idb_G
+!> @param G_ACT
+!> @param SEC_
+!> @param MODE
+!>
    subroutine elemental_G_lesser_IO(idb_G_RES,G_RES_ACT,idb_G,G_ACT,SEC_,MODE)
      use pars, ONLY:schlen
      integer      :: idb_G_RES,G_RES_ACT,idb_G,G_ACT,SEC_

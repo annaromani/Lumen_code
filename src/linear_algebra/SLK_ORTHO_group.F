@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 !
+!> SLK_ORTHO_group
+!>
+!> @param ORTHO
+!> @param POOL
+!> @param nproc_try_in
+!> @param comm_all
+!>
 subroutine SLK_ORTHO_group( ORTHO, POOL, nproc_try_in, comm_all )
  !
  use SLK_m,      ONLY:ORTHO_group,POOL_group,n_pools

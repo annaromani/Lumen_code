@@ -9,6 +9,14 @@
 !
 #include<y_memory.h> 
 !
+!> excitons_ph_ass_dos
+!>
+!> @param k
+!> @param Xk
+!> @param en
+!> @param Xen
+!> @param q_exc
+!>
 subroutine excitons_ph_ass_dos(k,Xk,en,Xen,q_exc)
  !
  use pars,          ONLY:SP,pi,rZERO,schlen
@@ -184,6 +192,9 @@ subroutine excitons_ph_ass_dos(k,Xk,en,Xen,q_exc)
  !
  contains
    !
+!> print_DOS
+!>
+!>
    subroutine print_DOS()
      !
      use com,           ONLY:msg,of_open_close

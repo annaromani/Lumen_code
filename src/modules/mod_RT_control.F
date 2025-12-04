@@ -97,6 +97,13 @@ module RT_control
  ! 
  interface
    !
+!> RT_output
+!>
+!> @param what
+!> @param VALUEs
+!> @param TIME
+!> @param E
+!>
    subroutine RT_output(what,VALUEs,TIME,E)
      use pars,       ONLY:SP
      character(*),       intent(in) :: what
@@ -105,6 +112,19 @@ module RT_control
      real(SP), optional, intent(in) :: E
    end subroutine
    !
+!> RT_apply
+!>
+!> @param bands
+!> @param E
+!> @param K
+!> @param what
+!> @param VERBOSE
+!> @param IO_COM
+!> @param Time
+!> @param keep_RT_carriers
+!> @param TIMES_ONLY
+!> @param skip_interpolation
+!>
    subroutine RT_apply(bands,E,K,what,VERBOSE,IO_COM,Time,keep_RT_carriers,TIMES_ONLY,skip_interpolation)
     use pars,           ONLY:SP
     use electrons,      ONLY:levels
@@ -122,6 +142,14 @@ module RT_control
     logical ,    optional, intent(in) :: skip_interpolation
    end subroutine
    !
+!> RT_carriers_object
+!>
+!> @param RT
+!> @param E
+!> @param K
+!> @param DB_id
+!> @param WHAT
+!>
    subroutine RT_carriers_object(RT,E,K,DB_id,WHAT)
      use real_time,  ONLY:RT_t
      use R_lattice,  ONLY:bz_samp
@@ -190,6 +218,10 @@ module RT_control
      !
    end function
    !
+!> RT_define_the_IO_DB_identifier
+!>
+!> @param what
+!>
    subroutine RT_define_the_IO_DB_identifier(what)
      character(*) :: what
      RT_current_DB_identifier=0
@@ -207,6 +239,10 @@ module RT_control
      if (what=="V_bands_K_section")             RT_current_DB_identifier=13
    end subroutine
    !
+!> RT_control_alloc
+!>
+!> @param what
+!>
    subroutine RT_control_alloc(what)
      !
      use pars,           ONLY:cZERO,rZERO
@@ -259,6 +295,10 @@ module RT_control
      !
    end subroutine RT_control_alloc
    !
+!> RT_control_free
+!>
+!> @param what
+!>
    subroutine RT_control_free(what)
      !
      character(*), intent(in) :: what
@@ -356,6 +396,12 @@ module RT_control
      !
    end function
    !
+!> SETUP_RT_IO_type
+!>
+!> @param TYP
+!> @param who
+!> @param what
+!>
    subroutine SETUP_RT_IO_type(TYP,who,what)
      !
      use real_time, ONLY:NE_tot_time,RT_dyn_step,RT_step,NE_i_time
@@ -399,6 +445,10 @@ module RT_control
      !
    end subroutine
    !
+!> RTibz_to_RT_k
+!>
+!> @param K
+!>
    subroutine RTibz_to_RT_k( K )
      use R_lattice,      ONLY:bz_samp,bz_samp_reset
      use real_time,      ONLY:RTibz
@@ -416,6 +466,10 @@ module RT_control
      enddo
    end subroutine
    !
+!> RT_carriers_to_RT_k
+!>
+!> @param K
+!>
    subroutine RT_carriers_to_RT_k( K )
      use R_lattice,      ONLY:bz_samp,bz_samp_reset
      use real_time,      ONLY:RT_carriers
@@ -433,6 +487,12 @@ module RT_control
      enddo
    end subroutine
    !
+!> RT_carriers_to_RT_E
+!>
+!> @param E_eq
+!> @param E
+!> @param what
+!>
    subroutine RT_carriers_to_RT_E(E_eq,E,what)
      use electrons,      ONLY:levels,E_reset,n_sp_pol
      use real_time,      ONLY:RT_carriers

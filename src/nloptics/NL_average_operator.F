@@ -134,6 +134,11 @@ subroutine NL_average_operator(O_VALUE,V_VALUE,O_REAL,O_MATRIX,&
  !
  contains 
    !
+!> make_Hk_matrix
+!>
+!> @param ik
+!> @param i_sp_pol
+!>
    subroutine make_Hk_matrix(ik,i_sp_pol)
      !
      use D_lattice,      ONLY:dl_sop,sop_inv

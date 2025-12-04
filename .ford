@@ -13,34 +13,43 @@ favicon: ./doc/media/yambo_favicon.png
 summary: <p align="center"><img alt="logo" src="media/yambo_logo.png"></p>
 media_dir: ./doc/media
 extensions: f90
-            F
+            F90
 fixed_extensions: f
 fpp_extensions: F
+preprocess: False
 extra_filetypes: c //
 src_dir: ./src
          ./driver
-         ./lib
          ./ypp
          ./interfaces
+         ./include
 exclude: src/wf_and_fft/scatter_Bamp_incl.F
          src/wf_and_fft/scatter_Gamp_incl.F
          src/wf_and_fft/WF_apply_symm_incl.F
          src/wf_and_fft/WF_symm_kpoint_incl.F
+         lib/*
+         test*
+         *test*
+         *TEST*
+         sample*
+         SAMPLE*
+         example*
+         EXAMPLE*
 macro: DEV_SUB(x)=x
        DEV_VAR(x)=x
        DEV_ATTR= 
 ---
 
-## 📚 Documentation Guide
+## Documentation Guide
 
 ### Quick Navigation
-- 📖 **[Complete Documentation Index](page/000_documentation_index.html)** - Browse all available documents
-- 📚 **[Theory Guide](page/YAMBO_THEORY_README.html)** - Theoretical foundations
-- ⚙️ **[Input Flags Reference](page/INPUT_FLAGS.html)** - All configuration options
-- 💾 **[I/O System](page/IO_Quick_Reference.html)** - File formats and architecture
-- 🧠 **[Memory Management](page/YAMBO_ALLOC_DOCUMENTATION.html)** - Allocation system
-- ⏱️ **[Real-Time Simulations](page/YAMBO_RT_QUICK_REFERENCE.html)** - Time-dependent calculations
-- 🔗 **[API Reference](modules/index.html)** - Code modules and procedures
+- **[Complete Documentation Index](page/000_documentation_index.html)** - Browse all available documents
+- **[Theory Guide](page/YAMBO_THEORY_README.html)** - Theoretical foundations
+- **[Input Flags Reference](page/INPUT_FLAGS.html)** - All configuration options
+- **[I/O System](page/IO_Quick_Reference.html)** - File formats and architecture
+- **[Memory Management](page/YAMBO_ALLOC_DOCUMENTATION.html)** - Allocation system
+- **[Real-Time Simulations](page/YAMBO_RT_QUICK_REFERENCE.html)** - Time-dependent calculations
+- **[API Reference](modules/index.html)** - Code modules and procedures
 
 ## ✨ Key Features
 
@@ -50,28 +59,28 @@ macro: DEV_SUB(x)=x
 - **Electron-Phonon Coupling** - Transport properties
 - **Parallel & GPU** - High-performance computing
 
-## 📖 Theory & Methods
+## Theory & Methods
 
 - [YAMBO Theory Documentation](page/YAMBO_THEORY_DOCUMENTATION.html) - Complete theory reference
 - [YAMBO Theory README](page/YAMBO_THEORY_README.html) - Introduction to theoretical framework
 - [YAMBO Theory Visual Guide](page/YAMBO_THEORY_VISUAL_GUIDE.html) - Visual representations
 - [YAMBO Theory Code Examples](page/YAMBO_THEORY_CODE_EXAMPLES.html) - Implementation examples
 
-## 🔄 Real-Time Capabilities
+## Real-Time Capabilities
 
 - [Real-Time Theory Documentation](page/YAMBO_RT_THEORY_DOCUMENTATION.html) - Real-time propagation theory
 - [Real-Time Quick Reference](page/YAMBO_RT_QUICK_REFERENCE.html) - Real-time simulation guide
 - [YPP Real-Time Documentation](page/YPP_RT_DOCUMENTATION.html) - Post-processing tool guide
 - [YPP Real-Time Flowcharts](page/YPP_RT_FLOWCHARTS.html) - Processing workflows
 
-## 💾 I/O & Data Management
+## I/O & Data Management
 
 - [IO System Architecture](page/IO_System_Architecture.html) - Complete I/O infrastructure design
 - [IO System Flowchart](page/IO_System_Flowchart.html) - Visual workflow diagrams
 - [Input Flags Reference](page/INPUT_FLAGS.html) - Complete input flags listing
 - [IO Quick Reference](page/IO_Quick_Reference.html) - Common I/O procedures
 
-## 🧠 Memory & Allocation System
+## Memory & Allocation System
 
 - [YAMBO Allocation Architecture](page/YAMBO_ALLOC_ARCHITECTURE.html) - Memory management design
 - [YAMBO Allocation Documentation](page/YAMBO_ALLOC_DOCUMENTATION.html) - Complete API reference

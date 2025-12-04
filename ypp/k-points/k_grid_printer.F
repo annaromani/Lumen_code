@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> k_grid_printer
+!>
+!> @param nk
+!> @param k
+!> @param coo_in
+!> @param form
+!> @param wk
+!> @param coo_out
+!>
 subroutine k_grid_printer(nk,k,coo_in,form,wk,coo_out)
  !
  use pars,                ONLY:SP,schlen,pi

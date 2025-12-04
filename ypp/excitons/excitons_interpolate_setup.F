@@ -9,6 +9,18 @@
 !
 #include<y_memory.h> 
 !
+!> excitons_interpolate_setup
+!>
+!> @param k
+!> @param Xk
+!> @param en
+!> @param Xen
+!> @param q
+!> @param BS_all_E
+!> @param ID_INTERP_EXC
+!> @param ID_INTERP_OCC
+!> @param report
+!>
 subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_INTERP_OCC,report)
  !
  ! This subroutine read and interpolate exciton 

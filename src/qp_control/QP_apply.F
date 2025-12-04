@@ -9,6 +9,17 @@
 !
 #include<y_memory.h>
 !
+!> QP_apply
+!>
+!> @param bands
+!> @param en
+!> @param k
+!> @param object
+!> @param msg_fmt
+!> @param qp_impose
+!> @param QP_ctl_impose
+!> @param main_section
+!>
 subroutine QP_apply(bands,en,k,object,msg_fmt,qp_impose,QP_ctl_impose,main_section)
  !
  ! This routine manages the external qp corrections.
@@ -211,6 +222,11 @@ subroutine QP_apply(bands,en,k,object,msg_fmt,qp_impose,QP_ctl_impose,main_secti
  !
  contains
    !
+!> QP_apply_gap_report
+!>
+!> @param E
+!> @param title
+!>
    subroutine QP_apply_gap_report(E,title)
     use pars, ONLY:SP
     character(*)  ::title

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_acoustic_phonon_properties
+!>
+!> @param q
+!>
 subroutine ELPH_acoustic_phonon_properties(q)
  !
  ! The phonon branches are splitted in two: acoustic and optical

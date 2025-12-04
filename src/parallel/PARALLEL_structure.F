@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> PARALLEL_structure
+!>
+!> @param n_elements
+!> @param ROLE
+!>
 subroutine PARALLEL_structure(n_elements,ROLE)
  !
  use pars,        ONLY:schlen

@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> electrons_WFs_proj_interpolate
+!>
+!> @param Xen
+!> @param SEED_k
+!> @param OUT_k
+!> @param BANDS_range
+!> @param proj_fac
+!> @param ID_proj
+!>
 subroutine electrons_WFs_proj_interpolate(Xen,SEED_k,OUT_k,BANDS_range,proj_fac,ID_proj)
  !
  use pars,           ONLY:SP,cZERO

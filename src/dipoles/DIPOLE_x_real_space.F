@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> DIPOLE_x_real_space
+!>
+!> @param Xen
+!> @param Xk
+!> @param Dip
+!> @param idir_todo
+!>
 subroutine DIPOLE_x_real_space(Xen,Xk,Dip,idir_todo)
  !
  use drivers,             ONLY:l_sc_run

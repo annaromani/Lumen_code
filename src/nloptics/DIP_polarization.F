@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !                  
+!> DIP_polarization
+!>
+!> @param Xen
+!> @param Xk
+!> @param V_bands
+!> @param Polarization
+!>
 subroutine DIP_polarization(Xen,Xk,V_bands,Polarization)
  !
  use pars,           ONLY:SP,cI

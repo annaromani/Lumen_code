@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PROJECTION_perpendicular_sampling
+!>
+!> @param K
+!> @param versor
+!>
 subroutine PROJECTION_perpendicular_sampling( K, versor )
  !
  use zeros,          ONLY:k_iku_zero

@@ -9,6 +9,9 @@
 !
 #include<y_memory.h>
 !
+!> eval_R_minus_R
+!>
+!>
 subroutine eval_R_minus_R()
  !
  ! Evaluate the R_i-R_j table
@@ -45,6 +48,12 @@ subroutine eval_R_minus_R()
  !
  contains
    !
+!> MapVec2Indx
+!>
+!> @param direx
+!> @param ii
+!> @param V
+!>
    subroutine MapVec2Indx(direx,ii,V)
      !
      ! Map a vector V(3) of integers in a 

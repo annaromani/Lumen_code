@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM FP
 !
+!> ELPH_databases_IO_pol_and_freqs
+!>
+!> @param IDB
+!>
 subroutine ELPH_databases_IO_pol_and_freqs(IDB)
  !
  use pars,           ONLY:SP 

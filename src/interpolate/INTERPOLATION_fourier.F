@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> INTERPOLATION_fourier
+!>
+!> @param K
+!> @param VALUES
+!> @param engre
+!> @param nvalues
+!> @param NK
+!> @param ID
+!>
 subroutine INTERPOLATION_fourier(K,VALUES,engre,nvalues,NK,ID)
  !
  use pars,              ONLY:SP,pi,cI,cZERO,DP,rZERO

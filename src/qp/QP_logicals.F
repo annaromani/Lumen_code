@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QP_logicals
+!>
+!>
 subroutine QP_logicals( )
  !
  use pars,          ONLY:SP

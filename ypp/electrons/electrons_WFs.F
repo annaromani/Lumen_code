@@ -10,6 +10,10 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
+!> electrons_WFs
+!>
+!> @param Xen
+!>
 subroutine electrons_WFs(Xen)
  !
  use pars,           ONLY:SP,lchlen

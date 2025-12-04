@@ -30,6 +30,12 @@ module pw_export_module
 
 contains 
 
+!> pw_openindex
+!>
+!> @param pwunit
+!> @param pwfilename
+!> @param ierr
+!>
   subroutine pw_openindex(pwunit,pwfilename,ierr)
     implicit none
 
@@ -45,6 +51,10 @@ contains
     return
   end subroutine pw_openindex
 
+!> pw_closeindex
+!>
+!> @param pwunit
+!>
   subroutine pw_closeindex(pwunit)
     implicit none
 
@@ -56,6 +66,10 @@ contains
     return
   end subroutine pw_closeindex
 
+!> pw_dimensions
+!>
+!> @param pwunit
+!>
   subroutine pw_dimensions(pwunit)
     implicit none
     
@@ -99,6 +113,10 @@ contains
     return
   end subroutine pw_dimensions
 
+!> pw_other
+!>
+!> @param pwunit
+!>
   subroutine pw_other(pwunit)
     implicit none
     integer :: ierr
@@ -115,6 +133,10 @@ contains
     return
   end subroutine pw_other
 
+!> pw_atoms
+!>
+!> @param pwunit
+!>
   subroutine pw_atoms(pwunit)
     implicit none
     integer :: ierr, natoms, iat
@@ -157,6 +179,10 @@ contains
   end subroutine pw_atoms
 
 
+!> pw_cell
+!>
+!> @param pwunit
+!>
   subroutine pw_cell(pwunit)
     implicit none
     integer :: ierr
@@ -202,6 +228,10 @@ contains
     return
   end subroutine pw_cell
 
+!> pw_symmetry
+!>
+!> @param pwunit
+!>
   subroutine pw_symmetry(pwunit)
     implicit none
     integer :: ierr, is
@@ -225,6 +255,10 @@ contains
     return
   end subroutine pw_symmetry
 
+!> pw_gvectors
+!>
+!> @param pwunit
+!>
   subroutine pw_gvectors(pwunit)
     implicit none
     integer :: ierr
@@ -241,6 +275,10 @@ contains
     return
   end subroutine pw_gvectors
 
+!> pw_eigenvalues
+!>
+!> @param pwunit
+!>
   subroutine pw_eigenvalues(pwunit)
     implicit none
     integer :: ierr,ik
@@ -267,6 +305,10 @@ contains
     return
   end subroutine pw_eigenvalues
 
+!> pw_allocwfc
+!>
+!> @param dimwinx
+!>
   subroutine pw_allocwfc(dimwinx)
     implicit none
     integer :: dimwinx
@@ -277,6 +319,10 @@ contains
     return 
   end subroutine pw_allocwfc
 
+!> pw_igkindex
+!>
+!> @param pwunit
+!>
   subroutine pw_igkindex(pwunit)
     implicit none
     integer :: ierr,ik,npw
@@ -316,6 +362,10 @@ contains
     return
   end subroutine pw_igkindex
 
+!> pw_wfcstart
+!>
+!> @param pwunit
+!>
   subroutine pw_wfcstart(pwunit) 
     implicit none
     integer, intent(in) :: pwunit
@@ -327,6 +377,10 @@ contains
     return
   end subroutine pw_wfcstart
 
+!> pw_wfcstop
+!>
+!> @param pwunit
+!>
   subroutine pw_wfcstop(pwunit) 
     implicit none
     integer, intent(in) :: pwunit
@@ -338,6 +392,11 @@ contains
     return
   end subroutine pw_wfcstop
 
+!> pw_wfcscan
+!>
+!> @param pwunit
+!> @param ik
+!>
   subroutine pw_wfcscan(pwunit,ik) 
     implicit none
     integer, intent(in) :: pwunit, ik
@@ -355,6 +414,13 @@ contains
     return
   end subroutine pw_wfcscan
 
+!> pw_wfcread
+!>
+!> @param pwunit
+!> @param ib
+!> @param npw
+!> @param wtmp
+!>
   subroutine pw_wfcread(pwunit,ib,npw,wtmp) 
     implicit none
     integer, intent(in) :: pwunit, ib
@@ -369,6 +435,11 @@ contains
     return
   end subroutine pw_wfcread
    
+!> pw_wfcscanend
+!>
+!> @param pwunit
+!> @param ik
+!>
   subroutine pw_wfcscanend(pwunit,ik) 
     implicit none
     integer, intent(in) :: pwunit, ik
@@ -378,6 +449,14 @@ contains
     return
   end subroutine pw_wfcscanend
 
+!> pw_wfck
+!>
+!> @param pwunit
+!> @param ik
+!> @param npw
+!> @param ibmin
+!> @param ibmax
+!>
   subroutine pw_wfck(pwunit,ik,npw,ibmin,ibmax) 
     implicit none
     integer, intent(in) :: pwunit
@@ -429,6 +508,10 @@ contains
   end subroutine pw_wfck
 
 
+!> pw_kpoints
+!>
+!> @param pwunit
+!>
   subroutine pw_kpoints(pwunit)
     implicit none
     integer :: ierr

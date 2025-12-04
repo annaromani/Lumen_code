@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> NL_Hamiltonian
+!>
+!> @param E
+!> @param k
+!> @param q
+!> @param X
+!> @param Time
+!> @param V_bands
+!>
 subroutine NL_Hamiltonian(E,k,q,X,Time,V_bands)
  !
  ! The subroutine calculate Ho + V + Sigma and the fields E_tot, E_ext, E_ks

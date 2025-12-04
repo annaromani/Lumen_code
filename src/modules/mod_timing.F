@@ -87,6 +87,12 @@ MODULE timing_m
    !
    ! Subroutines
    !   
+!> timing
+!>
+!> @param name
+!> @param opr
+!> @param list
+!>
    SUBROUTINE timing(name,opr,list)
      IMPLICIT NONE
      CHARACTER(*),           INTENT(in)    :: name
@@ -155,6 +161,10 @@ MODULE timing_m
      !
    END SUBROUTINE timing
    !
+!> timing_allocate
+!>
+!> @param nclock_max_
+!>
    SUBROUTINE timing_allocate(nclock_max_)
      IMPLICIT NONE
      INTEGER,             INTENT(in)  :: nclock_max_
@@ -179,6 +189,9 @@ MODULE timing_m
      !
    END SUBROUTINE timing_allocate
    !
+!> timing_deallocate
+!>
+!>
    SUBROUTINE timing_deallocate()
      IMPLICIT NONE
 #ifndef _TIMING
@@ -190,6 +203,12 @@ MODULE timing_m
      alloc = .FALSE.
    END SUBROUTINE timing_deallocate
    !
+!> clock_list_allocate
+!>
+!> @param obj
+!> @param nclock_max_
+!> @param name
+!>
    SUBROUTINE clock_list_allocate(obj,nclock_max_,name)
      IMPLICIT NONE
      TYPE(clock_list),       INTENT(inout) :: obj    
@@ -215,6 +234,10 @@ MODULE timing_m
      obj%alloc=.TRUE.
    END SUBROUTINE clock_list_allocate
    !
+!> clock_list_deallocate
+!>
+!> @param obj
+!>
    SUBROUTINE clock_list_deallocate(obj)
      IMPLICIT NONE
      TYPE(clock_list),       INTENT(inout) :: obj    
@@ -228,6 +251,12 @@ MODULE timing_m
      obj%alloc=.FALSE.
    END SUBROUTINE clock_list_deallocate
    !
+!> clock_allocate
+!>
+!> @param name
+!> @param nclock
+!> @param obj
+!>
    SUBROUTINE clock_allocate(name,nclock,obj)
      IMPLICIT NONE
      CHARACTER(*),          INTENT(in)    :: name
@@ -249,6 +278,11 @@ MODULE timing_m
      obj%alloc=.TRUE.
    END SUBROUTINE clock_allocate
    !
+!> clock_assignment
+!>
+!> @param obj1
+!> @param obj2
+!>
    SUBROUTINE clock_assignment(obj1,obj2)
      IMPLICIT NONE
      TYPE(clock),    INTENT(inout) :: obj1    
@@ -265,6 +299,13 @@ MODULE timing_m
      obj1%alloc = .TRUE.
    END SUBROUTINE clock_assignment
    !
+!> clock_find
+!>
+!> @param list
+!> @param name
+!> @param found
+!> @param index
+!>
    SUBROUTINE clock_find(list,name,found,index)
      IMPLICIT NONE
      TYPE(clock_list),      INTENT(in)    :: list
@@ -291,6 +332,10 @@ MODULE timing_m
      !
    END SUBROUTINE clock_find
    !
+!> clock_start
+!>
+!> @param obj
+!>
    SUBROUTINE clock_start(obj)
      use LIVE_t, ONLY:cti
      IMPLICIT NONE
@@ -302,6 +347,10 @@ MODULE timing_m
      obj%call_number = obj%call_number + 1
    END SUBROUTINE clock_start
    !
+!> clock_stop
+!>
+!> @param obj
+!>
    SUBROUTINE clock_stop(obj)
      use LIVE_t, ONLY:cti
      IMPLICIT NONE
@@ -315,6 +364,10 @@ MODULE timing_m
      obj%running = .FALSE.
    END SUBROUTINE clock_stop
    !
+!> clock_update
+!>
+!> @param obj
+!>
    SUBROUTINE clock_update(obj)
      IMPLICIT NONE
      TYPE(clock),           INTENT(inout) :: obj    
@@ -325,6 +378,9 @@ MODULE timing_m
      ENDIF
    END SUBROUTINE clock_update
    !
+!> timing_upto_now
+!>
+!>
    SUBROUTINE timing_upto_now()
      use pars,    ONLY:lchlen
      use com,     ONLY:msg

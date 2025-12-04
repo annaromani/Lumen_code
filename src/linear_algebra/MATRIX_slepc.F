@@ -14,6 +14,15 @@
 #include <slepc/finclude/slepcsys.h>
 #include <slepc/finclude/slepceps.h>
 !
+!> MATRIX_slepc
+!>
+!> @param M_slepc
+!> @param n_eig
+!> @param V_right
+!> @param V_left
+!> @param E_real
+!> @param E_cmpl
+!>
 subroutine MATRIX_slepc(M_slepc,n_eig,V_right,V_left,E_real,E_cmpl)
  !
  ! 10/06/2016 HM
@@ -489,6 +498,18 @@ subroutine MATRIX_slepc(M_slepc,n_eig,V_right,V_left,E_real,E_cmpl)
  !
 end subroutine
 !
+!> MyEPSMonitor
+!>
+!> @param eps
+!> @param its
+!> @param nconv
+!> @param eigr
+!> @param eigi
+!> @param errest
+!> @param nest
+!> @param dummy
+!> @param ierr
+!>
 subroutine MyEPSMonitor(eps,its,nconv,eigr,eigi,errest,nest,dummy,ierr)
  ! 
  ! Monitor the convergence of the iterative diagonalization

@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> DIPOLE_kb_pwscf_comp
+!>
+!> @param npp
+!> @param npp_tab
+!> @param ia
+!> @param is
+!> @param ik
+!> @param Xk
+!> @param kbv
+!>
 subroutine DIPOLE_kb_pwscf_comp(npp,npp_tab,ia,is,ik,Xk,kbv)
  !
  use pars,          ONLY:SP,pi,cZERO

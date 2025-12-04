@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
+!> cutoff_driver
+!>
+!> @param q
+!>
 subroutine cutoff_driver(q)
  !     
  ! In this subroutine I calculate the FT of a cutoffed coulomb

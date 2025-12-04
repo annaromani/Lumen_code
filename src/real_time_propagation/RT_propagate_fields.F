@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> RT_propagate_fields
+!>
+!> @param E
+!> @param k
+!> @param A_old
+!> @param A_new
+!> @param G_inp
+!> @param T
+!> @param T_step
+!>
 subroutine RT_propagate_fields(E,k,A_old,A_new,G_inp,T,T_step)
  !
  ! The external and total fields in Yambo are defined and organized as follow:

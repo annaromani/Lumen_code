@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> RT_Hamiltonian
+!>
+!> @param dG_in
+!> @param A_input
+!> @param E
+!> @param k
+!>
 subroutine RT_Hamiltonian(dG_in,A_input,E,k)
  !
  ! 1) The KBE is coded in terms of :

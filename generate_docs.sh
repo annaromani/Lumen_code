@@ -40,7 +40,7 @@ cd "$SCRIPT_DIR"
 
 print_header() {
     echo -e "${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║${NC}  🌊 Lumen Documentation Generator (FORD)                     ${BLUE}║${NC}"
+    echo -e "${BLUE}║   Lumen Documentation Generator (FORD)                         ║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }

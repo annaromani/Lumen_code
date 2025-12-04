@@ -61,6 +61,11 @@ end interface
 contains
 
 !@ MANUAL
+!> pw_basis_init00
+!>
+!> @param basis
+!> @param struct
+!>
 subroutine pw_basis_init00(basis,struct)
 ! Initializes a basis object
   type(pw_basis),                    intent(out) :: basis
@@ -80,6 +85,11 @@ subroutine pw_basis_init00(basis,struct)
 end subroutine pw_basis_init00
 
 !@ MANUAL
+!> pw_basis_init10
+!>
+!> @param basis
+!> @param struct
+!>
 subroutine pw_basis_init10(basis,struct)
 ! Initializes an array of basis objects, all af them pointing to the same struct
   type(pw_basis),                    intent(out) :: basis(:)
@@ -93,6 +103,10 @@ subroutine pw_basis_init10(basis,struct)
 end subroutine pw_basis_init10
 
 !@ MANUAL
+!> pw_basis_destroy0
+!>
+!> @param basis
+!>
 subroutine pw_basis_destroy0(basis)
 ! Destroys an object
   type(pw_basis), intent(inout) :: basis
@@ -103,6 +117,10 @@ subroutine pw_basis_destroy0(basis)
 end subroutine pw_basis_destroy0
 
 !@ MANUAL
+!> pw_basis_destroy1
+!>
+!> @param basis
+!>
 subroutine pw_basis_destroy1(basis)
 ! Destroys an array of basis objects
   type(pw_basis), intent(inout) :: basis(:)
@@ -114,6 +132,11 @@ subroutine pw_basis_destroy1(basis)
 end subroutine pw_basis_destroy1
 
 !@ MANUAL
+!> pw_basis_set_struct
+!>
+!> @param basis
+!> @param struct
+!>
 subroutine pw_basis_set_struct(basis,struct)
 ! Associates a struct to a basis
   type(pw_basis),          intent(inout) :: basis
@@ -126,6 +149,11 @@ subroutine pw_basis_set_struct(basis,struct)
 end subroutine pw_basis_set_struct
 
 !@ MANUAL
+!> pw_basis_set_npw
+!>
+!> @param basis
+!> @param npw
+!>
 subroutine pw_basis_set_npw(basis,npw)
 ! Sets the number of plane waves and evetually reallocates the grid
   type(pw_basis), intent(inout) :: basis
@@ -168,6 +196,11 @@ function pw_basis_is_equal(basis1,basis2)
 &                     all(basis1%g == basis2%g)
 end function pw_basis_is_equal
 
+!> pw_basis_copy
+!>
+!> @param new_basis
+!> @param old_basis
+!>
 subroutine pw_basis_copy(new_basis,old_basis)
 ! Copies an object
 ! Interfaced with operator(=)

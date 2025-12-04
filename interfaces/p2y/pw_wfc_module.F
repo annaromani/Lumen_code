@@ -54,6 +54,11 @@ end interface
 contains
 
 !@ MANUAL
+!> pw_wfc_init00
+!>
+!> @param wfc
+!> @param basis
+!>
 subroutine pw_wfc_init00(wfc,basis)
 ! Initializes a wfc object
   type(pw_wfc),                     intent(out) :: wfc
@@ -67,6 +72,11 @@ subroutine pw_wfc_init00(wfc,basis)
   if(present(basis)) call pw_wfc_set_basis(wfc,basis)
 end subroutine pw_wfc_init00
 
+!> pw_wfc_init10
+!>
+!> @param wfc
+!> @param basis
+!>
 subroutine pw_wfc_init10(wfc,basis)
 ! Initializes an array of wfc objects, all af them pointing to the same basis
   type(pw_wfc),                     intent(out) :: wfc(:)
@@ -82,6 +92,11 @@ subroutine pw_wfc_init10(wfc,basis)
   end do
 end subroutine pw_wfc_init10
 
+!> pw_wfc_init20
+!>
+!> @param wfc
+!> @param basis
+!>
 subroutine pw_wfc_init20(wfc,basis)
 ! Initializes a matrix of wfc objects, all af them pointing to the same basis
   type(pw_wfc),                     intent(out) :: wfc(:,:)
@@ -99,6 +114,11 @@ subroutine pw_wfc_init20(wfc,basis)
   end do
 end subroutine pw_wfc_init20
 
+!> pw_wfc_init11
+!>
+!> @param wfc
+!> @param basis
+!>
 subroutine pw_wfc_init11(wfc,basis)
 ! Initializes an array of wfc objects, pointing to different basis
   type(pw_wfc),           intent(out) :: wfc(:)
@@ -112,6 +132,10 @@ subroutine pw_wfc_init11(wfc,basis)
 end subroutine pw_wfc_init11
 
 !@ MANUAL
+!> pw_wfc_destroy0
+!>
+!> @param wfc
+!>
 subroutine pw_wfc_destroy0(wfc)
 ! Destroys an object
   type(pw_wfc), intent(inout) :: wfc
@@ -122,6 +146,10 @@ subroutine pw_wfc_destroy0(wfc)
 !   if(associated(wfc%val)) write(0,*) "sono associato wfc"
 end subroutine pw_wfc_destroy0
 
+!> pw_wfc_destroy1
+!>
+!> @param wfc
+!>
 subroutine pw_wfc_destroy1(wfc)
 ! Destroys an array of objects
   type(pw_wfc), intent(inout) :: wfc(:)
@@ -131,6 +159,10 @@ subroutine pw_wfc_destroy1(wfc)
   end do
 end subroutine pw_wfc_destroy1
 
+!> pw_wfc_destroy2
+!>
+!> @param wfc
+!>
 subroutine pw_wfc_destroy2(wfc)
 ! Destroys a matrix of objects
   type(pw_wfc), intent(inout) :: wfc(:,:)
@@ -142,6 +174,11 @@ subroutine pw_wfc_destroy2(wfc)
   end do
 end subroutine pw_wfc_destroy2
 
+!> pw_wfc_set_basis
+!>
+!> @param wfc
+!> @param basis
+!>
 subroutine pw_wfc_set_basis(wfc,basis)
 ! Set the basis pointer for a wfc object
   type(pw_wfc),           intent(inout) :: wfc
@@ -156,6 +193,11 @@ subroutine pw_wfc_set_basis(wfc,basis)
 end subroutine pw_wfc_set_basis
 
 !@ MANUAL
+!> pw_wfc_copy0
+!>
+!> @param new_wfc
+!> @param old_wfc
+!>
 subroutine pw_wfc_copy0(new_wfc,old_wfc)
 ! Subroutine per copiare una wfc
   type(pw_wfc), intent(out) :: new_wfc
@@ -172,6 +214,11 @@ subroutine pw_wfc_copy0(new_wfc,old_wfc)
   enddo
 end subroutine pw_wfc_copy0
 
+!> pw_wfc_copy1
+!>
+!> @param new_wfc
+!> @param old_wfc
+!>
 subroutine pw_wfc_copy1(new_wfc,old_wfc)
   type(pw_wfc), intent(out) :: new_wfc(:)
   type(pw_wfc), intent(in)  :: old_wfc(:)
@@ -202,6 +249,11 @@ function pw_wfc_braket(bra,ket)
   pw_wfc_braket = dot_product(bra%val,ket%val)
 end function pw_wfc_braket
 
+!> pw_wfc_scale_r
+!>
+!> @param wfc
+!> @param scale
+!>
 subroutine pw_wfc_scale_r(wfc,scale)
 ! Subroutine per riscalare di un fattore reale una funzione d'onda
 ! use num_module
@@ -217,6 +269,11 @@ subroutine pw_wfc_scale_r(wfc,scale)
 end subroutine pw_wfc_scale_r
 
 !@ MANUAL
+!> pw_wfc_scale_c
+!>
+!> @param wfc
+!> @param scale
+!>
 subroutine pw_wfc_scale_c(wfc,scale)
 ! Subroutine per riscalare di un fattore complesso una funzione d'onda
 ! use num_module
@@ -241,6 +298,11 @@ function pw_wfc_p_braket(bra,ket)
   call pw_wfc_destroy(wfc_tmp)
 end function pw_wfc_p_braket
 
+!> pw_wfc_p
+!>
+!> @param new_wfc
+!> @param old_wfc
+!>
 subroutine pw_wfc_p(new_wfc,old_wfc)
 ! use num_module
 ! Applica l'operatore p

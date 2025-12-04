@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> cutoff_cylinder
+!>
+!> @param q
+!> @param is_cut
+!>
 subroutine cutoff_cylinder(q,is_cut)
  !
  use pars,          ONLY:SP,pi,schlen

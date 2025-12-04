@@ -23,6 +23,14 @@ module interfaces
  !
  interface
    !
+!> DESC_compare
+!>
+!> @param D1
+!> @param D2
+!> @param i_err
+!> @param exclude
+!> @param only
+!>
    subroutine DESC_compare(D1,D2,i_err,exclude,only)
      use descriptors,ONLY:IO_desc
      type(IO_desc),          intent(in) :: D1,D2
@@ -31,6 +39,14 @@ module interfaces
      character(*), optional, intent(in) :: only
    end subroutine
    !
+!> DESC_write
+!>
+!> @param dest
+!> @param prefix
+!> @param desc
+!> @param range
+!> @param skip_patt
+!>
    subroutine DESC_write(dest,prefix,desc,range,skip_patt)
      use descriptors,ONLY:IO_desc
      character(*),           intent(in) :: dest
@@ -40,6 +56,15 @@ module interfaces
      character(*), optional, intent(in) :: skip_patt
    end subroutine
    !
+!> OCCUPATIONS_Fermi
+!>
+!> @param E
+!> @param K
+!> @param OBJ
+!> @param mode
+!> @param n_bands
+!> @param impose_balance
+!>
    subroutine OCCUPATIONS_Fermi(E,K,OBJ,mode,n_bands,impose_balance)
      use electrons,      ONLY:levels
      use R_lattice,      ONLY:bz_samp
@@ -51,6 +76,13 @@ module interfaces
      logical,      OPTIONAL ::impose_balance
    end subroutine
    !
+!> MATRIX_duplicate
+!>
+!> @param operation
+!> @param M_in
+!> @param INDEX_in
+!> @param M_out
+!>
    subroutine MATRIX_duplicate( operation, M_in, INDEX_in, M_out )
      use matrix,         ONLY:PAR_matrix
      character(*)               :: operation
@@ -59,6 +91,12 @@ module interfaces
      type(PAR_matrix)           :: M_out
    end subroutine
    !
+!> MATRIX_transpose
+!>
+!> @param operation
+!> @param M_in
+!> @param M_out
+!>
    subroutine MATRIX_transpose( operation, M_in, M_out )
      use matrix,         ONLY:PAR_matrix,MATRIX_reset
      character(*)               :: operation
@@ -66,6 +104,19 @@ module interfaces
      type(PAR_matrix)           :: M_out
    end subroutine
    !
+!> MATRIX_transfer
+!>
+!> @param M_in
+!> @param M_bse
+!> @param M
+!> @param M_out
+!> @param INDEX_in
+!> @param INDEX_out
+!> @param SND
+!> @param RCV
+!> @param COMM
+!> @param COMM_name
+!>
    subroutine MATRIX_transfer( M_in, M_bse, M, M_out, INDEX_in, INDEX_out, SND, RCV, COMM, COMM_name)
      !
      use parallel_m,     ONLY:yMPI_comm
@@ -129,6 +180,16 @@ module interfaces
     complex(SP),pointer,optional       :: BS_overlap(:,:)
   end subroutine LDIAGO_driver
 
+!> el_density_and_current
+!>
+!> @param E
+!> @param k
+!> @param rho
+!> @param drho
+!> @param J
+!> @param bands
+!> @param force_spatial_inversion
+!>
    subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
      use pars,           ONLY:SP
      use electrons,      ONLY:levels
@@ -143,6 +204,13 @@ module interfaces
      logical,  optional, intent(in) ::force_spatial_inversion
    end subroutine el_density_and_current
    !
+!> el_magnetization
+!>
+!> @param en
+!> @param Xk
+!> @param magn
+!> @param bands
+!>
    subroutine el_magnetization(en,Xk,magn,bands)
      use pars,           ONLY:SP
      use electrons,      ONLY:levels
@@ -172,6 +240,15 @@ module interfaces
    end subroutine el_density_of_states
    !
 #if defined _SLEPC && !defined _NL
+!> MATRIX_slepc
+!>
+!> @param M_slepc
+!> @param n_eig
+!> @param V_right
+!> @param V_left
+!> @param E_real
+!> @param E_cmpl
+!>
    subroutine MATRIX_slepc(M_slepc,n_eig,V_right,V_left,E_real,E_cmpl)
      !
      use pars,           ONLY:SP,schlen
@@ -209,6 +286,12 @@ module interfaces
      logical,     optional, intent(in) :: quiet
    end subroutine
    !
+!> WF_free
+!>
+!> @param WF
+!> @param keep_fft
+!> @param keep_states_to_load
+!>
    subroutine WF_free(WF,keep_fft,keep_states_to_load)
      use wave_func,       ONLY:WAVEs
      type(WAVEs)           :: WF
@@ -216,6 +299,17 @@ module interfaces
      logical     ,optional :: keep_states_to_load
    end subroutine
    !
+!> OCCUPATIONS_Gaps
+!>
+!> @param E
+!> @param E_g_dir
+!> @param E_g_ind
+!> @param N_f
+!> @param N_m
+!> @param I_dir
+!> @param E_k_dir
+!> @param E_k_ind
+!>
    subroutine OCCUPATIONS_Gaps(E,E_g_dir,E_g_ind,N_f,N_m,I_dir,E_k_dir,E_k_ind)
      use pars,          ONLY: SP
      use electrons,     ONLY:levels,n_sp_pol
@@ -269,6 +363,14 @@ module interfaces
      complex(SP), pointer, optional,   intent(in)  :: BS_Overlap(:,:) 
    end subroutine K_diago_L_res
    !
+!> K_stored_in_a_big_matrix
+!>
+!> @param i_BS_mat
+!> @param BS_mat_dim
+!> @param BS_mat
+!> @param iq
+!> @param what
+!>
    subroutine K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,what)
     use pars,           ONLY:SP
     integer,      intent(in) :: i_BS_mat,iq,BS_mat_dim
@@ -289,6 +391,14 @@ module interfaces
      complex(SP), pointer                      :: BS_Overlap(:,:)
    end subroutine K_diago_perturbative
 !
+!> PL_diago_residual
+!>
+!> @param BS_V_left
+!> @param BS_V_right
+!> @param BS_R_PL
+!> @param K_is_not_hermitian
+!> @param BS_overlap
+!>
    subroutine PL_diago_residual(BS_V_left,BS_V_right,BS_R_PL,K_is_not_hermitian,BS_overlap) 
      use pars,           ONLY:SP
      use BS,             ONLY:BS_H_dim
@@ -298,6 +408,17 @@ module interfaces
      complex(SP),optional,intent(in)  :: BS_overlap(BS_H_dim,BS_H_dim)
    end subroutine
    !
+!> QP_DBs_merge
+!>
+!> @param N
+!> @param DBs
+!> @param plan
+!> @param N_qp
+!> @param qp
+!> @param OP
+!> @param PRE_FAC
+!> @param FILES
+!>
    subroutine QP_DBs_merge(N,DBs,plan,N_qp,qp,OP,PRE_FAC,FILES)
      use pars, ONLY:SP
      use QP_m, ONLY:QP_t
@@ -322,6 +443,10 @@ module interfaces
      integer ,optional :: COM_mode
    end function
    !
+!> QP_state_print
+!>
+!> @param qp
+!>
    subroutine QP_state_print(qp)
      use QP_m,          ONLY:QP_t
      type(QP_t),optional ::qp              
@@ -336,6 +461,18 @@ module interfaces
      type(tddft_wf_t), target, intent(inout) :: tddft_wf
    end function TDDFT_ALDA_eh_space_R_kernel
    !
+!> WF_symm_kpoint_g
+!>
+!> @param b_to_load
+!> @param ik
+!> @param i_sp_pol
+!> @param isymm
+!> @param ig0
+!> @param WF
+!> @param ssop
+!> @param isref
+!> @param igref
+!>
    subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
      use pars,          ONLY:SP
      use wave_func,     ONLY:WAVEs
@@ -346,6 +483,16 @@ module interfaces
      integer,              optional, intent(in) :: isref,igref
    end subroutine WF_symm_kpoint_g
    !
+!> WF_shift_kpoint
+!>
+!> @param b_to_shift
+!> @param nb_to_shift
+!> @param ikbz
+!> @param wf_shift
+!> @param Xk
+!> @param WF_k_in
+!> @param WF_k_out
+!>
    subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_out)
      use pars,          ONLY:SP
      use electrons,     ONLY:n_spinor
@@ -357,6 +504,14 @@ module interfaces
      complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_overlaps,n_spinor,nb_to_shift)
    end subroutine WF_shift_kpoint
    !
+!> WF_symm_kpoint
+!>
+!> @param b_to_load
+!> @param ikbz
+!> @param i_sp_pol
+!> @param Xk
+!> @param WF_k_out
+!>
    subroutine WF_symm_kpoint(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
      use pars,          ONLY:SP 
      use R_lattice,     ONLY:bz_samp
@@ -367,6 +522,14 @@ module interfaces
      complex(SP),   intent(out) :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
    end subroutine WF_symm_kpoint
    !
+!> WF_symm_kpoint_gpu
+!>
+!> @param b_to_load
+!> @param ikbz
+!> @param i_sp_pol
+!> @param Xk
+!> @param WF_k_out
+!>
    subroutine WF_symm_kpoint_gpu(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
      use pars,          ONLY:SP 
      use R_lattice,     ONLY:bz_samp
@@ -377,6 +540,11 @@ module interfaces
      complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
    end subroutine WF_symm_kpoint_gpu
    !
+!> WF_apply_symm
+!>
+!> @param isc
+!> @param WF_symm
+!>
    subroutine WF_apply_symm(isc,WF_symm)
      use pars,          ONLY:SP
      use FFT_m,         ONLY:fft_size
@@ -385,6 +553,11 @@ module interfaces
      complex(SP), intent(out) :: WF_symm(fft_size,n_spinor)
    end subroutine WF_apply_symm
    !
+!> WF_apply_symm_gpu
+!>
+!> @param isc
+!> @param WF_symm
+!>
    subroutine WF_apply_symm_gpu(isc,WF_symm)
      use pars,          ONLY:SP
      use FFT_m,         ONLY:fft_size

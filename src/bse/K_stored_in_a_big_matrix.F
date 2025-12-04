@@ -9,6 +9,14 @@
 !
 #include <y_memory.h>
 !
+!> K_stored_in_a_big_matrix
+!>
+!> @param i_BS_mat
+!> @param BS_mat_dim
+!> @param BS_mat
+!> @param iq
+!> @param what
+!>
 subroutine K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,what)
  !
  ! Here I fill the kernel (coupling included) in an entire BIG matrix to be

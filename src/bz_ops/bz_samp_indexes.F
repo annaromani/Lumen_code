@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> bz_samp_indexes
+!>
+!> @param en
+!> @param k
+!> @param Xk
+!> @param q
+!>
 subroutine bz_samp_indexes(en,k,Xk,q)
  !
  ! ikbz=(ik,is) --<--:--<-- okbz=(ok,os) = (IK-Q)
@@ -561,6 +568,9 @@ subroutine bz_samp_indexes(en,k,Xk,q)
  !
  contains 
    !
+!> k_GRIDS_update
+!>
+!>
    subroutine k_GRIDS_update()
      !
      ! Grids string update
@@ -585,6 +595,10 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      !
    end subroutine 
    !
+!> k_grid_shift
+!>
+!> @param v
+!>
    subroutine k_grid_shift(v)
      implicit none
      integer  :: v(3),u(3),i1
@@ -598,6 +612,11 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      v=u 
    end subroutine
    !
+!> define_q_map
+!>
+!> @param qpt_map
+!> @param q_ref
+!>
    subroutine define_q_map(qpt_map,q_ref)
      !
      implicit none
@@ -633,6 +652,11 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      enddo
    end subroutine
    !
+!> define_q_map_new
+!>
+!> @param qpt_map
+!> @param q_ref
+!>
    subroutine define_q_map_new(qpt_map,q_ref)
      !
      use pars,      ONLY:zero_dfl
@@ -694,6 +718,10 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      !
    end subroutine
    !
+!> q_shadows
+!>
+!> @param force_gamma_only
+!>
    subroutine q_shadows(force_gamma_only)
      use vec_operate,    ONLY:iku_v_norm
      logical                ::force_gamma_only
@@ -750,6 +778,10 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      !
    end subroutine q_shadows
    !
+!> bz_X_only_exit
+!>
+!> @param message
+!>
    subroutine bz_X_only_exit(message)
      character(*), intent(in) :: message
      call qindx_free('ALL')
@@ -769,6 +801,9 @@ subroutine bz_samp_indexes(en,k,Xk,q)
      coll_scattering=.false.
    end subroutine bz_X_only_exit
    !
+!> print_q_indirect
+!>
+!>
    subroutine print_q_indirect( )
      !
      use stderr,        ONLY:intc

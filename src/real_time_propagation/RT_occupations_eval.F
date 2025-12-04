@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> RT_occupations_eval
+!>
+!> @param dG
+!>
 subroutine RT_occupations_eval(dG)
  !
  use pars,           ONLY:SP

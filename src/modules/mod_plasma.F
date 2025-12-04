@@ -41,6 +41,11 @@ module plasma
  !
  contains
    !
+!> PLASMA_alloc
+!>
+!> @param Gas
+!> @param DIM_
+!>
    subroutine PLASMA_alloc(Gas,DIM_)
      !
      use D_lattice,      ONLY:nsym
@@ -60,6 +65,10 @@ module plasma
      !
    end subroutine
    !
+!> PLASMA_free
+!>
+!> @param Gas
+!>
    subroutine PLASMA_free(Gas)
      !
      type(plasma_gas) :: Gas

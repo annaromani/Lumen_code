@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> DIPOLE_IO
+!>
+!> @param Xk
+!> @param Xen
+!> @param Dip
+!> @param check_read_or_write
+!> @param io_err
+!> @param PAR_K_scheme_kind
+!>
 subroutine DIPOLE_IO(Xk,Xen,Dip,check_read_or_write,io_err,PAR_K_scheme_kind)
  !
  use pars,        ONLY:SP,cI,cZERO
@@ -169,6 +178,11 @@ subroutine DIPOLE_IO(Xk,Xen,Dip,check_read_or_write,io_err,PAR_K_scheme_kind)
  !
  contains
    !
+!> fix_velocity
+!>
+!> @param Dip
+!> @param dir
+!>
    subroutine fix_velocity(Dip,dir)
      !
      ! Now I need to correct DIP_v in case
@@ -237,6 +251,10 @@ subroutine DIPOLE_IO(Xk,Xen,Dip,check_read_or_write,io_err,PAR_K_scheme_kind)
    end subroutine
    !
 #if defined _RT
+!> project_spin_dipoles
+!>
+!> @param Dip
+!>
    subroutine project_spin_dipoles(Dip)
      use DIPOLES,   ONLY:DIP_spin
      type(DIPOLE_t),  intent(in) :: Dip
@@ -259,6 +277,10 @@ subroutine DIPOLE_IO(Xk,Xen,Dip,check_read_or_write,io_err,PAR_K_scheme_kind)
      enddo
    end subroutine project_spin_dipoles
    !
+!> project_dipoles
+!>
+!> @param Dip
+!>
    subroutine project_dipoles(Dip)
      use DIPOLES,   ONLY:DIP_iR,DIP_P,DIP_v
      use pars,      ONLY:cZERO

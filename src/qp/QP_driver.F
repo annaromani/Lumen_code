@@ -9,6 +9,17 @@
 !
 #include<y_memory.h>
 ! 
+!> QP_driver
+!>
+!> @param X
+!> @param Xen
+!> @param Xk
+!> @param en
+!> @param k
+!> @param q
+!> @param Xw
+!> @param Dip
+!>
 subroutine QP_driver(X,Xen,Xk,en,k,q,Xw,Dip)
  !
  use pars,          ONLY:SP,pi,cONE,cZERO
@@ -360,6 +371,9 @@ subroutine QP_driver(X,Xen,Xk,en,k,q,Xw,Dip)
  !
  contains
    !
+!> local_alloc
+!>
+!>
    subroutine local_alloc()
      !
      YAMBO_ALLOC(qp%Z,(qp%n_states))
@@ -406,6 +420,9 @@ subroutine QP_driver(X,Xen,Xk,en,k,q,Xw,Dip)
      !
    end subroutine
    !
+!> local_free
+!>
+!>
    subroutine local_free()
      YAMBO_FREE(PAR_IND_WF_linear%element_2D)
      YAMBO_FREE(qp%Z)
@@ -433,6 +450,14 @@ subroutine QP_driver(X,Xen,Xk,en,k,q,Xw,Dip)
    !
 end subroutine
 !
+!> check_qp_states
+!>
+!> @param QP_table
+!> @param QP_state
+!> @param qp
+!> @param en
+!> @param Xen
+!>
 subroutine check_qp_states(QP_table,QP_state,qp,en,Xen)
   !
   ! Check if qp-indexes are continous for SC-GW

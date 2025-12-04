@@ -9,6 +9,16 @@
 !
 #include<y_memory.h>
 !
+!> acfdt_tot_energy
+!>
+!> @param Xen
+!> @param Xk
+!> @param En
+!> @param k
+!> @param q
+!> @param X
+!> @param Dip
+!>
 subroutine acfdt_tot_energy(Xen,Xk,En,k,q,X,Dip)
  !
  use pars,           ONLY:SP,schlen,pi,DP

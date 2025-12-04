@@ -76,6 +76,11 @@ module com
    ! dropped splitting of_open_close in two different subroutines:
    ! of_open and of_close
    !
+!> of_open_close
+!>
+!> @param of_name
+!> @param mode
+!>
    subroutine of_open_close(of_name,mode)
      character(*), intent(in)            :: of_name
      character(*), intent(in), optional  :: mode
@@ -100,6 +105,10 @@ module com
  !
  contains
    !
+!> msg_length_set
+!>
+!> @param length
+!>
    subroutine msg_length_set(length)
      integer, optional:: length
      if (present(length)) then
@@ -113,6 +122,11 @@ module com
    ! INTERFACE TO MSG
    !#######################
    !
+!> msg_novalue
+!>
+!> @param how
+!> @param mesg
+!>
    subroutine msg_novalue(how,mesg)
      character(*)     :: mesg
      character(*)     :: how
@@ -128,6 +142,16 @@ module com
      call msg_characters_vector(how,trim(mesg),crap,INDENT=INDENT)
    end subroutine
    !
+!> msg_logical
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_logical(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -140,6 +164,16 @@ module com
      if (.not.val) call msg_character(how,mesg,"no" ,USE_TABS=USE_TABS,INDENT=INDENT,after_msg=after_msg,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_character
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_character(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -151,6 +185,16 @@ module com
      call msg_characters_vector_int(how,mesg,(/val/),USE_TABS=USE_TABS,INDENT=INDENT,after_msg=after_msg,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_integer
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_integer(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -163,6 +207,17 @@ module com
 &                                 INDENT=INDENT,after_msg=after_msg,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_real
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param EXT_FORMAT
+!> @param MSG_string
+!>
    subroutine msg_real(how,mesg,val,after_msg,USE_TABS,INDENT,EXT_FORMAT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -176,6 +231,16 @@ module com
 &                              INDENT=INDENT,EXT_FORMAT=EXT_FORMAT,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_characters_vector
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_characters_vector(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -187,6 +252,16 @@ module com
      call msg_characters_vector_int(how,mesg,val,after_msg=after_msg,USE_TABS=USE_TABS,INDENT=INDENT,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_integers_vector
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_integers_vector(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how
@@ -199,6 +274,17 @@ module com
 &                                 INDENT=INDENT,MSG_string=MSG_string)
    end subroutine
    !
+!> msg_reals_vector
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param EXT_FORMAT
+!> @param MSG_string
+!>
    subroutine msg_reals_vector(how,mesg,val,after_msg,USE_TABS,INDENT,EXT_FORMAT,MSG_string)
      character(*)     :: mesg
      character(*)     :: how

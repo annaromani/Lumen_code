@@ -11,6 +11,11 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
+!> WF_alloc
+!>
+!> @param WF
+!> @param k_extrema_only
+!>
 subroutine WF_alloc(WF,k_extrema_only)
  !
  use pars,          ONLY:cZERO,SP

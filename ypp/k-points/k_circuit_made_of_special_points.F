@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> k_circuit_made_of_special_points
+!>
+!> @param PATH
+!> @param n_points
+!>
 subroutine k_circuit_made_of_special_points( PATH, n_points )
  !
  use pars,                ONLY:SP,schlen

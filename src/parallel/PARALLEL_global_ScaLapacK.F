@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARALLEL_global_ScaLapacK
+!>
+!>
 subroutine PARALLEL_global_ScaLapacK( )
  !
  use linear_algebra,ONLY:INV

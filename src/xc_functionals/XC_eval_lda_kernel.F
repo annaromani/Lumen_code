@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> XC_eval_lda_kernel
+!>
+!> @param v1rho
+!> @param v2rho2
+!>
 subroutine XC_eval_lda_kernel(v1rho,v2rho2)
  !
  use pars,           ONLY:SP,DP

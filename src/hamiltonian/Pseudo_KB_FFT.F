@@ -9,6 +9,18 @@
 !
 #include<y_memory.h>
 !
+!> Pseudo_KB_FFT
+!>
+!> @param kbv
+!> @param kbv_real_space
+!> @param kpt
+!> @param pp_range
+!> @param npp
+!> @param i_atom
+!> @param is
+!> @param ia
+!> @param ik
+!>
 subroutine Pseudo_KB_FFT(kbv,kbv_real_space,kpt,pp_range,npp,i_atom,is,ia,ik)
  !
  use drivers,       ONLY:l_real_time,l_sc_magnetic

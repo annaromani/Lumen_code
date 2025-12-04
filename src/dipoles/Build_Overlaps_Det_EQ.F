@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> Build_Overlaps_Det_EQ
+!>
+!> @param Xen
+!> @param i_sp_pol
+!> @param ikbz
+!> @param Sm1_plus
+!> @param Sm1_minus
+!> @param S_det
+!>
 subroutine Build_Overlaps_Det_EQ(Xen,i_sp_pol,ikbz,Sm1_plus,Sm1_minus,S_det)
  !
  ! Build inverse overlaps and overlaps determinants between valence bands at

@@ -10,6 +10,11 @@
 #include<dev_defs.h>
 !
 !
+!> scatter_Bamp_using_the_gradient
+!>
+!> @param isc
+!> @param which
+!>
 subroutine scatter_Bamp_using_the_gradient(isc,which)
  !
  ! It computs

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> TDDFT_ALDA_lower_cutoff
+!>
+!> @param FXC_mode
+!>
 subroutine TDDFT_ALDA_lower_cutoff(FXC_mode)
  !
  ! This subroutine performes a double FFT of F_xc

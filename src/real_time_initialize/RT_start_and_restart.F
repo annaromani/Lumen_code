@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_start_and_restart
+!>
+!> @param E
+!> @param k
+!> @param q
+!>
 subroutine RT_start_and_restart(E,k,q)
  !
  ! This subroutine initialize some variables and restart from SC
@@ -303,6 +309,9 @@ subroutine RT_start_and_restart(E,k,q)
  !
  contains
    !
+!> RT_local_init
+!>
+!>
    subroutine RT_local_init()
      !
      implicit none

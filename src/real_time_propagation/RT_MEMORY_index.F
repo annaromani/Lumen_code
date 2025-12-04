@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM 
 !
+!> RT_MEMORY_index
+!>
+!>
 subroutine RT_MEMORY_index( )
  !
  use real_time,      ONLY:G_MEM_steps,MEM_pointer,i_MEM_prev,NE_i_time,&

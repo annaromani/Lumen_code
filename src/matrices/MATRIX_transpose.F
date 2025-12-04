@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> MATRIX_transpose
+!>
+!> @param operation
+!> @param M_in
+!> @param M_out
+!>
 subroutine MATRIX_transpose( operation, M_in, M_out )
  !
  ! performs the transpose (or transpose conjugate) of a distributed

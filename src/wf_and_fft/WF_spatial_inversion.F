@@ -9,6 +9,11 @@
 !
 #include<yambo_wfs.h>
 !
+!> WF_spatial_inversion
+!>
+!> @param en
+!> @param Xk
+!>
 subroutine WF_spatial_inversion(en,Xk)
  !
  ! Check if the Inversion is a DL symmetry operation either

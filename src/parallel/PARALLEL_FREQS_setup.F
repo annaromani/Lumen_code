@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_FREQS_setup
+!>
+!> @param W
+!> @param IND
+!> @param COMM
+!>
 subroutine PARALLEL_FREQS_setup(W,IND,COMM)
  !
  use frequency,   ONLY:w_samp

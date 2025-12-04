@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_excitonic_gkkp
+!>
+!> @param Xk
+!>
 subroutine ELPH_excitonic_gkkp(Xk)
  !
  use pars,                ONLY:SP,schlen,cZERO

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> k_map_nearest_by_dir
+!>
+!> @param Xk
+!> @param k_map
+!>
 subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  ! Map k-points on a regular grid along the b directions
@@ -116,6 +121,12 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
 end subroutine k_map_nearest_by_dir
  
+!> k_find_smallest_q
+!>
+!> @param ptbz
+!> @param q_step
+!> @param nbz
+!>
 subroutine k_find_smallest_q(ptbz,q_step,nbz)
  !
  ! Find the smallest q in the 3 direction 
@@ -156,6 +167,11 @@ subroutine k_find_smallest_q(ptbz,q_step,nbz)
  !
 end subroutine k_find_smallest_q
 
+!> k_find_smallest_g0
+!>
+!> @param g0_idx
+!> @param g0_length
+!>
 subroutine k_find_smallest_g0(g0_idx,g0_length)
  !
  ! Find the smallest G0 in each direction
@@ -212,6 +228,11 @@ subroutine k_find_smallest_g0(g0_idx,g0_length)
  !
 end subroutine k_find_smallest_g0
 
+!> check_shifts
+!>
+!> @param Xk
+!> @param WF_shifts
+!>
 subroutine check_shifts(Xk,WF_shifts)
  !
  ! I want all k-points between 0 and 1 (same notation of QE with Berry)

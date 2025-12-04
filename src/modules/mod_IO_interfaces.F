@@ -64,6 +64,11 @@ module IO_int
      logical,      optional :: FORCE_READ_MODE
    end function
    !
+!> io_disconnect
+!>
+!> @param ID
+!> @param FORCE
+!>
    subroutine io_disconnect(ID,FORCE)
      !
      integer           :: ID
@@ -71,6 +76,16 @@ module IO_int
      !
    end subroutine io_disconnect
    !
+!> io_control
+!>
+!> @param ACTION
+!> @param MODE
+!> @param COM
+!> @param SEC
+!> @param ID
+!> @param COMM
+!> @param DO_IT
+!>
    subroutine io_control(ACTION,MODE,COM,SEC,ID,COMM,DO_IT)
      use parallel_m,        ONLY:yMPI_comm
      integer,intent(in)                  :: ACTION
@@ -83,6 +98,16 @@ module IO_int
    !
    !  NEW: def and IO subroutines split in two
    !
+!> def_variable_elemental
+!>
+!> @param ID
+!> @param VAR
+!> @param VAR_SZ
+!> @param VAR_KIND
+!> @param MENU
+!> @param dim_names
+!> @param par_io_kind
+!>
    subroutine def_variable_elemental(ID,VAR,VAR_SZ,VAR_KIND,MENU,dim_names,par_io_kind)
      use pars,              ONLY:schlen
      integer     , intent(in) :: ID
@@ -94,6 +119,18 @@ module IO_int
      character(*),      optional, intent(in) :: par_io_kind
    end subroutine def_variable_elemental
    !
+!> def_variable_bulk
+!>
+!> @param ID
+!> @param VAR
+!> @param VAR_ID
+!> @param VAR_SZ
+!> @param VAR_KIND
+!> @param dim_names
+!> @param par_io_kind
+!> @param silent
+!> @param chunksize
+!>
    subroutine def_variable_bulk(ID,VAR,VAR_ID,VAR_SZ,VAR_KIND,dim_names,par_io_kind,silent,chunksize)
      use pars,              ONLY:schlen
      integer,      intent(in)  :: ID
@@ -169,11 +206,25 @@ module IO_int
      integer,optional :: version(3),revision
    end function
    !
+!> IO_and_Messaging_switch
+!>
+!> @param what
+!> @param CONDITION
+!>
    subroutine IO_and_Messaging_switch(what,CONDITION)
      character(*)      :: what
      logical, optional :: CONDITION
    end subroutine
    !
+!> io_fragment
+!>
+!> @param ID
+!> @param ID_frag
+!> @param i_fragment
+!> @param j_fragment
+!> @param extension
+!> @param ierr
+!>
    subroutine io_fragment(ID,ID_frag,i_fragment,j_fragment,extension,ierr)
      integer,      intent(in)   :: ID
      integer,      intent(out)  :: ID_frag

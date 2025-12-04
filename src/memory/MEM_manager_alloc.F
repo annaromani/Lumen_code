@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> MEM_manager_alloc
+!>
+!> @param what
+!> @param Sz
+!> @param Kn
+!> @param where
+!>
 subroutine MEM_manager_alloc(what,Sz,Kn,where)
  !
  use pars,         ONLY:schlen,DP,IPL

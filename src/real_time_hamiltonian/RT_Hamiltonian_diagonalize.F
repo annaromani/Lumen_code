@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> RT_Hamiltonian_diagonalize
+!>
+!> @param E
+!> @param k
+!> @param BGR
+!> @param A_input
+!>
 subroutine RT_Hamiltonian_diagonalize(E,k,BGR,A_input)
  !
  ! This routine defines and diagonalize the Coherent part of the

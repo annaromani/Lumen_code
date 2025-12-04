@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> io_RT_components_Reference
+!>
+!> @param ID
+!>
 subroutine io_RT_components_Reference(ID)
  !
  use pars,           ONLY:SP
@@ -73,6 +77,10 @@ subroutine io_RT_components_Reference(ID)
  !
  contains
    !
+!> elemental_LIFE_IO
+!>
+!> @param LIFE
+!>
    subroutine elemental_LIFE_IO(LIFE)
      type(RT_lifetime) :: LIFE
      if (LIFE%active) then

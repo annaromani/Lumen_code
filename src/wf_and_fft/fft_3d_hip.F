@@ -33,6 +33,13 @@
 !=====================================================================
 !
 !
+!> fft_3d_hip
+!>
+!> @param c_d
+!> @param n
+!> @param fft_sign
+!> @param hipfft_plan
+!>
 subroutine fft_3d_hip(c_d,n,fft_sign,hipfft_plan)
  !
  use iso_c_binding,        only: c_ptr,c_associated

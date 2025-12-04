@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> symmetries_driver
+!>
+!> @param E
+!> @param Xk
+!>
 subroutine symmetries_driver(E,Xk)
  !
  use pars,                ONLY:SP,lchlen

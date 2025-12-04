@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_input_file
+!>
+!>
 subroutine INIT_input_file()
  !
  use pars,           ONLY:lchlen

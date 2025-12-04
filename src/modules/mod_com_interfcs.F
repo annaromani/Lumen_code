@@ -9,6 +9,16 @@ module com_interfcs
  !
  interface
    !
+!> msg_characters_vector_int
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_characters_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      use pars,     ONLY:lchlen
      character(*)                :: how
@@ -20,6 +30,16 @@ module com_interfcs
      character(lchlen), optional :: MSG_string
    end subroutine
    !
+!> msg_integers_vector_int
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
    subroutine msg_integers_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
      use pars,     ONLY:lchlen
      character(*)                :: how
@@ -31,6 +51,17 @@ module com_interfcs
      character(lchlen), optional :: MSG_string
    end subroutine
    !
+!> msg_reals_vector_int
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param EXT_FORMAT
+!> @param MSG_string
+!>
    subroutine msg_reals_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,EXT_FORMAT,MSG_string)
      use pars,     ONLY:SP,lchlen
      character(*)                :: how

@@ -10,6 +10,18 @@
 #include<dev_defs.h>                                                    
 !
 !
+!> WF_symm_kpoint_g
+!>
+!> @param b_to_load
+!> @param ik
+!> @param i_sp_pol
+!> @param isymm
+!> @param ig0
+!> @param WF
+!> @param ssop
+!> @param isref
+!> @param igref
+!>
 subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  !
  use pars,          ONLY:SP,cZERO

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> K_diagonal
+!>
+!> @param iq
+!> @param what
+!>
 subroutine K_diagonal(iq,what)
  !
  use pars,           ONLY:SP,cZERO,cI

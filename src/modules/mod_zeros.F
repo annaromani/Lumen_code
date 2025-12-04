@@ -20,6 +20,13 @@ module zeros
  !
  contains 
    !
+!> define_zeros
+!>
+!> @param vector_
+!> @param ref_value
+!> @param zero_
+!> @param RLU
+!>
    subroutine define_zeros(vector_,ref_value,zero_,RLU) 
      !
      use vec_operate, ONLY: sort,c2a

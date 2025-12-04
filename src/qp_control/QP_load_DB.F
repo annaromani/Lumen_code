@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> QP_load_DB
+!>
+!> @param i_ACTION
+!> @param bands
+!> @param en
+!> @param k
+!>
 subroutine QP_load_DB(i_ACTION,bands,en,k)
  !
  use drivers,       ONLY:l_chi,l_bss

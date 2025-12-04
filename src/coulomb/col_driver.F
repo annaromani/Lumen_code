@@ -30,6 +30,11 @@
 ! |q+G| = Sqrt[ 2 / ( DLVol NqBZ qpg(q,G)) ]                                  
 !
 !
+!> col_driver
+!>
+!> @param bare_NG
+!> @param q
+!>
 subroutine col_driver(bare_NG,q)
  !
  !Here I launch the routine to create/read the 

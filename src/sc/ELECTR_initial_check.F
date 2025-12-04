@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AC MG
 !
+!> ELECTR_initial_check
+!>
+!> @param k
+!> @param Dip
+!>
 subroutine ELECTR_initial_check(k,Dip)
  !
  use pars,        ONLY:SP

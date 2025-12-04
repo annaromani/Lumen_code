@@ -102,6 +102,10 @@ module hip_m
 
 contains
 
+!> hipcheck
+!>
+!> @param hiperror
+!>
   subroutine hipcheck(hiperror)
       IMPLICIT NONE
       integer(kind(HIP_SUCCESS)) :: hiperror
@@ -116,6 +120,10 @@ contains
 contains
   !
   ! dummy subroutine to avoid having an empty module
+!> hip_dummy__
+!>
+!> @param i
+!>
   subroutine hip_dummy__(i)
      integer :: i
      i=0 

@@ -5,6 +5,19 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> electrons_dos_elemental
+!>
+!> @param k
+!> @param E
+!> @param bands
+!> @param el_dos
+!> @param dos_E
+!> @param spin_fac
+!> @param pdos_fac
+!> @param USE_the_DbGd
+!> @param QUIET
+!> @param FORCE_occ
+!>
 subroutine electrons_dos_elemental(k,E,bands,el_dos,dos_E,spin_fac,pdos_fac,USE_the_DbGd,QUIET,FORCE_occ)
  !
  use pars,           ONLY:SP,rZERO

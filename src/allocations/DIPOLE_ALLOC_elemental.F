@@ -11,6 +11,11 @@
 #include <y_memory.h>
 !
 !
+!> DIPOLE_ALLOC_elemental
+!>
+!> @param what
+!> @param d
+!>
 subroutine DIPOLE_ALLOC_elemental(what,d)
  !
  use DIPOLES,        ONLY:DIP_iR,DIP_v,DIP_P,DIP_orbital,DIP_spin,DIP_P_spinor,P_square,DIP_S,&

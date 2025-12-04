@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> QP_state_table_setup
+!>
+!> @param en
+!>
 subroutine QP_state_table_setup(en)
  !
  ! There are 2 objects that command the QP corrections
@@ -215,6 +219,11 @@ subroutine QP_state_table_setup(en)
  !
  contains
    !
+!> i_check
+!>
+!> @param k_i
+!> @param ilim
+!>
    subroutine i_check(k_i,ilim)
      integer :: k_i(2),ilim
      if (k_i(1)>ilim.or.k_i(1)<1) k_i(1)=1

@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_load
+!>
+!> @param defs
+!> @param en
+!> @param q
+!> @param k
+!> @param X
+!> @param Xw
+!> @param Dip
+!>
 subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  !
  use drivers,       ONLY:infile_editing
@@ -810,6 +820,9 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
    !
 #if defined _MPI 
    !
+!> CPU_structure_load
+!>
+!>
    subroutine CPU_structure_load()
      use parallel_m, ONLY:n_CPU_str_max,CPU_structure,PARALLEL_default_mode
      integer           :: i_s
@@ -853,6 +866,11 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
    !
 #endif
    !
+!> Xload
+!>
+!> @param X
+!> @param wv
+!>
    subroutine Xload(X,wv)
      !
      use pars,   ONLY:SP

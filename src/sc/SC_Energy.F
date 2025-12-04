@@ -5,6 +5,18 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> SC_Energy
+!>
+!> @param E_total
+!> @param E_eigen
+!> @param E_zero
+!> @param E_Hartree
+!> @param E_xc_
+!> @param E_Fermi
+!> @param E
+!> @param k
+!> @param rho
+!>
 subroutine SC_Energy(E_total,E_eigen,E_zero,E_Hartree,E_xc_,E_Fermi,E,k,rho)
  !
  ! Total energy defined in terms of the KS orbitals

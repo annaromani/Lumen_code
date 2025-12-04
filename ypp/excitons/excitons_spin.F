@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> excitons_spin
+!>
+!> @param Xk
+!> @param Res
+!> @param BS_E
+!> @param BS_E_degs
+!>
 subroutine excitons_spin(Xk,Res,BS_E,BS_E_degs)
  !
  use pars,          ONLY:SP,cZERO,rZERO
@@ -187,6 +194,12 @@ subroutine excitons_spin(Xk,Res,BS_E,BS_E_degs)
  !
  contains
    !
+!> elemental_compose
+!>
+!> @param n
+!> @param n_p
+!> @param inner_product
+!>
    subroutine elemental_compose(n,n_p,inner_product)
      !
      integer     :: n,n_p

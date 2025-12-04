@@ -10,6 +10,10 @@
 #include<y_memory.h>
 #include<parallel_memory.h>
 !
+!> K_blocks
+!>
+!> @param iq
+!>
 subroutine K_blocks(iq)
  !
  ! Create and Fill the BSK blocks
@@ -176,6 +180,11 @@ subroutine K_blocks(iq)
 end subroutine K_blocks
 !
 !
+!> K_block_alloc
+!>
+!> @param iB
+!> @param mode
+!>
 subroutine K_block_alloc( iB, mode )
  !
  use pars,         ONLY:SP,cZERO
@@ -209,6 +218,11 @@ subroutine K_block_alloc( iB, mode )
 end subroutine K_block_alloc
 !
 !
+!> K_block_free
+!>
+!> @param iB
+!> @param mode
+!>
 subroutine K_block_free( iB, mode )
  !
  use BS,           ONLY:BS_blk,l_BSE_kernel_complete
@@ -234,6 +248,10 @@ subroutine K_block_free( iB, mode )
 end subroutine K_block_free
 !
 !
+!> K_block_symmetrize
+!>
+!> @param i_B
+!>
 subroutine K_block_symmetrize(i_B)
  use BS,           ONLY:BS_blk,l_BS_ares_from_res
  implicit none
@@ -272,6 +290,10 @@ subroutine K_block_symmetrize(i_B)
 end subroutine K_block_symmetrize
 !
 !
+!> BS_blks_free
+!>
+!> @param i_BS_mat
+!>
 subroutine BS_blks_free(i_BS_mat)
  use BS,           ONLY:BS_blk,n_BS_blks
  implicit none
@@ -285,6 +307,9 @@ subroutine BS_blks_free(i_BS_mat)
 end subroutine
 !
 !
+!> BS_blks_symmetrize_K
+!>
+!>
 subroutine BS_blks_symmetrize_K()
  use BS,           ONLY:BS_blk,n_BS_blks
  implicit none

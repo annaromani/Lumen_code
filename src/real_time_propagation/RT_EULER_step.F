@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+!> RT_EULER_step
+!>
+!> @param dG_in
+!> @param dG_out
+!> @param ik
+!> @param i_sp_pol
+!> @param nbf
+!> @param dT
+!>
 subroutine RT_EULER_step(dG_in,dG_out,ik,i_sp_pol,nbf,dT)
  !
  use pars,           ONLY:SP,cZERO,cI
@@ -85,6 +94,15 @@ subroutine RT_EULER_step(dG_in,dG_out,ik,i_sp_pol,nbf,dT)
 end subroutine RT_EULER_step
 !
 !
+!> RT_EULER_step_apply
+!>
+!> @param G_k
+!> @param H_k
+!> @param dG_out
+!> @param nbf
+!> @param deltaT
+!> @param mode
+!>
 subroutine RT_EULER_step_apply(G_k,H_k,dG_out,nbf,deltaT,mode)
  !
  use pars,           ONLY:SP,cI

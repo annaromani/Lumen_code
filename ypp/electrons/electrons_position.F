@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> electrons_position
+!>
+!> @param nkpt_pos
+!> @param nband_pos
+!> @param power
+!> @param what
+!> @param format
+!>
 subroutine electrons_position(nkpt_pos,nband_pos,power,what,format)
  !
  use pars,           ONLY:SP,schlen,pi
@@ -201,6 +209,9 @@ subroutine electrons_position(nkpt_pos,nband_pos,power,what,format)
  YAMBO_FREE(x_cc)
  !
  contains
+!> logical_init
+!>
+!>
    subroutine logical_init()
      l_cartesian=.false.
      l_cylindrical=.false.
@@ -216,6 +227,9 @@ subroutine electrons_position(nkpt_pos,nband_pos,power,what,format)
      if(l_2d.and..not.l_cylindrical) call error('2d implemented only for cylind coord')
    end subroutine
    !
+!> local_alloc
+!>
+!>
    subroutine local_alloc()
      if(l_spherical) then
        YAMBO_ALLOC(r_tmp,(fft_size))
@@ -248,6 +262,9 @@ subroutine electrons_position(nkpt_pos,nband_pos,power,what,format)
      endif
    end subroutine 
    !
+!> local_free
+!>
+!>
    subroutine local_free()
      if(l_spherical) then 
        YAMBO_FREE(r_tmp)

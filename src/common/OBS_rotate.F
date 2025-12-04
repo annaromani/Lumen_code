@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> OBS_rotate
+!>
+!> @param R
+!> @param O
+!> @param N
+!> @param direction
+!>
 subroutine OBS_rotate(R,O,N,direction)
  !
  ! Transform O in the new/old basis defined by R

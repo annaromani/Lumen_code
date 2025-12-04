@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !    
+!> SET_job_strings_and_dirs
+!>
+!> @param JS
+!>
 subroutine SET_job_strings_and_dirs(JS)
  !
  use pars,       ONLY:schlen

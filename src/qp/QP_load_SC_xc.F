@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM DV
 !
+!> QP_load_SC_xc
+!>
+!>
 subroutine QP_load_SC_xc() 
  !
  ! Load and Rotate non-local Hamiltonian coming from SC calculation 

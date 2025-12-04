@@ -368,6 +368,11 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  !
  contains
    !
+!> elemental_IO
+!>
+!> @param iq_
+!> @param this_is_Xo
+!>
    subroutine elemental_IO(iq_,this_is_Xo)
      !
      use IO_m,          ONLY:NONE

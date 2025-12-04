@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> RT_TRabs_output
+!>
+!> @param what
+!> @param how
+!> @param ofile
+!> @param N_files
+!> @param W
+!> @param TIME
+!>
 subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  !
  use pars,            ONLY:SP,schlen,pi,cI
@@ -99,6 +108,11 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
  !
  contains
    !
+!> elemental_TIME_E_write
+!>
+!> @param file
+!> @param data
+!>
    subroutine elemental_TIME_E_write(file,data)
      character(*) :: file
      real(SP)     :: data(2)
@@ -108,6 +122,12 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
      call OUTPUT_driver(file,action="write")
    end subroutine
    !
+!> gimme_a_name
+!>
+!> @param i
+!> @param j
+!> @param desc
+!>
    subroutine gimme_a_name(i,j,desc)
      integer :: i,j
      character(*) :: desc
@@ -118,6 +138,10 @@ subroutine RT_TRabs_output(what,how,ofile,N_files,W,TIME)
      ofile(N_files)="YPP-TR_"//trim(base)//"_"//TRabs_EPS_label(i,j)//"_"//desc
    end subroutine
    !
+!> elemental_desc_write
+!>
+!> @param file
+!>
    subroutine elemental_desc_write(file)
      character(*) :: file
      call DESC_write('o '//file,'#',RT_desc)     

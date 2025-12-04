@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> OUTPUT_driver
+!>
+!> @param file
+!> @param action
+!> @param TITLES
+!> @param I_VALUES
+!> @param R_VALUES
+!> @param ORDER
+!> @param UNIT
+!> @param KIND
+!>
 subroutine OUTPUT_driver(file,action,TITLES,I_VALUES,R_VALUES,ORDER,UNIT,KIND)
  !
  use pars,                ONLY:SP,schlen,lchlen

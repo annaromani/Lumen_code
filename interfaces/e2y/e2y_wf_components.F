@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> e2y_wf_components
+!>
+!> @param ncid
+!>
 subroutine e2y_wf_components(ncid)
   !==============================================
   ! Reads wf for ib=1 (all kpt) and returns

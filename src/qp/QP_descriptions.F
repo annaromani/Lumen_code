@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QP_descriptions
+!>
+!> @param qp
+!> @param X
+!> @param Xw
+!> @param Update
+!>
 subroutine QP_descriptions(qp,X,Xw,Update)
  ! 
  ! WARNING ! Changes here must be updated in io_QP_and_GF as well.

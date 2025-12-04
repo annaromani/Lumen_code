@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_global_dimensions
+!>
+!> @param E
+!> @param Xk
+!> @param q
+!> @param ENVIRONMENT
+!>
 subroutine PARALLEL_global_dimensions(E,Xk,q,ENVIRONMENT)
  !
  use com,           ONLY:secnm

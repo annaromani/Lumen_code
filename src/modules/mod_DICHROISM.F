@@ -23,6 +23,9 @@ module DICHROISM
  !
  contains
    !
+!> BSS_DICH_alloc
+!>
+!>
    subroutine BSS_DICH_alloc( )
      use pars,       ONLY:cZERO
      use BS,         ONLY:BS_dip_size,BS_H_dim
@@ -31,11 +34,17 @@ module DICHROISM
      BSS_dipoles_dich = cZERO
    end subroutine
    !
+!> BSS_DICH_free
+!>
+!>
    subroutine BSS_DICH_free( )
      if (.not.l_BS_dichroism) return
      YAMBO_FREE(BSS_dipoles_dich)
    end subroutine
 
+!> BSS_MEspin_alloc
+!>
+!>
    subroutine BSS_MEspin_alloc( )
      use pars,       ONLY:cZERO
      use BS,         ONLY:BS_dip_size,BS_H_dim
@@ -44,11 +53,17 @@ module DICHROISM
      BSS_dipoles_mespin = cZERO
    end subroutine
    !
+!> BSS_MEspin_free
+!>
+!>
    subroutine BSS_MEspin_free( )
      if (.not.l_BS_mespin) return
      YAMBO_FREE(BSS_dipoles_mespin)
    end subroutine
    !
+!> BSS_MEorb_alloc
+!>
+!>
    subroutine BSS_MEorb_alloc( )
      use pars,       ONLY:cZERO
      use BS,         ONLY:BS_dip_size,BS_H_dim
@@ -57,6 +72,9 @@ module DICHROISM
      BSS_dipoles_meorb = cZERO
    end subroutine
    !
+!> BSS_MEorb_free
+!>
+!>
    subroutine BSS_MEorb_free( )
      if (.not.l_BS_meorb) return
      YAMBO_FREE(BSS_dipoles_meorb)

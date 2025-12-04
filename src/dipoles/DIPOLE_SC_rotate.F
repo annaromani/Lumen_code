@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM CA
 !
+!> Dipole_SC_rotate
+!>
+!> @param H_rotation
+!> @param Xen
+!> @param X
+!> @param rot_direction
+!>
 subroutine Dipole_SC_rotate(H_rotation,Xen,X,rot_direction)
  !
  ! This routine update dipoles according to eq. 13

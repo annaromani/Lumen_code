@@ -6,6 +6,17 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !----------------------------------------------------------------------------
+!> PP_becprod_calc
+!>
+!> @param becprod
+!> @param nspin
+!> @param current_spin
+!> @param domag
+!> @param mb
+!> @param nb
+!> @param becp
+!> @param becpp
+!>
 subroutine PP_becprod_calc ( becprod, nspin, current_spin, domag, mb, nb, becp, becpp )
   !----------------------------------------------------------------------------
   !
@@ -143,6 +154,15 @@ subroutine PP_becprod_calc ( becprod, nspin, current_spin, domag, mb, nb, becp, 
 end subroutine PP_becprod_calc
 !
 !----------------------------------------------------------------------------
+!> add_becprod_nc
+!>
+!> @param na
+!> @param np
+!> @param aux_nc
+!> @param becprod
+!> @param nspin_mag
+!> @param domag
+!>
 subroutine add_becprod_nc ( na, np, aux_nc, becprod, nspin_mag, domag )
 !----------------------------------------------------------------------------
   !
@@ -189,6 +209,15 @@ subroutine add_becprod_nc ( na, np, aux_nc, becprod, nspin_mag, domag )
 end subroutine add_becprod_nc
 !
 !----------------------------------------------------------------------------
+!> add_becprod_so
+!>
+!> @param na
+!> @param np
+!> @param aux_so
+!> @param becprod
+!> @param nspin_mag
+!> @param domag
+!>
 subroutine add_becprod_so( na, np, aux_so, becprod, nspin_mag, domag )
   !----------------------------------------------------------------------------
   !

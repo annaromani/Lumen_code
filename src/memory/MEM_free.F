@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> MEM_free
+!>
+!> @param what
+!> @param Sz
+!>
 subroutine MEM_free(what,Sz)
  !
  use pars,         ONLY:schlen,DP,IPL,IP

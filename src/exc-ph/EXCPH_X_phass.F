@@ -337,6 +337,9 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  !
  contains
  !
+!> Find_Max_Sat
+!>
+!>
  subroutine Find_Max_Sat()
    implicit none
    !
@@ -369,6 +372,9 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
     !
  end subroutine Find_Max_Sat
  !
+!> Sat_report
+!>
+!>
  subroutine Sat_report()
    use stderr,        ONLY:intc
    use units,         ONLY:HA2EV

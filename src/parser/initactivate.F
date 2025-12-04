@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> initactivate
+!>
+!> @param mode
+!> @param names
+!>
 subroutine initactivate(mode,names)
  !
  use it_tools
@@ -120,6 +125,11 @@ subroutine initactivate(mode,names)
  !
  contains
    !
+!> activate
+!>
+!> @param iflg
+!> @param ip
+!>
    subroutine activate(iflg,ip)
      integer :: iflg,ip
      if (ip==0) return

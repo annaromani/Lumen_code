@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_global_Response_T_base
+!>
+!> @param Xk
+!>
 subroutine PARALLEL_global_Response_T_base(Xk)
  !
  use R_lattice,     ONLY:bz_samp,nXkbz,nXkibz

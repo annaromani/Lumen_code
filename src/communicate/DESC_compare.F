@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> DESC_compare
+!>
+!> @param D1
+!> @param D2
+!> @param i_err
+!> @param exclude
+!> @param only
+!>
 subroutine DESC_compare(D1,D2,i_err,exclude,only)
  !
  use descriptors,   ONLY:IO_desc

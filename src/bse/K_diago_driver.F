@@ -17,6 +17,12 @@
 #include <slepc/finclude/slepceps.h>
 #endif
 !
+!> K_diago_driver
+!>
+!> @param iq
+!> @param W
+!> @param X_static
+!>
 subroutine K_diago_driver(iq,W,X_static) 
  !
  ! Generic diagonalization method to solve resonant and non resonant Hamiltonians.
@@ -480,6 +486,10 @@ subroutine K_diago_driver(iq,W,X_static)
  !
  contains
    !
+!> local_alloc
+!>
+!> @param what
+!>
    subroutine local_alloc(what)
      !
      character(*) :: what
@@ -541,6 +551,9 @@ subroutine K_diago_driver(iq,W,X_static)
      !
    end subroutine local_alloc
    !
+!> local_free
+!>
+!>
    subroutine local_free()
      !
      YAMBO_FREE(BS_E_real)
@@ -563,6 +576,9 @@ subroutine K_diago_driver(iq,W,X_static)
    end subroutine local_free
    !
    !
+!> K_ldiago_resize_variables
+!>
+!>
    subroutine K_ldiago_resize_variables()
     !
     ! We need to realloc as sizes can change.
@@ -585,6 +601,9 @@ subroutine K_diago_driver(iq,W,X_static)
    !
 #if defined _SLEPC && !defined _NL
    !
+!> K_slepc_resize_variables
+!>
+!>
    subroutine K_slepc_resize_variables()
      !
      call warning(" resizing alla variables whose size depends on BSS_n_eig ")
@@ -615,6 +634,9 @@ subroutine K_diago_driver(iq,W,X_static)
    !
 #endif
    !
+!> K_local_init
+!>
+!>
    subroutine K_local_init()
      ! 
      BSS_n_eig=BSS_n_eig_Input
@@ -715,6 +737,9 @@ subroutine K_diago_driver(iq,W,X_static)
      !
    end subroutine K_local_init
    !
+!> BSS_n_eig_init
+!>
+!>
    subroutine BSS_n_eig_init()
      !
      ! Number of states to be computed
@@ -785,6 +810,9 @@ subroutine K_diago_driver(iq,W,X_static)
    !
 #if defined _SLEPC && !defined _NL
    !
+!> K_slepc_local_init
+!>
+!>
    subroutine K_slepc_local_init()
      integer          :: domk(BS_nT_grps)
      !
@@ -799,6 +827,9 @@ subroutine K_diago_driver(iq,W,X_static)
      !
    end subroutine K_slepc_local_init
    !
+!> K_slepc_local_free
+!>
+!>
    subroutine K_slepc_local_free()
      !
      if (BSS_slepc_matrix_format=='shell') then

@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 ! 
+!> NL_test_collisions
+!>
+!> @param k
+!> @param q
+!>
 subroutine NL_test_collisions(k,q) 
  !
  ! Test-collisions built on the fly from V/W 

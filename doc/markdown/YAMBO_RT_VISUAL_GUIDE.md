@@ -759,6 +759,127 @@ Communication pattern:
 
 ---
 
+## 9. NEGF Screening and Many-Body Effects: Implementation Status
+
+### ⚠️ Critical Limitations in Dynamic Screening
+
+```
+┌────────────────────────────────────────────────────────────┐
+│  NEGF Implementation Status Summary                        │
+└────────────────────────────────────────────────────────────┘
+
+WHAT IS IMPLEMENTED:
+════════════════════
+
+✅ Occupation Evolution
+   • f_n(k,t) extracted from G^<_nn(k,t,t)
+   • Evolved via Kadanoff-Baym equation
+   • Updated at every timestep
+
+✅ Density Update
+   • ρ(r,t) recomputed from occupations
+   • Hartree potential V^H[ρ(t)] computed dynamically
+   • Provides Coulomb repulsion with carriers
+
+✅ XC Potential (when not using collisions)
+   • V^xc[ρ(t)] recomputed at each step
+   • TDDFT-LDA approach fully dynamic
+
+⚠️  Collision Kernels (TDSEX/TDCOHSEX)
+   • Built from EQUILIBRIUM GW screening
+   • NOT recomputed dynamically
+   • Uses FIXED kernel K_eq throughout simulation
+   • Approximation: ΔΣ^Hxc = K_eq · [G(t) - G_ref]
+
+WHAT IS NOT IMPLEMENTED:
+═════════════════════════
+
+❌ Dynamic Dielectric Function ε(q,ω,t)
+   • Screening does NOT adapt to carrier density
+   • Plasma frequency ω_p(t) NOT updated
+   • Excitonic screening NOT included
+
+❌ BSE Kernel Update K(t)
+   • No real-time computation of K(q,t)
+   • Excitonic binding energy NOT renormalized
+   • No many-body e-h dynamics
+
+❌ Dynamic Screening Effects
+   • No carrier-induced band gap shift
+   • No screening buildup timescale
+   • No exciton-screening interplay
+
+PHYSICAL CONSEQUENCES:
+═════════════════════
+
+For BLEACHING:
+• ✅ Band filling captured (state occupations)
+• ❌ Excitonic renormalization missing
+• ❌ Many-body blue/red-shift not included
+
+For PHOTOINDUCED ABSORPTION:
+• ✅ Carrier-induced density changes captured
+• ✅ Hartree screening with carriers
+• ❌ Excitonic effects frozen in time
+• ❌ Ultrafast screening dynamics missing
+
+DETAILED COMPARISON:
+═══════════════════
+
+Strategy (a): Collision Kernel (Current)
+  H^RT = H^EQ + K_eq · [G(t) - G_ref] + H^ext
+  Pro:  Fast, explicit form
+  Con:  Screening is static, only valid for small perturbations
+
+Strategy (b): Direct Functional (Partial)
+  H^RT = H^EQ + V^H[ρ(t)] + V^xc[ρ(t)] + H^ext
+  Pro:  More accurate, Hartree is dynamic
+  Con:  XC is local/semi-local, no correlation screening
+
+What's Missing: Dynamic Many-Body Screening
+  H^RT = H^EQ + Σ^xc[G(t),W(t)] + H^ext
+  Would need: W(q,ω,t) computed from G^<(t)
+  Cost: Very expensive, not implemented
+
+CODE LOCATIONS:
+═══════════════
+
+Dynamic parts:
+  • src/real_time_hamiltonian/RT_Hamiltonian.F (lines 94-162)
+    ├── el_density_matrix()           [dynamic ρ]
+    ├── V_Hartree()                   [dynamic V^H]
+    └── XC_potential_driver()         [dynamic V^xc, if not using collisions]
+
+Static parts:
+  • src/collisions/COLLISIONS_compose_rt.F (lines 55-95)
+    └── Fixed kernel K_eq applied to dG(t)
+        [NOT recomputed]
+
+Missing:
+  • src/pol_function/  [dielectric computation]
+    └── NOT called during RT (only for GW setup)
+  • src/bse/           [BSE kernel]
+    └── NOT called during RT
+
+RECOMMENDED DOCUMENTATION CHANGE:
+═════════════════════════════════
+Add to NEGF section:
+
+"⚠️  Screening Treatment:
+    YAMBO RT uses EQUILIBRIUM screening kernels that are held
+    fixed during propagation. This is exact only for small
+    perturbations. For strong-field regimes or when screening
+    renormalization is important, consider:
+    
+    1. Post-processing with time-dependent BSE
+    2. Comparing results at different pump strengths
+       to assess screening validity
+    3. Using lower field strengths where linear response
+       is valid"
+```
+
+---
+
 ## Appendix: Symbol Legend
 
 ```

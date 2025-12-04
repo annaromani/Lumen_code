@@ -9,6 +9,17 @@
 !
 #include<y_memory.h>
 !
+!> K_inversion_engine
+!>
+!> @param what
+!> @param iw_2start
+!> @param iw_2do
+!> @param px
+!> @param W
+!> @param Lo
+!> @param Lo_dim
+!> @param do_it_full
+!>
 subroutine K_inversion_engine(what,iw_2start,iw_2do,px,W,Lo,Lo_dim,do_it_full)
  !
  use pars,           ONLY:SP,cZERO
@@ -112,6 +123,10 @@ subroutine K_inversion_engine(what,iw_2start,iw_2do,px,W,Lo,Lo_dim,do_it_full)
  !
  contains
    !
+!> PL_compose
+!>
+!> @param i_L_
+!>
    subroutine PL_compose(i_L_)
      complex(SP) :: Vp(BS_H_dim),V(BS_H_dim)
      integer     :: i_L_,i_c,i_cv,i1,i2
@@ -132,6 +147,10 @@ subroutine K_inversion_engine(what,iw_2start,iw_2do,px,W,Lo,Lo_dim,do_it_full)
      enddo
    end subroutine
    !
+!> EPS_compose
+!>
+!> @param i_L_
+!>
    subroutine EPS_compose(i_L_)
      integer     :: i_L_
      complex(SP) :: V(BS_H_dim)

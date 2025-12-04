@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> RT_Fluence_and_PI_kind
+!>
+!> @param En
+!> @param i_field
+!>
 subroutine RT_Fluence_and_PI_kind(En,i_field)
  !
  use pars,           ONLY:SP,pi

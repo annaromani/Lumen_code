@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> RT_G_two_times_driver
+!>
+!> @param en
+!> @param kpt
+!> @param qpt
+!>
 subroutine RT_G_two_times_driver(en,kpt,qpt)
  !
  use R_lattice,      ONLY:bz_samp

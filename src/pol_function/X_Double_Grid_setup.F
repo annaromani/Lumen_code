@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> X_Double_Grid_setup
+!>
+!> @param iq
+!> @param k
+!> @param k_FGbz
+!> @param nTrans_percent
+!> @param Radius
+!>
 subroutine X_Double_Grid_setup(iq,k,k_FGbz,nTrans_percent,Radius)
  !
  ! Define which kpts I will use in a consistent way between q=0 and q/=0

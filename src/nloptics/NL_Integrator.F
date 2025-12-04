@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AC MG 
 !
+!> NL_Integrator
+!>
+!> @param E
+!> @param k
+!> @param q
+!> @param X
+!> @param Integrator
+!> @param i_time
+!> @param V_bands
+!>
 subroutine NL_Integrator(E,k,q,X,Integrator,i_time,V_bands)
  !
  !  This subroutine perform integration using different methods

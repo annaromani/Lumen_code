@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> def_variable_elemental
+!>
+!> @param ID
+!> @param VAR
+!> @param VAR_SZ
+!> @param VAR_KIND
+!> @param MENU
+!> @param dim_names
+!> @param par_io_kind
+!>
 subroutine def_variable_elemental(ID,VAR,VAR_SZ,VAR_KIND,MENU,dim_names,par_io_kind)
  !
  use netcdf

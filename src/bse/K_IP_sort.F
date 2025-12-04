@@ -9,6 +9,16 @@
 !
 #include<y_memory.h>
 !
+!> K_IP_sort
+!>
+!> @param what
+!> @param I
+!> @param N
+!> @param Indexes
+!> @param vI
+!> @param El
+!> @param vC
+!>
 subroutine K_IP_sort(what,I,N,Indexes,vI,El,vC)
  !
  use pars,          ONLY:SP,cZERO

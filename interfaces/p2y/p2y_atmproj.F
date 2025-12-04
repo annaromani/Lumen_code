@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> p2y_atmproj
+!>
+!> @param filename
+!> @param k
+!>
 subroutine p2y_atmproj(filename,k)
  !
  use pars,                  ONLY:SP,DP,schlen
@@ -78,6 +83,9 @@ subroutine p2y_atmproj(filename,k)
  !
  contains
    !
+!> fill_atomic_table
+!>
+!>
    subroutine fill_atomic_table()
      !
      use qe_pseudo_m,      ONLY:ityp,nat

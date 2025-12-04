@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> XC_libxc_driver
+!>
+!> @param en
+!> @param Xk
+!> @param FUNCTIONAL
+!> @param ORDER
+!> @param EXX_FRACTION
+!> @param EXX_SCREENING
+!>
 subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
  !
  ! This routine evaluates the xc functional in yambo 

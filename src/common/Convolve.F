@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> Convolve
+!>
+!> @param f
+!> @param g
+!> @param f_times_g
+!> @param N
+!> @param step
+!> @param Eo
+!>
 subroutine Convolve(f,g,f_times_g,N,step,Eo)
  !
  ! f(x) = \sum_i f_i delta(x-i * step-Eo)

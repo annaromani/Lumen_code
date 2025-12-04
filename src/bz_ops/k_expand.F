@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> k_expand
+!>
+!> @param k
+!>
 subroutine k_expand(k)
  !
  ! Outputs:

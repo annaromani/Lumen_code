@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM CH
 !
+!> Dipole_check_shifted_grids
+!>
+!> @param Xk_shift
+!> @param Xk
+!> @param iq
+!> @param num_shifted_grid
+!> @param q_mod
+!> @param grid_order
+!>
 subroutine Dipole_check_shifted_grids( Xk_shift, Xk, iq, num_shifted_grid,q_mod,grid_order)
  !
  use pars,            ONLY:SP

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARALLEL_set_the_active_structures
+!>
+!> @param n_structures
+!>
 subroutine PARALLEL_set_the_active_structures(n_structures)
  !
  ! The CPU's /= 1 are active and stored in PARALLEL_CPU_used/_role. Moreover if "k" and "q" fields

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_databases_grids_map
+!>
+!> @param k
+!> @param q
+!>
 subroutine ELPH_databases_grids_map(k,q)
  !
  use drivers,        ONLY:l_phel_corr

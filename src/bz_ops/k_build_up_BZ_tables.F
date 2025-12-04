@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> k_build_up_BZ_tables
+!>
+!> @param k
+!>
 subroutine k_build_up_BZ_tables(k)
  !
  ! Output:

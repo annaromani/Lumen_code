@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> RT_alloc
+!>
+!> @param en
+!> @param what
+!>
 subroutine RT_alloc(en,what)
  !
  use pars,           ONLY:SP,cZERO

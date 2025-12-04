@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> MEM_global_mesg
+!>
+!> @param what
+!> @param xkind
+!> @param HOST_SIZE
+!>
 subroutine MEM_global_mesg(what,xkind,HOST_SIZE)
  !
  use pars,         ONLY:SP,DP,IPL

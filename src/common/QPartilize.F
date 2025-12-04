@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QPartilize
+!>
+!> @param N
+!> @param G
+!> @param W
+!> @param E
+!> @param Z
+!> @param dG_step
+!>
 subroutine QPartilize(N,G,W,E,Z,dG_step)
  !
  use pars,    ONLY:SP

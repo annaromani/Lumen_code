@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARALLEL_live_message
+!>
+!> @param WHAT
+!> @param ENVIRONMENT
+!> @param LOADED
+!> @param TOTAL
+!> @param LOADED_r
+!> @param TOTAL_r
+!> @param NC
+!>
 subroutine PARALLEL_live_message(WHAT,ENVIRONMENT,LOADED,TOTAL,LOADED_r,TOTAL_r,NC)
  !
  use pars,       ONLY:lchlen,SP

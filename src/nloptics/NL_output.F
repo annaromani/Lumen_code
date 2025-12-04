@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> NL_output
+!>
+!> @param i_time
+!> @param i_run
+!>
 subroutine NL_output(i_time,i_run)
  !
  use pars,         ONLY:SP,schlen,pi

@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_lin_system
+!>
+!> @param A
+!> @param B
+!> @param n
+!> @param nrhs
+!>
 subroutine PARALLEL_lin_system(A,B,n,nrhs)
  !
  !  Solve the linear system

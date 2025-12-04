@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> k_map_fine_to_coarse_driver
+!>
+!> @param Xk
+!> @param Xen
+!>
 subroutine k_map_fine_to_coarse_driver(Xk,Xen)
  !
  use pars,                ONLY:SP

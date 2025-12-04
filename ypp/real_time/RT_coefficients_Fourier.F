@@ -9,6 +9,16 @@
 !
 #include<y_memory.h>
 !
+!> RT_coefficients_Fourier
+!>
+!> @param nt
+!> @param P
+!> @param nw
+!> @param W
+!> @param X
+!> @param X_err
+!> @param deltaW
+!>
 subroutine RT_coefficients_Fourier(nt,P,nw,W,X,X_err,deltaW)
  !
  ! Here I calculate the coefficients of a given Fourier series

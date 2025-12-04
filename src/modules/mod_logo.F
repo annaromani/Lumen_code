@@ -39,6 +39,10 @@ module LOGO
      pickup_a_random=int(dlaran(iseed(4:))*rand_range)
    end function
    !
+!> pickup_a_lumen_logo
+!>
+!> @param unit_
+!>
    subroutine pickup_a_lumen_logo(unit_)
      !
      use C_driver, ONLY:code_version,code_revision,code_hash,code_libraries,code_branch
@@ -111,6 +115,10 @@ module LOGO
    end subroutine
    !
    !
+!> pickup_a_yambo_logo
+!>
+!> @param unit_
+!>
    subroutine pickup_a_yambo_logo(unit_)
      !
      use C_driver, ONLY:code_version,code_revision,code_hash,code_libraries,code_branch

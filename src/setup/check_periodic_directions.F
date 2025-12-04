@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> check_periodic_directions
+!>
+!> @param is_cut
+!>
 subroutine check_periodic_directions(is_cut)
  !
  use pars,           ONLY:SP

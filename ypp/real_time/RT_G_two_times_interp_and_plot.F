@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_G_two_times_interp_and_plot
+!>
+!> @param en
+!> @param kpt
+!> @param qpt
+!>
 subroutine RT_G_two_times_interp_and_plot(en,kpt,qpt)
  !
  use pars,           ONLY:SP

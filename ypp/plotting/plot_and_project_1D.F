@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> plot_and_project_1D
+!>
+!> @param V
+!> @param direction
+!>
 subroutine plot_and_project_1D(V,direction)
  !
  use pars,        ONLY:SP,DP,pi,cI

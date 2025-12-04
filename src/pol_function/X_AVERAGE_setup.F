@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> X_AVERAGE_setup
+!>
+!> @param what
+!> @param i_counter
+!> @param q0
+!>
 subroutine X_AVERAGE_setup(what,i_counter,q0)
  !
  use pars,          ONLY:SP,rZERO

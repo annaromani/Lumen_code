@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> COLLISIONS_map_to_QP_table
+!>
+!> @param what
+!> @param COLL
+!>
 subroutine COLLISIONS_map_to_QP_table(what,COLL)
  !
  use collision_ext, ONLY:COLLISIONS_group,COLL_bands

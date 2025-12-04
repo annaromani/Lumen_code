@@ -10,6 +10,16 @@
 #include<dev_defs.h>
 !
 !
+!> TDDFT_ALDA_eh_space_G_collisions_R
+!>
+!> @param iq
+!> @param Xk
+!> @param i_T_grp
+!> @param NG
+!> @param l_bs_tddft_wf_in_loop
+!> @param tddft_wf
+!> @param mode
+!>
 subroutine TDDFT_ALDA_eh_space_G_collisions_R(iq,Xk,i_T_grp,NG,l_bs_tddft_wf_in_loop,tddft_wf,mode)
  !
  ! Calculates the F_xc scattering 

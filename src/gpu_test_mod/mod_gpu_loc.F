@@ -46,6 +46,9 @@ module gpu_loc_m
 
 contains
 
+!> gpu_linalg_setup
+!>
+!>
   subroutine gpu_linalg_setup()
     implicit none
 #if defined _CUDAF || defined _OPENACC

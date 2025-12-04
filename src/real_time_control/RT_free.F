@@ -9,6 +9,9 @@
 !
 #include<y_memory.h>
 !
+!> RT_free
+!>
+!>
 subroutine RT_free( )
  !
  use R_lattice,      ONLY:bz_samp_FineGd_reset

@@ -68,6 +68,15 @@ subroutine DIPOLE_kb_project(pp_range,ib_range,ib,i_wf,wf_ncx,nbndx,npp,&
 end subroutine DIPOLE_kb_project
 !
 !
+!> DIPOLE_kb_sum
+!>
+!> @param rho
+!> @param pp_dim_yambo
+!> @param ib_range
+!> @param iv
+!> @param ic
+!> @param XX
+!>
 subroutine DIPOLE_kb_sum(rho,pp_dim_yambo,ib_range,iv,ic,XX)
  !
  use pars,          ONLY:SP

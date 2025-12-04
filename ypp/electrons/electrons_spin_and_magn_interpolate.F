@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> electrons_spin_and_magn_interpolate
+!>
+!> @param what
+!> @param SEED_k
+!> @param OUT_k
+!> @param BANDS_range
+!> @param ID_spin
+!> @param ID_magn
+!>
 subroutine electrons_spin_and_magn_interpolate(what,SEED_k,OUT_k,BANDS_range,ID_spin,ID_magn)
  !
  use pars,           ONLY:SP

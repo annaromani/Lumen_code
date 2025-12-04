@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): CH DS HM
 !
+!> a2y_wf
+!>
+!> @param wf_disk
+!> @param i_sp_pol
+!> @param ikibz
+!> @param ib_grp
+!> @param ncid
+!>
 subroutine a2y_wf(wf_disk,i_sp_pol,ikibz,ib_grp, ncid)
   !
   ! Reads and returns wf_disk for both spins

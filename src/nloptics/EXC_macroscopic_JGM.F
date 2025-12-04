@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
+!> EXC_macroscopic_JGM
+!>
+!> @param en
+!> @param Pmac
+!> @param rho
+!> @param Exc
+!> @param V_xc
+!>
 subroutine EXC_macroscopic_JGM(en,Pmac,rho,Exc,V_xc)
   !
  use pars,          ONLY: pi,SP,DP,cI,cZERO

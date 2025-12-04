@@ -200,6 +200,9 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  !
  contains
    !
+!> print_output
+!>
+!>
    subroutine print_output()
 !     use X_output,      ONLY:X_write_messages_before_headers,X_write_q_plus_G
      implicit none

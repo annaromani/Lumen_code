@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_databases_IO_transfer_and_write
+!>
+!> @param IDB
+!> @param k
+!> @param E
+!> @param GKKP
+!>
 subroutine ELPH_databases_IO_transfer_and_write(IDB,k,E,GKKP)
  !
  use pars,                ONLY:SP,DP,rZERO,cZERO

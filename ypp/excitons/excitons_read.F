@@ -9,6 +9,16 @@
 !
 #include<y_memory.h>
 !
+!> excitons_read
+!>
+!> @param k
+!> @param Xk
+!> @param en
+!> @param Xen
+!> @param iq
+!> @param what
+!> @param io_err
+!>
 subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
  !
  use pars,          ONLY:SP,pi

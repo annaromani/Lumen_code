@@ -25,6 +25,19 @@
 !! @param[out]      gsqF_life_bose      Imaginary part Fan self-energy Bose part
 !! @param[out]      gsqF_life_f         Imaginary part Fan self-energy Fermi part
 !
+!> ELPH_Sigma_c_engine
+!>
+!> @param i_qp
+!> @param ob
+!> @param ok
+!> @param iq_bz
+!> @param iq_ibz
+!> @param iq_mem
+!> @param il
+!> @param elph_gkkp_sq
+!> @param en
+!> @param k
+!>
 subroutine ELPH_Sigma_c_engine(i_qp,ob,ok,iq_bz,iq_ibz,iq_mem,il,elph_gkkp_sq,en,k,q,Sc_W,q_weight)
  !
  use pars,          ONLY:SP,pi,cZERO

@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> INTERPOLATION_driver_do
+!>
+!> @param operation
+!> @param ID
+!> @param OUT_k
+!> @param OUT_E
+!> @param FineGrid
+!>
 subroutine INTERPOLATION_driver_do(operation,ID,OUT_k,OUT_E,FineGrid)
  !
  ! INTREPOLATION_driver_do at present interpolates both to the Coarse grid and to the Fine grid

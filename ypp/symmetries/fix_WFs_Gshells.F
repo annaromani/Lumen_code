@@ -11,6 +11,13 @@
 #include<y_memory.h>
 !
 !
+!> fix_WFs_Gshells
+!>
+!> @param k
+!> @param k_save
+!> @param kpoints_map
+!> @param old_nsym
+!>
 subroutine fix_WFs_Gshells(k,k_save,kpoints_map,old_nsym)
  !
  use com,                 ONLY:msg

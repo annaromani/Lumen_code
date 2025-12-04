@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_dos_time_plot
+!>
+!> @param En
+!> @param k
+!> @param n_T_steps
+!>
 subroutine RT_dos_time_plot(En,k,n_T_steps)
  !
  use units,          ONLY:HA2EV,AUT2FS

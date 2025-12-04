@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AMDV
 !
+!> cutoff_slab
+!>
+!> @param q
+!>
  subroutine cutoff_slab(q)
  !
  use com,           ONLY:of_open_close

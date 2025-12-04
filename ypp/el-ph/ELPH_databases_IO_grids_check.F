@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM FP
 !
+!> ELPH_databases_IO_grids_check
+!>
+!> @param k
+!>
 subroutine ELPH_databases_IO_grids_check(k)
  !
  ! ELPH <-> YAMBO k table correspondance

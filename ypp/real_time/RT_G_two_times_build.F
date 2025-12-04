@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_G_two_times_build
+!>
+!> @param en
+!> @param kpt
+!> @param qpt
+!>
 subroutine RT_G_two_times_build(en,kpt,qpt)
  !
  use pars,           ONLY:SP,DP,cZERO,cI,cONE,cZERO,schlen

@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> External_corrections
+!>
+!> @param en
+!> @param Xen
+!> @param Ken
+!> @param DIPen
+!> @param Xk
+!> @param k
+!> @param X
+!>
 subroutine External_corrections(en,Xen,Ken,DIPen,Xk,k,X)
  !
  use drivers,       ONLY:l_optics,l_chi,l_em1s,l_em1d,l_acfdt,l_ppa,l_bss,l_gw0,l_bse,l_alda_fxc

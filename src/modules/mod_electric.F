@@ -37,6 +37,10 @@ module electric
  !
  contains
    !
+!> ELECTRIC_alloc
+!>
+!> @param en
+!>
    subroutine ELECTRIC_alloc(en)
      !
      use pars,           ONLY:SP

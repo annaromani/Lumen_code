@@ -43,6 +43,9 @@ module LIVE_t
  !
  contains
    !
+!> GET_user_WALL_time
+!>
+!>
    subroutine GET_user_WALL_time( )
      integer           :: i_pos(3)
      i_pos=(/index(trim(USER_wall_time_string),"d"),index(trim(USER_wall_time_string),"h"),index(trim(USER_wall_time_string),"m")/) 
@@ -95,6 +98,12 @@ module LIVE_t
      if (present(dt_out)) dt_out=dz(:6)
    end function
    !
+!> live_timing
+!>
+!> @param message
+!> @param steps
+!> @param DEPTH
+!>
    subroutine live_timing(message,steps,DEPTH)
      character(*),optional :: message
      integer     ,optional :: steps
@@ -122,6 +131,15 @@ module LIVE_t
      !
    end subroutine
    !
+!> ct
+!>
+!> @param INIT
+!> @param INIT_SEG
+!> @param SEG
+!> @param INIT_SEC
+!> @param SEC
+!> @param FIN
+!>
    subroutine ct(INIT,INIT_SEG,SEG,INIT_SEC,SEC,FIN)
      !
      ! cput_seg = Segment CPUT
@@ -191,6 +209,15 @@ module LIVE_t
      time_string=trim(cd)//trim(ch)//trim(cm)//trim(cs)
    end function
    !
+!> LIVE_message
+!>
+!> @param message
+!> @param lfmt
+!> @param rfmt
+!> @param sfmt
+!> @param CPU_TIME
+!> @param CPU_ID
+!>
    subroutine LIVE_message(message,lfmt,rfmt,sfmt,CPU_TIME,CPU_ID)
      !
      !C simple message:
@@ -297,6 +324,11 @@ module LIVE_t
      !
    end subroutine
    !
+!> live_timing_activate
+!>
+!> @param name
+!> @param steps
+!>
    subroutine live_timing_activate(name,steps)
      implicit none
      character(*)      :: name
@@ -318,6 +350,9 @@ module LIVE_t
      call live_timing_update("--","--")
    end subroutine
    !
+!> live_timing_close
+!>
+!>
    subroutine live_timing_close( )
      use stderr,  ONLY:log_as_a_file,logfile_unit
      implicit none
@@ -326,6 +361,10 @@ module LIVE_t
    end subroutine
    !
    !
+!> live_timing_add
+!>
+!> @param steps
+!>
    subroutine live_timing_add(steps)
      use parallel_m, ONLY : myid
      implicit none
@@ -387,6 +426,11 @@ module LIVE_t
      !
    end subroutine
    !
+!> live_timing_update
+!>
+!> @param xch
+!> @param ech
+!>
    subroutine live_timing_update(xch,ech)
      implicit none
      character(*)::xch,ech
@@ -452,6 +496,10 @@ module LIVE_t
    ! Calls machine-dependent "clock" for "vpp"
    ! Calls machine-dependent "xclock" for "sr8k"
    !
+!> cti
+!>
+!> @param tcpu
+!>
    subroutine cti(tcpu)
      implicit none
      real(DP) tcpu

@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> electrons_pdos_factors
+!>
+!> @param kpts
+!> @param bands
+!> @param PDOS_fac
+!>
 subroutine electrons_pdos_factors(kpts,bands,PDOS_fac)
  !
  use pars,           ONLY:SP

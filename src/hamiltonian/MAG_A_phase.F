@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> MAG_A_phase
+!>
+!>
 subroutine MAG_A_phase()
  !
  use pars,           ONLY:SP

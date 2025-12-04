@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> RT_gradk_rho_times_E_wrong
+!>
+!> @param ik
+!> @param i_sp_pol
+!> @param H_nl_sc
+!> @param dG_in
+!> @param A_input
+!> @param Xk
+!> @param Xen
+!>
 subroutine RT_gradk_rho_times_E_wrong(ik,i_sp_pol,H_nl_sc,dG_in,A_input,Xk,Xen)
  !
  ! This subroutine computes the k-gradient of the density matrix,
@@ -189,6 +199,16 @@ subroutine RT_gradk_rho_times_E_wrong(ik,i_sp_pol,H_nl_sc,dG_in,A_input,Xk,Xen)
 end subroutine RT_gradk_rho_times_E_wrong
 !
 !
+!> RT_gradk_rho_times_E
+!>
+!> @param ik
+!> @param i_sp_pol
+!> @param H_nl_sc
+!> @param dG_in
+!> @param A_input
+!> @param Xk
+!> @param Xen
+!>
 subroutine RT_gradk_rho_times_E(ik,i_sp_pol,H_nl_sc,dG_in,A_input,Xk,Xen)
  !
  ! This subroutine computes the k-gradient of the density matrix,

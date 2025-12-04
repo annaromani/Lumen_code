@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> XCo_report
+!>
+!> @param qp
+!> @param E
+!> @param k
+!>
 subroutine XCo_report(qp,E,k)
  !
  use drivers,       ONLY:l_real_time,l_gw0

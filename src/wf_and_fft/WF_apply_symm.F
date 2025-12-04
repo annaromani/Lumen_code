@@ -9,6 +9,10 @@
 !
 #include<yambo_wfs.h>
 !
+!> DEV_SUB
+!>
+!> @param WF_apply_symm
+!>
 subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
  !
  ! INCLUDED in: WF_apply_symm_incl.F 

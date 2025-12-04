@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_ELPH_initialize
+!>
+!> @param E
+!> @param k
+!> @param q
+!>
 subroutine RT_ELPH_initialize(E,k,q)
  ! 
  use parser_m,       ONLY:parser

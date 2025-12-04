@@ -11,6 +11,19 @@ module NL_interfaces
  !
  interface
    !
+!> NL_average_operator
+!>
+!> @param O_VALUE
+!> @param V_VALUE
+!> @param O_REAL
+!> @param O_MATRIX
+!> @param V_MATRIX
+!> @param PV_MATRIX
+!> @param V_bands
+!> @param dG
+!> @param k
+!> @param en
+!>
    subroutine NL_average_operator(O_VALUE,V_VALUE,O_REAL,O_MATRIX,V_MATRIX,PV_MATRIX,V_bands,dG,k,en,TRANS,nK_mem)
      !
      use pars,           ONLY:SP

@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> RT_Dephasing_Matrix
+!>
+!> @param E
+!>
 subroutine RT_Dephasing_Matrix(E)
  !
  use pars,          ONLY:SP

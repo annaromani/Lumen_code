@@ -9,6 +9,19 @@
 !
 #include<y_memory.h>
 !
+!> MATRIX_transfer
+!>
+!> @param M_in
+!> @param M_bse
+!> @param M
+!> @param M_out
+!> @param INDEX_in
+!> @param INDEX_out
+!> @param SND
+!> @param RCV
+!> @param COMM
+!> @param COMM_name
+!>
 subroutine MATRIX_transfer( M_in, M_bse, M, M_out, INDEX_in, INDEX_out, SND, RCV, COMM, COMM_name)
  !
  ! General, multi-purpose M <-> M transfer

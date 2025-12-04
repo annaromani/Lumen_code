@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> QP_report_and_write
+!>
+!> @param k
+!> @param qp
+!> @param en
+!> @param QPdb_read_err
+!>
 subroutine QP_report_and_write(k,qp,en,QPdb_read_err)
  !
  use drivers,       ONLY:l_elph_corr,l_elel_corr,l_life,l_cohsex

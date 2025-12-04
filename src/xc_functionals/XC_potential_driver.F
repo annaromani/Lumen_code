@@ -19,6 +19,16 @@
 !! @param[out]      V_xc                exchange correlation potential (if ORDER=1)
 !! @param[out]      F_xc                exchange correlation kernel    (if ORDER=2)
 !
+!> XC_potential_driver
+!>
+!> @param en
+!> @param Xk
+!> @param KIND
+!> @param FUNCTIONAL
+!> @param ORDER
+!> @param EXX_FRACTION
+!> @param EXX_SCREENING
+!>
 subroutine XC_potential_driver(en,Xk,KIND,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
  !
  ! Wrapper for calculation of the XC potential. If available libxc,

@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> Apply_W_field
+!>
+!> @param A_input
+!> @param Wk
+!> @param H_nl_sc
+!>
 subroutine Apply_W_field(A_input,Wk,H_nl_sc)
  !
  use pars,           ONLY:SP,cZERO

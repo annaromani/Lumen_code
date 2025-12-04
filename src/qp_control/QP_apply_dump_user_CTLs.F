@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> QP_apply_dump_user_CTLs
+!>
+!> @param E
+!> @param object
+!>
 subroutine QP_apply_dump_user_CTLs( E, object )
  !
  use pars,          ONLY:schlen
@@ -121,6 +126,9 @@ subroutine QP_apply_dump_user_CTLs( E, object )
  !
  contains
    !
+!> USER_action_active
+!>
+!>
    subroutine USER_action_active()
      n_QP_actions=n_QP_actions+1
      QP_action(n_QP_actions)%active=.TRUE.

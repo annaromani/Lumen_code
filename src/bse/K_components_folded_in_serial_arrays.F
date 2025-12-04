@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM MG IMA
 !
+!> K_components_folded_in_serial_arrays
+!>
+!> @param iq
+!>
 subroutine K_components_folded_in_serial_arrays(iq)
  !
  ! Here I fill the kernel (coupling included) in an entire BIG matrix to be

@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> X_mat_filling
+!>
+!> @param iq_mem
+!> @param X
+!> @param Xw
+!> @param X_MEM_n_freqs
+!> @param X_MEM_n_tot_freqs
+!> @param X_mat
+!>
 subroutine X_mat_filling(iq_mem,X,Xw,X_MEM_n_freqs,X_MEM_n_tot_freqs,X_mat)
  !
  ! PAR => SER for I/O or for cases where I/O is not done

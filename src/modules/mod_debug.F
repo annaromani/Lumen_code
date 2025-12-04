@@ -18,6 +18,10 @@ module debug
  !
  contains
    !
+!> dbg
+!>
+!> @param name
+!>
    subroutine dbg(name)
      !
      character(*), optional :: name

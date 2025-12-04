@@ -1,4 +1,11 @@
 # 3 "numrec_locate.spp"
+!> numrec_locate_sgl
+!>
+!> @param xx
+!> @param n
+!> @param x
+!> @param j
+!>
 subroutine numrec_locate_sgl(xx,n,x,j)
   use numrec_kinds
   implicit none
@@ -21,6 +28,13 @@ subroutine numrec_locate_sgl(xx,n,x,j)
   j=jl
 end subroutine numrec_locate_sgl
 # 3 "numrec_locate.spp"
+!> numrec_locate_dbl
+!>
+!> @param xx
+!> @param n
+!> @param x
+!> @param j
+!>
 subroutine numrec_locate_dbl(xx,n,x,j)
   use numrec_kinds
   implicit none

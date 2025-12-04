@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> MAG_common_build_A
+!>
+!> @param build
+!>
 subroutine MAG_common_build_A(build)
  !
  !
@@ -158,6 +162,9 @@ subroutine MAG_common_build_A(build)
  contains
    !
    ! Allocates objects of mod magnetic
+!> module_alloc
+!>
+!>
    subroutine module_alloc()
      if(MAG_landau) then
        if(Bx/=0. .or. By/=0.) then
@@ -177,6 +184,9 @@ subroutine MAG_common_build_A(build)
      ir_table(:)=.true.
    end subroutine
    !
+!> module_free
+!>
+!>
    subroutine module_free()
      if(MAG_landau) then
        YAMBO_FREE(A_magn_x)

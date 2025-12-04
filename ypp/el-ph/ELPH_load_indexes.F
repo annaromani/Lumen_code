@@ -25,6 +25,14 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
+!> ELPH_load_indexes
+!>
+!> @param k
+!> @param E
+!> @param q
+!> @param qindx_ID
+!> @param qindx_ID_frag
+!>
 subroutine ELPH_load_indexes(k,E,q,qindx_ID,qindx_ID_frag)
  !
  use units,               ONLY:HA2EV

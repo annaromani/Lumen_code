@@ -9,6 +9,12 @@
 ! Adapted to QE by Andrea Ferretti & Layla Martin Samos
 ! Adapted to Y  by Andrea Ferretti & Daniele Varsano
 !
+!> vcut_init
+!>
+!> @param vcut
+!> @param a
+!> @param cutoff
+!>
 subroutine vcut_init(vcut,a,cutoff)
  !
  USE cutoff_ws_m
@@ -242,6 +248,10 @@ function qe_erfc (x)
  return  
 end function qe_erfc
 !
+!> vcut_info
+!>
+!> @param vcut
+!>
 subroutine vcut_info(vcut)
  !
  USE cutoff_ws_m
@@ -290,6 +300,10 @@ subroutine vcut_info(vcut)
  !
 end subroutine vcut_info
 !
+!> vcut_destroy
+!>
+!> @param vcut
+!>
 subroutine vcut_destroy(vcut)
  !
  USE cutoff_ws_m

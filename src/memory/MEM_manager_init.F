@@ -5,6 +5,18 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> MEM_manager_init
+!>
+!> @param what
+!> @param adding
+!> @param Sz
+!> @param i_SHELF
+!> @param i_COMPONENT
+!> @param i_SAVE
+!> @param SHELF
+!> @param TRUNK
+!> @param just_started
+!>
 subroutine MEM_manager_init(what,adding,Sz,i_SHELF,i_COMPONENT,i_SAVE,SHELF,TRUNK,just_started)
  !
  use pars,         ONLY:schlen,IPL

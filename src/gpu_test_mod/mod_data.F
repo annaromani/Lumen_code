@@ -22,6 +22,12 @@ end type
 
 contains
 
+!> data_alloc
+!>
+!> @param var
+!> @param N
+!> @param cpu_only
+!>
   subroutine data_alloc(var,N,cpu_only)
     implicit none
     type(data_t) :: var
@@ -49,6 +55,10 @@ contains
     return
   end subroutine data_alloc
   !
+!> data_free
+!>
+!> @param var
+!>
   subroutine data_free(var)
     implicit none
     type(data_t) :: var

@@ -494,6 +494,13 @@ module parallel_m
  !
  contains
    !
+!> PAR_build_index
+!>
+!> @param PAR_ind
+!> @param N_elements
+!> @param V_ind
+!> @param n_V_ind
+!>
    subroutine PAR_build_index(PAR_ind,N_elements,V_ind,n_V_ind)
      type(PP_indexes), intent(in)   :: PAR_ind
      integer,          intent(in)   :: N_elements
@@ -519,6 +526,12 @@ module parallel_m
      !
    end subroutine
    !
+!> CREATE_the_COMM
+!>
+!> @param WORLD
+!> @param COMM
+!> @param ID
+!>
    subroutine CREATE_the_COMM(WORLD, COMM, ID )
      integer       :: WORLD,ID,i_err
      type(yMPI_comm):: COMM
@@ -573,6 +586,9 @@ module parallel_m
    end function
 #endif
    !
+!> CPU_and_ROLE_strings_save
+!>
+!>
    subroutine CPU_and_ROLE_strings_save()
      implicit none
      !
@@ -581,6 +597,9 @@ module parallel_m
      ! 
    end subroutine CPU_and_ROLE_strings_save
    !
+!> CPU_and_ROLE_strings_restore
+!>
+!>
    subroutine CPU_and_ROLE_strings_restore()
      implicit none
      !
@@ -589,6 +608,9 @@ module parallel_m
      ! 
    end subroutine CPU_and_ROLE_strings_restore
    !
+!> CPU_str_reset
+!>
+!>
    subroutine CPU_str_reset()
      CPU_structure(1)%Long_Description="DIPOLES"
      CPU_structure(1)%Short_Description="DIP"
@@ -616,6 +638,10 @@ module parallel_m
      CPU_structure(12)%Short_Description="SX"
    end subroutine
    !
+!> COMM_reset
+!>
+!> @param COMM
+!>
    subroutine COMM_reset(COMM)
      type(yMPI_comm):: COMM
      COMM%n_CPU      =1
@@ -627,6 +653,10 @@ module parallel_m
    !
 #if !defined _io_lib
    !
+!> PAR_scheme_reset
+!>
+!> @param PARs
+!>
    subroutine PAR_scheme_reset(PARs)
      type(PAR_scheme):: PARs
      call COMM_reset(PARs%COMM_i)
@@ -640,6 +670,11 @@ module parallel_m
      PARs%consecutive= .FALSE.
    end subroutine
    !
+!> COMM_copy
+!>
+!> @param COMM_in
+!> @param COMM_out
+!>
    subroutine COMM_copy(COMM_in,COMM_out)
      type(yMPI_comm):: COMM_in,COMM_out
      COMM_out%n_CPU      =COMM_in%n_CPU
@@ -649,6 +684,11 @@ module parallel_m
      COMM_out%CPU_ID     =COMM_in%CPU_ID
    end subroutine
    !
+!> PAR_INDEX_copy
+!>
+!> @param IND_in
+!> @param IND_out
+!>
    subroutine PAR_INDEX_copy(IND_in,IND_out)
      type(PP_indexes):: IND_in,IND_out
      integer :: dim_
@@ -679,6 +719,10 @@ module parallel_m
      endif
    end subroutine
    !
+!> PP_indexes_reset
+!>
+!> @param IND_out
+!>
    subroutine PP_indexes_reset(IND_out)
      type(PP_indexes)::IND_out
      YAMBO_FREE(IND_out%element_1D)
@@ -690,6 +734,9 @@ module parallel_m
    end subroutine
 #endif
    !
+!> CREATE_hosts_COMM
+!>
+!>
    subroutine CREATE_hosts_COMM( )
 #if defined _MPI
      use LexicalSort,  ONLY:ch_sort
@@ -730,6 +777,13 @@ module parallel_m
 #endif
    end subroutine CREATE_hosts_COMM
    !
+!> par_distribute_set
+!>
+!> @param nsets
+!> @param nsets_this_cpu
+!> @param nset_shift
+!> @param comm
+!>
    subroutine par_distribute_set(nsets, nsets_this_cpu, nset_shift, comm)
      !
      implicit none

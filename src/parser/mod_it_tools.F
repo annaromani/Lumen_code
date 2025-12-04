@@ -18,6 +18,14 @@ module it_tools
  !
  interface
    !
+!> PARSER_force_command_line_value
+!>
+!> @param defs
+!> @param name
+!> @param I1
+!> @param R1
+!> @param CHAR
+!>
    subroutine PARSER_force_command_line_value(defs,name,I1,R1,CHAR)
      use it_m,          ONLY:initdefs
      use pars,          ONLY:SP
@@ -36,6 +44,10 @@ module it_tools
  !
  contains
    !
+!> it_reset
+!>
+!> @param mode
+!>
    subroutine it_reset(mode)
      use stderr,    ONLY:cstr
      use PARSER_lib,ONLY:iparse_init,iparse_end
@@ -100,6 +112,9 @@ module it_tools
      if (.not.infile_editing) check_verbosity=.TRUE.
    end function
    !
+!> infile_dump
+!>
+!>
    subroutine infile_dump()
      use com,  ONLY:inpfile_unit
      character(lchlen) :: ch
@@ -113,6 +128,11 @@ module it_tools
 1    close(inpfile_unit)
    end subroutine
    !
+!> ofiles_append
+!>
+!> @param line
+!> @param defs
+!>
    subroutine ofiles_append(line,defs)
      use com,           ONLY: n_ofs_defined,of_name,write_to_of
      character(*),optional  :: line
@@ -137,6 +157,11 @@ module it_tools
      enddo
    end function
    !
+!> switch_off_runlevel
+!>
+!> @param off_name
+!> @param except
+!>
    subroutine switch_off_runlevel(off_name,except)
      use stderr,    ONLY:STRING_split
      character(*)     :: off_name,except
@@ -177,6 +202,14 @@ module it_tools
    ! initmode 4'parserload': defs% (and associated variables of the mods) 
    !                          are overwritten with the input file values
    !
+!> loadrnlvlflag
+!>
+!> @param what
+!> @param defs
+!> @param name
+!> @param description
+!> @param verb_level
+!>
    subroutine loadrnlvlflag(what,defs,name,description,verb_level)
      use drivers,      ONLY:infile_editing
      use parser_m,     ONLY:parser
@@ -224,6 +257,16 @@ module it_tools
      end select
    end subroutine
    !
+!> loadi1var
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param unit
+!> @param verb_level
+!> @param protect
+!>
    subroutine loadi1var(defs,name,description,defval,unit,verb_level,protect)
      use parser_m,       ONLY:parser
      use drivers,        ONLY:infile_editing
@@ -266,6 +309,15 @@ module it_tools
      !
    end subroutine
    !
+!> loadinvar
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param unit
+!> @param verb_level
+!>
    subroutine loadinvar(defs,name,description,defval,unit,verb_level)
      use parser_m,       ONLY:parser
      character(*)::name,description
@@ -340,6 +392,15 @@ module it_tools
      !
    end subroutine
    !
+!> loadr1var
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param unit
+!> @param verb_level
+!>
    subroutine loadr1var(defs,name,description,defval,unit,verb_level)
      use parser_m,       ONLY:parser
      character(*)::name,description
@@ -374,6 +435,15 @@ module it_tools
      if (initmode<=1.and.present(verb_level)) call initverbosity(name,v_id,'r1',defs,verb_level)
    end subroutine
    !
+!> loadc1var
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param unit
+!> @param verb_level
+!>
    subroutine loadc1var(defs,name,description,defval,unit,verb_level)
      use parser_m,       ONLY:parser
      character(*)::name,description
@@ -409,6 +479,16 @@ module it_tools
      !
    end subroutine
    !
+!> loadrnvar
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param unit
+!> @param verb_level
+!> @param protect
+!>
    subroutine loadrnvar(defs,name,description,defval,unit,verb_level,protect)
      use drivers,       ONLY:infile_editing
      use parser_m,      ONLY:parser
@@ -509,6 +589,16 @@ module it_tools
      endif
    end subroutine
    !
+!> loadchvar
+!>
+!> @param defs
+!> @param name
+!> @param description
+!> @param defval
+!> @param verb_level
+!> @param protect
+!> @param case
+!>
    subroutine loadchvar(defs,name,description,defval,verb_level,protect,case)
      use drivers,        ONLY:infile_editing
      use parser_m,       ONLY:parser

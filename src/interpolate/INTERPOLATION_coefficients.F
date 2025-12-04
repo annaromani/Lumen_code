@@ -9,6 +9,18 @@
 !
 #include<y_memory.h>
 !
+!> INTERPOLATION_coefficients
+!>
+!> @param R1D
+!> @param R2D
+!> @param C1D
+!> @param C2D
+!> @param E
+!> @param k
+!> @param Nk
+!> @param ID
+!> @param ID_obj
+!>
 subroutine INTERPOLATION_coefficients(R1D,R2D,C1D,C2D,E,k,Nk,ID,ID_obj)
  !
  ! Notice that input/output k-points for the interpolation are in iku units

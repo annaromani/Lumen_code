@@ -10,6 +10,13 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_HERMITIAN_diagonalization
+!>
+!> @param M
+!> @param V
+!> @param N
+!> @param E
+!>
 subroutine PARALLEL_HERMITIAN_diagonalization(M, V, N, E)
  !
  ! perform the diagonalization by using scalapack

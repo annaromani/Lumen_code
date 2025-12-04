@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> io_RT_components_TIME_points
+!>
+!> @param ID
+!> @param VAR_SZ
+!> @param load_RESTART_info
+!> @param UNLIMITED_time
+!> @param TYP
+!>
 subroutine io_RT_components_TIME_points(ID,VAR_SZ,load_RESTART_info,UNLIMITED_time,TYP)
  !
  use pars,           ONLY:IP,SP,schlen,IP_YIO

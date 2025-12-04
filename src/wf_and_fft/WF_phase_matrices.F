@@ -16,6 +16,13 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!> WF_phase_matrices
+!>
+!> @param En
+!> @param Xk
+!> @param blim
+!> @param klim
+!>
 subroutine WF_phase_matrices(En,Xk,blim,klim)
  !    
  use pars,              ONLY:SP,cZERO

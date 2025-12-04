@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> electrons_spin_factors
+!>
+!> @param kpts
+!> @param bands
+!> @param spin_factors
+!>
 subroutine electrons_spin_factors(kpts,bands,spin_factors)
  !
  use pars,           ONLY:SP

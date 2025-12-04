@@ -11,6 +11,9 @@
 #include<y_memory.h>
 !
 !
+!> fft_free
+!>
+!>
 subroutine fft_free()
  !
  use iso_c_binding

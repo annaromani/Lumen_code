@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> Pseudo_KB_gauge_factor
+!>
+!> @param gauge_factor
+!>
 subroutine Pseudo_KB_gauge_factor(gauge_factor)
  !
  use pars,          ONLY:SP

@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> QP_apply_QP
+!>
+!> @param i_ACTION
+!> @param bands
+!> @param en
+!> @param k
+!> @param qp
+!>
 subroutine QP_apply_QP(i_ACTION,bands,en,k,qp)
  !
  use pars,          ONLY:rZERO

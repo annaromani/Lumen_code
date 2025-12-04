@@ -126,6 +126,17 @@ module QP_CTL_m
  !
  interface
    !
+!> QP_apply
+!>
+!> @param bands
+!> @param en
+!> @param k
+!> @param object
+!> @param msg_fmt
+!> @param qp_impose
+!> @param QP_ctl_impose
+!> @param main_section
+!>
    subroutine QP_apply(bands,en,k,object,msg_fmt,qp_impose,QP_ctl_impose,main_section)
      !
      use electrons,     ONLY:levels,n_sp_pol
@@ -160,6 +171,15 @@ module QP_CTL_m
      if (QP_ctl_user(ID,i_field)%Z/=(1._SP,0._SP)  )  QP_CTL_is_active=.TRUE.
    end function
    !
+!> QP_CTL_fill
+!>
+!> @param iA
+!> @param i_spin
+!> @param ID
+!> @param i_field
+!> @param CBm
+!> @param VBM
+!>
    subroutine QP_CTL_fill(iA,i_spin,ID,i_field,CBm,VBM)
      use pars, ONLY:rZERO,rONE
      integer  :: iA,i_spin,ID,i_field
@@ -200,6 +220,11 @@ module QP_CTL_m
      enddo
    end subroutine
    !
+!> QP_ctl_copy
+!>
+!> @param ctl1
+!> @param ctl2
+!>
    subroutine QP_ctl_copy(ctl1,ctl2)
      type(QP_ctl_t)::ctl1,ctl2
      ctl2%interp_neigh=ctl1%interp_neigh
@@ -218,6 +243,10 @@ module QP_CTL_m
      ctl2%fit_scissor=ctl1%fit_scissor  
    end subroutine
    !
+!> QP_ctl_reset
+!>
+!> @param QP_ctl
+!>
    subroutine QP_ctl_reset(QP_ctl)
      type(QP_ctl_t)::QP_ctl
      QP_ctl%interp_neigh=1

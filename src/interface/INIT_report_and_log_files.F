@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_report_and_log_files
+!>
+!>
 subroutine INIT_report_and_log_files()
  !
  use pars,           ONLY:lchlen,repfile_index,logfile_index

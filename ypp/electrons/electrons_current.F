@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> electrons_current
+!>
+!> @param Xk
+!> @param Xen
+!>
 subroutine electrons_current(Xk,Xen)
  !
  use pars,           ONLY:SP,lchlen

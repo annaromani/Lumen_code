@@ -101,6 +101,10 @@ module SC
  !
  contains
    !
+!> SC_alloc
+!>
+!> @param E
+!>
    subroutine SC_alloc(E)
      use drivers,        ONLY:l_sc_srpa,l_sc_sex,l_sc_coh
      use electrons,      ONLY:n_sp_pol,levels
@@ -123,6 +127,9 @@ module SC
      !
    end subroutine
    !
+!> SC_free
+!>
+!>
    subroutine SC_free()
      use QP_m,           ONLY:QP_Sc
      use hamiltonian,    ONLY:H_free

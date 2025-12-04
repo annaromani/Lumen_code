@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> TDDFT_do_X_W_typs
+!>
+!> @param iq
+!> @param X
+!> @param wv
+!>
 subroutine TDDFT_do_X_W_typs(iq,X,wv)
  !
  ! Prepare X and wv types for a TDDFT calculation

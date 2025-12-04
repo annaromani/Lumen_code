@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+!> RT_apply_Texp
+!>
+!> @param H1
+!> @param Gret
+!> @param H2
+!> @param deltaT
+!> @param eta
+!> @param n_order
+!>
 subroutine RT_apply_Texp(H1,Gret,H2,deltaT,eta,n_order)
  !
  !

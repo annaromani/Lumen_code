@@ -10,6 +10,11 @@
 #include<dev_defs.h>
 !
 !
+!> scatter_ModScr
+!>
+!> @param isc
+!> @param mu
+!>
 subroutine scatter_ModScr(isc,mu)
  !
  ! multiply scatterGamp by exp((-|q+G|^2)/(4\mu^2))
@@ -76,6 +81,12 @@ subroutine scatter_ModScr(isc,mu)
  !
  contains
    !
+!> set_qpg_true
+!>
+!> @param iq
+!> @param ig1
+!> @param bare_qpg_true
+!>
    subroutine set_qpg_true(iq,ig1,bare_qpg_true)
      use vec_operate,   ONLY:iku_v_norm
      use R_lattice,     ONLY:q_norm,g_vec,q_pt

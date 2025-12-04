@@ -10,6 +10,13 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!> QP_interpolate_W
+!>
+!> @param X
+!> @param Xw
+!> @param q
+!> @param mode
+!>
 subroutine QP_interpolate_W(X,Xw,q,mode)
  !
  use pars,          ONLY:SP,pi,zero_dfl,schlen,DP,rZERO
@@ -393,6 +400,14 @@ subroutine QP_interpolate_W(X,Xw,q,mode)
  !
 end subroutine
 !
+!> find_q_nns
+!>
+!> @param q
+!> @param q_grid_b_iku
+!> @param idx_q
+!> @param idx_is
+!> @param idx_G
+!>
 subroutine find_q_nns(q,q_grid_b_iku,idx_q,idx_is,idx_G)
  use pars,          ONLY:SP
  use R_lattice,     ONLY:bz_samp,RIM_W_ng,g_vec,ng_vec,rl_sop

@@ -44,6 +44,13 @@ module netcdf_data
     call netcdf_check(ncid,netcdf_error, dimid)
   end function
 
+!> netcdf_check
+!>
+!> @param ncid
+!> @param netcdf_error
+!> @param varid
+!> @param var_name
+!>
   subroutine netcdf_check(ncid,netcdf_error,varid,var_name)
     use netcdf
     use pars, only:lchlen

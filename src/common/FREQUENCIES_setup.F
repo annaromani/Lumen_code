@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> FREQUENCIES_setup
+!>
+!> @param W
+!>
 subroutine FREQUENCIES_setup(W)
  !
  ! %er %dr %n_freqs -> %p

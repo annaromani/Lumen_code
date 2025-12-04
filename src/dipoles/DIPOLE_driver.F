@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> DIPOLE_driver
+!>
+!> @param Xen
+!> @param Xk
+!> @param Xq
+!> @param Dip
+!>
 subroutine DIPOLE_driver(Xen,Xk,Xq,Dip)
  !
  ! Presently there exist two gauges: (i ) the length   which uses <r>            
@@ -198,6 +205,9 @@ subroutine DIPOLE_driver(Xen,Xk,Xq,Dip)
  !
  contains
    !
+!> DIPOLES_ppredux_and_symmetrize
+!>
+!>
    subroutine DIPOLES_ppredux_and_symmetrize()
     !
     use parallel_m,  ONLY:PAR_DIPk_ibz_index,PAR_COM_DIPk_ibz_A2A
@@ -288,6 +298,9 @@ subroutine DIPOLE_driver(Xen,Xk,Xq,Dip)
     !
    end subroutine DIPOLES_ppredux_and_symmetrize
    !
+!> DIPOLES_ppredux_and_symmetrize_orbt
+!>
+!>
    subroutine DIPOLES_ppredux_and_symmetrize_orbt()
     !
     use parallel_m,  ONLY:PAR_DIPk_ibz_index,PAR_COM_DIPk_ibz_A2A

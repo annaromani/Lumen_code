@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> electrons_magnetization
+!>
+!> @param Xk
+!> @param Xen
+!>
 subroutine electrons_magnetization(Xk,Xen)
  !
  use pars,           ONLY:SP,lchlen

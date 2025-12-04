@@ -156,6 +156,9 @@ integer function ELPH_databases_IO_elemental(what,IDB)
  !
  contains
    !
+!> local_return
+!>
+!>
    subroutine local_return()
      call io_control(ACTION=RD_CL,ID=ID)
      call io_disconnect(ID,FORCE=.TRUE.)

@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> K_compress
+!>
+!> @param iq
+!> @param ID_compr
+!>
 subroutine K_compress(iq,ID_compr)
  !
  use pars,         ONLY:cZERO
@@ -76,6 +81,12 @@ subroutine K_compress(iq,ID_compr)
 end subroutine K_compress
 !
 !
+!> K_compressed_IO
+!>
+!> @param iq
+!> @param io_BS_err
+!> @param mode
+!>
 subroutine K_compressed_IO(iq,io_BS_err,mode)
  !
  use pars,         ONLY:IPL

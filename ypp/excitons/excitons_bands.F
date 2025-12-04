@@ -9,6 +9,14 @@
 !
 #include<y_memory.h> 
 !
+!> excitons_bands
+!>
+!> @param k
+!> @param Xk
+!> @param en
+!> @param Xen
+!> @param q
+!>
 subroutine excitons_bands(k,Xk,en,Xen,q)
  !
  use pars,          ONLY:SP,schlen,rZERO
@@ -179,6 +187,9 @@ subroutine excitons_bands(k,Xk,en,Xen,q)
  !
  contains 
    !
+!> print_DOS
+!>
+!>
    subroutine print_DOS()
      implicit none
      ! 
@@ -198,6 +209,9 @@ subroutine excitons_bands(k,Xk,en,Xen,q)
      !
    end subroutine print_DOS
    ! 
+!> print_interpolated_BANDS
+!>
+!>
    subroutine print_interpolated_BANDS()
      implicit none
      !
@@ -246,6 +260,9 @@ subroutine excitons_bands(k,Xk,en,Xen,q)
      !
    end subroutine print_interpolated_BANDS
    ! 
+!> print_built_in_BANDS
+!>
+!>
    subroutine print_built_in_BANDS()
      implicit none
      !
@@ -313,6 +330,9 @@ subroutine excitons_bands(k,Xk,en,Xen,q)
      !
    end subroutine print_built_in_BANDS
    !
+!> print_INTERP_GRID
+!>
+!>
    subroutine print_INTERP_GRID()
      implicit none
      !

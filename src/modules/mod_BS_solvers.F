@@ -189,6 +189,15 @@ module BS_solvers
      logical, optional            :: write_ev
    end function
 
+!> write_bs_ev_par
+!>
+!> @param iq
+!> @param i_BS_mat
+!> @param neigs_this_cpu
+!> @param neig_shift
+!> @param BS_VR
+!> @param BS_VL
+!>
    subroutine write_bs_ev_par(iq, i_BS_mat, neigs_this_cpu, neig_shift, BS_VR, BS_VL)
      use pars,           ONLY:SP
      implicit none
@@ -229,6 +238,10 @@ module BS_solvers
    !
    ! Start BSS_resize_and_save interface
    !
+!> resizeR1
+!>
+!> @param VAR_R1
+!>
    subroutine resizeR1(VAR_R1)
      !
      real(SP), allocatable, intent(inout) :: VAR_R1(:)
@@ -241,6 +254,10 @@ module BS_solvers
      !
    end subroutine resizeR1
    !
+!> resizeR1p
+!>
+!> @param VAR_R1
+!>
    subroutine resizeR1p(VAR_R1)
      !
      real(SP), pointer, intent(inout) :: VAR_R1(:)
@@ -253,6 +270,10 @@ module BS_solvers
      !
    end subroutine resizeR1p
    !
+!> resizeR2p
+!>
+!> @param VAR_R2
+!>
    subroutine resizeR2p(VAR_R2)
      !
      real(SP), pointer, intent(inout) :: VAR_R2(:,:)
@@ -268,6 +289,10 @@ module BS_solvers
      !
    end subroutine resizeR2p
    !
+!> resizeC1
+!>
+!> @param VAR_C1
+!>
    subroutine resizeC1(VAR_C1)
      !
      complex(SP), allocatable, intent(inout) :: VAR_C1(:)
@@ -280,6 +305,10 @@ module BS_solvers
      !
    end subroutine resizeC1
    !
+!> resizeC1p
+!>
+!> @param VAR_C1
+!>
    subroutine resizeC1p(VAR_C1)
      !
      complex(SP), pointer, intent(inout) :: VAR_C1(:)
@@ -292,6 +321,10 @@ module BS_solvers
      !
    end subroutine resizeC1p
    !
+!> resizeC2
+!>
+!> @param VAR_C2
+!>
    subroutine resizeC2(VAR_C2)
      !
      complex(SP), allocatable, intent(inout) :: VAR_C2(:,:)
@@ -307,6 +340,10 @@ module BS_solvers
      !
    end subroutine resizeC2
    !
+!> resizeC2p
+!>
+!> @param VAR_C2
+!>
    subroutine resizeC2p(VAR_C2)
      !
      complex(SP), pointer, intent(inout) :: VAR_C2(:,:)
@@ -322,6 +359,11 @@ module BS_solvers
      !
    end subroutine resizeC2p
    !
+!> resizeC22p
+!>
+!> @param VAR_C22
+!> @param both
+!>
    subroutine resizeC22p(VAR_C22,both)
      !
      logical, intent(in)                 :: both
@@ -340,18 +382,30 @@ module BS_solvers
    !
    ! Start BSS_resize_only interface
    !
+!> resize_onlyR1
+!>
+!> @param VAR_R1
+!>
    subroutine resize_onlyR1(VAR_R1)
      real(SP), allocatable, intent(inout) :: VAR_R1(:)
      deallocate(VAR_R1)
      allocate(VAR_R1(BSS_n_eig))
    end subroutine resize_onlyR1
    !
+!> resize_onlyR1p
+!>
+!> @param VAR_R1
+!>
    subroutine resize_onlyR1p(VAR_R1)
      real(SP), pointer, intent(inout) :: VAR_R1(:)
      deallocate(VAR_R1); nullify(VAR_R1)
      allocate(VAR_R1(BSS_n_eig))
    end subroutine resize_onlyR1p
    !
+!> resize_onlyR2p
+!>
+!> @param VAR_R2
+!>
    subroutine resize_onlyR2p(VAR_R2)
      real(SP), pointer, intent(inout) :: VAR_R2(:,:)
      integer :: dim1
@@ -360,18 +414,30 @@ module BS_solvers
      allocate(VAR_R2(dim1,BSS_n_eig))
    end subroutine resize_onlyR2p
    !
+!> resize_onlyC1
+!>
+!> @param VAR_C1
+!>
    subroutine resize_onlyC1(VAR_C1)
      complex(SP), allocatable, intent(inout) :: VAR_C1(:)
      deallocate(VAR_C1)
      allocate(VAR_C1(BSS_n_eig))
    end subroutine resize_onlyC1
    !
+!> resize_onlyC1p
+!>
+!> @param VAR_C1
+!>
    subroutine resize_onlyC1p(VAR_C1)
      complex(SP), pointer, intent(inout) :: VAR_C1(:)
      deallocate(VAR_C1); nullify(VAR_C1)
      allocate(VAR_C1(BSS_n_eig))
    end subroutine resize_onlyC1p
    !
+!> resize_onlyC2
+!>
+!> @param VAR_C2
+!>
    subroutine resize_onlyC2(VAR_C2)
      complex(SP), allocatable, intent(inout) :: VAR_C2(:,:)
      integer :: dim1
@@ -380,6 +446,10 @@ module BS_solvers
      allocate(VAR_C2(BSS_n_eig,dim1))
    end subroutine resize_onlyC2
    !
+!> resize_onlyC2p
+!>
+!> @param VAR_C2
+!>
    subroutine resize_onlyC2p(VAR_C2)
      complex(SP), pointer, intent(inout) :: VAR_C2(:,:)
      integer :: dim1
@@ -388,6 +458,11 @@ module BS_solvers
      allocate(VAR_C2(BSS_n_eig,dim1))
    end subroutine resize_onlyC2p
    !
+!> resize_onlyC22p
+!>
+!> @param VAR_C22
+!> @param both
+!>
    subroutine resize_onlyC22p(VAR_C22,both)
      logical, intent(in)                 :: both
      complex(SP), pointer, intent(inout) :: VAR_C22(:,:)
@@ -397,6 +472,9 @@ module BS_solvers
    !
    ! End BSS_resize_only interface
    !
+!> BSS_alloc
+!>
+!>
    subroutine BSS_alloc( )
      use pars,      ONLY:IP,cZERO,rZERO
      use electrons, ONLY:n_sp_pol
@@ -437,6 +515,9 @@ module BS_solvers
      endif
    end subroutine
    !
+!> BSS_free
+!>
+!>
    subroutine BSS_free()
      YAMBO_FREE(BSS_eh_table)
      YAMBO_FREE(BSS_dipoles_opt)
@@ -448,6 +529,11 @@ module BS_solvers
      YAMBO_FREE(BSS_eh_E_SOC_corr)
    end subroutine
    !
+!> BS_HAYVEC_alloc
+!>
+!> @param V
+!> @param dom_k
+!>
    subroutine BS_HAYVEC_alloc(V,dom_k)
      use parallel_m,    ONLY:PAR_IND_T_Haydock
      type(Haydock_vector) :: V(BS_nT_grps)
@@ -461,6 +547,10 @@ module BS_solvers
      enddo
    end subroutine BS_HAYVEC_alloc
    !
+!> BS_HAYVEC_free
+!>
+!> @param V
+!>
    subroutine BS_HAYVEC_free(V)
      use stderr,     ONLY:intc 
      type(Haydock_vector) :: V(:)

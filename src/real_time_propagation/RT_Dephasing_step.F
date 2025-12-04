@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> RT_Dephasing_step
+!>
+!> @param dG_out
+!> @param dG_in
+!> @param ik
+!> @param i_sp
+!> @param deltaT
+!>
 subroutine RT_Dephasing_step(dG_out,dG_in,ik,i_sp,deltaT)
  !
  use pars,           ONLY:SP

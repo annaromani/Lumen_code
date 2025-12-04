@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> RT_carriers_object
+!>
+!> @param RT
+!> @param E
+!> @param K
+!> @param DB_id
+!> @param WHAT
+!>
 subroutine RT_carriers_object(RT,E,K,DB_id,WHAT)
  !
  ! This subroutine contains the RT objects, included the RT table
@@ -227,6 +235,9 @@ subroutine RT_carriers_object(RT,E,K,DB_id,WHAT)
  !
  contains
    !
+!> build_RT_table
+!>
+!>
    subroutine build_RT_table()
      !
      i_RT=0
@@ -247,6 +258,12 @@ subroutine RT_carriers_object(RT,E,K,DB_id,WHAT)
      !
    end subroutine
    !
+!> LOCAL_GAMMA_IO
+!>
+!> @param what
+!> @param LIFE
+!> @param N
+!>
    subroutine LOCAL_GAMMA_IO(what,LIFE,N)
      type(RT_obj_lifetime), target:: LIFE
      character(*)                 :: what

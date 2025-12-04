@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): MG CA
 !
+!> Build_overlaps_det_NEQ
+!>
+!> @param en
+!> @param Xk
+!> @param i_sp
+!> @param ikbz
+!> @param V_bands
+!> @param Sm1_plus
+!> @param Sm1_minus
+!> @param S_det
+!>
 subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_det)
  !
  ! Build overlaps determinants between valence bands

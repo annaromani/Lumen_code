@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> COLLISIONS_alloc_and_free
+!>
+!> @param what
+!> @param elements
+!> @param actions
+!> @param I
+!>
 subroutine COLLISIONS_alloc_and_free(what,elements,actions,I)
  !
  use pars,           ONLY:cZERO,rZERO,DP,SP
@@ -177,6 +184,11 @@ subroutine COLLISIONS_alloc_and_free(what,elements,actions,I)
  !
  contains
    !
+!> local_alloc_and_free
+!>
+!> @param COLL_element
+!> @param COLL_grp
+!>
    subroutine local_alloc_and_free(COLL_element,COLL_grp)
      type(COLLISIONS_group)   :: COLL_grp
      type(COLLISIONS_element) :: COLL_element(COLL_grp%N)

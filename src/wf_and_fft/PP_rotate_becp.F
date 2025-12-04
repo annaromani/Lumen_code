@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> PP_rotate_becp
+!>
+!> @param isc
+!> @param ibec
+!> @param obec
+!>
 subroutine PP_rotate_becp(isc,ibec,obec)
  !
  ! isc(1), ibnd

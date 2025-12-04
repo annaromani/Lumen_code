@@ -33,6 +33,13 @@
 !=====================================================================
 !
 !
+!> fft_3d_cuda
+!>
+!> @param c_d
+!> @param n
+!> @param fft_sign
+!> @param cufft_plan
+!>
 subroutine fft_3d_cuda(c_d,n,fft_sign,cufft_plan)
  !
  use pars,          ONLY:DP

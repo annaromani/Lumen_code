@@ -73,6 +73,12 @@ module y_memory
  !
  interface
    !
+!> MEM_global_mesg
+!>
+!> @param what
+!> @param xkind
+!> @param HOST_SIZE
+!>
    subroutine MEM_global_mesg(what,xkind,HOST_SIZE)
     use pars,          ONLY:IPL
     character(*), intent(in) :: what
@@ -120,6 +126,9 @@ module y_memory
  !
  contains
    !
+!> GET_user_MEM_limit
+!>
+!>
    subroutine GET_user_MEM_limit( )
      use stderr,   ONLY:intc
      integer           :: i_pos(2)
@@ -140,6 +149,11 @@ module y_memory
      USER_MEM_limit_string=trim(intc(USER_MEM_limit))//USER_MEM_unit
    end subroutine
    !
+!> MEM_element_init
+!>
+!> @param MEM_element_to_init
+!> @param size_
+!>
    subroutine MEM_element_init(MEM_element_to_init,size_)
      integer,           intent(in)  :: size_
      type(MEM_element), intent(out) :: MEM_element_to_init(size_)
@@ -180,6 +194,11 @@ module y_memory
      mem_string=trim(mem_string)//trim(where_str)
    end function
    !
+!> MEM_element_copy
+!>
+!> @param M1
+!> @param M2
+!>
    subroutine MEM_element_copy(M1,M2)
      type(MEM_element) :: M1,M2
      M2%shelf      = M1%shelf
@@ -193,56 +212,111 @@ module y_memory
      M2%composed   = M1%composed
    end subroutine
    !
+!> MEM_i1
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i1(name,i)
      character(*)::name
      integer     ::i(:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1)),HOST_)
    end subroutine
+!> MEM_lp1
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_lp1(name,i)
      character(*)::name
      integer(LP) ::i(:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1)),HOST_)
    end subroutine
+!> MEM_ch1
+!>
+!> @param name
+!> @param ch
+!>
    subroutine MEM_ch1(name,ch)
      character(*)::name
      character   ::ch(:)
      call MEM_manager_alloc(name,size(ch,KIND=IPL),kind(ch(1)),HOST_)
    end subroutine
+!> MEM_i2
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i2(name,i)
      character(*)::name
      integer     ::i(:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1)),HOST_)
    end subroutine
+!> MEM_i3
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i3(name,i)
      character(*)::name
      integer     ::i(:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1)),HOST_)
    end subroutine
+!> MEM_i4
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i4(name,i)
      character(*)::name
      integer     ::i(:,:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_lp3
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_lp3(name,i)
      character(*)::name
      integer(LP) ::i(:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1)),HOST_)
    end subroutine
+!> MEM_ch3
+!>
+!> @param name
+!> @param ch
+!>
    subroutine MEM_ch3(name,ch)
      character(*)::name
      character   ::ch(:,:,:)
      call MEM_manager_alloc(name,size(ch,KIND=IPL),kind(ch(1,1,1)),HOST_)
    end subroutine
+!> MEM_i5
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i5(name,i)
      character(*)::name
      integer     ::i(:,:,:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1,1,1)),HOST_)
    end subroutine
+!> MEM_i6
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i6(name,i)
      character(*)::name
      integer     ::i(:,:,:,:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1,1,1,1)),HOST_)
    end subroutine
+!> MEM_i7
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i7(name,i)
      character(*)::name
      integer     ::i(:,:,:,:,:,:,:)
@@ -250,26 +324,51 @@ module y_memory
    end subroutine
    !
    ! GPU routines
+!> MEM_i1_d
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i1_d(name,i)
      character(*)::name
      integer DEV_ATTR ::i(:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1)),DEV_)
    end subroutine
+!> MEM_i2_d
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i2_d(name,i)
      character(*)::name
      integer DEV_ATTR ::i(:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1)),DEV_)
    end subroutine
+!> MEM_i3_d
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i3_d(name,i)
      character(*)::name
      integer DEV_ATTR ::i(:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1)),DEV_)
    end subroutine
+!> MEM_i4_d
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i4_d(name,i)
      character(*)::name
      integer DEV_ATTR ::i(:,:,:,:)
      call MEM_manager_alloc(name,size(i,KIND=IPL),kind(i(1,1,1,1)),DEV_)
    end subroutine
+!> MEM_i5_d
+!>
+!> @param name
+!> @param i
+!>
    subroutine MEM_i5_d(name,i)
      character(*)::name
      integer DEV_ATTR ::i(:,:,:,:,:)
@@ -277,52 +376,102 @@ module y_memory
    end subroutine
    ! end of GPU subroutines
    !
+!> MEM_r1
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r1(name,r)
      character(*)::name
      real(SP)    ::r(:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r),HOST_)
    end subroutine
+!> MEM_r2
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r2(name,r)
      character(*)::name
      real(SP)    ::r(:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1)),HOST_)
    end subroutine
+!> MEM_r3
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r3(name,r)
      character(*)::name
      real(SP)    ::r(:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1)),HOST_)
    end subroutine
+!> MEM_r4
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r4(name,r)
      character(*)::name
      real(SP)    ::r(:,:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_r5
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r5(name,r)
      character(*)::name
      real(SP)    ::r(:,:,:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1,1,1)),HOST_)
    end subroutine
 #ifndef _DOUBLE
+!> MEM_rd1
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_rd1(name,r)
      character(*)::name
      real(DP)    ::r(:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r),HOST_)
    end subroutine
+!> MEM_rd2
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_rd2(name,r)
      character(*)::name
      real(DP)    ::r(:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1)),HOST_)
    end subroutine
+!> MEM_rd3
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_rd3(name,r)
      character(*)::name
      real(DP)    ::r(:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1)),HOST_)
    end subroutine
+!> MEM_rd4
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_rd4(name,r)
      character(*)::name
      real(DP)    ::r(:,:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_rd5
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_rd5(name,r)
      character(*)::name
      real(DP)    ::r(:,:,:,:,:)
@@ -331,26 +480,51 @@ module y_memory
 #endif
    !
    ! more GPU subroutines
+!> MEM_r1_d
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r1_d(name,r)
      character(*)::name
      real(SP) DEV_ATTR ::r(:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r),DEV_)
    end subroutine
+!> MEM_r2_d
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r2_d(name,r)
      character(*)::name
      real(SP) DEV_ATTR ::r(:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1)),DEV_)
    end subroutine
+!> MEM_r3_d
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r3_d(name,r)
      character(*)::name
      real(SP) DEV_ATTR ::r(:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1)),DEV_)
    end subroutine
+!> MEM_r4_d
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r4_d(name,r)
      character(*)::name
      real(SP) DEV_ATTR ::r(:,:,:,:)
      call MEM_manager_alloc(name,size(r,KIND=IPL),kind(r(1,1,1,1)),DEV_)
    end subroutine
+!> MEM_r5_d
+!>
+!> @param name
+!> @param r
+!>
    subroutine MEM_r5_d(name,r)
      character(*)::name
      real(SP) DEV_ATTR ::r(:,:,:,:,:)
@@ -358,16 +532,31 @@ module y_memory
    end subroutine
    ! end of GPU subroutines
    !
+!> MEM_c1
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c1(name,c)
      character(*)::name
      complex(SP) ::c(:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1)),HOST_)
    end subroutine
+!> MEM_c2
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c2(name,c)
      character(*)::name
      complex(SP) ::c(:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1)),HOST_)
    end subroutine
+!> MEM_c3
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c3(name,c)
      character(*)::name
      complex(SP) ::c(:,:,:)
@@ -375,22 +564,42 @@ module y_memory
      Sz = size(c,1,KIND=IPL)*size(c,2,KIND=IPL)*size(c,3,KIND=IPL)
      call MEM_manager_alloc(name,Sz,2*kind(c(1,1,1)),HOST_)
    end subroutine
+!> MEM_c4
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c4(name,c)
      character(*)::name
      complex(SP) ::c(:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_c5
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c5(name,c)
      character(*)::name
      complex(SP) ::c(:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1)),HOST_)
    end subroutine
+!> MEM_c6
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c6(name,c)
      character(*)::name
      complex(SP) ::c(:,:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1,1)),HOST_)
    end subroutine
 #ifdef _DOUBLE
+!> MEM_c1_s
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c1_s(name,c)
      character(*)::name
      complex(SP6) ::c(:)
@@ -398,31 +607,61 @@ module y_memory
    end subroutine
 #endif
 #ifndef _DOUBLE
+!> MEM_cd1
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd1(name,c)
      character(*)::name
      complex(DP) ::c(:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1)),HOST_)
    end subroutine
+!> MEM_cd2
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd2(name,c)
      character(*)::name
      complex(DP) ::c(:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1)),HOST_)
    end subroutine
+!> MEM_cd3
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd3(name,c)
      character(*)::name
      complex(DP) ::c(:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1)),HOST_)
    end subroutine
+!> MEM_cd4
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd4(name,c)
      character(*)::name
      complex(DP) ::c(:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_cd5
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd5(name,c)
      character(*)::name
      complex(DP) ::c(:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1)),HOST_)
    end subroutine
+!> MEM_cd6
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd6(name,c)
      character(*)::name
      complex(DP) ::c(:,:,:,:,:,:)
@@ -431,31 +670,61 @@ module y_memory
 #endif
    !
    ! GPU subroutines
+!> MEM_c1_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c1_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1)),DEV_)
    end subroutine
+!> MEM_c2_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c2_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1)),DEV_)
    end subroutine
+!> MEM_c3_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c3_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1)),DEV_)
    end subroutine
+!> MEM_c4_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c4_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1)),DEV_)
    end subroutine
+!> MEM_c5_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c5_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1)),DEV_)
    end subroutine
+!> MEM_c6_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_c6_d(name,c)
      character(*)::name
      complex(SP) DEV_ATTR ::c(:,:,:,:,:,:)
@@ -463,62 +732,122 @@ module y_memory
    end subroutine
 
 #ifndef _DOUBLE
+!> MEM_cd1_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd1_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1)),DEV_)
    end subroutine
+!> MEM_cd2_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd2_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1)),DEV_)
    end subroutine
+!> MEM_cd3_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd3_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1)),DEV_)
    end subroutine
+!> MEM_cd4_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd4_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1)),DEV_)
    end subroutine
+!> MEM_cd5_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd5_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1)),DEV_)
    end subroutine
+!> MEM_cd6_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_cd6_d(name,c)
      character(*)::name
      complex(DP) DEV_ATTR ::c(:,:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1,1)),DEV_)
    end subroutine
 
+!> MEM_rd1_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd1_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),kind(c(1)),DEV_)
    end subroutine
+!> MEM_rd2_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd2_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),kind(c(1,1)),DEV_)
    end subroutine
+!> MEM_rd3_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd3_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),kind(c(1,1,1)),DEV_)
    end subroutine
+!> MEM_rd4_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd4_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),kind(c(1,1,1,1)),DEV_)
    end subroutine
+!> MEM_rd5_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd5_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),kind(c(1,1,1,1,1)),DEV_)
    end subroutine
+!> MEM_rd6_d
+!>
+!> @param name
+!> @param c
+!>
    subroutine MEM_rd6_d(name,c)
      character(*)::name
      real(DP) DEV_ATTR ::c(:,:,:,:,:,:)
@@ -528,31 +857,61 @@ module y_memory
 #endif
    ! end of GPU subroutines
    !
+!> MEM_l1
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l1(name,l)
      character(*)::name
      logical     ::l(:)
      call MEM_manager_alloc(name,size(l,KIND=IPL),kind(l(1)),HOST_)
    end subroutine
+!> MEM_l2
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l2(name,l)
      character(*)::name
      logical     ::l(:,:)
      call MEM_manager_alloc(name,size(l,KIND=IPL),kind(l(1,1)),HOST_)
    end subroutine
+!> MEM_l3
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l3(name,l)
      character(*)::name
      logical     ::l(:,:,:)
      call MEM_manager_alloc(name,size(l,KIND=IPL),kind(l(1,1,1)),HOST_)
    end subroutine
+!> MEM_l4
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l4(name,l)
      character(*)::name
      logical     ::l(:,:,:,:)
      call MEM_manager_alloc(name,size(l,KIND=IPL),kind(l(1,1,1,1)),HOST_)
    end subroutine
+!> MEM_l5
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l5(name,l)
      character(*)::name
      logical     ::l(:,:,:,:,:)
      call MEM_manager_alloc(name,size(l,KIND=IPL),kind(l(1,1,1,1,1)),HOST_)
    end subroutine
+!> MEM_l6
+!>
+!> @param name
+!> @param l
+!>
    subroutine MEM_l6(name,l)
      character(*)::name
      logical     ::l(:,:,:,:,:,:)

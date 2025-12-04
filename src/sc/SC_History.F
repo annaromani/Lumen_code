@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> SC_History
+!>
+!> @param it
+!> @param E
+!>
 subroutine SC_History(it,E)
  !
  use pars,           ONLY:schlen,SP

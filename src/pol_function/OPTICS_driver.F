@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> OPTICS_driver
+!>
+!> @param Xen
+!> @param Xk
+!> @param q
+!> @param wv
+!> @param X
+!> @param Dip
+!>
 subroutine OPTICS_driver(Xen,Xk,q,wv,X,Dip)
  ! 
  ! Optics driver

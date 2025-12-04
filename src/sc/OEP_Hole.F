@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
+!> OEP_Hole
+!>
+!> @param E
+!> @param k
+!> @param Vslt
+!> @param U_x
+!>
 subroutine OEP_Hole(E,k,Vslt,U_x)
  !
  !  Vhole(Slater) part of the exact exchange/static RPA potential 

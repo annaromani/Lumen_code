@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> Build_V_xc_mat
+!>
+!> @param V_xc
+!> @param V_xc_mat
+!>
 subroutine Build_V_xc_mat(V_xc,V_xc_mat)
  !
  use pars,           ONLY:SP,cZERO,cI,rZERO,tiny_dfl

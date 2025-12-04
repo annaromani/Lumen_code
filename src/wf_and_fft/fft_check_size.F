@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> fft_check_size
+!>
+!> @param iGo_max
+!> @param NG_C
+!> @param NG_HF
+!> @param mode
+!>
 subroutine fft_check_size(iGo_max,NG_C,NG_HF,mode)
  !
  use pars,              ONLY:SP

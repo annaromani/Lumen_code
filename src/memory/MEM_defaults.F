@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> MEM_defaults
+!>
+!>
 subroutine MEM_defaults( )
  !
  implicit none

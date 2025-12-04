@@ -13,6 +13,12 @@
 #include <slepc/finclude/slepcsys.h>
 #include <slepc/finclude/slepceps.h>
 !
+!> K_stored_in_a_slepc_matrix
+!>
+!> @param i_BS_mat
+!> @param iq
+!> @param slepc_mat
+!>
 subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  !
  ! Here I fill the kernel in a slepc matrix

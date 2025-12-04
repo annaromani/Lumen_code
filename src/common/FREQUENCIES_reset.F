@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> FREQUENCIES_reset
+!>
+!> @param Xw
+!> @param what
+!>
 subroutine FREQUENCIES_reset(Xw,what)
  !
  ! Input

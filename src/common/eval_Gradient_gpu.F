@@ -10,6 +10,13 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!> eval_Gradient
+!>
+!> @param f
+!> @param f_gradient
+!> @param spinor_size
+!> @param f_type
+!>
 subroutine eval_Gradient(f,f_gradient,spinor_size,f_type)
  !
  ! The gradient of a periodic function f(r):

@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_density
+!>
+!> @param en
+!> @param kpt
+!> @param qpt
+!>
 subroutine RT_density(en,kpt,qpt)
  !
  use pars,           ONLY:SP,schlen,cZERO

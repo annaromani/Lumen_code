@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_Hamiltonian
+!>
+!> @param en
+!> @param k
+!> @param q
+!>
 subroutine ELPH_Hamiltonian(en,k,q)
  !
  use pars,          ONLY:SP,lchlen,rZERO

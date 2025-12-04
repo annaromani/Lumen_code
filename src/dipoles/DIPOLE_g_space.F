@@ -11,6 +11,12 @@
 #include<y_memory.h>
 !
 !
+!> DIPOLE_g_space
+!>
+!> @param Xen
+!> @param Xk
+!> @param Dip
+!>
 subroutine DIPOLE_g_space(Xen,Xk,Dip)
  !
  ! This routine returns <iR> and <P^2>.

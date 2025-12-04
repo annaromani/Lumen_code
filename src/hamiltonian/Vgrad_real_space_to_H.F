@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> Vgrad_real_space_to_H
+!>
+!> @param ik
+!> @param H
+!> @param WF
+!> @param V_grad
+!>
 subroutine Vgrad_real_space_to_H(ik,H,WF,V_grad)
  !
  ! Updte of SOC interaction, i.e. last term in 

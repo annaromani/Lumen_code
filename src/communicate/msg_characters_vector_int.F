@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> msg_characters_vector_int
+!>
+!> @param how
+!> @param mesg
+!> @param val
+!> @param after_msg
+!> @param USE_TABS
+!> @param INDENT
+!> @param MSG_string
+!>
 subroutine msg_characters_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_string)
  !
  use pars,         ONLY:schlen,lchlen,max_open_ofs,repfile_index
@@ -123,6 +133,12 @@ subroutine msg_characters_vector_int(how,mesg,val,after_msg,USE_TABS,INDENT,MSG_
  !
 end subroutine
 !
+!> add_the_semi_column
+!>
+!> @param string
+!> @param n
+!> @param string_plus
+!>
 subroutine add_the_semi_column(string,n,string_plus)
  use pars,      ONLY:lchlen
  implicit none
@@ -141,6 +157,12 @@ subroutine add_the_semi_column(string,n,string_plus)
  endif
 end subroutine
 !
+!> fix_the_new_line
+!>
+!> @param how
+!> @param string
+!> @param l_new_line
+!>
 subroutine fix_the_new_line(how,string,l_new_line)
  implicit none
  integer      :: n

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> RT_Glesser_rotate
+!>
+!> @param dG
+!>
 subroutine RT_Glesser_rotate(dG)
  !
  use pars,           ONLY:SP

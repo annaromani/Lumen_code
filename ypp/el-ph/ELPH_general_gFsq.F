@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_general_gFsq
+!>
+!> @param k
+!> @param en
+!> @param Xk
+!> @param Xen
+!> @param q
+!> @param BS_E_degs
+!>
 subroutine ELPH_general_gFsq(k,en,Xk,Xen,q,BS_E_degs)
  !
  use pars,                ONLY:SP,schlen

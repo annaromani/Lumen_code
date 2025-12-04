@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> X_OUTPUT_driver
+!>
+!> @param WHAT
+!> @param keys
+!> @param solver
+!> @param IQ
+!> @param IG
+!> @param DESC
+!> @param data
+!> @param indexes
+!>
 subroutine X_OUTPUT_driver(WHAT,keys,solver,IQ,IG,DESC,data,indexes)
  !
  use pars,          ONLY:schlen,SP
@@ -231,6 +242,13 @@ subroutine X_OUTPUT_driver(WHAT,keys,solver,IQ,IG,DESC,data,indexes)
      if (STRING_match(WHAT,"ALL")) IS_this_ok=.TRUE.
    end function
    !
+!> ELEMENTAL_init
+!>
+!> @param it
+!> @param short
+!> @param long
+!> @param scattering
+!>
    subroutine ELEMENTAL_init(it,short,long,scattering)
      integer      :: it
      character(*) :: short,long,scattering

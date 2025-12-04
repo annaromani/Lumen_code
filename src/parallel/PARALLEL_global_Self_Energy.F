@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_global_Self_Energy
+!>
+!> @param E
+!> @param Xk
+!> @param q
+!> @param ENVIRONMENT
+!>
 subroutine PARALLEL_global_Self_Energy(E,Xk,q,ENVIRONMENT)
  !
  use electrons,     ONLY:levels

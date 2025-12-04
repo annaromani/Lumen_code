@@ -9,6 +9,9 @@
 !
 #include<y_memory.h>
 !
+!> PP_uspp_init
+!>
+!>
 subroutine PP_uspp_init()
  !
  ! checks and reads USPP DB, and, in case, initialize

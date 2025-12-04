@@ -398,6 +398,10 @@ contains
 
   !
   ! dummy subroutine to avoid having an empty module
+!> cusolverdn_y_dummy__
+!>
+!> @param i
+!>
   subroutine cusolverdn_y_dummy__(i)
      integer :: i
      i=0

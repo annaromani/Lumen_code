@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): CA AM DS
 !
+!> COLLISIONS_compose_nl
+!>
+!> @param G_in
+!>
 subroutine COLLISIONS_compose_nl(G_in)
  !
  ! HF(qp_state) = - (0.,1.) * \sum_{n,n',q} STATIC_collisions(n,n',q,qp_state) x G_lesser(n,n',k-q)

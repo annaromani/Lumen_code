@@ -37,6 +37,17 @@
 ! @param[out]      Sat_absorption      Satellite in absorption
 ! @param[out]      Sat_emission        Satellite in emission
 !!
+!> Satellite_Simple
+!>
+!> @param iq_bz
+!> @param q
+!> @param il
+!> @param i_alpha
+!> @param i_beta
+!> @param W
+!> @param Sat_absorption
+!> @param Sat_emission
+!>
 subroutine Satellite_Simple(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emission)
  !
  use frequency,     ONLY:w_samp

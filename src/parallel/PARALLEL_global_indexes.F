@@ -9,6 +9,17 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_global_indexes
+!>
+!> @param E
+!> @param Xk
+!> @param q
+!> @param ENVIRONMENT
+!> @param X
+!> @param Dip
+!> @param RESET
+!> @param Dip_limits_pre_defined
+!>
 subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre_defined)
  !
  ! LOGICALS

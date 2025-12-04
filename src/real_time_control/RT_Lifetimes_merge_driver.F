@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> RT_Lifetimes_merge_driver
+!>
+!> @param what
+!>
 subroutine RT_Lifetimes_merge_driver(what)
  !
  use RT_lifetimes,   ONLY:RT_EP_emit_life,RT_EE_life,RT_EH_life,RT_EP_abs_life,&
@@ -71,6 +75,10 @@ subroutine RT_Lifetimes_merge_driver(what)
  !
  contains
    !
+!> REDUX
+!>
+!> @param LIFE
+!>
    subroutine REDUX(LIFE)
      use RT_lifetimes,   ONLY:RT_lifetime
      type(RT_lifetime)      ::LIFE
@@ -79,6 +87,11 @@ subroutine RT_Lifetimes_merge_driver(what)
      call PP_redux_wait(LIFE%emit,COMM=PAR_COM_Xk_ibz_INDEX%COMM)
    end subroutine
    !
+!> ADD_to_REF
+!>
+!> @param LIFE
+!> @param LIFE_ref
+!>
    subroutine ADD_to_REF(LIFE,LIFE_ref)
      use RT_lifetimes,   ONLY:RT_lifetime
      type(RT_lifetime)      ::LIFE,LIFE_ref

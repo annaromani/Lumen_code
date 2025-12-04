@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> MATRIX_transfer_side_crop
+!>
+!> @param I
+!> @param J
+!> @param O
+!>
 subroutine MATRIX_transfer_side_crop(I,J,O)
  !
  implicit none

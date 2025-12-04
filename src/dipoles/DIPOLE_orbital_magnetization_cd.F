@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> Dipole_orbital_magnetization_cd
+!>
+!> @param Xen
+!> @param Xk
+!> @param Dip
+!>
 subroutine Dipole_orbital_magnetization_cd(Xen,Xk,Dip)
  !
  ! This routine returns <L>

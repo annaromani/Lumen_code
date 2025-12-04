@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> COLLISIONS_dbname
+!>
+!> @param coll_kind
+!> @param db_name
+!>
 subroutine COLLISIONS_dbname(coll_kind,db_name)
  !
  use pars,          ONLY:schlen

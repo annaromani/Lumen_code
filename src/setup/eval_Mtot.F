@@ -9,6 +9,12 @@
 !
 #include <y_memory.h>
 !
+!> eval_Mtot
+!>
+!> @param en
+!> @param k
+!> @param q
+!>
 subroutine eval_Mtot(en,k,q)
  !
  use pars,           ONLY:SP

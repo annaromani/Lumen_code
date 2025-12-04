@@ -162,6 +162,13 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_openfile
+!>
+!> @param filename
+!> @param action
+!> @param binary
+!> @param ierr
+!>
     SUBROUTINE qexml_openfile( filename, action, binary, ierr)
       !------------------------------------------------------------------------
       !
@@ -227,6 +234,11 @@ CONTAINS
     !  
     !  
     !------------------------------------------------------------------------
+!> qexml_closefile
+!>
+!> @param action
+!> @param ierr
+!>
     SUBROUTINE qexml_closefile( action, ierr)
       !------------------------------------------------------------------------
       !
@@ -295,6 +307,11 @@ CONTAINS
     !
     !
     !--------------------------------------------------------------------------
+!> qexml_basename
+!>
+!> @param str
+!> @param extension
+!>
     SUBROUTINE qexml_basename( str, extension )
       !--------------------------------------------------------------------------
       !
@@ -327,6 +344,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> version_parse
+!>
+!> @param str
+!> @param major
+!> @param minor
+!> @param patch
+!> @param ierr
+!>
     SUBROUTINE version_parse(str, major, minor, patch, ierr)
       !--------------------------------------------------------------------------
       !   
@@ -440,6 +465,11 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> create_directory
+!>
+!> @param dirname
+!> @param ierr
+!>
     SUBROUTINE create_directory( dirname, ierr )
       !------------------------------------------------------------------------
       !
@@ -530,6 +560,12 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> copy_file
+!>
+!> @param file_in
+!> @param file_out
+!> @param ierr
+!>
     SUBROUTINE copy_file( file_in, file_out, ierr )
       !------------------------------------------------------------------------
       !
@@ -627,6 +663,11 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_header
+!>
+!> @param creator_name
+!> @param creator_version
+!>
     SUBROUTINE qexml_write_header( creator_name, creator_version ) 
       !------------------------------------------------------------------------
       !
@@ -873,6 +914,15 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_efield
+!>
+!> @param tefield
+!> @param dipfield
+!> @param edir
+!> @param emaxpos
+!> @param eopreg
+!> @param eamp
+!>
     SUBROUTINE qexml_write_efield( tefield, dipfield, edir, emaxpos, eopreg, eamp )
       !------------------------------------------------------------------------
       !
@@ -970,6 +1020,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_gk
+!>
+!> @param ik
+!> @param npwk
+!> @param npwkx
+!> @param xk
+!> @param k_units
+!> @param index
+!> @param igk
+!>
     SUBROUTINE qexml_write_gk( ik, npwk, npwkx, xk, k_units, index, igk )
       !------------------------------------------------------------------------
       !
@@ -1003,6 +1063,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_spin
+!>
+!> @param lsda
+!> @param noncolin
+!> @param npol
+!> @param lspinorb
+!> @param domag
+!>
     SUBROUTINE qexml_write_spin( lsda, noncolin, npol, lspinorb, domag )
       !------------------------------------------------------------------------
       !
@@ -1208,6 +1276,12 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_phonon
+!>
+!> @param modenum
+!> @param xqq
+!> @param q_units
+!>
     SUBROUTINE qexml_write_phonon( modenum, xqq, q_units )
       !------------------------------------------------------------------------
       !
@@ -1271,6 +1345,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_bands
+!>
+!> @param ik
+!> @param ispin
+!> @param nbnd
+!> @param eig
+!> @param energy_units
+!> @param occ
+!> @param ef
+!>
     SUBROUTINE qexml_write_bands( ik, ispin, nbnd, eig, energy_units, occ, ef )
       !------------------------------------------------------------------------
       !
@@ -1443,6 +1527,17 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_write_rho
+!>
+!> @param nr1
+!> @param nr2
+!> @param nr3
+!> @param rho
+!> @param nr1x
+!> @param nr2x
+!> @param rhov
+!> @param binary
+!>
     SUBROUTINE qexml_write_rho( nr1, nr2, nr3, rho, nr1x, nr2x, rhov, binary )
       !------------------------------------------------------------------------
       !
@@ -1941,6 +2036,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_efield
+!>
+!> @param tefield
+!> @param dipfield
+!> @param edir
+!> @param emaxpos
+!> @param eopreg
+!> @param eamp
+!> @param ierr
+!>
     SUBROUTINE qexml_read_efield( tefield, dipfield, edir, emaxpos, eopreg, eamp, ierr )
       !----------------------------------------------------------------------
       !
@@ -2114,6 +2219,17 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_gk
+!>
+!> @param ik
+!> @param npwk
+!> @param npwkx
+!> @param xk
+!> @param k_units
+!> @param index
+!> @param igk
+!> @param ierr
+!>
     SUBROUTINE qexml_read_gk( ik, npwk, npwkx, xk, k_units, index, igk, ierr )
       !------------------------------------------------------------------------
       !
@@ -2176,6 +2292,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_spin
+!>
+!> @param lsda
+!> @param noncolin
+!> @param npol
+!> @param lspinorb
+!> @param ierr
+!>
     SUBROUTINE qexml_read_spin( lsda, noncolin, npol, lspinorb, ierr )
       !------------------------------------------------------------------------
       !
@@ -2578,6 +2702,13 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_phonon
+!>
+!> @param modenum
+!> @param xqq
+!> @param q_units
+!> @param ierr
+!>
     SUBROUTINE qexml_read_phonon( modenum, xqq, q_units, ierr )
       !------------------------------------------------------------------------
       !
@@ -2698,6 +2829,17 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_bands
+!>
+!> @param ik
+!> @param ispin
+!> @param nbnd
+!> @param eig
+!> @param energy_units
+!> @param occ
+!> @param ef
+!> @param ierr
+!>
     SUBROUTINE qexml_read_bands( ik, ispin, nbnd, eig, energy_units, occ, ef, ierr )
       !------------------------------------------------------------------------
       !
@@ -2918,6 +3060,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexml_read_rho
+!>
+!> @param nr1
+!> @param nr2
+!> @param nr3
+!> @param rho
+!> @param ip
+!> @param rhoz
+!> @param ierr
+!>
     SUBROUTINE qexml_read_rho( nr1, nr2, nr3, rho, ip, rhoz, ierr  )
       !------------------------------------------------------------------------
       !

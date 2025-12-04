@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): MG DS
 !
+!> XC_eval_gga_potential
+!>
+!> @param v1rho
+!> @param v1sigma
+!> @param drho
+!> @param V_xc
+!>
 subroutine XC_eval_gga_potential(v1rho,v1sigma,drho,V_xc)
   !
   ! Given the partial derivatives, v1rho, v1sigma, provide the vxc_tot:

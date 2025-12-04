@@ -9,6 +9,11 @@
 #include<y_memory.h>
 !
 !
+!> EXCPH_eval_sat
+!>
+!> @param iq_bz
+!> @param q
+!>
 subroutine EXCPH_eval_sat(iq_bz,q)
  !
  use pars,           ONLY:SP,cZERO,rZERO

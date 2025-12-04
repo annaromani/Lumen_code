@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> OCCUPATIONS_Gaps
+!>
+!> @param E
+!> @param E_g_dir
+!> @param E_g_ind
+!> @param Nbf
+!> @param Nbm
+!> @param I_dir
+!> @param E_k_dir
+!> @param E_k_ind
+!>
 subroutine OCCUPATIONS_Gaps(E,E_g_dir,E_g_ind,Nbf,Nbm,I_dir,E_k_dir,E_k_ind)
  !
  use pars,          ONLY:SP

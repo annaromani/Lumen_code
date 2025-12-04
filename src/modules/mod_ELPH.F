@@ -127,6 +127,11 @@ module ELPH
  !
  contains
    !
+!> setup_k_plus_q_levels
+!>
+!> @param iq
+!> @param E
+!>
    subroutine setup_k_plus_q_levels(iq,E)
      use electrons,  ONLY:spin_occ
      use D_lattice,  ONLY:Tel
@@ -142,6 +147,10 @@ module ELPH
      enddo
    end subroutine
    !
+!> FineGd_E_kpq_components_reset
+!>
+!> @param E
+!>
    subroutine FineGd_E_kpq_components_reset(E)
      !      
      type(E_kpq_fine_grid):: E
@@ -154,6 +163,10 @@ module ELPH
      !
    end subroutine
    !
+!> FineGd_E_kpq_alloc
+!>
+!> @param E
+!>
    subroutine FineGd_E_kpq_alloc(E)
      !      
      use electrons,      ONLY:n_sp_pol

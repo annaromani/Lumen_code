@@ -9,6 +9,12 @@
 !
 #include <y_memory.h>
 !
+!> RT_components_energy_plot
+!>
+!> @param En
+!> @param kpt
+!> @param n_T_steps
+!>
 subroutine RT_components_energy_plot(En,kpt,n_T_steps)
  ! 
  use units,          ONLY:HA2EV,HA2KEL,AUT2FS
@@ -365,6 +371,11 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
  !
  contains 
    !
+!> PLOT_the_GROUP
+!>
+!> @param TYP
+!> @param FIT
+!>
    subroutine PLOT_the_GROUP(TYP,FIT)
      use QP_m,       ONLY: Time_of
      type(Load_and_Fit) :: TYP
@@ -464,6 +475,10 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
      !
    end subroutine
    !
+!> local_free
+!>
+!> @param TYP
+!>
    subroutine local_free(TYP)
      type(Load_and_Fit) :: TYP
      if (trim(TYP%kind)=="none") return
@@ -476,6 +491,12 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
      YAMBO_FREE(TYP%Ef)
    end subroutine
    !
+!> Load_and_Fit_alloc
+!>
+!> @param TYP
+!> @param dim
+!> @param what
+!>
    subroutine Load_and_Fit_alloc(TYP,dim,what)
      !
      type(Load_and_Fit) :: TYP
@@ -547,6 +568,11 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
      !
    end subroutine
    !
+!> LIFE_ratio
+!>
+!> @param TYP
+!> @param TYP_ratio
+!>
    subroutine LIFE_ratio(TYP,TYP_ratio)
      !
      type(Load_and_Fit) :: TYP,TYP_ratio
@@ -564,6 +590,10 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
      !
    end subroutine
    !
+!> REORDER_it
+!>
+!> @param TYP
+!>
    subroutine REORDER_it(TYP)
      type(Load_and_Fit) :: TYP
      real(SP)           :: TMP_vec(RT_carriers%nstates)
@@ -575,6 +605,10 @@ subroutine RT_components_energy_plot(En,kpt,n_T_steps)
      enddo
    end subroutine
    !
+!> FIT_me
+!>
+!> @param TYP
+!>
    subroutine FIT_me(TYP)
      !
      use functions,  ONLY:Fermi_fnc_fit

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_collisions
+!>
+!> @param k
+!> @param COLL_grp
+!>
 subroutine PARALLEL_collisions( k, COLL_grp )
  !
  ! SC
@@ -231,6 +236,10 @@ subroutine PARALLEL_collisions( k, COLL_grp )
 end subroutine PARALLEL_collisions
 !
 !
+!> PARALLEL_collisions_reset
+!>
+!> @param COLL_grp
+!>
 subroutine PARALLEL_collisions_reset(COLL_grp)
  !
  use collision_ext, ONLY:COLLISIONS_group

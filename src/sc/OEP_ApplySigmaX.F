@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> OEP_ApplySigmaX
+!>
+!> @param E
+!> @param k
+!> @param q
+!> @param U_x
+!>
 subroutine OEP_ApplySigmaX(E,k,q,U_x)
  !
  !  Apply the NL local X operator to the valence wfs:

@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> X_GreenF_convoluted
+!>
+!> @param iq
+!> @param transitions
+!> @param Xw
+!> @param Xen
+!> @param Xk
+!> @param GreenF
+!> @param ordering
+!>
 subroutine X_GreenF_convoluted(iq,transitions,Xw,Xen,Xk,GreenF,ordering)
  !
  use pars,       ONLY:SP,cZERO

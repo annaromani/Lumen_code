@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PROJECTION_axis
+!>
+!> @param axis
+!> @param O
+!>
 subroutine PROJECTION_axis( axis, O )
  !
  use pars,           ONLY:SP

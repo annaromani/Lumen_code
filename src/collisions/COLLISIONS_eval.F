@@ -10,6 +10,15 @@
 #include<collisions.h>
 #include<y_memory.h>
 !
+!> COLLISIONS_eval
+!>
+!> @param E
+!> @param X
+!> @param k
+!> @param xk
+!> @param q
+!> @param Xw
+!>
 subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  !
  ! The EOM looks like:
@@ -279,6 +288,10 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  !
  contains
    !
+!> CHECK_and_ALLOC
+!>
+!> @param COLL_grp
+!>
    subroutine CHECK_and_ALLOC(COLL_grp)
      !
      !
@@ -339,6 +352,10 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
 end subroutine COLLISIONS_eval
 !
 !
+!> set_BS_blks
+!>
+!> @param Xk
+!>
 subroutine set_BS_blks(Xk)
  !
  use pars,         ONLY:cZERO
@@ -393,6 +410,12 @@ subroutine set_BS_blks(Xk)
 end subroutine set_BS_blks
 !
 !
+!> check_BS_parameters_consistency
+!>
+!> @param Xk
+!> @param BS_nk_bz
+!> @param BS_nk_ibz
+!>
 subroutine check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
  !
  use R_lattice,       ONLY:bz_samp
@@ -441,6 +464,11 @@ subroutine check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
 end subroutine check_BS_parameters_consistency
 !
 !
+!> build_inverse_BS_eh_table
+!>
+!> @param Xk
+!> @param ID_mat
+!>
 subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  !
  use electrons,       ONLY:n_sp_pol
@@ -495,6 +523,10 @@ subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
 end subroutine build_inverse_BS_eh_table
 !
 !
+!> build_BS_kpt_map
+!>
+!> @param Xk
+!>
 subroutine build_BS_kpt_map(Xk)
  !
  use pars,           ONLY:SP

@@ -97,6 +97,14 @@ CONTAINS
 !-------------------------------------------
 !
     !------------------------------------------------------------------------
+!> qexsd_init
+!>
+!> @param unit_in
+!> @param unit_out
+!> @param dir
+!> @param dir_in
+!> @param dir_out
+!>
     SUBROUTINE qexsd_init( unit_in, unit_out, dir, dir_in, dir_out )
       !------------------------------------------------------------------------
       !    
@@ -136,6 +144,13 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_openfile
+!>
+!> @param filename
+!> @param action
+!> @param binary
+!> @param ierr
+!>
     SUBROUTINE qexsd_openfile( filename, action, binary, ierr)
       !------------------------------------------------------------------------
       !
@@ -180,6 +195,11 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_open_section
+!>
+!> @param label
+!> @param ierr
+!>
     SUBROUTINE qexsd_open_section(label,ierr)
       !------------------------------------------------------------------------
       IMPLICIT NONE
@@ -192,6 +212,11 @@ CONTAINS
     END SUBROUTINE qexsd_open_section
     !  
     !------------------------------------------------------------------------
+!> qexsd_close_section
+!>
+!> @param label
+!> @param ierr
+!>
     SUBROUTINE qexsd_close_section(label,ierr)
       !------------------------------------------------------------------------
       IMPLICIT NONE
@@ -205,6 +230,11 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_closefile
+!>
+!> @param action
+!> @param ierr
+!>
     SUBROUTINE qexsd_closefile( action, ierr)
       !------------------------------------------------------------------------
       !
@@ -234,6 +264,10 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_rewind
+!>
+!> @param ierr
+!>
     SUBROUTINE qexsd_rewind( ierr)
       !------------------------------------------------------------------------
       IMPLICIT NONE
@@ -252,6 +286,15 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_scan_logical0
+!>
+!> @param iun
+!> @param label
+!> @param lval
+!> @param attr
+!> @param lfound
+!> @param ierr
+!>
     SUBROUTINE qexsd_scan_logical0( iun, label, lval, attr, lfound, ierr)
       !------------------------------------------------------------------------
       !
@@ -333,6 +376,11 @@ CONTAINS
     !
     !
     !--------------------------------------------------------------------------
+!> qexsd_basename
+!>
+!> @param str
+!> @param extension
+!>
     SUBROUTINE qexsd_basename( str, extension )
       !--------------------------------------------------------------------------
       !
@@ -365,6 +413,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> version_parse
+!>
+!> @param str
+!> @param major
+!> @param minor
+!> @param patch
+!> @param ierr
+!>
     SUBROUTINE version_parse(str, major, minor, patch, ierr)
       !--------------------------------------------------------------------------
       !   
@@ -601,6 +657,16 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_read_cell
+!>
+!> @param alat
+!> @param a1
+!> @param a2
+!> @param a3
+!> @param alat_units
+!> @param a_units
+!> @param ierr
+!>
     SUBROUTINE qexsd_read_cell( alat, a1, a2, a3, alat_units, a_units, ierr )
       !------------------------------------------------------------------------
       !
@@ -1067,6 +1133,15 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_read_gk
+!>
+!> @param ik
+!> @param nspin
+!> @param npwk
+!> @param xk
+!> @param igkv
+!> @param ierr
+!>
     SUBROUTINE qexsd_read_gk( ik, nspin, npwk, xk, igkv, ierr )
       !------------------------------------------------------------------------
       !
@@ -1095,6 +1170,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_read_spin
+!>
+!> @param lsda
+!> @param noncolin
+!> @param npol
+!> @param lspinorb
+!> @param ierr
+!>
     SUBROUTINE qexsd_read_spin( lsda, noncolin, npol, lspinorb, ierr )
       !------------------------------------------------------------------------
       !
@@ -1134,6 +1217,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_read_xc
+!>
+!> @param dft
+!> @param dft_is_hybrid
+!> @param dft_is_hubbard
+!> @param dft_is_vdW
+!> @param ierr
+!>
     SUBROUTINE qexsd_read_xc( dft, dft_is_hybrid, dft_is_hubbard, dft_is_vdW, ierr)
       !------------------------------------------------------------------------
       !
@@ -1691,6 +1782,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_fft2igv_map
+!>
+!> @param ngm
+!> @param igv
+!> @param nfft
+!> @param fft2igv
+!> @param dims_only
+!>
     subroutine qexsd_fft2igv_map( ngm, igv, nfft, fft2igv, dims_only)
       !------------------------------------------------------------------------
       !
@@ -1745,6 +1844,14 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_igk_map
+!>
+!> @param nfft
+!> @param fft2igv
+!> @param npwk
+!> @param igkv
+!> @param igk_map
+!>
     subroutine qexsd_igk_map( nfft, fft2igv, npwk, igkv, igk_map )
       !------------------------------------------------------------------------
       !
@@ -2110,6 +2217,12 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
+!> qexsd_read_rhog
+!>
+!> @param igv
+!> @param rho
+!> @param ierr
+!>
     subroutine qexsd_read_rhog ( igv, rho, ierr )
       !------------------------------------------------------------------------
       !! Read and distribute rho(G) from file  'charge-density.*' 

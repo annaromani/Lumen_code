@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> io_fragment
+!>
+!> @param ID
+!> @param ID_frag
+!> @param i_fragment
+!> @param j_fragment
+!> @param extension
+!> @param ierr
+!>
 subroutine io_fragment(ID,ID_frag,i_fragment,j_fragment,extension,ierr)
  !
  ! This routine opens the fragment.

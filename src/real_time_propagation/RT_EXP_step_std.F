@@ -5,6 +5,15 @@
 !
 ! Authors (see AUTHORS file for details): CA DS
 !
+!> RT_EXP_step_std
+!>
+!> @param dG_old
+!> @param dG_inp
+!> @param dG_out
+!> @param ik
+!> @param i_sp_pol
+!> @param deltaT
+!>
 subroutine RT_EXP_step_std(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  ! The EXP integrator is better than the EULER integrator if Ho_plus_Sigma

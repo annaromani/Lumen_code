@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> SERIAL_SVD
+!>
+!> @param n
+!> @param M
+!> @param mode
+!> @param SVD_digits
+!>
 subroutine SERIAL_SVD(n,M,mode,SVD_digits)
  !
  use pars,           ONLY:SP,cZERO,cONE

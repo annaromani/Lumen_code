@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> RT_Integrator
+!>
+!> @param G_new
+!> @param dG_new
+!> @param dG_old
+!> @param A_new
+!> @param A_old
+!> @param E
+!> @param k
+!> @param q
+!>
 subroutine RT_Integrator(G_new,dG_new,dG_old,A_new,A_old,E,k,q)
  !
  !  This subroutine perform integration using different methods: EULER / EXP / INV
@@ -152,6 +163,9 @@ subroutine RT_Integrator(G_new,dG_new,dG_old,A_new,A_old,E,k,q)
  !
  contains
    !
+!> RT_build_dG_new
+!>
+!>
    subroutine RT_build_dG_new()
      !
      use parallel_m,     ONLY:PAR_IND_Xk_ibz
@@ -187,6 +201,9 @@ subroutine RT_Integrator(G_new,dG_new,dG_old,A_new,A_old,E,k,q)
      !
    end subroutine RT_build_dG_new
    !
+!> RT_build_A_new
+!>
+!>
    subroutine RT_build_A_new()
      !
      do i_step=1,Int_Ns

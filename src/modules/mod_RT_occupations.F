@@ -51,6 +51,11 @@ module RT_occupations
  !
  contains
    !
+!> RT_EL_occupations_alloc
+!>
+!> @param D1
+!> @param D2
+!>
    subroutine RT_EL_occupations_alloc(D1,D2)
      integer :: D1(2),D2
      call RT_occupation_alloc("electrons",RT_el_occ,D1,D2)
@@ -58,11 +63,19 @@ module RT_occupations
      if (l_elph_scatt.or.l_elel_scatt.or.l_elphoton_scatt) call RT_occupation_alloc("life",RT_life_occ,D1,D2)
    end subroutine
    !
+!> RT_PH_occupations_alloc
+!>
+!> @param D1
+!> @param D2
+!>
    subroutine RT_PH_occupations_alloc(D1,D2)
      integer :: D1(2),D2
      if (l_phel_scatt.or.l_phel_corr.or.l_elph_scatt) call RT_occupation_alloc("phonons",RT_ph_occ,D1,D2)
    end subroutine
    !
+!> RT_ALL_occupations_free
+!>
+!>
    subroutine RT_ALL_occupations_free( )
      call RT_occupation_free(RT_el_occ)
      call RT_occupation_free(RT_ho_occ)
@@ -70,6 +83,10 @@ module RT_occupations
      if (l_elph_scatt.or.l_elel_scatt.or.l_elphoton_scatt) call RT_occupation_free(RT_life_occ)
    end subroutine
    !
+!> RT_occupation_clean
+!>
+!> @param OCC
+!>
    subroutine RT_occupation_clean(OCC)
      type(RT_occupation) :: OCC
      if (allocated(OCC%dN)) then
@@ -83,6 +100,13 @@ module RT_occupations
      endif
    end subroutine
    !
+!> RT_occupation_alloc
+!>
+!> @param KIND
+!> @param OCC
+!> @param D1
+!> @param D2
+!>
    subroutine RT_occupation_alloc(KIND,OCC,D1,D2)
      character(*)        :: KIND
      type(RT_occupation) :: OCC
@@ -103,6 +127,10 @@ module RT_occupations
      OCC%active=.true.
    end subroutine
    !
+!> RT_occupation_free
+!>
+!> @param OCC
+!>
    subroutine RT_occupation_free(OCC)
      type(RT_occupation) :: OCC
      OCC%KIND="none"
@@ -112,6 +140,12 @@ module RT_occupations
      YAMBO_FREE(OCC%N_ref)
    end subroutine
    !
+!> RT_obj_occupation_alloc
+!>
+!> @param KIND
+!> @param OCC
+!> @param Ns
+!>
    subroutine RT_obj_occupation_alloc(KIND,OCC,Ns)
      character(*)            :: KIND
      type(RT_obj_occupation) :: OCC
@@ -126,6 +160,10 @@ module RT_occupations
      OCC%active   =.TRUE.
    end subroutine
    !
+!> RT_obj_occupation_free
+!>
+!> @param OCC
+!>
    subroutine RT_obj_occupation_free(OCC)
      type(RT_obj_occupation) :: OCC
      if (.not.OCC%active) return

@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> MAG_initial_check
+!>
+!>
 subroutine MAG_initial_check()
  !
  use pars,        ONLY:SP,pi

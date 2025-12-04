@@ -14,6 +14,11 @@
 #include <slepc/finclude/slepceps.h>
 #include <y_memory.h>
 !
+!> K_shell_matrix
+!>
+!> @param i_BS_mat
+!> @param slepc_mat
+!>
 subroutine K_shell_matrix(i_BS_mat,slepc_mat)
  !
  ! Create a PETSC ShellMatrix and define the matrix-vector product

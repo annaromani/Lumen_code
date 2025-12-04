@@ -1,4 +1,12 @@
 # 3 "numrec_ddpoly.spp"
+!> numrec_ddpoly_sgl
+!>
+!> @param c
+!> @param nc
+!> @param x
+!> @param pd
+!> @param nd
+!>
 subroutine numrec_ddpoly_sgl(c,nc,x,pd,nd)
   use numrec_kinds
   implicit none
@@ -27,6 +35,14 @@ subroutine numrec_ddpoly_sgl(c,nc,x,pd,nd)
   end do
 end subroutine numrec_ddpoly_sgl
 # 3 "numrec_ddpoly.spp"
+!> numrec_ddpoly_dbl
+!>
+!> @param c
+!> @param nc
+!> @param x
+!> @param pd
+!> @param nd
+!>
 subroutine numrec_ddpoly_dbl(c,nc,x,pd,nd)
   use numrec_kinds
   implicit none

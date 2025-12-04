@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): MG CA DS AF
 !
+!> DEV_SUB
+!>
+!> @param WF_symm_kpoint
+!>
 subroutine DEV_SUB(WF_symm_kpoint)(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
  !
  ! INCLUDED in: WF_symm_kpoint_incl.F 

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_databases_check
+!>
+!> @param bands
+!>
 subroutine ELPH_databases_check(bands)
  ! 
  use IO_int,         ONLY:io_control

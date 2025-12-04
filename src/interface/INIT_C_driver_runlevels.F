@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> INIT_C_driver_runlevels
+!>
+!> @param defs
+!>
 subroutine INIT_C_driver_runlevels(defs)
  !
  use it_tools,      ONLY:it,initdefs

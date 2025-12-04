@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): AM AF
 !
+!> SLK_setup
+!>
+!> @param idriver
+!> @param ncpu_in_use
+!> @param ORTHO
+!> @param POOL
+!> @param COMM
+!> @param INDEX_comm
+!> @param slk_error
+!>
 subroutine SLK_setup( idriver, ncpu_in_use, ORTHO, POOL, COMM, INDEX_comm, slk_error)
  !
  use SLK_m,          ONLY:n_pools,ORTHO_group,POOL_group,SLK_POOL_init

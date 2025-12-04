@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> RT_Rabi_frequency_ALL_and_print
+!>
+!> @param En
+!> @param i_field
+!>
 subroutine RT_Rabi_frequency_ALL_and_print(En,i_field)
  !
  ! To be fixed in parallel

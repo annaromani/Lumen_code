@@ -11,6 +11,12 @@
 #include<y_memory.h>
 !
 !
+!> fft_setup
+!>
+!> @param iG_max_in
+!> @param iGo_max
+!> @param ONLY_SIZE
+!>
 subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  use pars,           ONLY:SP,pi
@@ -315,6 +321,10 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  contains
    !
+!> fft_best_size
+!>
+!> @param test_fft_size
+!>
    subroutine fft_best_size(test_fft_size)
      !
 #if defined _FFTQE

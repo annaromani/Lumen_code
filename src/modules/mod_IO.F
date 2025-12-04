@@ -262,6 +262,10 @@ module IO_m
    end function manage_action
 #endif
    !
+!> io_reset
+!>
+!> @param ID
+!>
    subroutine io_reset(ID)
      use parallel_m, ONLY:mpi_comm_null
      integer :: ID
@@ -287,6 +291,10 @@ module IO_m
      io_resetable(ID)=.true.
    end subroutine
    !
+!> mk_dir
+!>
+!> @param dirname
+!>
    subroutine mk_dir(dirname)
      use pars,           ONLY:schlen
      use stderr,         ONLY:cstr,STRING_split
@@ -315,6 +323,12 @@ module IO_m
      DB_path=trim(DB_path)//trim(db_)
    end function
    !
+!> cp_file
+!>
+!> @param file_
+!> @param dest_
+!> @param ierr_
+!>
    subroutine cp_file(file_,dest_,ierr_)
      use stderr,         ONLY:cstr
      implicit none
@@ -323,6 +337,12 @@ module IO_m
      call isystem( cstr("bash -c 'cp "//file_//" "//dest_//" >& /dev/null' " ), ierr_ )
    end subroutine
    !
+!> cp_directory
+!>
+!> @param dir_
+!> @param dest_
+!> @param ierr_
+!>
    subroutine cp_directory(dir_,dest_,ierr_)
      use stderr,         ONLY:cstr
      implicit none
@@ -331,6 +351,10 @@ module IO_m
      call isystem( cstr("bash -c 'cp -R "//dir_//" "//dest_//" >& /dev/null' " ), ierr_ )
    end subroutine
    !
+!> rm_file
+!>
+!> @param filename
+!>
    subroutine rm_file(filename)
      use stderr,         ONLY:cstr
      implicit none
@@ -339,6 +363,11 @@ module IO_m
      call iremove( cstr(trim(filename)) )
    end subroutine
    !
+!> rename_file
+!>
+!> @param filename_old
+!> @param filename_new
+!>
    subroutine rename_file(filename_old,filename_new)
      use stderr,    ONLY:cstr
      implicit none
@@ -424,6 +453,13 @@ module IO_m
      INQUIRE (FILE=trim(filename),OPENED=PLAIN_file_is_open)
    end function
    !
+!> netcdf_call
+!>
+!> @param status
+!> @param ID
+!> @param VAR
+!> @param ID_VAR
+!>
    subroutine netcdf_call(status,ID,VAR,ID_VAR)
      integer,      intent (in)           :: status
      integer,      intent (in)           :: ID
@@ -489,6 +525,12 @@ module IO_m
      endif
    end function
    !
+!> deliver_IO_error_message
+!>
+!> @param i_err
+!> @param DB
+!> @param STOP_it
+!>
    subroutine deliver_IO_error_message(i_err,DB,STOP_it)
      !
      integer          :: i_err

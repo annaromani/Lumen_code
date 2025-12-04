@@ -9,6 +9,18 @@
 !
 #include<y_memory.h>
 !
+!> QP_secant_driver
+!>
+!> @param X
+!> @param Xen
+!> @param Xk
+!> @param en
+!> @param k
+!> @param q
+!> @param qp
+!> @param Xw
+!> @param Dip
+!>
 subroutine QP_secant_driver(X,Xen,Xk,en,k,q,qp,Xw,Dip)
  !
  !Procedure for non-perturbative solution of Dyson equation.
@@ -195,6 +207,9 @@ subroutine QP_secant_driver(X,Xen,Xk,en,k,q,qp,Xw,Dip)
  !
  contains 
    !
+!> W2Sc_local_call
+!>
+!>
    subroutine W2Sc_local_call()
      !
      ! Here I call the QP_W2Sc to routine to calculate the Sc SE

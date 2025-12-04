@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> QED_Sigma_c
+!>
+!> @param E
+!> @param k
+!> @param q
+!> @param qp
+!>
 subroutine QED_Sigma_c(E,k,q,qp)
  !
  use pars,                ONLY:SP,pi,cI,rZERO
@@ -263,6 +270,11 @@ subroutine QED_Sigma_c(E,k,q,qp)
  !
  contains
    !
+!> EVAL_the_G_loop
+!>
+!> @param iG_start
+!> @param iG_end
+!>
    subroutine EVAL_the_G_loop(iG_start,iG_end)
      !
      integer :: iG_start,iG_end
@@ -353,6 +365,11 @@ subroutine QED_Sigma_c(E,k,q,qp)
      !
    end subroutine EVAL_the_G_loop
    !
+!> LOCAL_WF_and_COLLISIONS_allocation
+!>
+!> @param NG
+!> @param NB
+!>
    subroutine LOCAL_WF_and_COLLISIONS_allocation( NG , NB )
      !
      integer :: NG,NB
@@ -382,6 +399,10 @@ subroutine QED_Sigma_c(E,k,q,qp)
      !
    end subroutine
    !
+!> EVAL_pre_factors
+!>
+!> @param NULL_G
+!>
    subroutine EVAL_pre_factors( NULL_G )
      logical :: NULL_G
      if (NULL_G) then

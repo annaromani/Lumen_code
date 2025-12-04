@@ -5,6 +5,53 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> **YPP - Post-Processing & Analysis Driver**
+!>
+!> Analyzes and post-processes results from yambo and yambo_rt calculations.
+!> Provides spectrum generation, band structure analysis, and excited-state
+!> spectroscopy including excitons, real-time dynamics, and quasi-particle databases.
+!>
+!> **Main Workflow**:
+!> 1. Initialize YPP system and load ground state
+!> 2. Load response function / real-time databases
+!> 3. Execute analysis modules (RT, electrons, excitons, etc.)
+!> 4. Export formatted results and spectra
+!>
+!> **Available Analysis Modules**:
+!> - YPP_RealTime: Analyze RT trajectories (current, polarization, spectra)
+!> - YPP_Electrons: Band structure and DOS analysis
+!> - YPP_Excitons: Excitonic spectroscopy and wave functions
+!> - YPP_Wannier: Wannier function analysis
+!> - YPP_ELPH: Electron-phonon coupling analysis
+!> - QP DB manipulations: Expand, create, modify quasiparticle databases
+!>
+!> **Key Modules Used**:
+!> - YPPm: YPP control and flags
+!> - YPP_real_time: Real-time analysis module
+!> - R_lattice: Brillouin zone and k-point operations
+!> - parallel_m: MPI parallelization
+!>
+!> **Important Files Referenced**:
+!> - See: YAMBO_CODE_FLOW_ARCHITECTURE.md for complete flow diagram
+!> - See: YPP_RT_DOCUMENTATION.md for real-time post-processing
+!>
+!> @param np Number of processes (MPI)
+!> @param pid Process ID (rank)
+!> @param lnstr Length of input string
+!> @param iinf I/O information
+!> @param iind Input directory length
+!> @param iod Output directory length
+!> @param icd Current directory length
+!> @param ijs Job string length
+!> @param instr Input specification string
+!> @param inf Input file path
+!> @param ind Input database directory
+!> @param od Output database directory
+!> @param com_dir Communication directory
+!> @param js Job string identifier
+!>
+!> @return Error status (0 = success)
+!>
 integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir,js)
  !
  use drivers,             ONLY:infile_editing
@@ -277,6 +324,11 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
 contains
   !
+!> ypp_finalize
+!>
+!> @param STRING
+!> @param instr
+!>
   subroutine ypp_finalize(STRING,instr)
     character(*) :: STRING
     character(*) :: instr

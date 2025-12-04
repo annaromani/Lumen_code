@@ -52,6 +52,11 @@ module frequency
  !
  contains
    !
+!> W_duplicate
+!>
+!> @param Wi
+!> @param Wo
+!>
    subroutine W_duplicate(Wi,Wo)
      type(w_samp):: Wi,Wo
      Wo%n_freqs=Wi%n_freqs
@@ -70,6 +75,11 @@ module frequency
      Wo%grid_type=Wi%grid_type
    end subroutine W_duplicate
    !
+!> W_reset
+!>
+!> @param W
+!> @param damping
+!>
    subroutine W_reset(W,damping)
      type(w_samp)::W
      real(SP), optional, intent(in) :: damping

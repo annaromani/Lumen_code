@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> SET_defaults
+!>
+!> @param INSTR
+!> @param IND
+!> @param OD
+!> @param COM_DIR
+!>
 subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  !
  use debug,      ONLY:dbg

@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> IO_temporary_jobdir_and_strings
+!>
+!> @param what
+!> @param value
+!>
 subroutine IO_temporary_jobdir_and_strings(what,value)
  !
  use pars,           ONLY:lchlen

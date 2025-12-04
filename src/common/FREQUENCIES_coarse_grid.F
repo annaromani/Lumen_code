@@ -9,6 +9,15 @@
 !
 #include<y_memory.h>
 !
+!> FREQUENCIES_coarse_grid
+!>
+!> @param title
+!> @param bg_pt
+!> @param npts
+!> @param cg_percentual
+!> @param in_pt
+!> @param lterm
+!>
 subroutine FREQUENCIES_coarse_grid(title,bg_pt,npts,cg_percentual,in_pt,lterm)
  !
  ! Input

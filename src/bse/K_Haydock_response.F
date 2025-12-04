@@ -5,6 +5,19 @@
 !
 ! Authors (see AUTHORS file for details): AM MG DS IMA TG
 !
+!> K_Haydock_response
+!>
+!> @param iq
+!> @param it
+!> @param Cf_size
+!> @param OBS
+!> @param scheme
+!> @param W
+!> @param Af
+!> @param Bf
+!> @param Cf
+!> @param reached_threshold
+!>
 subroutine K_Haydock_response(iq,it,Cf_size,OBS,scheme,W,Af,Bf,Cf,reached_threshold,FG_factor)
  !
  use pars,           ONLY:SP,cZERO,cONE,cI,pi

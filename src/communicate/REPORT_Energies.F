@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> REPORT_Energies
+!>
+!> @param E
+!> @param k
+!> @param Xk
+!> @param n_bands_
+!> @param k_range
+!> @param what
+!> @param l_kpoints
+!> @param l_what
+!>
 subroutine REPORT_Energies(E,k,Xk,n_bands_,k_range,what,l_kpoints,l_what)
  !
  use pars,           ONLY:schlen,SP

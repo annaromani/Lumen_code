@@ -5,6 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): CA DS AM
 !
+!> electrons_bands_interpolate
+!>
+!> @param Xen
+!> @param Xk
+!> @param BANDS_range
+!> @param ID_bands
+!> @param CIRCUIT_E
+!> @param GRID_E
+!> @param CIRCUIT_dE
+!>
 subroutine electrons_bands_interpolate(Xen,Xk,BANDS_range,ID_bands,CIRCUIT_E,GRID_E,CIRCUIT_dE)
  !
  use pars,           ONLY:SP

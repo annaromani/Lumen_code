@@ -10,6 +10,14 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 ! 
+!> K_correlation_collisions_dir
+!>
+!> @param iq
+!> @param i_block
+!> @param qindx_ID_frag
+!> @param Xk
+!> @param q
+!>
 subroutine K_correlation_collisions_dir(iq,i_block,qindx_ID_frag,Xk,q)
  !
  ! This routine evaluates the correlation collisions:
@@ -368,6 +376,17 @@ subroutine K_correlation_collisions_dir(iq,i_block,qindx_ID_frag,Xk,q)
        !
    end subroutine fill_indexes
    !
+!> EVAL_table
+!>
+!> @param iB
+!> @param iki
+!> @param iko
+!> @param ibi
+!> @param ibo
+!> @param i_sp_pol
+!> @param i_s_ki
+!> @param i_s_ko
+!>
    subroutine EVAL_table(iB,iki,iko,ibi,ibo,i_sp_pol,i_s_ki,i_s_ko)
      implicit none
      integer, intent(in) :: iB,iki,iko,ibi,ibo,i_sp_pol,i_s_ki,i_s_ko
@@ -379,6 +398,19 @@ subroutine K_correlation_collisions_dir(iq,i_block,qindx_ID_frag,Xk,q)
      !
    end subroutine
    !
+!> EVAL_collision
+!>
+!> @param iB
+!> @param iki
+!> @param iko
+!> @param ikit
+!> @param ikot
+!> @param i_sp_pol_i
+!> @param i_sp_pol_o
+!> @param ibi
+!> @param ibo
+!> @param iq_W_in
+!>
    subroutine EVAL_collision(iB,iki,iko,ikit,ikot,i_sp_pol_i,i_sp_pol_o,ibi,ibo,iq_W_in,i_s_ki,i_s_ko,isc)
      use collision_el,  ONLY:elemental_collision
      use devxlib,       ONLY:devxlib_memcpy_d2d

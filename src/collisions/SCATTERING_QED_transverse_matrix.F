@@ -5,6 +5,18 @@
 !
 ! Authors (see AUTHORS file for details): AM PM
 !
+!> SCATTERING_QED_transverse_matrix
+!>
+!> @param i_k
+!> @param i_q_bz
+!> @param i_G
+!> @param i_G0
+!> @param k
+!> @param q
+!> @param T_matrix
+!> @param T_vec
+!> @param Photon_E
+!>
 subroutine SCATTERING_QED_transverse_matrix(i_k,i_q_bz,i_G,i_G0,k,q,T_matrix,T_vec,Photon_E)
  !
  ! T_matrix(i,j) = \delta_{i,j} - q_photon(i)*q_photon(j)/q_photon^2

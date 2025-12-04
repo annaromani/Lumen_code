@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> SERIAL_HERMITIAN_diagonalization
+!>
+!> @param n
+!> @param M
+!> @param E
+!>
 subroutine SERIAL_HERMITIAN_diagonalization(n,M,E)
  !
  use pars,           ONLY: SP

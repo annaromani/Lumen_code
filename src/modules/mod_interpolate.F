@@ -105,6 +105,13 @@ module interpolate
  !
  interface
    !
+!> INTERPOLATION_nearest_k
+!>
+!> @param K_in
+!> @param V_in
+!> @param K_out
+!> @param V_out
+!>
    subroutine INTERPOLATION_nearest_k(K_in,V_in,K_out,V_out)
      use pars,           ONLY:SP
      real(SP)                :: K_in(:,:)
@@ -113,6 +120,18 @@ module interpolate
      real(SP)                :: V_out(:,:,:)
    end subroutine
    !
+!> INTERPOLATION_coefficients
+!>
+!> @param R1D
+!> @param R2D
+!> @param C1D
+!> @param C2D
+!> @param E
+!> @param k
+!> @param Nk
+!> @param ID
+!> @param ID_obj
+!>
    subroutine INTERPOLATION_coefficients(R1D,R2D,C1D,C2D,E,k,Nk,ID,ID_obj)
      use pars,       ONLY:SP
      use R_lattice,  ONLY:bz_samp
@@ -127,6 +146,17 @@ module interpolate
      integer,       intent(out)          :: ID
    end subroutine  INTERPOLATION_coefficients
    !
+!> INTERPOLATION_BZ
+!>
+!> @param K
+!> @param NK
+!> @param ID
+!> @param R1D
+!> @param R2D
+!> @param C1D
+!> @param C2D
+!> @param E
+!>
    subroutine INTERPOLATION_BZ(K,NK,ID,R1D,R2D,C1D,C2D,E)
      use pars,       ONLY:SP
      use R_lattice,  ONLY:bz_samp
@@ -139,6 +169,16 @@ module interpolate
      type(levels),  intent(out), optional :: E
    end subroutine INTERPOLATION_BZ
    !
+!> electrons_bands_interpolate
+!>
+!> @param Xen
+!> @param Xk
+!> @param BANDS_range
+!> @param ID_bands
+!> @param CIRCUIT_E
+!> @param GRID_E
+!> @param CIRCUIT_dE
+!>
    subroutine electrons_bands_interpolate(Xen,Xk,BANDS_range,ID_bands,CIRCUIT_E,GRID_E,CIRCUIT_dE)
      use pars,       ONLY:SP
      use electrons,  ONLY:levels
@@ -181,6 +221,14 @@ module interpolate
      logical,       intent(in),    optional :: SERIAL
    end subroutine INTERPOLATION_driver_seed
    !
+!> INTERPOLATION_driver_do
+!>
+!> @param operation
+!> @param ID
+!> @param OUT_k
+!> @param OUT_E
+!> @param FineGrid
+!>
    subroutine INTERPOLATION_driver_do(operation,ID,OUT_k,OUT_E,FineGrid)
      use R_lattice,   ONLY:bz_samp
      use electrons,   ONLY:levels

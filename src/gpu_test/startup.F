@@ -1,5 +1,8 @@
 
 !======================
+!> startup
+!>
+!>
 subroutine startup()
   !======================
   use gpu_loc_m

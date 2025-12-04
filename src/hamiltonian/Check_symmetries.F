@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> Check_symmetries
+!>
+!> @param field_dir
+!> @param field_kind
+!>
 subroutine Check_symmetries(field_dir,field_kind)
   !
   use pars,          ONLY:SP

@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM DS AF
 !
+!> DEV_SUB
+!>
+!> @param scatter_Bamp
+!>
 subroutine DEV_SUB(scatter_Bamp)(isc)
  !
  ! rhotw(G)=<ib ik_is i_sp| e^[I(RsG-G0).r] | ob ok_os o_sp>

@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> OCCUPATIONS_Extend_Double_Grid
+!>
+!> @param what
+!> @param E
+!> @param k
+!>
 subroutine OCCUPATIONS_Extend_Double_Grid(what,E,k)
  !
  use pars,           ONLY:SP,DP
@@ -124,6 +130,10 @@ subroutine OCCUPATIONS_Extend_Double_Grid(what,E,k)
  !
  contains
    !
+!> check_and_propose_a_new_Fermi_level
+!>
+!> @param ierr
+!>
    subroutine check_and_propose_a_new_Fermi_level(ierr)
      !
      integer :: ierr
@@ -158,6 +168,9 @@ subroutine OCCUPATIONS_Extend_Double_Grid(what,E,k)
      !
    end subroutine
    !
+!> E_Fermi_to_Nel
+!>
+!>
    subroutine E_Fermi_to_Nel( )
      real(DP):: Nel_accumulated
      integer :: ik_fg,iE_fg,ikibz,Nk
@@ -182,6 +195,10 @@ subroutine OCCUPATIONS_Extend_Double_Grid(what,E,k)
      delta_Nel(i_try)=real(Nel_accumulated,SP)-Nel
    end subroutine
    !
+!> Occupations_update
+!>
+!> @param i_loop
+!>
    subroutine Occupations_update( i_loop )
      integer :: ik_fg,i_loop
      E%FG%E(:,:,:)=E%FG%E(:,:,:)-Ef(i_loop)

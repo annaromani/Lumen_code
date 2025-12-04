@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> RT_1D_Fourier_Transform
+!>
+!> @param mode
+!> @param FT
+!> @param RT
+!> @param I_sign
+!>
 subroutine RT_1D_Fourier_Transform(mode,FT,RT,I_sign)
  !
  ! Here I calculate:
@@ -106,6 +113,11 @@ subroutine RT_1D_Fourier_Transform(mode,FT,RT,I_sign)
 end subroutine RT_1D_Fourier_Transform
 !
 !
+!> RT_1D_Fourier_Chirp
+!>
+!> @param FT
+!> @param RT
+!>
 subroutine RT_1D_Fourier_Chirp(FT,RT)
  !
  ! This subroutine adds a chirp in frequency space

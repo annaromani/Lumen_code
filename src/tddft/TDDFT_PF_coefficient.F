@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): MG
 !
+!> TDDFT_PF_coefficient
+!>
+!> @param en
+!> @param Xk
+!> @param a_xc
+!> @param b_xc
+!>
 subroutine TDDFT_PF_coefficient(en,Xk,a_xc,b_xc)
  !
  ! Evaluate the alpha for the polarization functional 
@@ -167,6 +174,12 @@ contains
      !
    end function Alpha_JGM
    !
+!> Alpha_LOR
+!>
+!> @param epsM0
+!> @param alpha
+!> @param beta
+!>
    subroutine Alpha_LOR(epsM0,alpha,beta)
      !
      ! Botti: only static now PRB 72, 125203, dynamic later on 

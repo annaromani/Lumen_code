@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> LSEX_potential
+!>
+!> @param q
+!> @param X
+!> @param Xw
+!>
 subroutine LSEX_potential(q,X,Xw) 
  !
  ! Construct the screeend potential W(G=G'=0,q)

@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_atomic_amplitude
+!>
+!> @param q
+!>
 subroutine ELPH_atomic_amplitude(q)
  !
  use pars,                ONLY:SP

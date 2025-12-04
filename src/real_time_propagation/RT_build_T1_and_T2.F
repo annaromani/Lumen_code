@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> RT_build_T1_and_T2
+!>
+!> @param ik
+!> @param T1_k
+!> @param T2_k
+!> @param I1_matrix
+!> @param dT
+!>
 subroutine RT_build_T1_and_T2(ik,T1_k,T2_k,I1_matrix,dT)
  !
  ! dG(T) = G(T) - G(0)

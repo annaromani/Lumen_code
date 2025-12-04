@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> DIPOLE_setup
+!>
+!> @param Dip
+!>
 subroutine DIPOLE_setup(Dip)
  !
  use drivers,        ONLY:l_real_time,l_sc_run,l_nl_optics

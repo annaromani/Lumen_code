@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> Pseudo_Hamiltonian
+!>
+!> @param Xk
+!> @param Xen
+!> @param l_equilibrium
+!>
 subroutine Pseudo_Hamiltonian(Xk,Xen,l_equilibrium)
  !
  ! This subroutine computes the non local part of the pseudo potential V^nl using the KB form factors.

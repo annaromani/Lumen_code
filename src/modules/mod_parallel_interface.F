@@ -50,6 +50,15 @@ module parallel_int
  !
  interface 
    !
+!> PARALLEL_scheme_initialize
+!>
+!> @param WHAT
+!> @param ENVIRONMENT
+!> @param PARs
+!> @param N
+!> @param TABLE
+!> @param MATRIX
+!>
    subroutine PARALLEL_scheme_initialize(WHAT,ENVIRONMENT,PARs,N,TABLE,MATRIX)
      use parallel_m,   ONLY:PAR_scheme
      character(*)               :: WHAT
@@ -77,6 +86,17 @@ module parallel_int
      type(yMPI_comm),optional :: COMM_index_global_2
    end subroutine
    !
+!> PARALLEL_index
+!>
+!> @param px
+!> @param uplim
+!> @param low_range
+!> @param COMM
+!> @param CONSECUTIVE
+!> @param ORDERED
+!> @param NO_EMPTIES
+!> @param MASK
+!>
    subroutine PARALLEL_index(px,uplim,low_range,COMM,CONSECUTIVE,ORDERED,NO_EMPTIES,MASK)
      use parallel_m, ONLY:PP_indexes,yMPI_COMM
      type(PP_indexes)       ::px
@@ -89,6 +109,15 @@ module parallel_int
      logical,       optional::MASK(:)
    end subroutine
    !
+!> PARALLEL_MATRIX_distribute
+!>
+!> @param COMM
+!> @param PAR_IND
+!> @param nb
+!> @param PAR_index
+!> @param PAR_ID
+!> @param PAR_n_elements
+!>
    subroutine PARALLEL_MATRIX_distribute(COMM,PAR_IND,nb,PAR_index,PAR_ID,PAR_n_elements)
      use parallel_m,    ONLY:yMPI_comm,PP_indexes
      type(yMPI_comm)   :: COMM
@@ -99,6 +128,16 @@ module parallel_int
      integer, optional:: PAR_n_elements
    end subroutine PARALLEL_MATRIX_distribute
    !
+!> PARALLEL_MATRIX_distribute_cv
+!>
+!> @param COMM
+!> @param PAR_IND
+!> @param nb1
+!> @param nb2
+!> @param PAR_index
+!> @param PAR_ID
+!> @param PAR_n_elements
+!>
    subroutine PARALLEL_MATRIX_distribute_cv(COMM,PAR_IND,nb1,nb2,PAR_index,PAR_ID,PAR_n_elements)
      use parallel_m,    ONLY:yMPI_comm,PP_indexes
      type(yMPI_comm)   :: COMM
@@ -109,11 +148,26 @@ module parallel_int
      integer, optional:: PAR_n_elements
    end subroutine PARALLEL_MATRIX_distribute_cv
    !
+!> PARALLEL_WF_index
+!>
+!> @param COMM
+!>
    subroutine PARALLEL_WF_index(COMM)
      use parallel_m,      ONLY:yMPI_comm
      type(yMPI_comm), optional :: COMM
    end subroutine
    !
+!> PARALLEL_global_indexes
+!>
+!> @param E
+!> @param Xk
+!> @param q
+!> @param ENVIRONMENT
+!> @param X
+!> @param Dip
+!> @param RESET
+!> @param Dip_limits_pre_defined
+!>
    subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre_defined)
      use X_m,           ONLY:X_t
      use DIPOLES,       ONLY:DIPOLE_t
@@ -128,12 +182,29 @@ module parallel_int
      logical,         optional::RESET,Dip_limits_pre_defined
    end subroutine
    !
+!> PARALLEL_check_phase_space
+!>
+!> @param N_PAR_elements
+!> @param WORLD
+!> @param WORLD_size
+!> @param MSG
+!>
    subroutine PARALLEL_check_phase_space( N_PAR_elements,WORLD,WORLD_size,MSG )
      integer               :: N_par_elements
      integer,     optional :: WORLD,WORLD_size
      character(*),optional :: MSG
    end subroutine
    !
+!> PARALLEL_live_message
+!>
+!> @param WHAT
+!> @param ENVIRONMENT
+!> @param LOADED
+!> @param TOTAL
+!> @param LOADED_r
+!> @param TOTAL_r
+!> @param NCPU
+!>
    subroutine PARALLEL_live_message(WHAT,ENVIRONMENT,LOADED,TOTAL,LOADED_r,TOTAL_r,NCPU)
      use pars,           ONLY:SP
      character(*)          :: WHAT
@@ -164,6 +235,10 @@ module parallel_int
  !
  contains
    !
+!> PP_wait
+!>
+!> @param COMM
+!>
    subroutine PP_wait(COMM)
      integer, optional :: COMM
 #if defined _MPI
@@ -181,6 +256,12 @@ module parallel_int
    ! PP_redux
    !==========
    !
+!> l0share
+!>
+!> @param array
+!> @param imode
+!> @param COMM
+!>
    subroutine l0share(array,imode,COMM)
      logical   :: array
      integer, optional :: imode,COMM
@@ -212,6 +293,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> l1share
+!>
+!> @param array
+!> @param imode
+!> @param COMM
+!>
    subroutine l1share(array,imode,COMM)
      logical   :: array(:)
      integer, optional :: imode,COMM
@@ -248,6 +335,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> i0share
+!>
+!> @param ival
+!> @param imode
+!> @param COMM
+!>
    subroutine i0share(ival,imode,COMM)
      integer:: ival
      integer, optional :: imode,COMM
@@ -275,6 +368,12 @@ module parallel_int
 #endif
    end subroutine i0share
    !
+!> i1share
+!>
+!> @param array
+!> @param imode
+!> @param COMM
+!>
    subroutine i1share(array,imode,COMM)
      integer:: array(:)
      integer, optional :: imode,COMM
@@ -309,6 +408,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> i81share
+!>
+!> @param array
+!> @param imode
+!> @param COMM
+!>
    subroutine i81share(array,imode,COMM)
      integer(8)        :: array(:)
      integer, optional :: imode,COMM
@@ -343,6 +448,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> i2share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine i2share(array,COMM)
      integer :: array(:,:)
      integer, optional :: COMM
@@ -370,6 +480,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> i3share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine i3share(array,COMM)
      integer:: array(:,:,:)
      integer, optional :: COMM
@@ -397,6 +512,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r0share
+!>
+!> @param rval
+!> @param imode
+!> @param COMM
+!>
    subroutine r0share(rval,imode,COMM)
      real(SP)          :: rval
      integer, optional :: imode,COMM
@@ -429,6 +550,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r1share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine r1share(array,COMM)
      real(SP) :: array(:)
      integer, optional :: COMM
@@ -460,6 +586,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r2share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine r2share(array,COMM)
      real(SP) :: array(:,:)
      integer, optional :: COMM
@@ -491,6 +622,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r3share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine r3share(array,COMM)
      real(SP):: array(:,:,:)
      integer, optional :: COMM
@@ -522,6 +658,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r4share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine r4share(array,COMM)
      real(SP):: array(:,:,:,:)
      integer, optional :: COMM
@@ -553,6 +694,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> d0share
+!>
+!> @param rval
+!> @param imode
+!> @param COMM
+!>
    subroutine d0share(rval,imode,COMM)
      real(DP)          :: rval
      integer, optional :: imode,COMM
@@ -584,6 +731,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> d1share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine d1share(array,COMM)
      real(DP) :: array(:)
      integer, optional :: COMM
@@ -614,6 +766,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> d2share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine d2share(array,COMM)
      real(DP) :: array(:,:)
      integer, optional :: COMM
@@ -644,6 +801,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> d3share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine d3share(array,COMM)
      real(DP):: array(:,:,:)
      integer, optional :: COMM
@@ -674,6 +836,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c0share
+!>
+!> @param cval
+!> @param imode
+!> @param COMM
+!>
    subroutine c0share(cval,imode,COMM)
      complex(SP)       :: cval
      integer, optional :: imode,COMM
@@ -706,6 +874,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c1share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine c1share(array,COMM)
      complex(SP):: array(:)
      integer, optional :: COMM
@@ -737,6 +910,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c2share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine c2share(array,COMM)
      complex(SP):: array(:,:)
      integer, optional :: COMM
@@ -768,6 +946,12 @@ module parallel_int
 #endif
    end subroutine
 
+!> c2share_x
+!>
+!> @param array
+!> @param in_place
+!> @param COMM
+!>
    subroutine c2share_x(array,in_place,COMM)
      complex(SP):: array(:,:)
      logical, intent(IN) :: in_place 
@@ -801,6 +985,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c3share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine c3share(array,COMM)
      complex(SP):: array(:,:,:)
      integer, optional :: COMM
@@ -832,6 +1021,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c4share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine c4share(array,COMM)
      complex(SP):: array(:,:,:,:)
      integer, optional :: COMM
@@ -863,6 +1057,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c5share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine c5share(array,COMM)
      complex(SP):: array(:,:,:,:,:)
      integer, optional :: COMM
@@ -894,6 +1093,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> dc0share
+!>
+!> @param cval
+!> @param imode
+!> @param COMM
+!>
    subroutine dc0share(cval,imode,COMM)
      complex(DP)       :: cval
      integer, optional :: imode,COMM
@@ -925,6 +1130,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> dc1share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine dc1share(array,COMM)
      complex(DP):: array(:)
      integer, optional :: COMM
@@ -955,6 +1165,11 @@ module parallel_int
 #endif
    end subroutine
    !
+!> dc2share
+!>
+!> @param array
+!> @param COMM
+!>
    subroutine dc2share(array,COMM)
      complex(DP):: array(:,:)
      integer, optional :: COMM
@@ -987,6 +1202,12 @@ module parallel_int
    !==========
    ! PP_bcast
    !==========
+!> i0bcast
+!>
+!> @param ival
+!> @param node
+!> @param COMM
+!>
    subroutine i0bcast(ival,node,COMM)
      integer  :: ival
      integer, intent(in) :: node
@@ -1006,6 +1227,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> i1bcast
+!>
+!> @param ival
+!> @param node
+!> @param COMM
+!>
    subroutine i1bcast(ival,node,COMM)
      integer  :: ival(:)
      integer, intent(in) :: node
@@ -1025,6 +1252,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c0bcast
+!>
+!> @param cval
+!> @param node
+!> @param COMM
+!>
    subroutine c0bcast(cval,node,COMM)
      complex(SP):: cval
      integer, intent(in) :: node
@@ -1047,6 +1280,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c1bcast
+!>
+!> @param array
+!> @param node
+!> @param COMM
+!>
    subroutine c1bcast(array,node,COMM)
      complex(SP):: array(:)
      integer, intent(in) :: node
@@ -1069,6 +1308,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> r1bcast
+!>
+!> @param array
+!> @param node
+!> @param COMM
+!>
    subroutine r1bcast(array,node,COMM)
      real(SP):: array(:)
      integer, intent(in) :: node
@@ -1091,6 +1336,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> ch0bcast
+!>
+!> @param chval
+!> @param node
+!> @param COMM
+!>
    subroutine ch0bcast(chval,node,COMM)
      character(len=*):: chval
      integer, intent(in) :: node
@@ -1119,6 +1370,12 @@ module parallel_int
 #endif
    end subroutine
    !
+!> c2bcast
+!>
+!> @param array
+!> @param node
+!> @param COMM
+!>
    subroutine c2bcast(array,node,COMM)
      implicit none
      complex(SP):: array(:,:)
@@ -1144,6 +1401,12 @@ module parallel_int
 #endif
    end subroutine c2bcast
    !
+!> c3bcast
+!>
+!> @param array
+!> @param node
+!> @param COMM
+!>
    subroutine c3bcast(array,node,COMM)
      implicit none
      complex(SP):: array(:,:,:)
@@ -1171,6 +1434,12 @@ module parallel_int
    !
 #if ! defined _DOUBLE
    !
+!> z3bcast
+!>
+!> @param array
+!> @param node
+!> @param COMM
+!>
    subroutine z3bcast(array,node,COMM)
      implicit none
      complex(DP):: array(:,:,:)
@@ -1199,6 +1468,14 @@ module parallel_int
    !============
    ! PP_snd_rcv
    !============
+!> PP_snd_rcv_r2
+!>
+!> @param mode
+!> @param array
+!> @param node
+!> @param COMM
+!> @param TAG
+!>
    subroutine PP_snd_rcv_r2(mode,array,node,COMM,TAG)
      character(*):: mode
      real(SP)    :: array(:,:)
@@ -1229,6 +1506,14 @@ module parallel_int
 #endif
    end subroutine
    !
+!> PP_snd_rcv_c2
+!>
+!> @param mode
+!> @param array
+!> @param node
+!> @param COMM
+!> @param TAG
+!>
    subroutine PP_snd_rcv_c2(mode,array,node,COMM,TAG)
      character(*):: mode
      complex(SP) :: array(:,:)
@@ -1259,6 +1544,14 @@ module parallel_int
 #endif
    end subroutine
    !   
+!> PP_snd_rcv_c1
+!>
+!> @param mode
+!> @param array
+!> @param node
+!> @param COMM
+!> @param TAG
+!>
    subroutine PP_snd_rcv_c1(mode,array,node,COMM,TAG)
      character(*):: mode
      complex(SP) :: array(:)

@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> RT_carriers_number
+!>
+!> @param en
+!> @param k
+!> @param Ncarr
+!>
 subroutine RT_carriers_number(en,k,Ncarr)
  !
  use pars,           ONLY:SP

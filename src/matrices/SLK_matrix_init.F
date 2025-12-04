@@ -24,6 +24,12 @@
 !
 #include<y_memory.h>
 !
+!> SLK_matrix_init
+!>
+!> @param M_slk
+!> @param N
+!> @param N_blocks
+!>
 subroutine SLK_matrix_init(M_slk, N, N_blocks)
  !
  use SLK_m,          ONLY:SLK_ORTHO

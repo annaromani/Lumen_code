@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> ELPH_Sigma_c
+!>
+!> @param en
+!> @param k
+!> @param q
+!> @param qp
+!>
 subroutine ELPH_Sigma_c(en,k,q,qp)
  !
  ! This routine calculates the QP shifts due to el-ph intercation

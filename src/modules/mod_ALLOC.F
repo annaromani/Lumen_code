@@ -13,6 +13,15 @@ module ALLOC
    !
 #if defined _ELPH
    !
+!> ELPH_alloc
+!>
+!> @param what
+!> @param GKKP
+!> @param Nb
+!> @param Nm
+!> @param Nk_mem
+!> @param Nq_mem
+!>
    subroutine ELPH_alloc(what,GKKP,Nb,Nm,Nk_mem,Nq_mem)
      use ELPH,          ONLY:GKKP_me
      character(*)      :: what
@@ -22,17 +31,32 @@ module ALLOC
    !
 #endif
    !
+!> DIPOLE_ALLOC_elemental
+!>
+!> @param what
+!> @param d
+!>
    subroutine DIPOLE_ALLOC_elemental(what,d)
      character(*)                :: what
      integer, optional           :: d(:)
    end subroutine
    !
+!> DIPOLE_ALLOC_global
+!>
+!> @param D
+!> @param NK
+!>
    subroutine DIPOLE_ALLOC_global(D,NK)
      use DIPOLES,        ONLY:DIPOLE_t
      type(DIPOLE_t),intent(inout), optional :: D
      integer                     , optional :: NK
    end subroutine
    !
+!> X_ALLOC_elemental
+!>
+!> @param WHAT
+!> @param DIM
+!>
    subroutine X_ALLOC_elemental(WHAT,DIM)
      character(*)      :: WHAT
      integer, optional :: DIM(:)

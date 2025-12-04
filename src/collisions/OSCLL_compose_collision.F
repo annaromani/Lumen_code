@@ -20,6 +20,16 @@
 ! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston, 
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
+!> OSCLL_compose_collision
+!>
+!> @param k
+!> @param q
+!> @param i_n
+!> @param i_m
+!> @param i_k
+!> @param i_sp
+!> @param COLL
+!>
 subroutine OSCLL_compose_collision(k,q,i_n,i_m,i_k,i_sp,COLL) 
  !
  ! This subroutine use long-range part of the Screened exchange

@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> section
+!>
+!> @param mode
+!> @param name
+!>
 subroutine section(mode,name)
  !
  ! mode =  * 	 : new basic level

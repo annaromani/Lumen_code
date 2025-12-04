@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> X_half_mat_check
+!>
+!> @param Xen
+!> @param Xk
+!> @param Xw
+!>
 subroutine X_half_mat_check(Xen,Xk,Xw)
  !
  use frequency,     ONLY:w_samp

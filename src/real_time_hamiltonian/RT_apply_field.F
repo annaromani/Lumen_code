@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !
+!> RT_apply_field
+!>
+!> @param ik
+!> @param i_sp_pol
+!> @param H_nl_sc
+!> @param A_input
+!>
 subroutine RT_apply_field(ik,i_sp_pol,H_nl_sc,A_input)
  !
  ! This subroutine adds the external field to the Hamiltonian,

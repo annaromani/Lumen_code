@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> k_map_E_fine
+!>
+!> @param fg
+!> @param E
+!> @param k
+!> @param MAP
+!>
 subroutine k_map_E_fine(fg,E,k,MAP)
  !
  use pars,                ONLY:SP

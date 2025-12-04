@@ -25,6 +25,16 @@
 ! *The samplings do not depend on the sampled function 
 !---------------------------------------------------------------
 
+!> FREQUENCIES_mpa_sampling
+!>
+!> @param np
+!> @param w1
+!> @param w2
+!> @param d
+!> @param ps
+!> @param gs
+!> @param w
+!>
  subroutine FREQUENCIES_mpa_sampling(np, w1, w2, d, ps, gs, w) 
    use pars,     ONLY:SP,cI
    implicit none

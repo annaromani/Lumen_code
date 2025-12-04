@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): DV
 !
+!> c2y_wf
+!>
+!> @param wf_disk
+!> @param i_sp_pol
+!> @param ikibz
+!> @param ib_grp
+!> @param KSS_file_name
+!>
 subroutine c2y_wf(wf_disk,i_sp_pol,ikibz,ib_grp,KSS_file_name)
  !
  use pars,                  ONLY:SP,DP,cZERO

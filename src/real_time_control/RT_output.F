@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): CA AM
 !
+!> RT_output
+!>
+!> @param what
+!> @param VALUES
+!> @param TIME
+!> @param E
+!>
 subroutine RT_output(what,VALUES,TIME,E)
  ! 
  use units,          ONLY:HA2EV,HA2KEL,SPEED_OF_LIGHT,AU2KWCMm2,PS2AUT,AU2VMm1

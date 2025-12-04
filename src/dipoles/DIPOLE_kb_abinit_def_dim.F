@@ -5,6 +5,9 @@
 !
 ! Authors (see AUTHORS file for details): DS
 !
+!> Dipole_kb_abinit_def_dim
+!>
+!>
 subroutine Dipole_kb_abinit_def_dim()
  !
  ! Here I assume the number of projectors different from zero

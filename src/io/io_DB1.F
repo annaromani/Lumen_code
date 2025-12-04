@@ -361,6 +361,9 @@ integer function io_DB1(E,k,ID)
  !
  contains
    !
+!> compatibility_message
+!>
+!>
    subroutine compatibility_message( )
      !
      live_timing_is_on=.FALSE.

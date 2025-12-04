@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARALLEL_get_user_structure
+!>
+!> @param ENVIRONMENT
+!> @param RUNNING_ENVIRONMENT
+!>
 subroutine PARALLEL_get_user_structure(ENVIRONMENT,RUNNING_ENVIRONMENT)
  !
  use pars,         ONLY:schlen

@@ -9,6 +9,11 @@
 !
 #include<y_memory.h>
 !
+!> k_circuit_driver
+!>
+!> @param PATH
+!> @param n_points
+!>
 subroutine k_circuit_driver(PATH,n_points)
  !
  use pars,           ONLY:SP

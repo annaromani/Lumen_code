@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !                  
+!> NL_current
+!>
+!> @param k
+!> @param E
+!> @param V_input
+!> @param NL_J
+!>
 subroutine NL_current(k,E,V_input,NL_J)
  !
  ! Evalute current 

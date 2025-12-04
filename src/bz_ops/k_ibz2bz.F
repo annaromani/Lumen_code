@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> k_ibz2bz
+!>
+!> @param k
+!> @param units
+!> @param FORCE_BZ
+!>
 subroutine k_ibz2bz(k,units,FORCE_BZ)
  !
  ! Output

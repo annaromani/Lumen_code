@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> OCCUPATIONS_Extend
+!>
+!> @param Xe
+!> @param E
+!> @param k
+!>
 subroutine OCCUPATIONS_Extend(Xe,E,k)
  !
  ! The occupation of E levels are decided using the Fermi "Levels" of Xe.

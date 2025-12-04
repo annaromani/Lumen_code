@@ -155,6 +155,9 @@ module gpu_m
 
 contains
 
+!> gpu_setup
+!>
+!>
   subroutine gpu_setup()
     implicit none
     integer :: ndev,myid_host_loc,devtype
@@ -292,6 +295,9 @@ contains
     !
   end subroutine gpu_setup
   !
+!> gpu_linalg_setup
+!>
+!>
   subroutine gpu_linalg_setup()
     implicit none
 #if defined _CUDAF || defined  _OPENACC

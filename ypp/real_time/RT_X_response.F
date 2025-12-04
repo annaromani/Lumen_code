@@ -9,6 +9,12 @@
 !
 #include<y_memory.h>
 !
+!> RT_X_response
+!>
+!> @param en
+!> @param k
+!> @param q
+!>
 subroutine RT_X_response(en,k,q)
  !
  use YPP_real_time,  ONLY:Use_FFT,Pol,Curr,N_probe_frequencies,&

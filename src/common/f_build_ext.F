@@ -5,6 +5,11 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> f_build_ext
+!>
+!> @param E
+!> @param Ef
+!>
 subroutine f_build_ext(E,Ef)
  !
  use pars,       ONLY:SP

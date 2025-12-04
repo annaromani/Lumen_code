@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> RT_occ_bands_interpolation
+!>
+!> @param en
+!> @param k
+!> @param q
+!> @param n_T_steps
+!>
 subroutine RT_occ_bands_interpolation(en,k,q,n_T_steps)
  !
  use pars,           ONLY:SP,schlen,rZERO
@@ -289,6 +296,10 @@ subroutine RT_occ_bands_interpolation(en,k,q,n_T_steps)
  !
  contains
    !
+!> EVAL_integrated_occupations
+!>
+!> @param ID
+!>
    subroutine EVAL_integrated_occupations(ID)
      integer  :: ID
      real(SP) :: NK

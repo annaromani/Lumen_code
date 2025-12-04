@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> OUTPUT_unit_conversion
+!>
+!> @param Ivar
+!> @param Rvar
+!> @param DESC
+!> @param KIND
+!> @param PARSER_call
+!>
 subroutine OUTPUT_unit_conversion(Ivar,Rvar,DESC,KIND,PARSER_call)
  !
  use pars,  ONLY:SP,lchlen,schlen
@@ -271,6 +279,11 @@ subroutine OUTPUT_unit_conversion(Ivar,Rvar,DESC,KIND,PARSER_call)
  !
  contains 
    !
+!> set_itp_unit
+!>
+!> @param unit_
+!> @param im
+!>
    subroutine set_itp_unit(unit_,im)
      !
      integer :: im

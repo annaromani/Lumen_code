@@ -67,6 +67,9 @@ module pseudo
  contains
    !
    ! Abinit
+!> PP_alloc_abinit
+!>
+!>
    subroutine PP_alloc_abinit()
      use wave_func,  ONLY:wf_ncx
      YAMBO_ALLOC(pp_kbs,(n_atomic_species,pp_n_l_times_proj_max))
@@ -78,6 +81,9 @@ module pseudo
    end subroutine
    !
    ! PWscf
+!> PP_alloc_pwscf
+!>
+!>
    subroutine PP_alloc_pwscf()
      use wave_func,  ONLY:wf_ncx
      YAMBO_ALLOC(pp_kbs,(n_atomic_species,pp_n_l_times_proj_max))
@@ -88,12 +94,18 @@ module pseudo
      pp_kbd =0._SP
    end subroutine
    !
+!> PP_free
+!>
+!>
    subroutine PP_free()
      YAMBO_FREE(pp_kbs)
      YAMBO_FREE(pp_kb)
      YAMBO_FREE(pp_kbd)
    end subroutine
    !
+!> PP_nlcc_alloc
+!>
+!>
    subroutine PP_nlcc_alloc()
      use R_lattice,  ONLY:ng_vec
      implicit none
@@ -103,6 +115,9 @@ module pseudo
      pp_has_nlcc_atom =0
    end subroutine 
    !
+!> PP_nlcc_free
+!>
+!>
    subroutine PP_nlcc_free()
      YAMBO_FREE(pp_rhog_nlcc)
      YAMBO_FREE(pp_rho_nlcc)
@@ -110,6 +125,9 @@ module pseudo
      pp_has_nlcc=.FALSE.
    end subroutine
    !
+!> PP_uspp_alloc
+!>
+!>
    subroutine PP_uspp_alloc()
      implicit none
      if (qe_pseudo_alloc) call PP_uspp_free()
@@ -119,6 +137,10 @@ module pseudo
      qe_pseudo_alloc=.true.
    end subroutine
    !
+!> PP_uspp_free
+!>
+!> @param becp_only
+!>
    subroutine PP_uspp_free(becp_only)
      implicit none
      logical, optional, intent(in) :: becp_only

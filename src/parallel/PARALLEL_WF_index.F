@@ -9,6 +9,10 @@
 !
 #include<y_memory.h>
 !
+!> PARALLEL_WF_index
+!>
+!> @param COMM
+!>
 subroutine PARALLEL_WF_index(COMM)
  !
  ! Here I used states_to_load to define the WF_linear index.

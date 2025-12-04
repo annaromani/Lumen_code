@@ -5,6 +5,12 @@
 !
 ! Authors (see AUTHORS file for details): CA MG DS
 !
+!> PARALLEL_global_Non_Linear
+!>
+!> @param E
+!> @param Xk
+!> @param q
+!>
 subroutine PARALLEL_global_Non_Linear(E,Xk,q)
  !
  use electrons,     ONLY:levels

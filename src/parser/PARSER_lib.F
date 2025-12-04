@@ -18,6 +18,9 @@ module PARSER_lib
      character(*), intent(in)  :: file_in, file_out
    end function iparse_init
    !
+!> iparse_end
+!>
+!>
    subroutine iparse_end()
    end subroutine iparse_end
    !
@@ -25,12 +28,24 @@ module PARSER_lib
      character(*), intent(in) :: name
    end function iparse_isdef
    !
+!> iparse_int
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_int(name, def, res)
      character(*), intent(in) :: name
      integer, intent(in)          :: def
      integer, intent(out)         :: res
    end subroutine iparse_int
    !
+!> iparse_double
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_double(name, def, res) 
      use pars, ONLY:DP
      character(*), intent(in) :: name
@@ -38,6 +53,12 @@ module PARSER_lib
      real(DP), intent(out)         :: res
    end subroutine iparse_double
    !
+!> iparse_complex
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_complex(name, def, res)
      use pars, ONLY:DP
      character(*), intent(in) :: name
@@ -45,6 +66,12 @@ module PARSER_lib
      complex(DP), intent(out)      :: res
    end subroutine iparse_complex
    !
+!> iparse_string
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_string(name, def, res)
      character(*), intent(in) :: name, def
      character(*), intent(out):: res
@@ -54,12 +81,26 @@ module PARSER_lib
      character(*), intent(in) :: name
    end function iparse_block_n
    !
+!> iparse_block_int
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_int(name, l, c, res)
      character(*), intent(in) :: name
      integer, intent(in)          :: l, c
      integer, intent(out)         :: res
    end subroutine iparse_block_int
    !
+!> iparse_block_double
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_double(name, l, c, res)
      use pars, ONLY:DP
      character(*), intent(in) :: name
@@ -67,6 +108,13 @@ module PARSER_lib
      real(DP), intent(out)         :: res
    end subroutine iparse_block_double
    !
+!> iparse_block_complex
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_complex(name, l, c, res)
      use pars, ONLY:DP
      character(*), intent(in) :: name
@@ -74,6 +122,13 @@ module PARSER_lib
      complex(DP), intent(out)      :: res
    end subroutine iparse_block_complex
    !
+!> iparse_block_string
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_string(name, l, c, res)
      character(*), intent(in) :: name
      integer, intent(in)          :: l, c
@@ -84,6 +139,12 @@ module PARSER_lib
  !
  contains
    !
+!> iparse_logical
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_logical(name, def, res)
      !
      ! logical is a FORTRAN type, so we emulate the routine with integers
@@ -99,6 +160,12 @@ module PARSER_lib
      res = (ires .ne. 0)
    end subroutine iparse_logical
    !
+!> iparse_str
+!>
+!> @param name
+!> @param def
+!> @param res
+!>
    subroutine iparse_str(name, def, res)
      !
      ! to avoid errors
@@ -110,6 +177,13 @@ module PARSER_lib
      call iparse_string(cstr(name), cstr(def), res)
    end subroutine iparse_str
    !
+!> iparse_block_logical
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_logical(name, l, c, res)
      use stderr, ONLY : cstr
      character(*), intent(IN) :: name
@@ -120,6 +194,13 @@ module PARSER_lib
      res = (ires .ne. 0)
    end subroutine iparse_block_logical
    !
+!> iparse_block_str
+!>
+!> @param name
+!> @param l
+!> @param c
+!> @param res
+!>
    subroutine iparse_block_str(name, l, c, res)
      use pars, ONLY:lchlen
      use stderr, ONLY : cstr,clear_str

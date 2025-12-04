@@ -4,6 +4,13 @@
 !
 ! Authors (see AUTHORS file for details): AM MG DS
 !
+!> K_Haydock_scatter
+!>
+!> @param V
+!> @param fullV
+!> @param fullV_size
+!> @param n_ColsFG
+!>
 subroutine K_Haydock_scatter(V,fullV,fullV_size,n_ColsFG)
  !
  ! Scatter the full dimension vector on the master (read from disk/restart)

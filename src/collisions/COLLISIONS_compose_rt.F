@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): CA AM DS
 !
+!> COLLISIONS_compose_rt
+!>
+!> @param dG_avg
+!>
 subroutine COLLISIONS_compose_rt(dG_avg)
  !
  ! HF/SEX(state) = - (0.,1.) * \sum_{n,n',q} COLLISIONS(n,n',q,state) x G_lesser(n,n',k-q)
@@ -125,6 +129,11 @@ subroutine COLLISIONS_compose_rt(dG_avg)
 end subroutine COLLISIONS_compose_rt
 !
 !
+!> Build_dG_avg
+!>
+!> @param dG_in
+!> @param dG_avg
+!>
 subroutine Build_dG_avg(dG_in,dG_avg)
  !
  use pars,             ONLY:SP,cZERO

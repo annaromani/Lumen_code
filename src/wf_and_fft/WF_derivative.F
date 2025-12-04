@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> WF_derivative
+!>
+!> @param derivative_bands
+!> @param derivative_kpt
+!> @param derivative_sppol
+!> @param do_derivative
+!> @param use_live_timing
+!>
 subroutine WF_derivative(derivative_bands,derivative_kpt,derivative_sppol,do_derivative,use_live_timing)
  !
  !  Remember wf_t = -i \der_t wf   with t=x,y,z

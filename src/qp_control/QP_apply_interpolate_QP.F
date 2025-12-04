@@ -9,6 +9,14 @@
 !
 #include<y_memory.h>
 !
+!> QP_apply_interpolate_QP
+!>
+!> @param i_ACTION
+!> @param bands
+!> @param en
+!> @param k
+!> @param qp
+!>
 subroutine QP_apply_interpolate_QP(i_ACTION,bands,en,k,qp)
  !
  ! Extend the QP correction from the kpt in qp to the kpt in k
@@ -170,6 +178,10 @@ subroutine QP_apply_interpolate_QP(i_ACTION,bands,en,k,qp)
  !
  contains
    !
+!> QP_transfer
+!>
+!> @param action_kind
+!>
    subroutine QP_transfer(action_kind)
      !
      character(4) :: action_kind
@@ -259,6 +271,10 @@ subroutine QP_apply_interpolate_QP(i_ACTION,bands,en,k,qp)
      !
    end subroutine
    !
+!> QP_transfer_nearest
+!>
+!> @param action_kind
+!>
    subroutine QP_transfer_nearest(action_kind)
      !
      character(7) :: action_kind

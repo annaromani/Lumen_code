@@ -11,6 +11,17 @@
 #include<y_memory.h>
 ! 
 !
+!> QP_mpa
+!>
+!> @param X
+!> @param Xk
+!> @param E
+!> @param k
+!> @param q
+!> @param qp
+!> @param Xw
+!> @param GW_iter
+!>
 subroutine QP_mpa(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  ! Multipole approximation to the Correlation Self-Energy

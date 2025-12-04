@@ -293,6 +293,10 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
  !
  contains
    !
+!> call_INIT_load
+!>
+!> @param mode
+!>
    subroutine call_INIT_load(mode)
      character(*)::mode
      if (mode=='create_shadow_vars') initmode=0
@@ -303,6 +307,9 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
      call INIT_load(defs,en,q,k,X,Xw,Dip)
    end subroutine
    !
+!> LOCAL_from_runlevels_to_logicals
+!>
+!>
    subroutine LOCAL_from_runlevels_to_logicals()
      !
      integer     ::i1
@@ -387,6 +394,9 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
      !
    end subroutine LOCAL_from_runlevels_to_logicals
    !
+!> LOCAL_dipole_bands_ordering
+!>
+!>
    subroutine LOCAL_dipole_bands_ordering()
      !
      implicit none
@@ -403,6 +413,9 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
      !
    end subroutine LOCAL_dipole_bands_ordering
    !
+!> LOCAL_setup_before_input_IO
+!>
+!>
    subroutine LOCAL_setup_before_input_IO()
      !
      ! After DB reading/stdin logicals I propose here values for the input file
@@ -544,6 +557,9 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
      !
    end subroutine LOCAL_after_input_IO
    !
+!> LOCAL_scatt_and_correlation_logicals
+!>
+!>
    subroutine LOCAL_scatt_and_correlation_logicals( )
      !
      if (l_cohsex) call initactivate(1,'el_el_corr')

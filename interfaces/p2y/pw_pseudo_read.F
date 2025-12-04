@@ -31,6 +31,11 @@ contains
 !
 
 !---------------------------------------------------------------------------------
+!> pseudo_read_header
+!>
+!> @param psfile
+!> @param psp
+!>
 subroutine pseudo_read_header(psfile,psp)
   !---------------------------------------------------------------------------------
   implicit none
@@ -52,6 +57,12 @@ subroutine pseudo_read_header(psfile,psp)
 end subroutine pseudo_read_header
 
 !---------------------------------------------------------------------------------
+!> read_upf_header_v2
+!>
+!> @param psfile
+!> @param psp
+!> @param ierr
+!>
 subroutine read_upf_header_v2( psfile, psp, ierr )
   !---------------------------------------------------------------------------------
   implicit none
@@ -112,6 +123,12 @@ subroutine read_upf_header_v2( psfile, psp, ierr )
 end subroutine read_upf_header_v2
 
 !---------------------------------------------------------------------------------
+!> read_upf_header_v1
+!>
+!> @param psfile
+!> @param psp
+!> @param ierr
+!>
 subroutine read_upf_header_v1( psfile, psp, ierr )
   !---------------------------------------------------------------------------------
   implicit none
@@ -209,6 +226,11 @@ logical function matches (string1, string2)
 end function matches
 
 !-----------------------------------------------------------------------
+!> pseudo_read_data
+!>
+!> @param psfile
+!> @param psp
+!>
 subroutine pseudo_read_data(psfile,psp)
 !-----------------------------------------------------------------------
   IMPLICIT NONE
@@ -540,6 +562,11 @@ end subroutine read_upf_parameters_v2
 
 
 !-------------------------------------------
+!> pseudo_read_uspp
+!>
+!> @param psfile
+!> @param psp
+!>
 subroutine pseudo_read_uspp(psfile,psp)
   !-------------------------------------------
   implicit none
@@ -561,6 +588,12 @@ subroutine pseudo_read_uspp(psfile,psp)
 end subroutine pseudo_read_uspp
 
 !-------------------------------------------
+!> pseudo_read_uspp_v1
+!>
+!> @param psfile
+!> @param psp
+!> @param ierr
+!>
 subroutine pseudo_read_uspp_v1(psfile,psp,ierr)
   !-------------------------------------------
   implicit none
@@ -576,6 +609,12 @@ subroutine pseudo_read_uspp_v1(psfile,psp,ierr)
 end subroutine pseudo_read_uspp_v1
 
 !-------------------------------------------
+!> pseudo_read_uspp_v2
+!>
+!> @param psfile
+!> @param psp
+!> @param ierr
+!>
 subroutine pseudo_read_uspp_v2(psfile,psp,ierr)
   !-------------------------------------------
   implicit none

@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM CA DS
 !                  
+!> RT_current_AND_polarization
+!>
+!> @param k
+!> @param E
+!> @param G_input
+!> @param A_input
+!> @param Ncarr
+!>
 subroutine RT_current_AND_polarization(k,E,G_input,A_input,Ncarr)
  !
  ! Evalute current and polarization.

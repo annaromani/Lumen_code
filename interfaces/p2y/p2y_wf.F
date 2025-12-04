@@ -9,6 +9,13 @@
 !
 #include<y_memory.h>
 !
+!> p2y_wf
+!>
+!> @param wf_disk
+!> @param i_sp_pol
+!> @param ikibz
+!> @param ib_grp
+!>
  subroutine p2y_wf(wf_disk,i_sp_pol,ikibz, ib_grp)
  !
  ! Reads the WFs for single k-point ikibz and group of bands

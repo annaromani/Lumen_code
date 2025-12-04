@@ -399,6 +399,13 @@ integer function io_header(ID,QPTS,R_LATT,WF,IMPOSE_SN,TEMP,KPTS,D_LATT,XC_KIND,
  !
  contains
    !
+!> XC_KIND_io
+!>
+!> @param what
+!> @param VAR_
+!> @param string_
+!> @param desc_
+!>
    subroutine XC_KIND_io(what,VAR_,string_,desc_)
      !
      character(*)      :: what,VAR_,desc_

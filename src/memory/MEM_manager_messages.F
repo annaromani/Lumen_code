@@ -5,6 +5,13 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> MEM_manager_messages
+!>
+!> @param what
+!> @param adding
+!> @param MEM_now_Kb
+!> @param where
+!>
 subroutine MEM_manager_messages(what,adding,MEM_now_Kb,where)
  !
  use pars,         ONLY:SP,lchlen

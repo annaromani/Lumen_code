@@ -8,6 +8,11 @@
 !
 #include<y_memory.h>
 !
+!> EXCPH_ave_sat_DbGrid
+!>
+!> @param iq_bz
+!> @param q
+!>
 subroutine EXCPH_ave_sat_DbGrid(iq_bz,q)
  !
  use pars,           ONLY:SP,cZERO,rZERO,cI

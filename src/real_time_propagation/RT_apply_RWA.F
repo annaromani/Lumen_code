@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
+!> RT_apply_RWA
+!>
+!> @param ik
+!> @param i_sp
+!> @param E
+!> @param k
+!> @param dT
+!> @param dTp
+!> @param dG_out
+!> @param dG_in
+!>
 subroutine RT_apply_RWA(ik,i_sp,E,k,dT,dTp,dG_out,dG_in)
  !
  use pars,           ONLY:SP,cONE

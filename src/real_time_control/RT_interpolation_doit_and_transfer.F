@@ -5,6 +5,17 @@
 !
 ! Authors (see AUTHORS file for details): DS AM
 !
+!> RT_interpolation_doit_and_transfer
+!>
+!> @param OBJ
+!> @param K
+!> @param E
+!> @param nb
+!> @param l_B
+!> @param N_carriers
+!> @param df_Max
+!> @param dE_Max
+!>
 subroutine RT_interpolation_doit_and_transfer(OBJ,K,E,nb,l_B,N_carriers,df_Max,dE_Max)
  !
  use pars,           ONLY:SP

@@ -133,6 +133,10 @@ module EXCPH
  !
  contains
    !
+!> BSE_in_alloc
+!>
+!> @param k
+!>
    subroutine BSE_in_alloc(k)
      !      
      ! pre-allocs...
@@ -157,6 +161,9 @@ module EXCPH
      !
    end subroutine BSE_in_alloc
    !
+!> BSE_out_alloc
+!>
+!>
    subroutine BSE_out_alloc()
      implicit none
      !
@@ -165,6 +172,9 @@ module EXCPH
      !
    end subroutine BSE_out_alloc
    ! 
+!> Sat_alloc
+!>
+!>
    subroutine Sat_alloc()
      implicit none
      YAMBO_ALLOC(BS_Sat_E,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
@@ -179,6 +189,9 @@ module EXCPH
      !
    end subroutine Sat_alloc
    !
+!> Sat_free
+!>
+!>
    subroutine Sat_free()
      implicit none
      YAMBO_FREE(BS_Sat_E)
@@ -187,6 +200,9 @@ module EXCPH
      YAMBO_FREE(BS_Sat_WEIGHT_PH_abs)
    end subroutine Sat_free
    !
+!> Renorm_alloc
+!>
+!>
    subroutine Renorm_alloc()
      implicit none
      YAMBO_ALLOC(EXCPH_Renorm,(EXCPH_states(2)))
@@ -201,6 +217,9 @@ module EXCPH
      !
    end subroutine Renorm_alloc
    !
+!> Renorm_free
+!>
+!>
    subroutine Renorm_free()
      implicit none
      YAMBO_FREE(EXCPH_Renorm)
@@ -209,6 +228,9 @@ module EXCPH
      YAMBO_FREE(EXCPH_Renorm_PL_PH_abs)
    end subroutine Renorm_free
    !
+!> EXCPH_gkkp_alloc
+!>
+!>
    subroutine EXCPH_gkkp_alloc()
      implicit none
      YAMBO_ALLOC(EXCPH_Gkkp,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
@@ -238,6 +260,10 @@ module EXCPH
      !
    end subroutine RESIDUALS_and_EIGENVALUES_free
    !
+!> RESIDUALS_and_EIGENVALUES_alloc
+!>
+!> @param q
+!>
    subroutine RESIDUALS_and_EIGENVALUES_alloc(q)
      use R_lattice,      ONLY:bz_samp
      implicit none
@@ -252,6 +278,11 @@ module EXCPH
      YAMBO_ALLOC(BS_all_E,(BSS_n_eig,q%nibz))
    end subroutine RESIDUALS_and_EIGENVALUES_alloc
    !
+!> BSE_alloc
+!>
+!> @param k
+!> @param q
+!>
    subroutine BSE_alloc(k,q)
      !      
      use electrons,      ONLY:n_sp_pol      
@@ -306,6 +337,10 @@ module EXCPH
      YAMBO_FREE(BSS_eh_table_m1_in)
    end subroutine BSE_in_free
    !
+!> build_Q_map
+!>
+!> @param q
+!>
    subroutine build_Q_map(q)
     use R_lattice,      ONLY:bz_samp
     use zeros,          ONLY:k_iku_zero

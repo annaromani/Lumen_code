@@ -5,6 +5,10 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> ELPH_simmetrize_and_distribute_gsqF
+!>
+!> @param en
+!>
 subroutine ELPH_simmetrize_and_distribute_gsqF(en)
  !
  use electrons,     ONLY:levels

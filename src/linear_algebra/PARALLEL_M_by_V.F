@@ -5,6 +5,14 @@
 !
 ! Authors (see AUTHORS file for details): AM
 !
+!> PARALLEL_M_by_V
+!>
+!> @param transa
+!> @param N
+!> @param A
+!> @param X
+!> @param Y
+!>
 subroutine PARALLEL_M_by_V(transa,N,A,X,Y)
  !
  !  Perform the parallel matrix multiplication

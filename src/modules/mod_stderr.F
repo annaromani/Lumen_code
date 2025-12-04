@@ -38,10 +38,21 @@ module stderr
  !
  interface  
    !
+!> win_size
+!>
+!> @param wdim
+!>
    subroutine win_size(wdim)
      integer :: wdim
    end subroutine
    !
+!> c_fprintf
+!>
+!> @param lfmt
+!> @param msg
+!> @param rfmt
+!> @param sfmt
+!>
    subroutine c_fprintf(lfmt,msg,rfmt,sfmt)
      character(*) :: lfmt,rfmt,msg,sfmt
    end subroutine
@@ -50,6 +61,13 @@ module stderr
  !
  contains
    !
+!> set_real_printed_length
+!>
+!> @param f_length
+!> @param g_length
+!> @param of_length
+!> @param og_length
+!>
    subroutine set_real_printed_length(f_length,g_length,of_length,og_length)
      integer, optional :: f_length,g_length
      integer, optional :: of_length,og_length
@@ -82,11 +100,22 @@ module stderr
      !
    end subroutine
    !
+!> c_print
+!>
+!> @param lfmt
+!> @param msg
+!> @param rfmt
+!> @param sfmt
+!>
    subroutine c_print(lfmt,msg,rfmt,sfmt)
      character(*) :: lfmt,rfmt,msg,sfmt
      call c_fprintf(cstr(lfmt),cstr(msg),cstr(rfmt),cstr(sfmt))
    end subroutine
    !
+!> remove_new_line
+!>
+!> @param s
+!>
    subroutine remove_new_line(s)
     character(len=*) :: s
     integer          :: i
@@ -106,6 +135,10 @@ module stderr
      so(i+1:i+1) = achar(0)
    end function cstr
    !
+!> clear_str
+!>
+!> @param str
+!>
    subroutine clear_str(str)
      character(*), intent(out) :: str
      integer :: i
@@ -141,6 +174,13 @@ module stderr
      endif
    end function 
    !
+!> STRING_split
+!>
+!> @param string_in
+!> @param string_out
+!> @param space
+!> @param n_non_empty_strings
+!>
    subroutine STRING_split(string_in,string_out,space,n_non_empty_strings)
      character(*)          :: string_in
      character(schlen)     :: string_out(:)
@@ -394,6 +434,10 @@ module stderr
      !
   end function
   !
+!> STRING_to_LOWER
+!>
+!> @param strIn
+!>
   subroutine STRING_to_LOWER(strIn)
     !
     ! Adapted from http://www.star.le.ac.uk/~cgp/fortran.html (25 May 2012)
@@ -408,6 +452,10 @@ module stderr
     enddo
   end subroutine
   !
+!> STRING_to_UPPER
+!>
+!> @param strIn
+!>
   subroutine STRING_to_UPPER(strIn)
     !
     ! Adapted from http://www.star.le.ac.uk/~cgp/fortran.html (25 May 2012)
