@@ -5,48 +5,19 @@
 !
 ! Authors (see AUTHORS file for details): AM DS
 !
-!> **YAMBO - Main Ground-State & Response Function Driver**
-!>
-!> Orchestrates all ground-state and response-function calculations:
-!> GW quasiparticle corrections, Bethe-Salpeter excitons, nonlinear optics,
-!> and optical spectroscopy. This is the primary entry point for static
-!> calculations in YAMBO.
-!>
-!> **Main Workflow**:
-!> 1. Initialize system (SET_defaults, INIT)
-!> 2. Load ground state and basic databases
-!> 3. Compute response functions (GW, BSE, NLO, dipoles)
-!> 4. Output results to database files
-!>
-!> **Key Modules Used**:
-!> - drivers: Execution control and flags
-!> - X_m: Polarization and dielectric function
-!> - BS_m: Bethe-Salpeter equation kernels
-!> - DIPOLES: Optical matrix elements
-!> - parallel_m: MPI parallelization
-!>
-!> **Important Files Referenced**:
-!> - See: YAMBO_CODE_FLOW_ARCHITECTURE.md for complete flow diagram
-!> - See: YAMBO_RT_NEGF_THEORY.md for theoretical foundations
-!>
-!> @param np Number of processes (MPI)
-!> @param pid Process ID (rank)
-!> @param lnstr Length of input string
-!> @param iinf I/O information
-!> @param iind Input directory length
-!> @param iod Output directory length
-!> @param icd Current directory length
-!> @param ijs Job string length
-!> @param instr Input specification string
-!> @param inf Input file path
-!> @param ind Input database directory
-!> @param od Output database directory
-!> @param com_dir Communication directory
-!> @param js Job string identifier
-!>
-!> @return Error status (0 = success)
-!>
 integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir,js)
+ !! **YAMBO - Main Ground-State & Response Function Driver**
+ !!
+ !! Orchestrates all ground-state and response-function calculations:
+ !! GW quasiparticle corrections, Bethe-Salpeter excitons, nonlinear optics,
+ !! and optical spectroscopy. This is the primary entry point for static
+ !! calculations in YAMBO.
+ !!
+ !! **Main Workflow**:
+ !!   1. Initialize system (SET_defaults, INIT)
+ !!   2. Load ground state and basic databases
+ !!   3. Compute response functions (GW, BSE, NLO, dipoles)
+ !!   4. Output results to database files
  !
  !Y88b    /   e           e    e      888~~'    ,88~-_   
  ! Y88b  /   d8b         d8b  d8b     888   |  d888   '  
@@ -89,14 +60,34 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  !
  type(DIPOLE_t) :: Dip
  !
- integer,          intent(in)    :: lnstr,iind,iod,ijs,np,pid,icd
- integer,          intent(inout) :: iinf
- character(lnstr), intent(in)    :: instr
- character(iinf),  intent(in)    :: inf
- character(iind),  intent(in)    :: ind
- character(iod),   intent(in)    :: od
- character(ijs),   intent(in)    :: js
- character(icd),   intent(in)    :: com_dir
+ integer, intent(in) :: lnstr
+ !! Length of input string
+ integer, intent(in) :: iind
+ !! Input directory path length
+ integer, intent(in) :: iod
+ !! Output directory path length
+ integer, intent(in) :: ijs
+ !! Job string length
+ integer, intent(in) :: np
+ !! Number of MPI processes
+ integer, intent(in) :: pid
+ !! MPI process rank (0 = master)
+ integer, intent(in) :: icd
+ !! Current directory path length
+ integer, intent(inout) :: iinf
+ !! I/O information (return status)
+ character(lnstr), intent(in) :: instr
+ !! Input string with calculation directives
+ character(iinf), intent(in) :: inf
+ !! Input file path
+ character(iind), intent(in) :: ind
+ !! Input database directory
+ character(iod), intent(in) :: od
+ !! Output database directory
+ character(ijs), intent(in) :: js
+ !! Job string identifier
+ character(icd), intent(in) :: com_dir
+ !! Communication directory
  !
  ! Local Variables
  !
