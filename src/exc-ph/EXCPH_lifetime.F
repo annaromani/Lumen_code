@@ -78,12 +78,7 @@ subroutine EXCPH_lifetime(k,q,X)
  ! Allocations 
  !
  call RESIDUALS_and_EIGENVALUES_alloc(q)
- if (l_extend_output) then
-   allocate(EXC_life_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
-   allocate(EXC_pole_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
-   EXC_life_of_q=rZERO
-   EXC_pole_of_q=rZERO
- endif
+
  !
  ! Load excitonic energies 
  !
@@ -117,21 +112,7 @@ subroutine EXCPH_lifetime(k,q,X)
    &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq))
  enddo
  !
- l_interp_G2=.true.
- if(l_interp_G2) then
-   !
-   if(.not.use_PH_DbGd) &
-&     call error("G2 interpolation possible only with double-grid")
-   if(l_EXCPH_offdiago) &
-&     call error("G2 interpolation not compatible with EXCPH off-diagoanl")
-   !
-   ! Map q-points on a regular grid for linear interpolation of |G^2|
-   !
-   call k_map_nearest_by_dir(q,q_map)
-   !
-   YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
-   !
- endif
+
  !
  ! Load the Exciton-phonon elements and phonon energies
  !
@@ -162,12 +143,22 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  ! Calculate the life-times
  !
- YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
- EXC_LifeTime=rZERO
- if (l_EXCPH_offdiago) then
-   YAMBO_ALLOC(EXC_LineWidth,(EXCPH_states(1):EXCPH_states(2)))
-   EXC_LineWidth=rZERO
+ l_interp_G2=.true.
+ if(l_interp_G2) then
+   !
+   if(.not.use_PH_DbGd) &
+&     call error("G2 interpolation possible only with double-grid")
+   if(l_EXCPH_offdiago) &
+&     call error("G2 interpolation not compatible with EXCPH off-diagoanl")
+   !
+   ! Map q-points on a regular grid for linear interpolation of |G^2|
+   !
+   call k_map_nearest_by_dir(q,q_map)
+   !
  endif
+ !
+ ! Allocation
+ call EXCPH_Ltime_alloc()
  !
  call PP_indexes_reset(px)
  call PARALLEL_index(px,(/q%nbz/))
@@ -281,20 +272,49 @@ subroutine EXCPH_lifetime(k,q,X)
  endif
  !
  ! Deallocations
- !
- YAMBO_FREE(EXC_LifeTime)
- if (l_EXCPH_offdiago) then
-   YAMBO_FREE(EXC_LineWidth)
- endif
- call RESIDUALS_and_EIGENVALUES_free()
- if (l_extend_output) then
-   deallocate(EXC_life_of_q)
- endif
- if(l_interp_G2) then
-   YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
- endif
+ call EXCPH_Ltime_free()
  !
  contains
+  !
+  subroutine EXCPH_Ltime_alloc()
+    implicit none
+    !
+    if (l_extend_output) then
+      allocate(EXC_life_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
+      allocate(EXC_pole_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
+      EXC_life_of_q=rZERO
+      EXC_pole_of_q=rZERO
+    endif
+    if(l_interp_G2) then
+      YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
+    endif
+    !
+    YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
+    EXC_LifeTime=rZERO
+    if (l_EXCPH_offdiago) then
+      YAMBO_ALLOC(EXC_LineWidth,(EXCPH_states(1):EXCPH_states(2)))
+      EXC_LineWidth=rZERO
+    endif
+    !  
+  end subroutine EXCPH_Ltime_alloc
+  !
+  subroutine EXCPH_Ltime_free()
+    implicit none
+    !
+    YAMBO_FREE(EXC_LifeTime)
+    if (l_EXCPH_offdiago) then
+      YAMBO_FREE(EXC_LineWidth)
+    endif
+    call RESIDUALS_and_EIGENVALUES_free()
+    if (l_extend_output)  then
+       deallocate(EXC_life_of_q)
+       deallocate(EXC_pole_of_q)
+    endif
+    if(l_interp_G2) then
+      YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
+    endif
+    ! 
+  end subroutine EXCPH_Ltime_free
   !
   subroutine eval_G2_grad(iq_bz_in)
     use pars,           ONLY:rZERO
@@ -385,7 +405,7 @@ subroutine EXCPH_lifetime(k,q,X)
     !
     E_alpha=real(BS_E_in(i_alpha),SP)
     !
-    q_cg=q%ptbz(iq_bz) ! Units to be checked
+    q_cg=q%ptbz(iq_bz,:) ! To be converted in crystal 
     !
     nq_around  =q%FGbz%k_range(iq_bz,2)-q%FGbz%k_range(iq_bz,1) 
     weight_dbgd=1._SP/real(nq_around+1._SP,SP)                  
@@ -438,7 +458,7 @@ subroutine EXCPH_lifetime(k,q,X)
         !      
         ! EXCPH_gkkp(q_fg)=EXCPH_gkkp(q(cg)+\Delta_q(:)*\Grad EXCPH_gkkp(:)
         !
-        G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)+sum((q_fg(:)-q_cg(:))*Grad_EXCPH_Gkkp_sq(il,i_beta,i_alpha,:)
+        G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)+sum((q_fg(:)-q_cg(:))*Grad_EXCPH_Gkkp_sq(il,i_beta,i_alpha,:))
         !
       else
         G2_var=1._SP      
