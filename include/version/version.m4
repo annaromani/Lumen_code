@@ -1,9 +1,9 @@
-AC_INIT(Yambo, 5.3.0 r.26322 h.ab37aebc90, yambo@yambo-code.org)
+AC_INIT(Lumen, 2.0.0, https://gitlab.com/lumen-code/lumen/-/issues, lumen ,www.lumen-code.org)
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="26322"
-SHASH="ab37aebc90"
+SREVISION="26305"
+SHASH="7ab30e025b"
 AC_SUBST(SVERSION)
 AC_SUBST(SSUBVERSION)
 AC_SUBST(SPATCHLEVEL)
