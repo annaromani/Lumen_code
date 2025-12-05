@@ -2,7 +2,7 @@
 title: documentation index
 ---
 
-# 📚 Complete Documentation Index
+# Complete Documentation Index
 
 This section provides a comprehensive overview of all available documentation for the Yambo code.
 
@@ -86,10 +86,10 @@ This section provides a comprehensive overview of all available documentation fo
 
 ## Document Status
 
-✅ **Complete** - All documentation files integrated  
-🔄 **Maintained** - Updated with latest release  
-📝 **Searchable** - Full-text search enabled  
-🎨 **Professional Design** - Dark theme applied  
+**Complete** - All documentation files integrated  
+**Maintained** - Updated with latest release  
+**Searchable** - Full-text search enabled  
+**Professional Design** - Dark theme applied  
 
 ---
 

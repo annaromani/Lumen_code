@@ -850,7 +850,7 @@ do iter = 1, 1000
 enddo
 ```
 
-**✅ Correct:**
+**Correct:**
 ```fortran
 YAMBO_ALLOC(temp, (n, n))
 do iter = 1, 1000
@@ -872,7 +872,7 @@ subroutine compute()
 end subroutine
 ```
 
-**✅ Correct:**
+**Correct:**
 ```fortran
 subroutine compute()
   YAMBO_ALLOC(work, (n, n))
@@ -892,7 +892,7 @@ YAMBO_ALLOC(array, (n, m))
 YAMBO_ALLOC(array, (n, m))  ! ERROR: Already allocated!
 ```
 
-**✅ Correct:**
+**Correct:**
 ```fortran
 if (allocated(array)) YAMBO_FREE(array)
 YAMBO_ALLOC(array, (n, m))
@@ -909,7 +909,7 @@ YAMBO_ALLOC_GPU(array, (n, m))
 YAMBO_FREE(array)  ! ERROR: Still mapped on device!
 ```
 
-**✅ Correct:**
+**Correct:**
 ```fortran
 YAMBO_ALLOC_GPU(array, (n, m))
 ! ...

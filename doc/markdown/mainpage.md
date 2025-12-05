@@ -26,11 +26,11 @@ Yambo provides a comprehensive framework for:
 
 | Feature | Description |
 |---------|-------------|
-| 🌊 **Many-Body Physics** | Advanced treatment of electron correlations using GW approximation and Bethe-Salpeter equation |
-| ⚡ **Real-Time Dynamics** | Time-dependent simulations of electronic systems under external perturbations |
-| 🔬 **Spectroscopy** | Calculation of optical absorption, photoemission, and other spectroscopic properties |
-| 🎯 **High Performance** | Parallel computing support with MPI and optimized linear algebra |
-| 📊 **Visualization** | Built-in tools for plotting and data analysis |
+| **Many-Body Physics** | Advanced treatment of electron correlations using GW approximation and Bethe-Salpeter equation |
+| **Real-Time Dynamics** | Time-dependent simulations of electronic systems under external perturbations |
+| **Spectroscopy** | Calculation of optical absorption, photoemission, and other spectroscopic properties |
+| **High Performance** | Parallel computing support with MPI and optimized linear algebra |
+| **Visualization** | Built-in tools for plotting and data analysis |
 
 ---
 
@@ -127,38 +127,69 @@ The code is organized into functional modules:
 
 ## Documentation Structure
 
-This documentation is organized into the following main sections:
+Documentation is organized by **Theory → Code → Visual Guides** for logical learning progression.
 
-### 📚 **[Theory & Methods](@ref theory_section)**
-Comprehensive theoretical background and mathematical formulations:
-- @subpage yambo_theory_main "YAMBO Theory Documentation Suite"
-- @subpage yambo_rt_theory_main "Real-Time TDDFT Theory"
-- @subpage yambo_formulas "Quick Formula Reference"
+---
 
-### 🔧 **[User Guides & References](@ref user_guides_section)**
-Practical guides for using YAMBO and YPP:
-- @subpage input_flags "Input Parameters Reference"
-- @subpage doxygen_quick_ref "Doxygen Quick Reference"
+### **THEORY & FUNDAMENTALS** 
 
-### 🔬 **[Real-Time Simulations](@ref realtime_section)**
-Real-time TDDFT simulations and post-processing:
-- @subpage yambo_rt_theory_main "RT Theory Documentation"
-- @subpage ypp_rt_main "YPP Real-Time Post-Processing"
-- @subpage kb_implementation "Kadanoff-Baym Implementation Analysis"
-- @subpage two_time_reconstruction "Two-Time Green's Function Reconstruction"
-- @subpage rt_dyson_summary "RT-DE for TR-ARPES: Executive Summary" ⭐ NEW
-- @subpage rt_dyson_comparison "RT-DE vs Current Method: Visual Comparison" ⭐ NEW
-- @subpage rt_dyson_expansion "Real-Time Dyson Expansion: Detailed Analysis" ⭐ NEW
+Theoretical foundations and mathematical frameworks:
 
-### 💾 **[I/O System](@ref io_section)**
-Input/Output system architecture and usage:
-- @subpage io_architecture "I/O System Architecture"
-- @subpage io_flowchart "I/O System Flowchart"
-- @subpage io_quick_ref "I/O Quick Reference"
+#### Equilibrium Green's Functions
+- [YAMBO Theory Documentation](YAMBO_THEORY_DOCUMENTATION.html) - Foundational concepts and mathematical formulations
+- [Theory Code Examples](YAMBO_THEORY_CODE_EXAMPLES.html) - Practical code implementations of theory
 
-### 🧮 **[Memory Management](@ref memory_section)**
-Memory allocation and management system:
-- @subpage alloc_main "Memory Allocation Documentation Suite"
+#### Real-Time & Non-Equilibrium Systems
+- [Real-Time TDDFT Theory](YAMBO_RT_THEORY_DOCUMENTATION.html) - Time-dependent density functional theory
+- [NEGF Theory Guide](YAMBO_RT_NEGF_THEORY.html) - Non-equilibrium Green's functions fundamentals
+- [Screening in RT Systems](YAMBO_RT_SCREENING_THEORY.html) - Screening effects in real-time simulations
+- [Kadanoff-Baym Theory & Implementation](KADANOFF_BAYM_IMPLEMENTATION.html) - KBE derivation and code mapping
+
+#### Quick References
+- [Formula Quick Reference](YAMBO_FORMULAS_QUICK_REFERENCE.html) - Essential equations at a glance
+
+---
+
+### **IMPLEMENTATION & ARCHITECTURE**
+
+Code architecture, algorithms, and implementation details:
+
+#### Real-Time Simulations
+- [RT NEGF Implementation Analysis](YAMBO_RT_NEGF_IMPLEMENTATION.html) - What features are actually implemented
+- [RT Screening Implementation](YAMBO_RT_SCREENING_IMPLEMENTATION.html) - Screening algorithms in code
+- [Two-Time Green's Function Reconstruction](TWO_TIME_GREEN_FUNCTION_RECONSTRUCTION.html) - Advanced reconstruction techniques
+- [Two-Time Summary](TWO_TIME_RECONSTRUCTION_SUMMARY.html) - Quick summary of two-time approach
+
+#### System Architecture
+- [Code Flow & Architecture](YAMBO_CODE_FLOW_ARCHITECTURE.html) - Main entry points and control flow
+- [I/O System Architecture](IO_System_Architecture.html) - File I/O and database organization
+- [I/O Quick Reference](IO_Quick_Reference.html) - I/O API and file formats
+
+#### Memory & Allocation
+- [Memory Allocation System](YAMBO_ALLOC_DOCUMENTATION.html) - Dynamic memory management design
+- [Allocation Architecture](YAMBO_ALLOC_ARCHITECTURE.html) - Allocator internals and patterns
+- [Allocation Examples](YAMBO_ALLOC_EXAMPLES.html) - Code examples for memory allocation
+- [Allocation Quick Reference](YAMBO_ALLOC_QUICK_REFERENCE.html) - API quick guide
+
+#### User Configuration
+- [Input Parameters Reference](INPUT_FLAGS.html) - All ~177 input flags documented
+
+---
+
+### **VISUAL GUIDES & FLOWCHARTS**
+
+Diagrams, flowcharts, and visual learning materials:
+
+#### Real-Time Dynamics
+- [Real-Time Propagation Visual Guide](YAMBO_RT_VISUAL_GUIDE.html) - Step-by-step RT algorithm visualization
+- [YPP Real-Time Flowcharts](YPP_RT_FLOWCHARTS.html) - Post-processing workflows and pipelines
+- [YPP Real-Time Documentation](YPP_RT_DOCUMENTATION.html) - Complete YPP RT module guide
+
+#### Theory Visualization
+- [Theory Visual Guide](YAMBO_THEORY_VISUAL_GUIDE.html) - Diagrams and illustrations of key concepts
+
+#### System Diagrams
+- [I/O System Flowchart](IO_System_Flowchart.html) - Visual I/O control flow
 
 ---
 

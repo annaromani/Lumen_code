@@ -4,44 +4,83 @@ title: Documentation Pages
 
 # Documentation Pages {#doc_index}
 
-Welcome to the Yambo documentation! Browse the sections below to find the information you need.
+Documentation organized by **Theory → Code → Visual Guides** for logical learning progression.
 
-## Quick Access
+---
 
-### 📚 Core Theory
-- [YAMBO Theory Documentation](YAMBO_THEORY_DOCUMENTATION.html)
-- [YAMBO Theory README](YAMBO_THEORY_README.html)
-- [YAMBO Theory Visual Guide](YAMBO_THEORY_VISUAL_GUIDE.html)
-- [YAMBO Theory Code Examples](YAMBO_THEORY_CODE_EXAMPLES.html)
-- [Formula Quick Reference](YAMBO_FORMULAS_QUICK_REFERENCE.html)
+## THEORY & FUNDAMENTALS
 
-### ⚙️ Input/Output System
-- [IO System Architecture](IO_System_Architecture.html)
-- [IO System Flowchart](IO_System_Flowchart.html)
-- [IO Quick Reference](IO_Quick_Reference.html)
-- [Input Flags Reference](INPUT_FLAGS.html)
+Theoretical foundations and mathematical frameworks to understand YAMBO's physics.
 
-### 💾 Memory & Allocation
-- [YAMBO Allocation Architecture](YAMBO_ALLOC_ARCHITECTURE.html)
-- [YAMBO Allocation Documentation](YAMBO_ALLOC_DOCUMENTATION.html)
-- [YAMBO Allocation Examples](YAMBO_ALLOC_EXAMPLES.html)
-- [YAMBO Allocation Quick Reference](YAMBO_ALLOC_QUICK_REFERENCE.html)
-- [YAMBO Allocation README](YAMBO_ALLOC_README.html)
+### Equilibrium Green's Functions
 
-### ⏱️ Real-Time Dynamics
-- [Real-Time Theory Documentation](YAMBO_RT_THEORY_DOCUMENTATION.html)
-- [Real-Time Theory README](YAMBO_RT_THEORY_README.html)
-- [Real-Time Quick Reference](YAMBO_RT_QUICK_REFERENCE.html)
-- [Real-Time Visual Guide](YAMBO_RT_VISUAL_GUIDE.html)
-- [YPP Real-Time Documentation](YPP_RT_DOCUMENTATION.html)
-- [YPP Real-Time Quick Guide](YPP_RT_QUICK_GUIDE.html)
-- [YPP Real-Time Flowcharts](YPP_RT_FLOWCHARTS.html)
+- [YAMBO Theory Documentation](YAMBO_THEORY_DOCUMENTATION.html) — Foundational concepts and mathematical formulations
+- [Theory Code Examples](YAMBO_THEORY_CODE_EXAMPLES.html) — Practical code implementations of theory concepts
 
-### 🔬 Advanced Topics
-- [Two-Time Green Functions](TWO_TIME_GREEN_FUNCTION_RECONSTRUCTION.html)
-- [Two-Time Reconstruction Summary](TWO_TIME_RECONSTRUCTION_SUMMARY.html)
-- [Kadanoff-Baym Implementation](KADANOFF_BAYM_IMPLEMENTATION.html)
+### Real-Time & Non-Equilibrium Systems
 
-### 📖 Additional References
-- [Complete Documentation Index](000_documentation_index.html)
-- [Quick Reference](QUICK_REFERENCE.html)
+- [Real-Time TDDFT Theory](YAMBO_RT_THEORY_DOCUMENTATION.html) — Time-dependent density functional theory fundamentals
+- [NEGF Theory Guide](YAMBO_RT_NEGF_THEORY.html) — Non-equilibrium Green's functions fundamentals
+- [Screening in RT Systems](YAMBO_RT_SCREENING_THEORY.html) — Screening effects in real-time simulations
+- [Kadanoff-Baym Theory & Implementation](KADANOFF_BAYM_IMPLEMENTATION.html) — KBE derivation and code mapping
+
+### Quick References
+
+- [Formula Quick Reference](YAMBO_FORMULAS_QUICK_REFERENCE.html) — Essential equations at a glance
+- [NEGF Implementation Quick Reference](YAMBO_RT_NEGF_QUICK_REFERENCE.html) — Quick summary of NEGF features
+
+---
+
+## IMPLEMENTATION & ARCHITECTURE
+
+Code structure, algorithms, and implementation details for developers.
+
+### Real-Time Simulations
+
+- [RT NEGF Implementation Analysis](YAMBO_RT_NEGF_IMPLEMENTATION.html) — What features are actually implemented
+- [RT Screening Implementation](YAMBO_RT_SCREENING_IMPLEMENTATION.html) — Screening algorithms in code
+- [Two-Time Green's Function Reconstruction](TWO_TIME_GREEN_FUNCTION_RECONSTRUCTION.html) — Advanced reconstruction techniques
+- [Two-Time Summary](TWO_TIME_RECONSTRUCTION_SUMMARY.html) — Quick summary of two-time approach
+
+### System Architecture
+
+- [Code Flow & Architecture](YAMBO_CODE_FLOW_ARCHITECTURE.html) — Main entry points and control flow
+- [I/O System Architecture](IO_System_Architecture.html) — File I/O and database organization
+- [I/O Quick Reference](IO_Quick_Reference.html) — I/O API and file formats
+
+### Memory & Allocation
+
+- [Memory Allocation System](YAMBO_ALLOC_DOCUMENTATION.html) — Dynamic memory management design
+- [Allocation Architecture](YAMBO_ALLOC_ARCHITECTURE.html) — Allocator internals and patterns
+- [Allocation Examples](YAMBO_ALLOC_EXAMPLES.html) — Code examples for memory allocation
+- [Allocation Quick Reference](YAMBO_ALLOC_QUICK_REFERENCE.html) — API quick guide
+
+### User Configuration
+
+- [Input Parameters Reference](INPUT_FLAGS.html) — All ~177 input flags documented
+
+---
+
+## VISUAL GUIDES & FLOWCHARTS
+
+Diagrams, flowcharts, and visual learning materials.
+
+### Real-Time Dynamics
+
+- [Real-Time Propagation Visual Guide](YAMBO_RT_VISUAL_GUIDE.html) — Step-by-step RT algorithm visualization
+- [YPP Real-Time Flowcharts](YPP_RT_FLOWCHARTS.html) — Post-processing workflows and pipelines
+- [YPP Real-Time Documentation](YPP_RT_DOCUMENTATION.html) — Complete YPP RT module guide
+
+### Theory Visualization
+
+- [Theory Visual Guide](YAMBO_THEORY_VISUAL_GUIDE.html) — Diagrams and illustrations of key concepts
+
+### System Diagrams
+
+- [I/O System Flowchart](IO_System_Flowchart.html) — Visual I/O control flow
+
+---
+
+## Main Documentation
+
+For comprehensive overview and getting started guide, see [Yambo Documentation](mainpage.html)

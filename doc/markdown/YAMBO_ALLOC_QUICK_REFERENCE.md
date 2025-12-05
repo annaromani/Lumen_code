@@ -363,35 +363,35 @@ endif
 
 ---
 
-## Best Practices Checklist
+## Best Practices
 
-- ✅ Always use `YAMBO_ALLOC` instead of `allocate`
-- ✅ Always use `YAMBO_FREE` instead of `deallocate`
-- ✅ Include `#include<y_memory.h>` at top of file
-- ✅ Use `use y_memory_alloc` in subroutines
-- ✅ Free memory as soon as it's no longer needed
-- ✅ Check `allocated()` before freeing
-- ✅ Use descriptive variable names (helps in reports)
-- ✅ Use `YAMBO_FREE_GPU` for GPU arrays
-- ✅ Use `YAMBO_PAR_ALLOC` for MPI-distributed arrays
-- ✅ Set memory limits for production runs (`-M` flag)
+- Use `YAMBO_ALLOC` instead of `allocate`
+- Use `YAMBO_FREE` instead of `deallocate`
+- Include `#include<y_memory.h>` at top of file
+- Use `use y_memory_alloc` in subroutines
+- Free memory as soon as it's no longer needed
+- Check `allocated()` before freeing
+- Use descriptive variable names (helps in reports)
+- Use `YAMBO_FREE_GPU` for GPU arrays
+- Use `YAMBO_PAR_ALLOC` for MPI-distributed arrays
+- Set memory limits for production runs (`-M` flag)
 
 ---
 
 ## Common Mistakes
 
-### ❌ Mistake 1: Using raw allocate
+### Mistake 1: Using raw allocate
 ```fortran
-allocate(A(n, m))  ! ❌ No tracking
+allocate(A(n, m))  ! Not tracked by memory system
 ```
-**Fix:**
+**Correct:**
 ```fortran
-YAMBO_ALLOC(A, (n, m))  ! ✅ Tracked
+YAMBO_ALLOC(A, (n, m))  ! Tracked allocation
 ```
 
 ---
 
-### ❌ Mistake 2: Forgetting to free
+### Mistake 2: Forgetting to free
 ```fortran
 subroutine compute()
   YAMBO_ALLOC(temp, (n, n))
@@ -399,28 +399,28 @@ subroutine compute()
   ! Missing: YAMBO_FREE(temp)
 end subroutine
 ```
-**Fix:**
+**Correct:**
 ```fortran
 subroutine compute()
   YAMBO_ALLOC(temp, (n, n))
   ! ... use temp ...
-  YAMBO_FREE(temp)  ! ✅ Always free
+  YAMBO_FREE(temp)
 end subroutine
 ```
 
 ---
 
-### ❌ Mistake 3: Allocating in loop
+### Mistake 3: Allocating in loop
 ```fortran
 do i = 1, 1000
-  YAMBO_ALLOC(temp, (n, n))  ! ❌ Allocates 1000 times!
+  YAMBO_ALLOC(temp, (n, n))  ! Allocates 1000 times repeatedly
   ! ...
   YAMBO_FREE(temp)
 enddo
 ```
-**Fix:**
+**Correct:**
 ```fortran
-YAMBO_ALLOC(temp, (n, n))  ! ✅ Allocate once
+YAMBO_ALLOC(temp, (n, n))  ! Allocate once before loop
 do i = 1, 1000
   ! ... use temp ...
 enddo
@@ -429,27 +429,27 @@ YAMBO_FREE(temp)
 
 ---
 
-### ❌ Mistake 4: Wrong GPU free
+### Mistake 4: Wrong GPU free
 ```fortran
 YAMBO_ALLOC_GPU(A, (n, m))
 ! ...
-YAMBO_FREE(A)  ! ❌ Still mapped on device!
+YAMBO_FREE(A)  ! Incorrect for GPU arrays
 ```
-**Fix:**
+**Correct:**
 ```fortran
 YAMBO_ALLOC_GPU(A, (n, m))
 ! ...
-YAMBO_FREE_GPU(A)  ! ✅ Unmaps and frees
+YAMBO_FREE_GPU(A)  ! Proper GPU deallocation
 ```
 
 ---
 
-### ❌ Mistake 5: Not checking allocation
+### Mistake 5: Not checking allocation
 ```fortran
 YAMBO_ALLOC(huge_array, (10000, 10000, 10000))
-! Might fail silently if _MEM_CHECK not defined
+! May fail silently if _MEM_CHECK not defined
 ```
-**Fix:**
+**Correct:**
 ```fortran
 YAMBO_ALLOC(huge_array, (10000, 10000, 10000))
 if (.not. allocated(huge_array)) then
@@ -462,15 +462,17 @@ endif
 ## Performance Tips
 
 ### 1. Allocate Large Arrays Once
+**Recommended:**
 ```fortran
-! ✅ Good: Allocate once, reuse
 YAMBO_ALLOC(work, (n, n))
 do iter = 1, n_iterations
   call compute(work)
 enddo
 YAMBO_FREE(work)
+```
 
-! ❌ Bad: Allocate/free in loop
+**Avoid:**
+```fortran
 do iter = 1, n_iterations
   YAMBO_ALLOC(work, (n, n))
   call compute(work)
@@ -484,10 +486,10 @@ YAMBO_ALLOC(temp1, (n, n))
 YAMBO_ALLOC(temp2, (n, n))
 
 call step1(temp1, temp2)
-YAMBO_FREE(temp1)  ! ✅ Free as soon as done
+YAMBO_FREE(temp1)  ! Free when no longer needed
 
 call step2(temp2)
-YAMBO_FREE(temp2)  ! ✅ Free as soon as done
+YAMBO_FREE(temp2)  ! Free when no longer needed
 ```
 
 ### 3. Use Appropriate Data Types
