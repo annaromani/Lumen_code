@@ -136,7 +136,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  YAMBO_ALLOC(EXC_WF_rot1,(BS_H_dim,n_of_exc_max))
  YAMBO_ALLOC(EXC_WF_rot2,(BS_H_dim,n_of_exc_max))
  !
- filename="exc_syms_q"//trim(intc(iq))
+ filename="exc_qpt"//trim(intc(iq))//"_E+syms_sorted"
  !
  call of_open_close(filename,'ot')
  call msg("o "//trim(filename),"# Symmetries at qpt ",qpt%pt(iq,:),INDENT=0)
