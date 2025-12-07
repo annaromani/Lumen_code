@@ -18,18 +18,15 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  &                        EXCITONS_user_indexes
  use R_lattice,      ONLY:bz_samp!,coll_scattering
  use electrons,      ONLY:levels,n_sp_pol
- use BS_solvers,     ONLY:BS_mat,BSS_n_eig
- use BS,             ONLY:BS_bands,BS_H_dim
+ use BS_solvers,     ONLY:BSS_n_eig
+ use BS,             ONLY:BS_bands
  use wave_func,      ONLY:io_WF_phases,WF_phases_b_map,WF_phases
  use stderr,         ONLY:intc
- use D_lattice,      ONLY:nclass,elem,i_time_rev,nsym,nrot,dl_sop,dl_tra
+ use D_lattice,      ONLY:i_time_rev,nsym,nrot,dl_sop,dl_tra
  use vec_operate,    ONLY:sort,degeneration_finder
- use wrapper,        ONLY:Vstar_dot_V
- use interfaces,     ONLY:EXC_WF_symm_qpoint
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:DUMP,REP,OP_RD_CL,OP_RD,RD_CL,RD
  use com,            ONLY:msg,of_open_close
- use LIVE_t,         ONLY:live_timing
  !
  use y_memory_alloc
  !
@@ -44,10 +41,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  logical  :: l_min_mem
  integer  :: S_index(EXCITONS_n_user_states)
  integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max
- integer  :: ik,i_sp_pol,iqbz,iRqbz,isqc,isqy,isq_small_grp,iGqc,iGqy,nrotq,nsz(5),&
- &           iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,io_err,ID!,n_elem_used
+ integer  :: ik,i_sp_pol,iqbz,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID
  !
- complex(SP), allocatable :: EXC_WF_rot1(:,:),EXC_WF_rot2(:,:)
  complex(SP) :: exc_trace(12,EXCITONS_n_user_states,EXCITONS_n_user_states)
  complex(SP) :: exc_reps(12,EXCITONS_n_user_states,EXCITONS_n_user_states,EXCITONS_n_user_states)
  !
@@ -133,13 +128,12 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call msg('s',"Scan of eneriges gave number of reps ",n_deg_grp)
  !
- YAMBO_ALLOC(EXC_WF_rot1,(BS_H_dim,n_of_exc_max))
- YAMBO_ALLOC(EXC_WF_rot2,(BS_H_dim,n_of_exc_max))
- !
  nrotq=qpt%grp_nsym(iqbz)
  if ( any( qpt%grp_table(:nrotq,iqbz)>nrot ) ) nrotq=nrotq/(1+i_time_rev)
  !
  !write(*,*) qpt%grp_table(:nrotq,iqbz)
+ !
+ ! Detect the point group
  !
  call detect_point_group(nrotq,real(dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),DP))
  !
@@ -152,58 +146,10 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call print_point_group("o "//trim(filebse),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
  &                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
  !
- !write(*,*) "point group detected ",nclass,n_deg_grp
+ ! Compute the reps
  !
- ! Compute excitonic reps
- !
- !call live_timing("Exciton symmetries:",sum(nelem(:))*n_deg_grp)
- call live_timing("Excitonic reps:",nclass*n_deg_grp)
- !
- do iclass=1,nclass
-   ! The following loop is useful for debugging only
-   ! Any element of the class should be ok 
-   !n_elem_used=nelem(iclass)
-   do ielem=1,1
-     !
-     isq_small_grp=elem(ielem,iclass)
-     !
-     ! The rotated q-point
-     isqc=qpt%grp_table(isq_small_grp,iqbz)       ! the symmetry of the loop
-     isqy=qpt%s_table(iq,isqc)                    ! the symmetry used by yambo
-     !
-     iRqbz=qpt%k_table(iq,isqc)                   ! the rotated q-point
-     !
-     iGqc=qpt%k_table(iq,isqc)                    ! the G shift
-     iGqy=qpt%k_table(iq,isqy)                    ! the G shift
-     !
-     do i_grp=1,n_deg_grp
-       !
-       ! Get A(l,R*q)= Ry * A(l,q)
-       !
-       call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
-       &       iq,isqy,iGqy,ID,S_index,EXC_WF_rot1(:,:n_of_exc(i_grp)),l_min_mem)
-       !
-       ! Get R * A(l,q)
-       !
-       call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
-       &       iq,isqc,iGqc,ID,S_index,EXC_WF_rot2(:,:n_of_exc(i_grp)),l_min_mem)
-       !
-       ! Compute the trace of the Irrep
-       !
-       do il1=1,n_of_exc(i_grp)
-         do il2=1,n_of_exc(i_grp)
-           exc_reps(iclass,il2,il1,i_grp) = &
-           & Vstar_dot_V(BS_H_dim,EXC_WF_rot1(:,il2),EXC_WF_rot2(:,il1))
-         enddo
-       enddo
-       !
-       call live_timing(steps=1)
-       !
-     enddo
-   enddo
- enddo
- !
- call live_timing()
+ call compute_exc_reps(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,&
+ &          n_of_exc,first_exc,S_index,iqbz,l_min_mem,Xk,qpt,exc_reps)
  !
  call io_control(ACTION=RD_CL,COM=REP,SEC=(/0/),MODE=DUMP,ID=ID)
  io_err=io_WF_phases(BS_bands,0,0,0,ID,(/0,0,0,0,0/))
@@ -243,6 +189,95 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call of_open_close(filebse)
  !
 end subroutine excitons_symmetries
+!
+!
+subroutine compute_exc_reps(nstates,n_deg_grp,n_of_exc_max,n_of_exc,&
+&                   first_exc,S_index,iqbz,l_min_mem,Xk,qpt,loc_reps)
+ !
+ use pars,           ONLY:SP
+ use LIVE_t,         ONLY:live_timing
+ use interfaces,     ONLY:EXC_WF_symm_qpoint
+ use R_lattice,      ONLY:bz_samp
+ use BS,             ONLY:BS_H_dim
+ use wrapper,        ONLY:Vstar_dot_V
+ use D_lattice,      ONLY:nclass,elem
+ !
+ implicit none
+ !
+ integer,       intent(in)  :: nstates,n_deg_grp
+ integer,       intent(in)  :: n_of_exc_max,n_of_exc(nstates)
+ integer,       intent(in)  :: first_exc(nstates)
+ integer,       intent(in)  :: S_index(nstates)
+ integer,       intent(in)  :: iqbz
+ logical,       intent(in)  :: l_min_mem
+ complex(SP),   intent(out) :: loc_reps(12,nstates,nstates,nstates)
+ !
+ type(bz_samp), intent(inout) :: qpt,Xk
+ !
+ ! Workspace
+ !
+ complex(SP)  :: EXC_WF_rot1(BS_H_dim,n_of_exc_max)
+ complex(SP)  :: EXC_WF_rot2(BS_H_dim,n_of_exc_max)
+ !
+ integer  :: iq,iRqbz,isqc,isqy,isq_small_grp,iGqc,iGqy,nrotq,nsz(5),&
+ &           iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,io_err,ID!,n_elem_used
+ !
+ !write(*,*) "point group detected ",nclass,n_deg_grp
+ !
+ ! Compute excitonic reps
+ !
+ iq=qpt%sstar(iqbz,1)
+ !
+ !call live_timing("Exciton symmetries:",sum(nelem(:))*n_deg_grp)
+ call live_timing("Excitonic reps:",nclass*n_deg_grp)
+ !
+ do iclass=1,nclass
+   ! The following loop is useful for debugging only
+   ! Any element of the class should be ok 
+   !n_elem_used=nelem(iclass)
+   do ielem=1,1
+     !
+     isq_small_grp=elem(ielem,iclass)
+     !
+     ! The rotated q-point
+     isqc=qpt%grp_table(isq_small_grp,iqbz)       ! the symmetry of the loop
+     isqy=qpt%s_table(iq,isqc)                    ! the symmetry used by yambo
+     !
+     iRqbz=qpt%k_table(iq,isqc)                   ! the rotated q-point
+     !
+     iGqc=qpt%k_table(iq,isqc)                    ! the G shift
+     iGqy=qpt%k_table(iq,isqy)                    ! the G shift
+     !
+     do i_grp=1,n_deg_grp
+       !
+       ! Get A(l,R*q)= Ry * A(l,q)
+       !
+       call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
+       &       iq,isqy,iGqy,ID,S_index,EXC_WF_rot1(:,:n_of_exc(i_grp)),l_min_mem)
+       !
+       ! Get R * A(l,q)
+       !
+       call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
+       &       iq,isqc,iGqc,ID,S_index,EXC_WF_rot2(:,:n_of_exc(i_grp)),l_min_mem)
+       !
+       ! Compute the trace of the Irrep
+       !
+       do il1=1,n_of_exc(i_grp)
+         do il2=1,n_of_exc(i_grp)
+           loc_reps(iclass,il2,il1,i_grp) = &
+           & Vstar_dot_V(BS_H_dim,EXC_WF_rot1(:,il2),EXC_WF_rot2(:,il1))
+         enddo
+       enddo
+       !
+       call live_timing(steps=1)
+       !
+     enddo
+   enddo
+ enddo
+ !
+ call live_timing()
+ !
+end subroutine compute_exc_reps
 !
 !
 subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
