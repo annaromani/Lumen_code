@@ -11,21 +11,21 @@
 !
 subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
- use pars,           ONLY:SP,DP,cZERO,cI,schlen
+ use pars,           ONLY:SP,DP,cZERO,schlen
  use units,          ONLY:HA2EV
  use parser_m,       ONLY:parser
  use YPPm,           ONLY:deg_energy,EXCITONS_n_user_states,&
- &                        EXCITONS_user_indexes,symm_thresh
- use R_lattice,      ONLY:bz_samp,coll_scattering
+ &                        EXCITONS_user_indexes
+ use R_lattice,      ONLY:bz_samp!,coll_scattering
  use electrons,      ONLY:levels,n_sp_pol
  use BS_solvers,     ONLY:BS_mat,BSS_n_eig
- use BS,             ONLY:BS_bands,BS_H_dim,BS_K_dim
+ use BS,             ONLY:BS_bands,BS_H_dim
  use wave_func,      ONLY:io_WF_phases,WF_phases_b_map,WF_phases
- use stderr,         ONLY:intc,real2ch
- use D_lattice,      ONLY:which_irr,char_mat,nclass,elem,nelem,name_class,&
- &                        name_rap,i_time_rev,nsym,nrot,dl_sop,dl_tra
+ use stderr,         ONLY:intc
+ use D_lattice,      ONLY:nclass,elem,i_time_rev,nsym,nrot,dl_sop,dl_tra
  use vec_operate,    ONLY:sort,degeneration_finder
  use wrapper,        ONLY:Vstar_dot_V
+ use interfaces,     ONLY:EXC_WF_symm_qpoint
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:DUMP,REP,OP_RD_CL,OP_RD,RD_CL,RD
  use com,            ONLY:msg,of_open_close
@@ -40,23 +40,23 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  type(levels)        :: Xen
  complex(SP)         :: BS_E(BSS_n_eig)
  !
- real(SP) :: BS_E_real(EXCITONS_n_user_states),tmp_real,ref_val
- logical  :: l_min_mem,l_mixed_states,l_partial_space,l_char_table_imag,l_char_not_found,case_simple,case_cmplx
+ real(SP) :: BS_E_real(EXCITONS_n_user_states)
+ logical  :: l_min_mem
  integer  :: S_index(EXCITONS_n_user_states)
  integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max
- integer  :: ik,i_sp_pol,iqbz,iRqbz,isqc,isqy,isq_small_grp,iGqc,iGqy,nrotq,ncmplx,nsz(5),&
- &           ich,jrap,irap,iclass,ielem,iexc,jexc,il1,il2,i_grp,i_sub_grp,io_err,ID,n_elem_used,max_deg
+ integer  :: ik,i_sp_pol,iqbz,iRqbz,isqc,isqy,isq_small_grp,iGqc,iGqy,nrotq,nsz(5),&
+ &           iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,io_err,ID!,n_elem_used
  !
  complex(SP), allocatable :: EXC_WF_rot1(:,:),EXC_WF_rot2(:,:)
- complex(SP) :: trace(12,EXCITONS_n_user_states,EXCITONS_n_user_states),trace_loc(12),char_tmp(12)
+ complex(SP) :: exc_trace(12,EXCITONS_n_user_states,EXCITONS_n_user_states)
  complex(SP) :: exc_reps(12,EXCITONS_n_user_states,EXCITONS_n_user_states,EXCITONS_n_user_states)
  !
  integer  :: exc_sbgr(EXCITONS_n_user_states,EXCITONS_n_user_states),n_sub_grps(EXCITONS_n_user_states),&
  &           ref_exc_grp(EXCITONS_n_user_states,EXCITONS_n_user_states),&
- &           ref_exc_sbgr(EXCITONS_n_user_states,EXCITONS_n_user_states),which_class(12)
+ &           ref_exc_sbgr(EXCITONS_n_user_states,EXCITONS_n_user_states)
  !
- character(9)         :: vec_ch(12)
- character(schlen)    :: filename,titles(4),tmp_ch,loc_msg,loc_fmt
+ character(schlen)    :: filebse,titles(4),loc_msg,loc_fmt
+ character(schlen)    :: exc_character(EXCITONS_n_user_states,EXCITONS_n_user_states)
  !
  integer, external :: io_QINDX
  !
@@ -136,12 +136,6 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  YAMBO_ALLOC(EXC_WF_rot1,(BS_H_dim,n_of_exc_max))
  YAMBO_ALLOC(EXC_WF_rot2,(BS_H_dim,n_of_exc_max))
  !
- filename="exc_qpt"//trim(intc(iq))//"_E+syms_sorted"
- !
- call of_open_close(filename,'ot')
- call msg("o "//trim(filename),"# Symmetries at qpt ",qpt%pt(iq,:),INDENT=0)
- call msg("o "//trim(filename),"#")
- !
  nrotq=qpt%grp_nsym(iqbz)
  if ( any( qpt%grp_table(:nrotq,iqbz)>nrot ) ) nrotq=nrotq/(1+i_time_rev)
  !
@@ -149,15 +143,16 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call detect_point_group(nrotq,real(dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),DP))
  !
- call print_point_group("o "//trim(filename),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
+ filebse="exc_qpt"//trim(intc(iq))//"_E+syms_sorted"
+ !
+ call of_open_close(filebse,'ot')
+ call msg("o "//trim(filebse),"# Symmetries at qpt ",qpt%pt(iq,:),INDENT=0)
+ call msg("o "//trim(filebse),"#")
+ !
+ call print_point_group("o "//trim(filebse),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
  &                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
  !
  !write(*,*) "point group detected ",nclass,n_deg_grp
- !
- titles=(/" E[eV]  "," n_deg  "," symm.  ","i_lambda"/)
- call msg("o "//trim(filename),"#")
- call msg("o "//trim(filename),'#',titles,INDENT=0,USE_TABS=.true.)
- call msg("o "//trim(filename),"#")
  !
  ! Compute excitonic reps
  !
@@ -186,12 +181,12 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
        ! Get A(l,R*q)= Ry * A(l,q)
        !
        call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
-       & iq,isqy,iGqy,ID,S_index,EXC_WF_rot1(:,:n_of_exc(i_grp)),l_min_mem)
+       &       iq,isqy,iGqy,ID,S_index,EXC_WF_rot1(:,:n_of_exc(i_grp)),l_min_mem)
        !
        ! Get R * A(l,q)
        !
        call EXC_WF_symm_qpoint(Xk,qpt,first_exc(i_grp),n_of_exc(i_grp),&
-       & iq,isqc,iGqc,ID,S_index,EXC_WF_rot2(:,:n_of_exc(i_grp)),l_min_mem)
+       &       iq,isqc,iGqc,ID,S_index,EXC_WF_rot2(:,:n_of_exc(i_grp)),l_min_mem)
        !
        ! Compute the trace of the Irrep
        !
@@ -213,6 +208,65 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call io_control(ACTION=RD_CL,COM=REP,SEC=(/0/),MODE=DUMP,ID=ID)
  io_err=io_WF_phases(BS_bands,0,0,0,ID,(/0,0,0,0,0/))
  !
+ ! Now I refine the number of irreps using the reps.
+ ! The first guess was obtained with the degeneration finder
+ !
+ call refine_groups(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,ref_exc_grp,&
+                        &   exc_reps)
+ !
+ ! Finally I compute the exciton character
+ !
+ call get_character(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
+                        &   exc_trace,exc_reps,exc_character,.true.,iq)
+ !
+ titles=(/" E[eV]  ","i_lambda"," n_deg  ","exc-symm"/)
+ call msg("o "//trim(filebse),"#")
+ call msg("o "//trim(filebse),'#',titles,INDENT=0,USE_TABS=.true.)
+ call msg("o "//trim(filebse),"#")
+ !
+ loc_fmt="(F10.4,12x,i4,12x,F4.2,12x,a)"
+ !
+ do i_grp=1,n_deg_grp
+   do i_sub_grp=1,n_sub_grps(i_grp)
+     !
+     il1=first_exc(i_grp)+ref_exc_sbgr(i_sub_grp,i_grp)-1
+     !
+     write(loc_msg,loc_fmt) BS_E_real(il1)*HA2EV,il1,real(exc_trace(1,i_sub_grp,i_grp)),&
+     &              trim(exc_character(i_sub_grp,i_grp))
+     call msg("o "//trim(filebse),'',loc_msg,INDENT=-2)
+     !
+   enddo
+ enddo
+ !
+ call of_open_close(filebse)
+ !
+end subroutine excitons_symmetries
+!
+!
+subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,ref_exc_grp,&
+                        &   loc_reps   )
+ !
+ use pars,           ONLY:SP
+ use com,            ONLY:msg
+ use D_lattice,      ONLY:nclass
+ use YPPm,           ONLY:symm_thresh
+ use stderr,         ONLY:intc
+ !
+ implicit none
+ !
+ integer,      intent(in)  :: nstates,n_deg_grp
+ integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
+ integer,      intent(out) :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
+ integer,      intent(out) :: exc_sbgr(nstates,nstates),ref_exc_grp(nstates,nstates)
+ complex(SP),  intent(in)  :: loc_reps(12,nstates,nstates,nstates)
+ !
+ ! Workspace
+ !
+ integer  :: iexc,jexc,il1,il2,i_grp
+ !
  ! From each rep grep the size of the irreps
  !
  ref_exc_grp=-1
@@ -227,8 +281,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
        ref_exc_grp(il2,i_grp)=il1
        jexc=first_exc(i_grp)+il2-1
        call msg('s',"Rep "//trim(intc(i_grp))//" ,Exc. mix "//trim(intc(iexc))//","&
-       &                  //trim(intc(jexc)),sum(abs(exc_reps(:,il2,il1,i_grp))))
-       if ( sum(abs(exc_reps(:,il2,il1,i_grp)))>=nclass*symm_thresh) cycle
+       &                  //trim(intc(jexc)),sum(abs(loc_reps(:,il2,il1,i_grp))))
+       if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*symm_thresh) cycle
        ref_exc_grp(il2,i_grp)=-1
      enddo
    enddo
@@ -253,31 +307,79 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call msg('s',"Scan of rep matrices gave number of irreps ",sum(n_sub_grps(:n_deg_grp)))
  !
+end subroutine refine_groups
+!
+!
+subroutine get_character(nstates,n_deg_grp,n_of_exc,first_exc, &
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
+                        &   loc_trace,loc_reps,loc_character,l_prt_debug,iq)
+ !
+ use pars,           ONLY:SP,schlen,cI,cZERO
+ use units,          ONLY:HA2EV
+ use YPPm,           ONLY:symm_thresh
+ use stderr,         ONLY:intc,real2ch
+ use com,            ONLY:msg,of_open_close
+ use D_lattice,      ONLY:which_irr,char_mat,nclass,& !nelem,&
+ &                        name_class,name_rap
+ !
+ implicit none
+ !
+ integer,      intent(in)  :: nstates,n_deg_grp
+ integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
+ integer,      intent(in)  :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
+ integer,      intent(in)  :: exc_sbgr(nstates,nstates)
+ complex(SP),  intent(out) :: loc_trace(12,nstates,nstates)
+ complex(SP),  intent(in)  :: loc_reps(12,nstates,nstates,nstates)
+ character(*), intent(out) :: loc_character(nstates,nstates)
+ logical,      intent(in)  :: l_prt_debug
+ integer,      intent(in)  :: iq
+ !
+ ! Workspace
+ !
+ logical     :: debug_file_to_open
+ logical     :: l_mixed_states,l_partial_space,l_char_table_imag,l_char_not_found,case_simple,case_cmplx
+ complex(SP) :: tmp_trace(12),char_tmp(12)
+ !
+ real(SP)             :: tmp_real
+ character(9)         :: vec_ch(12)
+ character(schlen)    :: filedebug,titles(3),tmp_ch,loc_msg,loc_fmt
+ !
+ integer  :: ich,jrap,irap,iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,max_deg
+ !
+ integer  :: which_class(12),ncmplx
+ !
  ! Compute the trace of the irreps
  !
- trace=cZERO
+ loc_trace=cZERO
  !
  do i_grp=1,n_deg_grp
    do i_sub_grp=1,n_sub_grps(i_grp)
      !write(*,*) i_grp," sub grp ",i_sub_grp," with ref ",ref_exc_sbgr(i_sub_grp,i_grp)
      do il1=1,n_of_exc(i_grp)
        if( exc_sbgr(il1,i_grp)/=i_sub_grp ) cycle
-       !write(*,*) i_sub_grp,"exc in sbgrp ",il1
+       !write(*,*) i_sub_grp,"exc in sbgr ",il1
        do iclass=1,nclass
-         trace(iclass,i_sub_grp,i_grp)=trace(iclass,i_sub_grp,i_grp) + &
-         &                      exc_reps(iclass,il1,il1,i_grp)
+         loc_trace(iclass,i_sub_grp,i_grp)=loc_trace(iclass,i_sub_grp,i_grp) + &
+         &                      loc_reps(iclass,il1,il1,i_grp)
        enddo
      enddo
    enddo
  enddo
  !
- ! Finally I compute the exciton character
+ ! DEBUG <
+ !write(*,*) ""
+ !do irap=1,nclass
+ !  write(*,*) 0.0_SP,nelem(irap),real(char_mat(irap,which_irr(:nclass)),SP)
+ !enddo
+ ! DEBUG >
  !
- loc_fmt="(F10.4,12x,F4.2,12x,a,12x,i4)"
- l_char_table_imag=maxval(abs(real(cI*char_mat)))>0.01_SP
+ l_char_table_imag=maxval(abs(real(cI*char_mat,SP)))>0.01_SP
  !
- max_deg=nint(maxval(real(abs(char_mat(:,1)))))
+ max_deg=nint(maxval(real(abs(char_mat(:,1)),SP)))
  if (l_char_table_imag) max_deg=max_deg*2
+ !
+ debug_file_to_open=.true.
+ l_char_not_found=.false.
  !
  do iclass=1,nclass
    irap=which_irr(iclass)
@@ -290,14 +392,14 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
    !il=first_exc(i_grp)
    il1=first_exc(i_grp)+ref_exc_sbgr(i_sub_grp,i_grp)-1
    ! DEBUG <
-   !write(*,*) BS_E_real(il)*HA2EV,i_grp,n_of_exc(i_grp),real(trace(:nclass,i_grp))
+   !write(*,*) BS_E_real(il)*HA2EV,i_grp,n_of_exc(i_grp),real(loc_trace(:nclass,i_grp))
    ! DEBUG >
    !
-   l_mixed_states = nint(abs(trace(1,i_sub_grp,i_grp))) > max_deg 
+   l_mixed_states = nint(abs(loc_trace(1,i_sub_grp,i_grp))) > max_deg 
    !
    l_partial_space=.false.
    do iclass=1,nclass
-     tmp_real=abs(trace(iclass,i_sub_grp,i_grp))
+     tmp_real=abs(loc_trace(iclass,i_sub_grp,i_grp))
      tmp_real=abs(tmp_real-real(nint(tmp_real),SP))
      l_partial_space = tmp_real > symm_thresh
      if(l_partial_space) exit
@@ -309,12 +411,12 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
    !
    if ( .not. (l_mixed_states.or.l_partial_space) ) then
      do irap=1,nclass
-       char_tmp(:nclass)=char_mat(irap,which_irr(:nclass))
-       trace_loc(:nclass)=trace(:nclass,i_sub_grp,i_grp)
+       char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass)),kind=SP)
+       tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
        ! Point groups without imaginary part
-       case_simple=all(abs(     trace_loc(:nclass)       -     char_tmp(:nclass)) <=symm_thresh)
+       case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass)) <=symm_thresh)
        ! Point groups with imaginary part: 2 states with conjg character are summed together 
-       case_cmplx =all(abs(real(trace_loc(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
+       case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
        if ( .not. (case_simple .or. case_cmplx) ) cycle
        tmp_ch=trim(name_rap(irap))
        l_char_not_found=.false.
@@ -327,10 +429,10 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
    else if (l_mixed_states) then
      main_loop: do irap=1,nclass
        do jrap=1,nclass
-         char_tmp(:nclass)=char_mat(irap,which_irr(:nclass))+char_mat(jrap,which_irr(:nclass))
-         trace_loc(:nclass)=trace(:nclass,i_sub_grp,i_grp)
-         case_simple=all(abs(     trace_loc(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
-         case_cmplx =all(abs(real(trace_loc(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
+         char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass))+char_mat(jrap,which_irr(:nclass)),kind=SP)
+         tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
+         case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
+         case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
          if ( .not. (case_simple .or. case_cmplx) ) cycle
          tmp_ch=trim(name_rap(irap))//"+"//trim(name_rap(jrap))
          l_char_not_found=.false.
@@ -343,16 +445,35 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
      endif
    endif
    !
-   write(loc_msg,loc_fmt) BS_E_real(il1)*HA2EV,real(trace(1,i_sub_grp,i_grp)),trim(tmp_ch),il1
-   call msg("o "//trim(filename),'',loc_msg,INDENT=-2)
-   if (l_char_not_found) then
+   loc_character(i_sub_grp,i_grp)=trim(tmp_ch)
+   !
+   if (l_char_not_found.and.l_prt_debug) then
+     !
+     if (debug_file_to_open) then
+       filedebug="exc_qpt"//trim(intc(iq))//"_E+syms_sorted_dbg"
+       call of_open_close(filedebug,'ot')
+       loc_fmt="(i4,12x,F4.2,12x,a)"
+       debug_file_to_open=.false.
+     endif
+     !
+     call msg("o "//trim(filedebug),"# Symmetries debug at qpt ",iq,INDENT=0)
+     call msg("o "//trim(filedebug),"#")
+     !
+     titles=(/"i_lambda"," n_deg  "," symm.  "/)
+     call msg("o "//trim(filedebug),"#")
+     call msg("o "//trim(filedebug),'#',titles,INDENT=0,USE_TABS=.true.)
+     call msg("o "//trim(filedebug),"#")
+     !
+     write(loc_msg,loc_fmt) il1,real(loc_trace(1,i_sub_grp,i_grp)),trim(tmp_ch)
+     call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
+     !
      ncmplx=1
-     if ( any(aimag(trace(:,i_sub_grp,i_grp))>1.E-4_SP) ) ncmplx=2
+     if ( any(aimag(loc_trace(:,i_sub_grp,i_grp))>1.E-4_SP) ) ncmplx=2
      do ielem=1,ncmplx
        !
        if (ielem==1) loc_msg="Real part analysis "
        if (ielem==2) loc_msg="Img. part analysis"
-       call msg("o "//trim(filename),'',loc_msg,INDENT=-2)
+       call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
        vec_ch=""
        do iclass=1,nclass
          vec_ch(iclass)=trim(name_class(iclass))
@@ -360,17 +481,17 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
            vec_ch(iclass)=" "//vec_ch(iclass)
          enddo
        enddo
-       call msg("o "//trim(filename),"Class",vec_ch(:nclass),INDENT=0)
+       call msg("o "//trim(filedebug),"Class",vec_ch(:nclass),INDENT=0)
        !
        loc_msg=" Sum"
        do irap=1,nclass
          iclass=which_class(irap)
-         if(ielem==1) write(tmp_ch,"(2x,F5.2,2x)")  real(trace(iclass,i_sub_grp,i_grp))
-         if(ielem==2) write(tmp_ch,"(2x,F5.2,2x)") aimag(trace(iclass,i_sub_grp,i_grp))
+         if(ielem==1) write(tmp_ch,"(2x,F5.2,2x)")  real(loc_trace(iclass,i_sub_grp,i_grp))
+         if(ielem==2) write(tmp_ch,"(2x,F5.2,2x)") aimag(loc_trace(iclass,i_sub_grp,i_grp))
          loc_msg=trim(loc_msg)//trim(tmp_ch)
        enddo
        !
-       call msg("o "//trim(filename),'',loc_msg,INDENT=-2)
+       call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
        !
        do il2=1,n_of_exc(i_grp)
          if( exc_sbgr(il2,i_grp)/=i_sub_grp ) cycle
@@ -378,27 +499,20 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
          loc_msg="  "//trim(intc(iexc))
          do irap=1,nclass
            iclass=which_class(irap)
-           if(ielem==1) write(tmp_ch,"(2x,F5.2,2x)")  real(exc_reps(iclass,il2,il2,i_grp))
-           if(ielem==2) write(tmp_ch,"(2x,F5.2,2x)") aimag(exc_reps(iclass,il2,il2,i_grp))
+           if(ielem==1) write(tmp_ch,"(2x,F5.2,2x)")  real(loc_reps(iclass,il2,il2,i_grp))
+           if(ielem==2) write(tmp_ch,"(2x,F5.2,2x)") aimag(loc_reps(iclass,il2,il2,i_grp))
            loc_msg=trim(loc_msg)//trim(tmp_ch)
          enddo
-         call msg("o "//trim(filename),'',loc_msg,INDENT=-2)
+         call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
        enddo
        !
      enddo
-     call msg("o "//trim(filename),'')
+     call msg("o "//trim(filedebug),'')
    endif
    !
    enddo
  enddo
  !
- ! DEBUG <
- !write(*,*) ""
- !do irap=1,nclass
- !  write(*,*) 0.0_SP,nelem(irap),real(char_mat(irap,which_irr(:nclass)),SP)
- !enddo
- ! DEBUG >
+ if (.not.debug_file_to_open) call of_open_close(filedebug)
  !
- call of_open_close(filename)
- !
-end subroutine excitons_symmetries
+end subroutine get_character

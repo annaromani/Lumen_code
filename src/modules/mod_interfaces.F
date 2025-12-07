@@ -217,6 +217,21 @@ module interfaces
      logical     ,optional :: keep_states_to_load
    end subroutine
    !
+   subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
+   &                                ID,S_index,EXC_WFs,l_min_mem_in)
+     use pars,          ONLY:SP
+     use R_lattice,     ONLY:bz_samp
+     use BS,            ONLY:BS_H_dim
+     use BS_solvers,    ONLY:BSS_n_eig
+     type(bz_samp), intent(in)   :: Xk,qpt
+     integer,       intent(in)   :: first_state,nstates
+     integer,       intent(in)   :: iq,isq,igq
+     integer,       intent(inout):: ID
+     complex(SP),   intent(out)  :: EXC_WFs(BS_H_dim,nstates)
+     integer,       intent(in)   :: S_index(BSS_n_eig)
+     logical,     optional,   intent(in)  :: l_min_mem_in
+   end subroutine EXC_WF_symm_qpoint
+   !
    subroutine OCCUPATIONS_Gaps(E,E_g_dir,E_g_ind,N_f,N_m,I_dir,E_k_dir,E_k_ind)
      use pars,          ONLY: SP
      use electrons,     ONLY:levels,n_sp_pol
