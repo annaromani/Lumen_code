@@ -35,9 +35,7 @@ subroutine build_symmetries()
  YAMBO_ALLOC(rl_sop,(3,3,nsym))
  !
  do is=1,nsym
-   do concurrent (i2=1:3,i3=1:3)
-     rl_sop(i2,i3,is)=dl_sop(i2,i3,is)*alat(i2)/alat(i3)
-   enddo
+   forall (i2=1:3,i3=1:3) rl_sop(i2,i3,is)=dl_sop(i2,i3,is)*alat(i2)/alat(i3)
  enddo
  !
  ! Indentity index
