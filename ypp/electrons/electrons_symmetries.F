@@ -146,6 +146,8 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
  call io_control(ACTION=RD_CL,COM=REP,SEC=(/0/),MODE=DUMP,ID=ID_WF_phases)
  io_err=io_WF_phases(blim,0,0,0,ID_WF_phases,nsz)
  !
+ YAMBO_FREE(WF_phases_b_map)
+ !
 end subroutine electrons_symmetries
 !
 !

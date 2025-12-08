@@ -6,4 +6,4 @@ objs = electrons_driver.o electrons_spin_factors.o electrons_pdos_factors.o elec
        electrons_density.o electrons_bands.o electrons_symmetries.o \
        electrons_WFs.o electrons_current.o electrons_magnetization.o \
        electrons_bands_interpolate.o electrons_spin_and_magn_interpolate.o \
-       $(sc_objects)
+       transitions_symmetries.o $(sc_objects)
