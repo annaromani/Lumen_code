@@ -356,19 +356,23 @@ subroutine get_character_trans(n_trans_k,n_deg_grp,n_of_tr,first_tr,  &
    if (l_char_not_found.and.l_prt_debug) then
      !
      if (debug_file_to_open) then
+       !
        filedebug="elec_k"//trim(intc(ik))//"_sp"//trim(intc(i_sp_pol))//"_syms_dbg"
        call of_open_close(filedebug,'ot')
        loc_fmt="(i4,12x,F4.2,12x,a)"
        debug_file_to_open=.false.
+       call msg("o "//trim(filedebug),"# Symmetries debug at kpt ",ik,INDENT=0)
+       call msg("o "//trim(filedebug),"#")
+       !
+       titles=(/"  itr   "," n_deg  "," symm.  "/)
+       call msg("o "//trim(filedebug),"#")
+       call msg("o "//trim(filedebug),'#',titles,INDENT=0,USE_TABS=.true.)
+       call msg("o "//trim(filedebug),"#")
+       !
      endif
      !
-     call msg("o "//trim(filedebug),"# Symmetries debug at kpt ",ik,INDENT=0)
-     call msg("o "//trim(filedebug),"#")
-     !
-     titles=(/"   ib   "," n_deg  "," symm.  "/)
-     call msg("o "//trim(filedebug),"#")
-     call msg("o "//trim(filedebug),'#',titles,INDENT=0,USE_TABS=.true.)
-     call msg("o "//trim(filedebug),"#")
+     write(loc_msg,loc_fmt) i_tr1,real(loc_trace(1,i_grp)),trim(tmp_ch)
+     call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
      !
      ncmplx=1
      if ( any(aimag(loc_trace(:,i_grp))>1.E-4_SP) ) ncmplx=2

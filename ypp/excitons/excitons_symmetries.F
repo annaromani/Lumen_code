@@ -490,15 +490,16 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc,first_exc, &
        call of_open_close(filedebug,'ot')
        loc_fmt="(i4,12x,F4.2,12x,a)"
        debug_file_to_open=.false.
+       !
+       call msg("o "//trim(filedebug),"# Symmetries debug at qpt ",iq,INDENT=0)
+       call msg("o "//trim(filedebug),"#")
+       !
+       titles=(/"i_lambda"," n_deg  "," symm.  "/)
+       call msg("o "//trim(filedebug),"#")
+       call msg("o "//trim(filedebug),'#',titles,INDENT=0,USE_TABS=.true.)
+       call msg("o "//trim(filedebug),"#")
+       !
      endif
-     !
-     call msg("o "//trim(filedebug),"# Symmetries debug at qpt ",iq,INDENT=0)
-     call msg("o "//trim(filedebug),"#")
-     !
-     titles=(/"i_lambda"," n_deg  "," symm.  "/)
-     call msg("o "//trim(filedebug),"#")
-     call msg("o "//trim(filedebug),'#',titles,INDENT=0,USE_TABS=.true.)
-     call msg("o "//trim(filedebug),"#")
      !
      write(loc_msg,loc_fmt) il1,real(loc_trace(1,i_sub_grp,i_grp)),trim(tmp_ch)
      call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
