@@ -35,7 +35,6 @@ macro: DEV_SUB(x)=x
 ## Documentation Guide
 
 ### Quick Navigation
-- **[Complete Documentation Index](page/000_documentation_index.html)** - Browse all available documents
 - **[Theory Guide](page/YAMBO_THEORY_README.html)** - Theoretical foundations
 - **[Input Flags Reference](page/INPUT_FLAGS.html)** - All configuration options
 - **[I/O System](page/IO_Quick_Reference.html)** - File formats and architecture

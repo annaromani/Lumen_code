@@ -145,6 +145,11 @@ Theoretical foundations and mathematical frameworks:
 - [Screening in RT Systems](YAMBO_RT_SCREENING_THEORY.html) - Screening effects in real-time simulations
 - [Kadanoff-Baym Theory & Implementation](KADANOFF_BAYM_IMPLEMENTATION.html) - KBE derivation and code mapping
 
+#### Exciton-Phonon Coupling
+- [Exciton-Phonon Theory](EXCPH_THEORY.html) - Complete theoretical framework for exciton-phonon interactions
+- [Phonon-Assisted Transitions](EXCPH_THEORY.html) - One-phonon absorption and emission processes
+- [Exciton Lifetimes](EXCPH_THEORY.html) - Non-radiative decay from phonon scattering
+
 #### Quick References
 - [Formula Quick Reference](YAMBO_FORMULAS_QUICK_REFERENCE.html) - Essential equations at a glance
 
@@ -153,6 +158,12 @@ Theoretical foundations and mathematical frameworks:
 ### **IMPLEMENTATION & ARCHITECTURE**
 
 Code architecture, algorithms, and implementation details:
+
+#### Exciton-Phonon Coupling Implementation
+- [Exciton-Phonon Implementation](EXCPH_IMPLEMENTATION.html) - Computational algorithms and methods
+- [Matrix Element Calculation](EXCPH_IMPLEMENTATION.html) - How coupling strengths are computed
+- [Optical Properties](EXCPH_IMPLEMENTATION.html) - Absorption and luminescence spectra
+- [Lifetime Computation](EXCPH_IMPLEMENTATION.html) - Non-radiative decay rates
 
 #### Real-Time Simulations
 - [RT NEGF Implementation Analysis](YAMBO_RT_NEGF_IMPLEMENTATION.html) - What features are actually implemented

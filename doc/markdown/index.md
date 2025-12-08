@@ -10,7 +10,7 @@ Documentation organized by **Theory → Code → Visual Guides** for logical lea
 
 ## THEORY & FUNDAMENTALS
 
-Theoretical foundations and mathematical frameworks to understand YAMBO's physics.
+Theoretical foundations and mathematical frameworks to understand LUMEN's physics.
 
 ### Equilibrium Green's Functions
 
@@ -24,6 +24,12 @@ Theoretical foundations and mathematical frameworks to understand YAMBO's physic
 - [Screening in RT Systems](YAMBO_RT_SCREENING_THEORY.html) — Screening effects in real-time simulations
 - [Kadanoff-Baym Theory & Implementation](KADANOFF_BAYM_IMPLEMENTATION.html) — KBE derivation and code mapping
 
+### Exciton-Phonon Coupling
+
+- [Exciton-Phonon Theory](EXCPH_THEORY.html) — Complete theoretical framework for exciton-phonon interactions
+- [Phonon-Assisted Transitions](EXCPH_IMPLEMENTATION.html) — Theory of phonon-assisted optical processes
+- [Exciton Lifetimes](EXCPH_IMPLEMENTATION.html) — Non-radiative decay rates from phonon scattering
+
 ### Quick References
 
 - [Formula Quick Reference](YAMBO_FORMULAS_QUICK_REFERENCE.html) — Essential equations at a glance
@@ -34,6 +40,13 @@ Theoretical foundations and mathematical frameworks to understand YAMBO's physic
 ## IMPLEMENTATION & ARCHITECTURE
 
 Code structure, algorithms, and implementation details for developers.
+
+### Exciton-Phonon Coupling
+
+- [Exciton-Phonon Implementation](EXCPH_IMPLEMENTATION.html) — Computational methods and algorithms for coupling calculation
+- [Matrix Element Computation](EXCPH_IMPLEMENTATION.html) — How gkkp matrix elements are calculated
+- [Optical Properties Calculation](EXCPH_IMPLEMENTATION.html) — Computing absorption and luminescence spectra
+- [Lifetime Calculations](EXCPH_IMPLEMENTATION.html) — Non-radiative decay rates from scattering
 
 ### Real-Time Simulations
 

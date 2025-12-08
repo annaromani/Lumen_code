@@ -40,7 +40,7 @@ cd "$SCRIPT_DIR"
 
 print_header() {
     echo -e "${BLUE}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║${NC}  🌊 Lumen Documentation Generator (FORD)                     ${BLUE}║${NC}"
+echo -e "${BLUE}║${NC}  🌊 Lumen Documentation Generator (FORD)                     ${BLUE}║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
@@ -290,6 +290,10 @@ fi
 if [ "$SERVE_DOCS" = true ]; then
     serve_documentation
 fi
+
+DOC_DIR="$SCRIPT_DIR/doc"
+echo "🔧 Injecting custom sidebar navigation..."
+python3 "$DOC_DIR/inject-sidebar-script.py"
 
 # Final message
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"

@@ -8,16 +8,45 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate exciton-phonon matrix elements and satellites renormalizations
-!!
-!! @param[in]       E                quasi-particle index
-!! @param[in]       k                q-index in the BZ
-!! @param[in]       q                q-index in distributed array
-!! @param[in]       X                phonon-branch index
-!!
-!! @param[out]      EXCPH_gkkp                  Exciton-phonon matrix elements
-!! @param[out]      EXCPH_gkkp_sq               Exciton-phonon matrix elements squared
-!
+subroutine EXCPH_gkkp_driver(E,k,q,X)
+ !! **EXCPH_gkkp_driver - Exciton-Phonon Coupling Matrix Element Calculation**
+ !!
+ !! Computes exciton-phonon matrix elements by combining electron-phonon couplings
+ !! with exciton wavefunctions. The calculation involves rotating exciton states to
+ !! different q-points in the Brillouin zone and evaluating the coupling strength.
+ !!
+ !! **Physical Quantity**:
+ !!
+ !! G^exc_{α,β}(q,ν) = ⟨α,q|ΔV_ν|β,0⟩
+ !!
+ !! where α, β are exciton state indices, q is the phonon wavevector, and ν is the
+ !! phonon branch. This matrix element describes how a phonon with branch ν at
+ !! wavevector q couples exciton state β to state α.
+ !!
+ !! **Main Algorithm**:
+ !!   1. Load electron-phonon matrix elements (gkkp_expanded) from database
+ !!   2. Setup q-point and k-point Brillouin zone tables and symmetry operations
+ !!   3. For each q-point in IBZ:
+ !!      - Load exciton wavefunctions at this q-point
+ !!      - Rotate wavefunctions using symmetry operations
+ !!      - For each phonon branch:
+ !!        * Call EXCPH_gkkp_eval to compute coupling matrix elements
+ !!        * Save results to disk
+ !!   4. Write complete exciton-phonon database to disk
+ !!
+ !! **Input Parameters**:
+ !!   - E: Electronic structure (bands, energies, occupations)
+ !!   - k: k-point grid in the Brillouin zone
+ !!   - q: q-point grid for phonons
+ !!   - X: Response function data structure
+ !!
+ !! **Output**:
+ !!   - EXCPH_gkkp database file containing matrix elements
+ !!
+ !! **References**:
+ !!   - Paleari et al., "Exciton-phonon coupling in bulk crystals"
+ !!   - Salpeter and Bethe, "Relativistic equation for bound-state problems"
+ !
 subroutine EXCPH_gkkp_driver(E,k,q,X)
  !
  use pars,           ONLY:SP,cZERO,rZERO,schlen

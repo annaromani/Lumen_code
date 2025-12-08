@@ -8,8 +8,65 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate exciton non-radiative life-time induced by phonon-scattering
-!!
+subroutine EXCPH_lifetime(k,q,X)
+ !! **EXCPH_lifetime - Non-Radiative Exciton Lifetime from Phonon Scattering**
+ !!
+ !! Calculates the inverse lifetime (decay rate) of each exciton state due to
+ !! inelastic scattering with phonons. This is a key quantity for understanding
+ !! exciton dynamics and non-radiative recombination in semiconductors.
+ !!
+ !! **Physical Formula**:
+ !!
+ !! 1/τ_nr = 2π Σ_{β,ν,q} |G^exc_{α,β}(q,ν)|^2 δ(E_α - E_β ∓ ω_ν)
+ !!
+ !! where:
+ !!   - G^exc: Exciton-phonon matrix element
+ !!   - E_α, E_β: Energies of exciton states
+ !!   - ω_ν: Phonon frequency
+ !!   - δ: Delta function (replaced by Lorentzian for numerical integration)
+ !!   - ∓ signs represent phonon emission (-) and absorption (+) processes
+ !!
+ !! **Temperature Dependence**:
+ !!
+ !! The lifetime includes temperature effects through phonon occupations:
+ !!
+ !! 1/τ = Σ_{β,ν} |G^exc|^2 [n_ν/(E_α-E_β-ω_ν) + (n_ν+1)/(E_α-E_β+ω_ν)]
+ !!
+ !! where n_ν = 1/(exp(ω_ν/k_B T) - 1) is the Bose distribution.
+ !!
+ !! **Main Workflow**:
+ !!   1. Load exciton energies and wavefunctions
+ !!   2. Load exciton-phonon matrix elements
+ !!   3. Find energy degenerate groups (optional)
+ !!   4. Setup double-grid if requested
+ !!   5. For each exciton state α:
+ !!      - Sum over all decay channels (final states β and phonons ν)
+ !!      - Apply energy conservation with broadening
+ !!      - Include temperature-dependent phonon populations
+ !!      - Accumulate lifetime contributions
+ !!   6. Convert to physical units and write output
+ !!
+ !! **Output**:
+ !!   - EXC_LifeTime: Array of lifetimes (in atomic units)
+ !!   - EXC_LineWidth: Spectral linewidth (if computed)
+ !!   - Text files with detailed breakdown per state and process
+ !!
+ !! **Key Features**:
+ !!   - Handles degenerate exciton states with averaging
+ !!   - Optional off-diagonal self-energy terms for interband transitions
+ !!   - Temperature-dependent Bose occupations
+ !!   - Detailed output per q-point and phonon branch
+ !!   - Double-grid support for improved convergence
+ !!
+ !! **Parameters**:
+ !!   - KeepDeg: Maintain degenerate state splitting (default: False)
+ !!   - ExtendOutput: Output per q-point lifetime (default: False)
+ !!   - ExcPhOffDiago: Include off-diagonal contributions (default: False)
+ !!
+ !! **References**:
+ !!   - Paleari, "Phonon-assisted transitions in photoexcited semiconductors," PhD (2019)
+ !!   - Salpeter equation theory for exciton dynamics
+ !
 subroutine EXCPH_lifetime(k,q,X)
  !
  use units,          ONLY:HA2EV,HA2CMm1

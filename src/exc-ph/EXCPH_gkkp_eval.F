@@ -8,10 +8,52 @@
 !
 #include<y_memory.h>
 !
-! GKKP formulation following the F. Paleari PhD thesis (Pg. 109, Eq : 4.25)
-! The exciton phonon matrix elements are defined as <q=Q,S'|dV_{Q}|q=0,S>
-! These is for phonon absorption
-!
+subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
+ !! **EXCPH_gkkp_eval - Core Exciton-Phonon Matrix Element Computation**
+ !!
+ !! Computes the exciton-phonon matrix element for a specific q-point and phonon
+ !! branch by combining electron-phonon scattering with excitonic wavefunctions.
+ !!
+ !! **Physical Formula**:
+ !!
+ !! G^exc_{α,β}(q,ν) = Σ_H A^*_{H}(β) [ξ^hole_H - ξ^elec_H] A_{H}(α)
+ !!
+ !! where H indexes electron-hole pairs, ξ^hole and ξ^elec are partial sums over
+ !! individual scattering channels, and A are exciton expansion coefficients.
+ !!
+ !! **Two-Step Algorithm**:
+ !!
+ !!   1. Compute Xi Terms (intermediate results):
+ !!      - ξ^hole: Hole scattering contribution
+ !!        ξ^hole_H = Σ_{v'} g_{c,v'}(k,q) * A*_{H'}(β)
+ !!      - ξ^elec: Electron scattering contribution  
+ !!        ξ^elec_H = Σ_{c'} g_{c',c}(k+q,q) * A*_{H'}(β)
+ !!      where g are electron-phonon matrix elements normalized by √(2ω_ν)
+ !!
+ !!   2. Compute Final Coupling:
+ !!      G^exc_{α,β} = Σ_H A_{H}(α) * [ξ^hole_H - ξ^elec_H]
+ !!
+ !! **Input Parameters**:
+ !!   - iq_s: Symmetry-related q-point index
+ !!   - iq_bz: q-point in full Brillouin zone
+ !!   - il: Phonon branch index
+ !!   - k: k-point grid
+ !!   - q: q-point grid
+ !!   - ID_gkkp: I/O identifier for electron-phonon database
+ !!
+ !! **Output**:
+ !!   - Updates module array EXCPH_gkkp with computed matrix elements
+ !!   - Updates EXCPH_gkkp_sq with squared magnitudes for lifetime calculations
+ !!
+ !! **Key Implementation Details**:
+ !!   - Handles asymmetric momentum transfers: electrons gain q, holes lose q
+ !!   - Uses inverse BSS table for efficient index lookups
+ !!   - Normalizes by √(2ω_ν) to account for phonon zero-point motion
+ !!   - Optional absolute value operations for debugging
+ !!
+ !! **References**:
+ !!   - Paleari PhD thesis, Eq. 4.25, page 109
+ !
 subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !
  use pars,           ONLY:SP,cZERO,rZERO,cONE
