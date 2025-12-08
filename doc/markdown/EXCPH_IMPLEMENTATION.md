@@ -112,9 +112,11 @@ where:
 
 The phonon-assisted absorption contribution near frequency ω:
 
-χ_α^{phass}(ω) = Σ_{β,ν} |G^exc_{α,β}(q,ν)|^2 / [(E_β - ω) - ω_ν]
+$$
+\chi_\alpha^{ph-ass}(\omega) = \sum_{\beta,\nu} |G^{exc}_{\alpha,\beta}(q,\nu)|^2 / [(E_\beta - \omega) - \omega_\nu]
+$$
 
-This shows the resonance occurs at ω = E_β - ω_ν (phonon emission satellite).
+This shows the resonance occurs at $\omega = E_\beta - \omega_\nu$ (phonon emission satellite).
 
 ### Luminescence (PL): EXCPH_X_phass
 
@@ -135,9 +137,11 @@ The output distinguishes three contributions:
 
 The non-radiative lifetime is computed from the exciton self-energy:
 
-1/τ_nr = 2 Σ_{β,ν} |G^exc_{α,β}(q,ν)|^2 δ(E_α - E_β ∓ ω_ν)
+$$
+1/\tau_{nr} = 2 \sum_{\beta,\nu} |G^{exc}_{\alpha,\beta}(q,\nu)|^2 \delta(E_\alpha - E_\beta \mp \omega_\nu)
+$$
 
-The delta function is replaced by a Lorentzian with broadening parameter L_damping.
+The delta function is replaced by a Lorentzian with broadening parameter `L_damping`.
 
 #### Implementation Details
 
@@ -145,18 +149,18 @@ For each initial exciton state α:
 
 1. Loop over all final states β
 2. For each phonon branch ν
-3. Check if energy conservation is approximately satisfied: |E_α - E_β - ω_ν| < broadening
-4. Accumulate the lifetime contribution: |G^exc|^2 × density-of-states factor
+3. Check if energy conservation is approximately satisfied: $|E_\alpha - E_\beta - \omega_\nu| < \textrm{broadening}$
+4. Accumulate the lifetime contribution: $|G^{exc}|^2 × \textrm{density-of-states}$ factor
 
 Two processes contribute:
-- Phonon absorption (β → α - ω_ν): Creates phonon
-- Phonon emission (β → α + ω_ν): Annihilates phonon
+- Phonon absorption ($\beta \rightarrow \alpha - \omega_\nu$): Creates phonon
+- Phonon emission ($\beta → \alpha + \omega_\nu$): Annihilates phonon
 
 Phonon populations at finite temperature are included:
 
-1/τ_nr = Σ_{β,ν} |G^exc_{α,β}|^2 [n_ν/(E_α-E_β-ω_ν) + (n_ν+1)/(E_α-E_β+ω_ν)]
-
-where n_ν = 1/(exp(ω_ν/k_B T) - 1)
+$$
+1/\tau_{nr} = \sum_{\beta,\nu} |G^{exc}_{\alpha,\beta}|^2 [n_\nu/(E_\alpha-E_\beta-\omega_\nu) + (n_\nu+1)/(E_\alpha-E_\beta+\omega_\nu)]
+$$
 
 ## Output Data Structures
 
@@ -271,21 +275,6 @@ where:
 - N_bands: Number of bands
 
 For typical systems (100-1000 q-points, 3 phonon branches, 10-100 excitons), computation takes minutes to hours on modern hardware.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Error: gkkp_expanded databases not found**
-   - Solution: Run electron-phonon calculation first to generate gkkp_expanded database
-
-2. **Zero lifetimes across all states**
-   - Check: Phonon frequency threshold (FAN_deltaE_treshold)
-   - Check: Broadening parameter (L_damping) - if too small, resonances miss
-
-3. **Unphysical temperature dependence**
-   - Check: Bose occupation calculation at given temperature
-   - Check: Convergence with respect to energy broadening
 
 ## References
 
