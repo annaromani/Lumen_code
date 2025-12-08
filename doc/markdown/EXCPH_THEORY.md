@@ -54,17 +54,26 @@ where:
 
 ### Definition
 
-The exciton-phonon matrix element describes how a phonon couples two excitonic states:
+The exciton-phonon matrix element describes how a phonon couples two excitonic states. The **most general form** allows arbitrary exciton and phonon momenta:
 
 $$
 G^{\lambda, exc}_{\alpha,\beta}(Q,q) = ⟨\alpha,q+Q|\partial^\lambda_q V_|\beta,Q⟩
 $$
 
 where:
-- $\alpha$ is the final exciton state at wavevector $q$
-- $\beta$ is the initial exciton state at the origin
+- $Q$ is the initial exciton wavevector 
+- $q$ is the phonon wavevector
+- $\alpha$ is the final exciton state at wavevector $Q+q$
+- $\beta$ is the initial exciton state at wavevector $Q$
 - $\nu$ is the phonon branch
 - $\partial^\lambda_q V$ is the directional derivative of the total Kohn-Sham potential with respect to the phonon displacement vector of mode $\lambda$ and momentum $q$.
+
+The code currently implements the **restricted case** where the initial exciton is fixed at the Gamma point ($Q=0$):
+
+$$
+G^{exc}_{\alpha,\beta}(q,\nu) = ⟨\alpha,q|\partial_q V_\nu|\beta,0⟩
+$$
+
 
 ### Decomposition into Electron and Hole Contributions
 

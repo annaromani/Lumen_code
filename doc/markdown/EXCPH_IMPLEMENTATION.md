@@ -36,8 +36,15 @@ The calculation is orchestrated by `EXCPH_gkkp_driver`. This routine:
 The core calculation is performed by `EXCPH_gkkp_eval`, which implements the formula:
 
 $$
-G^{exc}_{\alpha,\beta}(q,\nu) = \sum_H A^*_{H}(\beta) [\xi_H^{hole}(q,\nu) - \xi_H^{elec}(q,\nu)] A_{H}(\alpha)
+G^{exc}_{\alpha,\beta}(q,\nu) = \sum_H A^*_{H}(\beta,Q=q) [\xi_H^{hole}(q,\nu) - \xi_H^{elec}(q,\nu)] A_{H}(\alpha,Q=0)
 $$
+
+where:
+- $\alpha$ indexes exciton states at the **initial q-point Q=0** (Gamma point)
+- $\beta$ indexes exciton states **rotated to q-point Q=q**
+- The coupling describes the transition from exciton at Gamma to exciton at q via a phonon with momentum q
+
+**Note**: The current implementation restricts to initial exciton at Q=0 (Gamma). The full formulation would allow arbitrary Q, but this simplified case captures the dominant physics for most materials.
 
 The calculation proceeds in two steps:
 
@@ -73,15 +80,21 @@ $$
 
 This involves conjugating the exciton wavefunction coefficient for state β and summing the Xi terms weighted by state α coefficients.
 
-### Wavefunction Rotation
+### Wavefunction Rotation (Q=0 → Q=q)
 
-Exciton wavefunctions must be rotated from the reference $q=0$ to other q-points using:
+Exciton wavefunctions must be rotated from the reference Gamma point (Q=0) to other q-points (Q=q) using symmetry operations:
 
 $$
-A_{k,v,c}(\alpha,q) = U^\dagger_{v,v'}(k_{sym},q_{sym}) U_{c,c'}(k+q_{sym},q_{sym}) A_{k,v,c}(\alpha)
+A_{k,v,c}(\alpha,Q=q) = U^\dagger_{v,v'}(k,q) U_{c,c'}(k+q,q) A_{k,v,c}(\alpha,Q=0)
 $$
 
-The unitary matrices come from diagonalizing the electronic Hamiltonian at each q-point and accounting for crystal symmetries via phase factors stored in ELEC_WF_phases.
+where:
+- The unitary matrices $U$ come from diagonalizing the electronic Hamiltonian at each q-point
+- Crystal symmetries are applied via phase factors stored in `ELEC_WF_phases`
+- This rotation ensures the excitonic states have the proper momentum structure at the rotated q-point
+- The electron contribution uses $k+q$ (electron gains momentum q), hole uses $k$ (standard convention)
+
+The rotation procedure (`EXC_WF_symm_qpoint`) handles all the necessary unitary transformations and symmetry operations.
 
 ## Computing Optical Properties
 
@@ -281,5 +294,3 @@ For typical systems (100-1000 q-points, 3 phonon branches, 10-100 excitons), com
 Implementation details follow:
 
 1. Paleari, F., et al., "Exciton-phonon coupling in bulk crystals," Physical Review B (2021)
-2. Salpeter, E.A., "Mass corrections to the fine structure of hydrogen-like atoms," Physical Review 87, 328 (1952)
-3. Code comments in EXCPH_gkkp_eval.F and related subroutines

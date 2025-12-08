@@ -17,11 +17,16 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !!
  !! **Physical Quantity**:
  !!
- !! G^exc_{α,β}(q,ν) = ⟨α,q|ΔV_ν|β,0⟩
+ !! G^{exc}_{\alpha,\beta}(q,\nu) = ⟨\alpha,Q=q|\partial_q V_\nu|\beta,Q=0⟩
  !!
- !! where α, β are exciton state indices, q is the phonon wavevector, and ν is the
- !! phonon branch. This matrix element describes how a phonon with branch ν at
- !! wavevector q couples exciton state β to state α.
+ !! where \alpha, \beta are exciton state indices, q is the phonon wavevector, and \nu is the
+ !! phonon branch. This matrix element describes how a phonon with branch \nu at
+ !! wavevector q couples initial exciton state \beta at Gamma (Q=0) to final exciton
+ !! state \alpha at q-point Q=q. 
+ !!
+ !! **IMPORTANT**: Current implementation assumes initial exciton at Q=0 (Gamma point only).
+ !! The most general form allows arbitrary Q: G^{exc}(Q,q,\nu), but this code restricts
+ !! to the case where exciton momentum transfer equals phonon momentum.
  !!
  !! **Main Algorithm**:
  !!   1. Load electron-phonon matrix elements (gkkp_expanded) from database
@@ -38,17 +43,13 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !!   - E: Electronic structure (bands, energies, occupations)
  !!   - k: k-point grid in the Brillouin zone
  !!   - q: q-point grid for phonons
- !!   - X: Response function data structure
+ !!   - \chi: Response function data structure
  !!
  !! **Output**:
  !!   - EXCPH_gkkp database file containing matrix elements
  !!
  !! **References**:
- !!   - Paleari et al., "Exciton-phonon coupling in bulk crystals"
- !!   - Salpeter and Bethe, "Relativistic equation for bound-state problems"
- !
-subroutine EXCPH_gkkp_driver(E,k,q,X)
- !
+ !!   - Paleari et al., PhysRevLett.122.187401
  use pars,           ONLY:SP,cZERO,rZERO,schlen
  use electrons,      ONLY:levels
  use R_lattice,      ONLY:bz_samp,qindx_B

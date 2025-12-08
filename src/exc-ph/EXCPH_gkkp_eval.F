@@ -16,22 +16,22 @@ subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !!
  !! **Physical Formula**:
  !!
- !! G^exc_{α,β}(q,ν) = Σ_H A^*_{H}(β) [ξ^hole_H - ξ^elec_H] A_{H}(α)
+ !! G^exc_{\alpha,\beta}(q,\nu) = \sum_H A^*_{H}(\beta) [\xi^hole_H - \xi^elec_H] A_{H}(\alpha)
  !!
- !! where H indexes electron-hole pairs, ξ^hole and ξ^elec are partial sums over
+ !! where H indexes electron-hole pairs, \xi^{hole} and \xi^{elec} are partial sums over
  !! individual scattering channels, and A are exciton expansion coefficients.
  !!
  !! **Two-Step Algorithm**:
  !!
- !!   1. Compute Xi Terms (intermediate results):
- !!      - ξ^hole: Hole scattering contribution
- !!        ξ^hole_H = Σ_{v'} g_{c,v'}(k,q) * A*_{H'}(β)
- !!      - ξ^elec: Electron scattering contribution  
- !!        ξ^elec_H = Σ_{c'} g_{c',c}(k+q,q) * A*_{H'}(β)
- !!      where g are electron-phonon matrix elements normalized by √(2ω_ν)
+ !!   1. Compute xi Terms (intermediate results):
+ !!      - \xi^{hole}: Hole scattering contribution
+ !!        \xi^{hole}_H = \sum_{v'} g_{c,v'}(k,q) * A*_{H'}(\beta)
+ !!      - \xi^{elec}: Electron scattering contribution  
+ !!        \xi^{elec}_H = \sum_{c'} g_{c',c}(k+q,q) * A*_{H'}(\beta)
+ !!      where g are electron-phonon matrix elements normalized by \sqrt{(2\omega_\nu)}
  !!
  !!   2. Compute Final Coupling:
- !!      G^exc_{α,β} = Σ_H A_{H}(α) * [ξ^hole_H - ξ^elec_H]
+ !!      G^{exc}_{\alpha,\beta} = \sum_H A_{H}(\alpha) * [\xi^{hole}_H - \xi^{elec}_H]
  !!
  !! **Input Parameters**:
  !!   - iq_s: Symmetry-related q-point index
@@ -52,7 +52,7 @@ subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !!   - Optional absolute value operations for debugging
  !!
  !! **References**:
- !!   - Paleari PhD thesis, Eq. 4.25, page 109
+ !!   - Paleari PhD thesis
  !
 subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !
