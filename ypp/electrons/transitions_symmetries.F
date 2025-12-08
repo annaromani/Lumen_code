@@ -357,7 +357,7 @@ subroutine get_character_trans(n_trans_k,n_deg_grp,n_of_tr,first_tr,  &
      !
      if (debug_file_to_open) then
        !
-       filedebug="elec_k"//trim(intc(ik))//"_sp"//trim(intc(i_sp_pol))//"_syms_dbg"
+       filedebug="trans_k"//trim(intc(ik))//"_sp"//trim(intc(i_sp_pol))//"_syms_dbg"
        call of_open_close(filedebug,'ot')
        loc_fmt="(i4,12x,F4.2,12x,a)"
        debug_file_to_open=.false.
