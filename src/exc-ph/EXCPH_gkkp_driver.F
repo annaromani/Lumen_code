@@ -17,14 +17,14 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !!
  !! **Physical Quantity**:
  !!
- !! G^{exc}_{\alpha,\beta}(q,\nu) = ⟨\alpha,Q=q|\partial_q V_\nu|\beta,Q=0⟩
+ !! G^{exc}_{\alpha,\beta}(q,\nu) = ⟨\alpha,q+Q=q|\partial_q V_\nu|\beta,Q=0⟩
  !!
  !! where \alpha, \beta are exciton state indices, q is the phonon wavevector, and \nu is the
  !! phonon branch. This matrix element describes how a phonon with branch \nu at
  !! wavevector q couples initial exciton state \beta at Gamma (Q=0) to final exciton
  !! state \alpha at q-point Q=q. 
  !!
- !! **IMPORTANT**: Current implementation assumes initial exciton at Q=0 (Gamma point only).
+ !! Current implementation assumes initial exciton at Q=0 (Gamma point only).
  !! The most general form allows arbitrary Q: G^{exc}(Q,q,\nu), but this code restricts
  !! to the case where exciton momentum transfer equals phonon momentum.
  !!

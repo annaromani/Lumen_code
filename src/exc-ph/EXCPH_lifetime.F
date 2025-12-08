@@ -17,22 +17,22 @@ subroutine EXCPH_lifetime(k,q,X)
  !!
  !! **Physical Formula**:
  !!
- !! 1/τ_nr = 2π Σ_{β,ν,q} |G^exc_{α,β}(q,ν)|^2 δ(E_α - E_β ∓ ω_ν)
+ !! 1/\tau_{nr} = 2\pi \sum_{\beta,\nu,q} |G^{exc}_{\alpha,\beta}(q,\nu)|^2 \delta(E_\alpha - E_\beta \mp \omega_\nu)
  !!
  !! where:
  !!   - G^exc: Exciton-phonon matrix element
- !!   - E_α, E_β: Energies of exciton states
- !!   - ω_ν: Phonon frequency
- !!   - δ: Delta function (replaced by Lorentzian for numerical integration)
- !!   - ∓ signs represent phonon emission (-) and absorption (+) processes
+ !!   - E_\alpha, , E_\beta: Energies of exciton states
+ !!   - \omega_\nu: Phonon frequency
+ !!   - \delta: Delta function (replaced by Lorentzian for numerical integration)
+ !!   - \mp signs represent phonon emission (-) and absorption (+) processes
  !!
  !! **Temperature Dependence**:
  !!
  !! The lifetime includes temperature effects through phonon occupations:
  !!
- !! 1/τ = Σ_{β,ν} |G^exc|^2 [n_ν/(E_α-E_β-ω_ν) + (n_ν+1)/(E_α-E_β+ω_ν)]
+ !! 1/\tau = \sum_{\beta,\nu} |G^exc|^2 [n_\nu/(E_\alpha-E_\beta-\omega_\nu) + (n_\nu+1)/(E_\alpha-E_\beta+\omega_\nu)]
  !!
- !! where n_ν = 1/(exp(ω_ν/k_B T) - 1) is the Bose distribution.
+ !! where n_\nu = 1/(exp(\omega_\nu/k_B T) - 1) is the Bose distribution.
  !!
  !! **Main Workflow**:
  !!   1. Load exciton energies and wavefunctions
@@ -64,8 +64,7 @@ subroutine EXCPH_lifetime(k,q,X)
  !!   - ExcPhOffDiago: Include off-diagonal contributions (default: False)
  !!
  !! **References**:
- !!   - Paleari, "Phonon-assisted transitions in photoexcited semiconductors," PhD (2019)
- !!   - Salpeter equation theory for exciton dynamics
+ !!   - Paleari, PhD thesis
  !
 subroutine EXCPH_lifetime(k,q,X)
  !
