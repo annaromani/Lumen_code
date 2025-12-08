@@ -63,10 +63,11 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call WF_phase_matrices(Xen,Xk,BS_bands,(/1,Xk%nibz/))
  !
+ nsz=0
  YAMBO_ALLOC(WF_phases_b_map,(BS_bands(1):BS_bands(2),Xk%nibz,n_sp_pol,2))
  !
  call io_control(ACTION=OP_RD,COM=REP,SEC=(/1,2/),MODE=DUMP,ID=ID)
- io_err=io_WF_phases(BS_bands,0,0,0,ID,(/0,0,0,0,0/))
+ io_err=io_WF_phases(BS_bands,0,0,0,ID,nsz)
  !
  call parser("MinimizeMem",l_min_mem)
  !
@@ -163,7 +164,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  ! Finally I compute the exciton character
  !
- call get_character(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
+ call get_character_exc(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
                         &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
                         &   exc_trace,exc_reps,exc_character,.true.,iq)
  !
@@ -172,7 +173,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call msg("o "//trim(filebse),'#',titles,INDENT=0,USE_TABS=.true.)
  call msg("o "//trim(filebse),"#")
  !
- loc_fmt="(F10.4,12x,i4,12x,F4.2,12x,a)"
+ loc_fmt="(F10.4,12x,i4,16x,F4.2,16x,a)"
  !
  do i_grp=1,n_deg_grp
    do i_sub_grp=1,n_sub_grps(i_grp)
@@ -345,7 +346,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
 end subroutine refine_groups
 !
 !
-subroutine get_character(nstates,n_deg_grp,n_of_exc,first_exc, &
+subroutine get_character_exc(nstates,n_deg_grp,n_of_exc,first_exc, &
                         &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
                         &   loc_trace,loc_reps,loc_character,l_prt_debug,iq)
  !
@@ -550,4 +551,4 @@ subroutine get_character(nstates,n_deg_grp,n_of_exc,first_exc, &
  !
  if (.not.debug_file_to_open) call of_open_close(filedebug)
  !
-end subroutine get_character
+end subroutine get_character_exc
