@@ -112,8 +112,6 @@ subroutine EXCPH_lifetime(k,q,X)
    &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq))
  enddo
  !
-
- !
  ! Load the Exciton-phonon elements and phonon energies
  !
  call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=DUMP,ID=ID_exc_gkkp)
@@ -320,9 +318,41 @@ subroutine EXCPH_lifetime(k,q,X)
     implicit none
     integer, intent(in) :: iq_bz_in
     !
+    ! Working space
+    !
+    integer :: id_red,iq_plus,iq_minus,idx(3)
+    !
     Grad_EXCPH_Gkkp_sq=rZERO
     !
+    do id_red=1,3  ! loop on reciprocal lattice
+      !
+      if(q_map%max_kdir(id_red)=1) then ! non-periodic directions
+        Grad_EXCPH_Gkkp_sq(:,:,:,id_red)=rZERO
+	cycle
+      endif
+      !
+      ! Load G2(q+delta_q) and G2(q-delta_q)
+      !
+      idx=q_map%k_map_inv(iq_bz_in,:)
+ idx(id_red)=idx(id_red)-istep
+ idx=k_periodic_idx(idx,k_map)
+ ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+ !
+ idx=k_map%k_map_inv(ikbz,:)
+ idx(id_red)=idx(id_red)+istep
+ idx=k_periodic_idx(idx,k_map)
+ ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
+
+      iq_plus=
+      !
+      ! Evaluate gradient and store it in Grad_EXCPH_Gkkp_sq
+      !
+
+      !
+    enddo ! loop on id_red 
+    !
     return
+    !  
   end subroutine eval_G2_grad
   !
   subroutine load_EXCPH(iq_bz_in)
