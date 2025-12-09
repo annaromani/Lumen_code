@@ -105,7 +105,7 @@ subroutine electrons_driver(Xk,Xen,Xq)
  !===============
  if (l_sp_symm) then
    call electrons_symmetries(Xk,Xen,NB,NK)
-   call transitions_symmetries(1,Xk,Xen,Xq,NB,NK)
+   !call transitions_symmetries(1,Xk,Xen,Xq,NB,NK)
  endif
  !
  ! MAGNETIZATION 
