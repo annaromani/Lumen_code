@@ -143,7 +143,7 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  ! Calculate the life-times
  !
- l_interp_G2=.true.
+ l_interp_G2=.false.
  if(l_interp_G2) then
    !
    if(.not.use_PH_DbGd) &
