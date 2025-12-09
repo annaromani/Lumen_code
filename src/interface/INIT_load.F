@@ -94,7 +94,7 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  use ELPH,          ONLY:QP_PH_n_G_bands,elph_nQ_used,elph_Ham_ik,elph_Ham_bands,elph_branches,&
 &                               RES_tresh,FAN_deltaE_treshold,DW_deltaE_treshold,E_kpq_sh_fact,gkkp_db
  use EXCPH,         ONLY:EXCPH_states,EXCPH_sum,Lout_path,L_damping,EXC_q0,alphaQ, &
-&                        EXCPH_deltaE_treshold,EXCPH_kthresh
+&                        EXCPH_deltaE_treshold,EXCPH_kthresh,l_interp_G2
  use D_lattice,     ONLY:Boltz_Temp
 #endif
 #if defined _OPENMP
@@ -728,6 +728,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it('f',defs,'PLqres', '[EXCPH] Write contribution from each q-point')
  !
  ! Testing only zone <
+ call it('f',defs,'InterpG2' , '[EXCPH] Linear interpolation of exciton-phonon matrix elements with DB-grid ')
  call it('f',defs,'ConstElph' , '[EXCPH] Set all electron-phonon matrix elements to one (for testing purpose)')
  call it('f',defs,'NoMatrxEl' , '[EXCPH] Set all  exciton-phonon matrix elements to one (for testing purpose)')
  call it('f',defs,'KeepDeg'   , '[EXCPH] Keep degenerate states (for testing purpose)')

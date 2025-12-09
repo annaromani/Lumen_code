@@ -24,7 +24,7 @@ subroutine EXCPH_lifetime(k,q,X)
  use EXCPH,          ONLY:EXCPH_sum,EXCPH_states,BS_E,BS_all_E,BS_E_in,L_damping,n_exc_in, &
 &                         EXC_LifeTime,min_EXC_E,EXCPH_Gkkp_sq,DB_Q_map,l_no_matrix_elements, &
 &                         RESIDUALS_and_EIGENVALUES_alloc,RESIDUALS_and_EIGENVALUES_free,alphaQ, &
-&                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth 
+&                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth,l_interp_G2 
  use ELPH,           ONLY:use_PH_DbGd,elph_branches,FAN_deltaE_treshold,Q_io_map
  use BS_solvers,     ONLY:deg_exc_thrshld
  use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm,degeneration_average
@@ -50,7 +50,7 @@ subroutine EXCPH_lifetime(k,q,X)
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
  integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
- logical  :: l_keep_deg,l_extend_output,l_interp_G2
+ logical  :: l_keep_deg,l_extend_output
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
  real(SP) , allocatable :: EXC_life_of_q(:,:),EXC_pole_of_q(:,:)
@@ -143,7 +143,6 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  ! Calculate the life-times
  !
- l_interp_G2=.false.
  if(l_interp_G2) then
    !
    if(.not.use_PH_DbGd) &

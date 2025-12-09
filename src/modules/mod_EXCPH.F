@@ -123,6 +123,7 @@ module EXCPH
  logical       :: l_DbGd_PH_only ! Double-Grid only for phonon energies
  logical       :: l_no_matrix_elements  ! Set EXC-PH matrix elements to 1 (in lifetime and satellites)
  logical       :: l_EXCPH_offdiago ! Turn on off-diagonal part of the EXC-PH self-energy
+ logical       :: l_interp_G2 ! Linear interpolation of exciton-phonon matrix elements with DB-grid
  !
  ! Excitonic occupations
  !
