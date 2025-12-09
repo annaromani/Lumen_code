@@ -108,7 +108,7 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
        call detect_point_group(nrotk,real(dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),DP))
        !
        call print_point_group("o "//trim(filename),nrotk,nsym,dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),&
-       &                                                  dl_tra(:,Xk%grp_table(:nrotk,ikbz)),.true.)
+       &                                                 dl_tra(:,Xk%grp_table(:nrotk,ikbz)),.false.)
        !
        call get_character_el(nb,n_deg_grp,n_of_el,first_el, &
        &           blim,ID_WF_phases,Xk,                    &
