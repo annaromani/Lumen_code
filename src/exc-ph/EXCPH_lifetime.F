@@ -57,6 +57,7 @@ subroutine EXCPH_lifetime(k,q,X)
  type(PP_indexes)::px
  type(bz_map) :: q_map
  real(SP), allocatable :: Grad_EXCPH_Gkkp_sq(:,:,:,:)
+ real(SP), allocatable :: EXCPH_Gkkp_sq_plus(:,:,:),EXCPH_Gkkp_sq_minus(:,:,:)
  !
  ! Initialization
  call parser('NoMatrxEl',l_no_matrix_elements)
@@ -170,9 +171,9 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    if (.not.px%element_1D(iq_bz)) cycle
    !
-   call load_EXCPH(iq_bz)
-   !
    if(l_interp_G2) call eval_G2_grad(iq_bz)
+   !
+   call load_EXCPH(iq_bz)
    !
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
@@ -284,6 +285,8 @@ subroutine EXCPH_lifetime(k,q,X)
     endif
     if(l_interp_G2) then
       YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
+      YAMBO_ALLOC(EXCPH_Gkkp_sq_plus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
+      YAMBO_ALLOC(EXCPH_Gkkp_sq_minus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
     endif
     !
     YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
@@ -309,45 +312,55 @@ subroutine EXCPH_lifetime(k,q,X)
     endif
     if(l_interp_G2) then
       YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
+      YAMBO_FREE(EXCPH_Gkkp_sq_plus)
+      YAMBO_FREE(EXCPH_Gkkp_sq_minus)
     endif
     ! 
   end subroutine EXCPH_Ltime_free
   !
   subroutine eval_G2_grad(iq_bz_in)
     use pars,           ONLY:rZERO
+    use vec_operate,    ONLY:k_periodic_idx
     implicit none
     integer, intent(in) :: iq_bz_in
     !
     ! Working space
     !
-    integer :: id_red,iq_plus,iq_minus,idx(3)
+    integer  :: id_red,iq_plus,iq_minus,idx(3),istep
+    real(SP) :: delta_q
     !
     Grad_EXCPH_Gkkp_sq=rZERO
     !
     do id_red=1,3  ! loop on reciprocal lattice
       !
-      if(q_map%max_kdir(id_red)=1) then ! non-periodic directions
+      if(q_map%max_kdir(id_red)==1) then ! non-periodic directions
         Grad_EXCPH_Gkkp_sq(:,:,:,id_red)=rZERO
 	cycle
       endif
       !
-      ! Load G2(q+delta_q) and G2(q-delta_q)
+      ! Generate q_minus=Q-\delta_q
       !
       idx=q_map%k_map_inv(iq_bz_in,:)
- idx(id_red)=idx(id_red)-istep
- idx=k_periodic_idx(idx,k_map)
- ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
- !
- idx=k_map%k_map_inv(ikbz,:)
- idx(id_red)=idx(id_red)+istep
- idx=k_periodic_idx(idx,k_map)
- ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
-
-      iq_plus=
+      idx(id_red)=idx(id_red)-istep
+      idx=k_periodic_idx(idx,q_map)
+      iq_minus=q_map%k_map_dir(idx(1),idx(2),idx(3))
       !
-      ! Evaluate gradient and store it in Grad_EXCPH_Gkkp_sq
+      call load_EXCPH(iq_minus)
       !
-
+      EXCPH_Gkkp_sq_minus=EXCPH_Gkkp_sq
+      !
+      ! Generate q_plus=Q+\delta_q
+      !
+      idx=q_map%k_map_inv(iq_bz_in,:)
+      idx(id_red)=idx(id_red)+istep
+      idx=k_periodic_idx(idx,q_map)
+      iq_plus=q_map%k_map_dir(idx(1),idx(2),idx(3))
+      !
+      call load_EXCPH(iq_plus)
+      !
+      EXCPH_Gkkp_sq_plus=EXCPH_Gkkp_sq
+      !
+      Grad_EXCPH_Gkkp_sq(:,:,:,id_red)=(EXCPH_Gkkp_sq_plus-EXCPH_Gkkp_sq_minus)/(2._SP*q_map%q_step(id_red))
       !
     enddo ! loop on id_red 
     !
