@@ -426,6 +426,7 @@ subroutine EXCPH_lifetime(k,q,X)
     use EXCPH,          ONLY:min_EXC_E_DbGd,EXC_E_DbGd
     use ELPH,           ONLY:FAN_deltaE_treshold,PH_freqs,PH_freqs_sq,Q_io_map
     use functions,      ONLY:bose_f,boltzman_f,Lorentzian_func
+    use vec_operate,    ONLY:c2a
     implicit none
     !
     logical, intent(in) :: l_interp_EXCPH
@@ -502,10 +503,12 @@ subroutine EXCPH_lifetime(k,q,X)
           if(q_map%max_kdir(id_red)==1) cycle ! non-periodic directions
 	  if(delta_q(id_red)<0._SP) then 
 	    ! Left interpolation
-     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red)-EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
+     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red) & 
+&                                         -EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
 	  else
 	    ! Right interpolation
-     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red+3)-EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
+     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red+3) &
+&                                         -EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
 	  endif
 	enddo
         !
