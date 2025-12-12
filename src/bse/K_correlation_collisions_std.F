@@ -10,15 +10,6 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-!************************* WARNING **************************
-!* In this subroutine there is a bug for finite q (iq/=1)   *
-!* plus spin-orbit that we were not able to solve yet.      * 
-!* An alternative subroutine that applies symmetries in a   *
-!* different way is proposed K_correlation_collisions_dir.F *
-!* This second subroutine is automatically called when      *
-!* iq/=1 and spin_orbit is present.                         *
-!************************************************************
-!
 subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
  ! This routine evaluates the correlation collisions:
