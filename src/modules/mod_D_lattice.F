@@ -111,7 +111,6 @@ module D_lattice
      implicit none
      !
      character(*) :: msg_where
-     logical      :: S1_contains_TR,S2_contains_TR
      !
      ! Work Space
      !
