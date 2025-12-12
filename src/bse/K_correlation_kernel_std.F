@@ -28,7 +28,7 @@ function K_correlation_kernel_std(i_block,i_p,i_pmq,                            
  !
  use pars,         ONLY:SP,cZERO,cONE,pi
  use BS,           ONLY:BS_blk,BS_W,BS_W_is_diagonal,WF_phase
- use D_lattice,    ONLY:nsym,i_time_rev
+ use D_lattice,    ONLY:nsym,S_contains_TR
  use R_lattice,    ONLY:DEV_VAR(G_m_G),DEV_VAR(g_rot)
  use wrapper,      ONLY:V_by_V_pwise_gpu,Vstar_dot_V_gpu
  use devxlib,      ONLY:devxlib_conjg_d,devxlib_xgemv_gpu
@@ -85,8 +85,8 @@ function K_correlation_kernel_std(i_block,i_p,i_pmq,                            
  !DEV_ACC_DEBUG end data
  !
  !
- if (i_k_s  >nsym/(i_time_rev+1)) call devxlib_conjg_d(O1,range1=(/1,BS_n_g_W/))
- if (i_kmq_s>nsym/(i_time_rev+1)) call devxlib_conjg_d(O2,range1=(/1,BS_n_g_W/))
+ if (S_contains_TR(i_k_s)  ) call devxlib_conjg_d(O1,range1=(/1,BS_n_g_W/))
+ if (S_contains_TR(i_kmq_s)) call devxlib_conjg_d(O2,range1=(/1,BS_n_g_W/))
  !
  if (     BS_W_is_diagonal) call V_by_V_pwise_gpu(BS_n_g_W,O_times_W,O1,BS_W(:,1,iq_W))
  if (.not.BS_W_is_diagonal) call devxlib_xgemv_gpu('T',BS_n_g_W,BS_n_g_W,cONE, &

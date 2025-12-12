@@ -22,8 +22,8 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  use units,             ONLY:HA2EV
  use LIVE_t,            ONLY:live_timing
  use R_lattice,         ONLY:bz_samp,G_m_G,minus_G,g_vec,rl_sop
- use D_lattice,         ONLY:nsym,i_time_rev,sop_tab,spin_sop
- use electrons,         ONLY:levels,n_max_deg,deg_threshold
+ use D_lattice,         ONLY:nsym,S_contains_TR,sop_tab,spin_sop
+ use electrons,         ONLY:levels,n_max_deg,deg_threshold,n_spinor
  use wave_func,         ONLY:WAVEs,io_WF_phases,WF_phases_b_map
  use wave_func,         ONLY:wf_ng_overlaps,wf_ng_1st_BZ,wf_ng,WF_copy,wf_nc_k
  use stderr,            ONLY:intc
@@ -55,7 +55,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  integer           :: ikbz,iRkbz,isk,isloop,isk_c,isk_y,iGk_y,iGk_c,iGk,iGloop,istark,&
  &                    iby,ibc,iby_phase,ibc_phase,i_sp_pol,ik,&
  &                    ifrag,s_count,i_wf_y,i_wf_c,iGp,ng_tmp,nb,NG_max
- complex(SP)       :: det,charac(blim(2)-blim(1)+1,nsym)
+ complex(SP)       :: det,charac(blim(2)-blim(1)+1,nsym+n_spinor)
  complex(SP)       :: spin_sop_composed(2,2),s1(2,2),s2(2,2)
 #if defined _CUDA
  complex(SP) DEV_ATTR     :: spin_sop_composed_d(2,2)
@@ -138,7 +138,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
        enddo
      enddo
      !
-     nsz=(/maxval(n_of_el),maxval(n_of_el),n_deg_grp,nsym,Xk%nstar(ik)/)
+     nsz=(/maxval(n_of_el),maxval(n_of_el),n_deg_grp,nsym*n_spinor,Xk%nstar(ik)/)
      !
      YAMBO_ALLOC(WF_phases,(nsz(1),nsz(2),nsz(3),nsz(4),nsz(5)))
      WF_phases=cZERO
@@ -168,7 +168,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
          call WF_symm_kpoint_g(blim,ik,i_sp_pol,isk,iGk,WF_Rk)
        endif
        !
-       do isloop=1,nsym
+       do isloop=1,nsym*n_spinor
          !
          ! symmetry composed
          isk_c=sop_tab(isloop,isk)
@@ -185,14 +185,14 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
            ! The following code is probably wrong
            s1=spin_sop(:,:,isk)
            s2=spin_sop(:,:,isloop)
-           !if (isloop>nsym/(1+i_time_rev)) s1=conjg(s1)
-           if (isk   >nsym/(1+i_time_rev)) s1=conjg(s1)
-           if (isloop>nsym/(1+i_time_rev)) then
+           !if (S_contains_TR(isloop)) s1=conjg(s1)
+           if (S_contains_TR(isk)   ) s1=conjg(s1)
+           if (S_contains_TR(isloop)) then
              s2=conjg(s2)
              s1=conjg(s1)
            endif
            spin_sop_composed=matmul(s2,s1)
-           if (isk_c >nsym/(1+i_time_rev)) spin_sop_composed=conjg(spin_sop_composed)
+           if (S_contains_TR(isk_c)) spin_sop_composed=conjg(spin_sop_composed)
 #if defined _CUDA
            call dev_memcpy(spin_sop_composed_d,spin_sop_composed)
 #endif

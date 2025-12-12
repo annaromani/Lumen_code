@@ -20,7 +20,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(G_m_G),&
  &                       k_pt,rl_sop,g_vec
  use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv, &
- &                       dl_sop,i_time_rev,nsym
+ &                       dl_sop,S_contains_TR,nsym
  !
  implicit none
  !
@@ -118,8 +118,8 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
    endif
    !
    ! take care of time reversal if needed
-   !if(isymm>nsym/(1+i_time_rev)) call dev_conjg(WF_k_tmp)
-   if(isymm>nsym/(1+i_time_rev)) WF_k_tmp=conjg(WF_k_tmp)
+   !if((isymm)) call dev_conjg(WF_k_tmp)
+   if(S_contains_TR(isymm)) WF_k_tmp=conjg(WF_k_tmp)
    !
    !call dev_memcpy(WF_p,WF_k_tmp)
    WF_p=WF_k_tmp

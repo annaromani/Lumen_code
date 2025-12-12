@@ -18,7 +18,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  use C_driver,       ONLY:code_bin
  use parser_m,       ONLY:parser
  use wave_func,      ONLY:wf_ng,wf_ncx,wf_igk,wf_nc_k,E_of_WFs
- use electrons,      ONLY:levels,n_met_bands,n_full_bands,E_duplicate,E_reset
+ use electrons,      ONLY:levels,n_spinor,n_met_bands,n_full_bands,E_duplicate,E_reset
  use D_lattice,      ONLY:a,alat,nsym,i_time_rev,DL_vol,Tel,dl_sop,atom_mass,atom_pos,atoms_map,&
 &                         atoms_spatial_inversion,i_space_inv,input_Tel_is_negative,&
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
@@ -184,9 +184,9 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  call build_xc_spin_map()
  !
- YAMBO_ALLOC(rl_sop,(3,3,nsym))
+ YAMBO_ALLOC(rl_sop,(3,3,nsym*n_spinor))
  !
- do is=1,nsym
+ do is=1,nsym*n_spinor
    forall (i2=1:3,i3=1:3) rl_sop(i2,i3,is)=dl_sop(i2,i3,is)*alat(i2)/alat(i3)
  enddo
  !

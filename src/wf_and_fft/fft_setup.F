@@ -14,6 +14,7 @@
 subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  use pars,           ONLY:SP,pi
+ use electrons,      ONLY:n_spinor
  use D_lattice,      ONLY:a,nsym,dl_sop,sop_inv,i_time_rev,alat
  use R_lattice,      ONLY:b,g_vec,ng_closed
  use matrix_operate, ONLY:m3inv
@@ -234,10 +235,10 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
    YAMBO_FREE_GPU(DEV_VAR(fft_rot_r_inv))
    YAMBO_FREE(fft_rot_r_inv)
    !
-   YAMBO_ALLOC(fft_rot_r,(fft_size,nsym))
+   YAMBO_ALLOC(fft_rot_r,(fft_size,nsym*n_spinor))
    YAMBO_ALLOC(fft_rot_r_inv,(fft_size))
    if (have_gpu) then
-     YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r),(fft_size,nsym))
+     YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r),(fft_size,nsym*n_spinor))
      YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r_inv),(fft_size))
    endif
 
@@ -284,6 +285,8 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
      enddo
    enddo
    i4=1
+   !
+   if (n_spinor==2) fft_rot_r(:,nsym+1:)=fft_rot_r(:,:nsym)
    !
    if (have_gpu) then
      call devxlib_memcpy_h2d(DEV_VAR(fft_rot_r),fft_rot_r)

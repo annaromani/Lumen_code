@@ -16,6 +16,7 @@ subroutine K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
  !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>  =
  !
+ use electrons,     ONLY:n_spinor
  use D_lattice,     ONLY:nsym
  use R_lattice,     ONLY:qindx_X,bz_samp
  use BS,            ONLY:O_ng,BS_bands,BS_res_K_corr,BS_blk,&
@@ -46,7 +47,7 @@ subroutine K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
  ! OMP LAST DEF
  integer ::     i_k_bz_last,i_p_bz_last,iq_W_bz_last,ig_W_last
  !
- integer     :: i_s_star,i_s_mq_star,N_kmq,N_pmq
+ integer     :: i_s_star,i_s_mq_star,N_kmq,N_pmq,sz(7)
  character(1):: mode_now
  !
  logical, allocatable :: O_todo_table(:,:,:,:,:,:,:)
@@ -102,8 +103,12 @@ subroutine K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
    enddo
  enddo
  !
- YAMBO_ALLOC(BS_blk(i_block)%O_table,(nsym,nsym,N_kmq,N_pmq,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol))
- allocate(O_todo_table(nsym,nsym,N_kmq,N_pmq,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol))
+ sz(1:2)=nsym*n_spinor
+ sz(3:4)=(/N_kmq,N_pmq/)
+ sz(5:6)=(/BS_bands(1),BS_bands(2)/)
+ sz(7)  = n_sp_pol
+ YAMBO_ALLOC(BS_blk(i_block)%O_table,(sz(1),sz(2),sz(3),sz(4),sz(5):sz(6),sz(5):sz(6),sz(7)))
+ allocate(O_todo_table(sz(1),sz(2),sz(3),sz(4),sz(5):sz(6),sz(5):sz(6),sz(7)))
  !
  BS_blk(i_block)%N_oscillators=0
  BS_blk(i_block)%O_table=0

@@ -12,7 +12,7 @@
 subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
  !
  use pars,           ONLY:SP,cZERO
- use D_lattice,      ONLY:nsym,i_time_rev,sop_inv,sop_inv_d
+ use D_lattice,      ONLY:nsym,S_contains_TR,sop_inv,sop_inv_d
  use BS,             ONLY:BS_T_grp,K_EXCH_collision,BS_n_g_exch,&
 &                         BSE_L_kind,l_BS_magnons,l_BSE_minimize_memory,BS_bands
  use interfaces,     ONLY:WF_load,WF_free
@@ -150,7 +150,7 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
        enddo
        !DEV_ACC_DEBUG end data
        !
-       if (i_s>nsym/(i_time_rev+1)) call devxlib_conjg_d(BS_T_grp(i_T_grp)%DEV_VAR(O_x)(:,i_T_el),range1=(/2,BS_n_g_exch/) )
+       if (S_contains_TR(i_s)) call devxlib_conjg_d(BS_T_grp(i_T_grp)%DEV_VAR(O_x)(:,i_T_el),range1=(/2,BS_n_g_exch/) )
        !
      endif
      !

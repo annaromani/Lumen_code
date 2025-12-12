@@ -20,7 +20,7 @@ integer function io_DB1_selective_scan(what,DB1_path,E,k,db1_alat,db1_a,COM_mode
  use pars,             ONLY:lchlen,SP
  use electrons,        ONLY:levels,E_reset
  use D_lattice,        ONLY:dl_sop,n_atoms_species,Z_species,atom_pos,&
-&                           atom_mass,atoms_map,nsym,alat
+&                           atom_mass,atoms_map,nsym,alat,S_contains_TR
  use R_lattice,        ONLY:g_vec,rl_sop,bz_samp,bz_samp_reset
  use wave_func,        ONLY:wf_nc_k,wf_igk,DEV_VAR(wf_igk)
  use com,              ONLY:core_io_path
@@ -76,6 +76,7 @@ integer function io_DB1_selective_scan(what,DB1_path,E,k,db1_alat,db1_a,COM_mode
    if (allocated(g_vec)) then
      YAMBO_FREE(g_vec)
      YAMBO_FREE(dl_sop)
+     YAMBO_FREE(S_contains_TR)
      YAMBO_FREE(rl_sop)
      YAMBO_FREE(wf_nc_k)
      !

@@ -56,7 +56,7 @@ subroutine K_WF_phases(Xk)
  call section('=','Wave-Function Phases')
  !
  if (.not.allocated(WF_phase)) then
-   YAMBO_ALLOC(WF_phase,(Xk%nibz,nsym,BS_bands(1):BS_bands(2),n_sp_pol))
+   YAMBO_ALLOC(WF_phase,(Xk%nibz,nsym*n_spinor,BS_bands(1):BS_bands(2),n_sp_pol))
  endif
  WF_phase=cZERO
  !
@@ -66,7 +66,7 @@ subroutine K_WF_phases(Xk)
    !
    do i_k=1,Xk%nibz
      !
-     do i_s=1,nsym
+     do i_s=1,nsym*n_spinor
        !
        i_s_star=Xk%s_table(i_k,i_s)
        !

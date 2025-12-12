@@ -25,7 +25,7 @@ subroutine OEP_ApplySigmaX(E,k,q,U_x)
  !      NO SPIN/PARALLEL EXECUTION NOT TESTED  
  ! 
  use pars,            ONLY:SP,DP,pi,schlen
- use D_lattice,       ONLY:i_time_rev,sop_inv,nsym
+ use D_lattice,       ONLY:S_contains_TR,sop_inv,nsym
  use electrons,       ONLY:levels,n_met_bands,spin_occ
  use R_lattice,       ONLY:bz_samp,g_rot,qindx_S,nkibz
  use FFT_m,           ONLY:fft_size,fft_g_table,fft_dim,fftw_plan,fft_rot_r
@@ -90,7 +90,7 @@ subroutine OEP_ApplySigmaX(E,k,q,U_x)
          isc%qs(1)=qindx_S(ik,iq,2)
          os=isc%os(3)
          qs=isc%qs(3)
-         lostr = os>nsym/(i_time_rev+1)
+         lostr = S_contains_TR(os)
          call scatter_Bamp(isc)
          u(1:QP_ng_Sx) = 4._SP*pi*conjg(isc%rhotw(1:QP_ng_Sx))*isc%gamp(1:QP_ng_Sx,1)
          iGo=g_rot(isc%qs(1),sop_inv(qs))

@@ -10,7 +10,7 @@ subroutine ELPH_databases_IO_gkkp_expand(mode,iq,iq_s,k,q,qindx_ID,qindx_ID_frag
  use pars,                ONLY:SP
  use R_lattice,           ONLY:bz_samp,qindx_B,qindx_B_load,qindx_C
  use ALLOC,               ONLY:ELPH_alloc
- use D_lattice,           ONLY:nsym,i_time_rev,sop_inv,sop_tab
+ use D_lattice,           ONLY:nsym,S_contains_TR,sop_inv,sop_tab
  use ELPH,                ONLY:elph_bands,GKKP_me,PH_qpt,l_GKKP_debug
  use YPP_ELPH,            ONLY:DB_ph_K_sym_table,YAMBO_K_found,l_use_qindxB
  use parser_m,            ONLY:parser
@@ -133,7 +133,7 @@ subroutine ELPH_databases_IO_gkkp_expand(mode,iq,iq_s,k,q,qindx_ID,qindx_ID_frag
    ! When using a uniform Q grid I cycle on the q symmetries 
    ! as well. To rotate the gkkp m.e. I use:
    !
-   if (iq_s>nsym/(i_time_rev+1)) then
+   if (S_contains_TR(iq_s)) then
      ! 
      ! gkkp_{I_need}= <Tk+IRq n'|dV_{SCF}/du^{IRq nu}|Tk n>=
      !                [<(R^-1 S p)+q n|dV_{SCF}/du^{q nu}|(R^-1 S p) n'>]^*= 
