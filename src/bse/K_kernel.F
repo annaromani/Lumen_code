@@ -216,16 +216,10 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  !
  if (l_bs_corr) then
    O_ng_shift=qindx_B_max
-   if (iq/=1 .and. n_spinor==2 .and. nsym>1) then
-     ! Default is direct algorithm, unless imposed from input
-     call parser('ImposeStdAlg',l_std_alg)
-     l_dir_alg=.not.l_std_alg
-   else
-     ! Default is standard algorithm, unless imposed from input
-     call parser('ImposeDirAlg',l_dir_alg)
-     l_std_alg=.not.l_dir_alg
-   endif
-   call parser('SkipPhases',l_skip_phases)
+   ! Default is standard algorithm, unless imposed from input
+   call parser('ImposeDirAlg',l_dir_alg)
+   l_std_alg=.not.l_dir_alg
+   if (l_std_alg) call parser('SkipPhases',l_skip_phases)
    call msg('r','[BSE] Correlation components ',(/BS_n_g_W,O_ng/))
  endif
  !
