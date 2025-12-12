@@ -14,7 +14,15 @@ subroutine K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
  ! This routine evaluates the correlation collisions:
  !
- !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>  =
+ !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>
+ !
+ ! It is an implementation alternative to K_correlation_collisions_std, which
+ ! avoid moving the symmetry s1 from the "bra" to the "ket"
+ ! It was originally designed for the case with SOC at finite-q, since the 
+ ! subroutine K_correlation_collisions_std was buggy.
+ ! The bug has now (2025/12/12) been fixed.
+ ! This alternative implementation remains however useful for bse implementation
+ ! with shifted grids and for this reason the subroutine is kept here 
  !
  use D_lattice,     ONLY:nsym
  use R_lattice,     ONLY:qindx_X,bz_samp
