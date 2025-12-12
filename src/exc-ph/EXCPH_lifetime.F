@@ -56,7 +56,7 @@ subroutine EXCPH_lifetime(k,q,X)
  real(SP) , allocatable :: EXC_life_of_q(:,:),EXC_pole_of_q(:,:)
  type(PP_indexes)::px
  type(bz_map) :: q_map
- real(SP), allocatable :: EXCPH_Gkkp_sq_pm(:,:,:,:)
+ real(SP), allocatable :: Grad_EXCPH_Gkkp_sq(:,:,:,:),EXCPH_Gkkp_sq_plus(:,:,:),EXCPH_Gkkp_sq_minus(:,:,:)
  !
  ! Initialization
  call parser('NoMatrxEl',l_no_matrix_elements)
@@ -283,7 +283,9 @@ subroutine EXCPH_lifetime(k,q,X)
       EXC_pole_of_q=rZERO
     endif
     if(l_interp_G2) then
-      YAMBO_ALLOC(EXCPH_Gkkp_sq_pm,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),6))
+      YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
+      YAMBO_ALLOC(EXCPH_Gkkp_sq_minus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
+      YAMBO_ALLOC(EXCPH_Gkkp_sq_plus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
     endif
     !
     YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
@@ -308,7 +310,9 @@ subroutine EXCPH_lifetime(k,q,X)
        deallocate(EXC_pole_of_q)
     endif
     if(l_interp_G2) then
-      YAMBO_FREE(EXCPH_Gkkp_sq_pm)
+      YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
+      YAMBO_FREE(EXCPH_Gkkp_sq_minus)
+      YAMBO_FREE(EXCPH_Gkkp_sq_plus)
     endif
     ! 
   end subroutine EXCPH_Ltime_free
@@ -324,13 +328,12 @@ subroutine EXCPH_lifetime(k,q,X)
     integer  :: id_red,iq_plus,iq_minus,idx(3),istep
     real(SP) :: delta_q
     !
-    EXCPH_Gkkp_sq_pm=rZERO
+    Grad_EXCPH_Gkkp_sq=rZERO
     !
     do id_red=1,3  ! loop on reciprocal lattice
       !
       if(q_map%max_kdir(id_red)==1) then ! non-periodic directions
-        EXCPH_Gkkp_sq_pm(:,:,:,id_red)  =rZERO
-        EXCPH_Gkkp_sq_pm(:,:,:,id_red+3)=rZERO
+        Grad_EXCPH_Gkkp_sq(:,:,:,id_red)  =rZERO
 	cycle
       endif
       !
@@ -343,7 +346,7 @@ subroutine EXCPH_lifetime(k,q,X)
       !
       call load_EXCPH(iq_minus)
       !
-      EXCPH_Gkkp_sq_pm(:,:,:,id_red)=EXCPH_Gkkp_sq
+      EXCPH_Gkkp_sq_minus=EXCPH_Gkkp_sq
       !
       ! Generate q_plus=Q+\delta_q
       !
@@ -354,7 +357,9 @@ subroutine EXCPH_lifetime(k,q,X)
       !
       call load_EXCPH(iq_plus)
       !
-      EXCPH_Gkkp_sq_pm(:,:,:,id_red+3)=EXCPH_Gkkp_sq
+      EXCPH_Gkkp_sq_plus=EXCPH_Gkkp_sq
+      !
+      Grad_EXCPH_Gkkp_sq(:,:,:,id_red)=(EXCPH_Gkkp_sq_plus-EXCPH_Gkkp_sq_minus)/q_map%q_step(id_red)
       !
     enddo ! loop on id_red 
     !
@@ -499,25 +504,19 @@ subroutine EXCPH_lifetime(k,q,X)
 	delta_q=delta_q-nint(delta_q) ! Bring in the BZ between [-0.5:0.5]
         !
 	G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
-	do id_red=1,3
-          if(q_map%max_kdir(id_red)==1) cycle ! non-periodic directions
-	  if(delta_q(id_red)<0._SP) then 
-	    ! Left interpolation
-     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red) & 
-&                                         -EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
-	  else
-	    ! Right interpolation
-     	    G2_var=G2_var+delta_q(id_red)*(EXCPH_Gkkp_sq_pm(il,i_beta,i_alpha,id_red+3) &
-&                                         -EXCPH_Gkkp_sq(il,i_beta,i_alpha))/q_map%q_step(id_red)
-	  endif
-	enddo
+	G2_var=G2_var+dot_product(delta_q,Grad_EXCPH_Gkkp_sq(il,i_beta,i_alpha,:))
+	!
+	! This function can in principle be negative in some point
+	! I fix in this way
+	!
+	if(G2_var<0._SP) G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
         !
       else
         G2_var=1._SP      
       endif
       !
-      DbGrid_Pole=DbGrid_Pole+G2_var*(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
-&                                   +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping)
+      DbGrid_Pole=DbGrid_Pole+G2_var*((1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
+&                                   +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping))
       !
     enddo
     !
