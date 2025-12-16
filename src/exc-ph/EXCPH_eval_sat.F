@@ -11,12 +11,12 @@
 !
 subroutine EXCPH_eval_sat(iq_bz,q)
  !
- use pars,           ONLY:SP,cZERO,rZERO
+ use pars,           ONLY:SP,cZERO,rZERO,cI
  use R_lattice,      ONLY:bz_samp
  use ELPH,           ONLY:elph_branches,PH_freqs_sq,FAN_deltaE_treshold,Q_io_map
  use EXCPH,          ONLY:BS_Sat_E,BS_Sat_E_PH_abs,BS_Sat_WEIGHT,BS_Sat_WEIGHT_PH_abs, &
 &                         BS_all_E,BS_E_in,EXCPH_Gkkp_sq,EXCPH_sum,EXCPH_states, &
-&                         l_no_matrix_elements,EXCPH_deltaE_treshold
+&                         l_no_matrix_elements,EXCPH_deltaE_treshold,L_damping
  !
  use y_memory_alloc
  !
@@ -49,8 +49,8 @@ subroutine EXCPH_eval_sat(iq_bz,q)
        E_alpha=BS_E_in(i_alpha)
        E_beta =BS_all_E(i_beta,iq_ibz)
        !
-       BS_Sat_E       (il,i_beta,i_alpha)=E_beta-E_alpha+ph_E
-       BS_Sat_E_PH_abs(il,i_beta,i_alpha)=E_beta-E_alpha-ph_E
+       BS_Sat_E       (il,i_beta,i_alpha)=E_beta-E_alpha+ph_E+cI*L_damping
+       BS_Sat_E_PH_abs(il,i_beta,i_alpha)=E_beta-E_alpha-ph_E+cI*L_damping
        !
        EXCPH_gaux=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
        if(l_no_matrix_elements) EXCPH_gaux=1._SP
