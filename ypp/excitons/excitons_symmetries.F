@@ -399,6 +399,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc,first_exc, &
          &                      loc_reps(iclass,il1,il1,i_grp)
        enddo
      enddo
+     !write(*,*) i_grp," sub grp ",i_sub_grp," with ref ",loc_trace(:nclass,i_sub_grp,i_grp)
    enddo
  enddo
  !
