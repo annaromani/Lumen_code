@@ -719,12 +719,14 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'ELPhExcStates', '[EXCPH] Incoming (external) exciton states',EXCPH_states)
  call it(defs,'ELPhExcSum',    '[EXCPH] Outgoing (virtual) exciton states',EXCPH_sum)
  call it(defs,'LoutPath',      '[EXCPH] Path of the outgoing L',Lout_path)
- call it(defs,'AlphaQ'       ,'[EXCPH] Excitonic band structure 2D distortion',alphaQ)
+ call it(defs,'AlphaQ'       ,'[EXCPH] Excitonic band structure 2D distortion',alphaQ,verb_level=V_resp)
  call it(defs,'EXCLongDr'     ,'[EXCPH] Electric field versor for the excitons',EXC_q0)
  !
- call it('f',defs,'DbGdOnlyPh'   , '[EXCPH] Use Double-Grid only for phonon energies (do not interpolate excitons)')
+ call it('f',defs,'DbGdOnlyPh'   , '[EXCPH] Use Double-Grid only for phonon & 
+& energies (do not interpolate excitons)',verb_level=V_resp)
  call it('f',defs,'ExtendOutput', '[EXCPH] Print additional output with q-resolved lifetimes and resonances')
- call it('f',defs,'DbGdWEIGHTs', '[EXCPH] Use Double-grid also for satellite weights and renormalization')
+ call it('f',defs,'DbGdWEIGHTs', '[EXCPH] Use Double-grid also for satellite &
+&  weights and renormalization',verb_level=V_resp)
  call it('f',defs,'PLqres', '[EXCPH] Write contribution from each q-point')
  !
  ! Testing only zone <
