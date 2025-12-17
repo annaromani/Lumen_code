@@ -90,6 +90,8 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
    call msg('s','Reading '//exc_kind//'s at @ Q-index #',iq)
    call excitons_read(k,Xk,en,Xen,iq,"check",io_err)
    !
+   if(io_err/=0) call error("Error reading exciton at q = "//intc(iq))
+   !
    if(l_exc_occ_interp) then
      call excitons_read(k,Xk,en,Xen,iq,"eigenvectors eigenvalues",io_err)
 #if defined _YPP_ELPH

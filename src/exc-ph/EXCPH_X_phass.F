@@ -181,9 +181,12 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
            endif
            !
            ! Add the satellites to the dielectric constant and luminescence
+           ! I divide by q%nbz because a factor deriving from A^\lambda_cv that
+           ! should be devided for the number of k-points equal to the number of
+           ! q-points
            !
-           Epsilon_ii(iw,1)=Epsilon_ii(iw,1)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
-           Epsilon_ii(iw,3)=Epsilon_ii(iw,3)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
+           Epsilon_ii(iw,1)=Epsilon_ii(iw,1)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz)/real(q%nbz,SP)
+           Epsilon_ii(iw,3)=Epsilon_ii(iw,3)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz)/real(q%nbz,SP)
            !
            PL_ii(iw,1)     =PL_ii(iw,1)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
            PL_ii(iw,3)     =PL_ii(iw,3)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
