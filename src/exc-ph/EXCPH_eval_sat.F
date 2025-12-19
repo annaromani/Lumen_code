@@ -12,12 +12,14 @@
 subroutine EXCPH_eval_sat(iq_bz,q)
  !
  use pars,           ONLY:SP,cZERO,rZERO,cI
+ use units,          ONLY:HA2EV
  use R_lattice,      ONLY:bz_samp
  use ELPH,           ONLY:elph_branches,PH_freqs_sq,FAN_deltaE_treshold,Q_io_map
  use EXCPH,          ONLY:BS_Sat_E,BS_Sat_E_PH_abs,BS_Sat_WEIGHT,BS_Sat_WEIGHT_PH_abs, &
 &                         BS_all_E,BS_E_in,EXCPH_Gkkp_sq,EXCPH_sum,EXCPH_states, &
 &                         l_no_matrix_elements,EXCPH_deltaE_treshold,L_damping
  !
+ use BS_solvers,     ONLY:deg_exc_thrshld
  use y_memory_alloc
  !
  implicit none
@@ -52,8 +54,16 @@ subroutine EXCPH_eval_sat(iq_bz,q)
        BS_Sat_E       (il,i_beta,i_alpha)=E_beta-E_alpha+ph_E+cI*L_damping
        BS_Sat_E_PH_abs(il,i_beta,i_alpha)=E_beta-E_alpha-ph_E+cI*L_damping
        !
-       EXCPH_gaux=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
+       ! I divide for q%nbz for the scaling of the A_cv^k a second division is in the 
+       ! definition of eps_ph(w) and I think it is consistent
+       !
+       EXCPH_gaux=EXCPH_Gkkp_sq(il,i_beta,i_alpha)/real(q%nbz,SP)
        if(l_no_matrix_elements) EXCPH_gaux=1._SP
+       !
+       ! I exclude these cases becase we need degenerate perturbation theory
+       ! to deal with them
+       !
+       if(abs(E_alpha-E_beta)<=deg_exc_thrshld) cycle 
        !
        if(abs(BS_Sat_E(il,i_beta,i_alpha))>EXCPH_deltaE_treshold) &
 &         BS_Sat_WEIGHT(il,i_beta,i_alpha)       =EXCPH_gaux/abs(BS_Sat_E(il,i_beta,i_alpha))**2

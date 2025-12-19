@@ -561,7 +561,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  EXCPH_states=(/1,1/)
  EXCPH_sum=(/1,1/)
  L_damping=0.005/HA2EV ! set to 5 meV
- EXCPH_deltaE_treshold=1.E-6_SP/HA2EV ! This is a cutoff for denominator in the exc-ph spectra
+ EXCPH_deltaE_treshold=0.001/HA2EV ! This is a cutoff for denominator in the exc-ph spectra
  EXC_q0=(/0.0,0.0,0.0/)
  alphaQ=rZERO
  EXCPH_kthresh=-1. ! If negative, use all kpoints (turn positive only for debug)
