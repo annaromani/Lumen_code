@@ -45,7 +45,8 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !... I/0
  integer              :: iq,io_err
  !
- l_flag=l_sort .or. l_exc_wf .or.l_amplitude .or. l_spin .or. l_exc_symm .or. l_exc_rad_life .or. l_interp .or. l_dipoles
+ l_flag=l_sort .or. l_exc_wf .or.l_amplitude .or. l_spin .or. l_exc_symm &
+ &             .or. l_exc_rad_life .or. l_interp .or. l_dipoles
 #if defined _YPP_ELPH
  l_flag=l_flag .or. l_eliashberg .or. l_gkkp .or. l_ph_ass_dos
 #endif

@@ -77,7 +77,7 @@ subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
  !
  if (EXCITONS_n_user_states>n_user) &
  & call warning(" "//trim(intc(EXCITONS_n_user_states-n_user))//&
- & ""//exc_kind//"ic states added to the USER selection to preserve degeneracy")
+ &" "//exc_kind//"ic states added to the USER selection to preserve degeneracy")
  !
  ! 2. Using the "En_treshold" variable
  !------------------------------------

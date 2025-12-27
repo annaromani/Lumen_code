@@ -1,29 +1,13 @@
 !
-!        Copyright (C) 2000-2021 the YAMBO team
-!              http://www.yambo-code.org
+! License-Identifier: GPL
+!
+! Copyright (C) 2022 The Yambo Team
 !
 ! Authors (see AUTHORS file for details): DS
 !
 ! headers
 !
 #include<y_memory.h>
-!
-! This file is distributed under the terms of the GNU
-! General Public License. You can redistribute it and/or
-! modify it under the terms of the GNU General Public
-! License as published by the Free Software Foundation;
-! either version 2, or (at your option) any later version.
-!
-! This program is distributed in the hope that it will
-! be useful, but WITHOUT ANY WARRANTY; without even the
-! implied warranty of MERCHANTABILITY or FITNESS FOR A
-! PARTICULAR PURPOSE.  See the GNU General Public License
-! for more details.
-!
-! You should have received a copy of the GNU General Public
-! License along with this program; if not, write to the Free
-! Software Foundation, Inc., 59 Temple Place - Suite 330,Boston,
-! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
 subroutine RT_transient_ARPES(Xen,Xk,Xq)
  !
@@ -61,14 +45,14 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  integer               :: iq,iq_bz,i_l,i_l_ref,i_c,i_v,i_cvk,i_kibz,i_kbz,i_kmq_ibz,i_kmq_bz,i_karpes,i_ks,i_sp_pol,i_w,i_l_v, &
  &                        io_err,ID_ARPES,ID_ARPES_int,ID_bands,NV,NK,q_range(2),l_range(2),                               &
  &                        EXC_table(1000,2),N_exc,j_exc,EXC_indx(1000)
- real(SP)              :: dw,Ev,Z,min_exc_E,N_lq,EXC_N_lq(1000)
+ real(SP)              :: dw,Ev,Z,min_exc_E,N_lq,EXC_N_lq(1000),EXC_E_lq(1000)
  complex(SP)           :: F_tmp(RT_conf%W_n_steps),PES(RT_conf%W_n_steps)
  real(SP),allocatable  :: ARPES_int(:,:,:)
  integer, allocatable  :: BS_E_degs(:)
  real(SP),allocatable  :: Res(:)
  !
- character(schlen)     :: headings(3),file_name,title
- real(SP)              :: odata(3),DIP_dir(3,3)
+ character(schlen)     :: dist_head(4),headings(3),file_name,title
+ real(SP)              :: dist_data(4),odata(3),DIP_dir(3,3)
  !
  complex(SP),external      ::Lorentzian_FT
  !
@@ -97,8 +81,8 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  !==============================
  !
  call parser("FullExpansion", l_full_expansion)
- call parser("States",        l_single_exciton)
  call parser("EXCTemp", l_exciton_distribution)
+ l_single_exciton=.not.l_exciton_distribution
  !
  if (.not. (l_single_exciton .or. l_exciton_distribution ) ) call error(" Select either Exc states or Exc temp in input")
  !
@@ -241,11 +225,14 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
      N_exc=N_exc+1
      Z=Z+N_lq
      !
-     j_exc=N_exc
-     if(N_exc>1000) j_exc=minloc(EXC_N_lq,1)
-     !
-     EXC_table(j_exc,:)=(/i_l,iq/)
-     EXC_N_lq(j_exc)   =N_lq
+     if (l_exciton_distribution) then
+       j_exc=N_exc
+       if(N_exc>1000) j_exc=minloc(EXC_N_lq,1)
+       !
+       EXC_table(j_exc,:)=(/i_l,iq/)
+       EXC_N_lq(j_exc)   =N_lq
+       EXC_E_lq(j_exc)   =BS_E(i_l)
+     endif
      !
      !if (l_single_exciton)       iq=iq_bz
      !if (l_exciton_distribution) iq=                  ! ********* To Fix ************
@@ -352,21 +339,27 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  PES=PES/Z
  INTERP_obj(ID_ARPES)%INTERP=INTERP_obj(ID_ARPES)%INTERP/Z
  !
- ! Print the excitonic weights
- !
- call sort(arrin=EXC_N_lq(:N_exc),indx=EXC_indx(:N_exc))
- !
- file_name="Exc_weights"
- call of_open_close(trim(file_name),'ot')
- headings=(/"N_lq","i_l "," iq "/)
- call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
- !
- do j_exc=N_exc,1,-1
-   odata=(/EXC_N_lq(j_exc)/Z,real(EXC_table(EXC_indx(j_exc),1),SP),real(EXC_table(EXC_indx(j_exc),2),SP)/)
-   call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
- enddo
- !
- call of_open_close(trim(file_name))
+ if (l_exciton_distribution) then
+   !
+   ! Print the excitonic weights
+   !
+   call sort(arrin=EXC_N_lq(:N_exc),indx=EXC_indx(:N_exc))
+   !
+   file_name="Exc_distribution"
+   call of_open_close(trim(file_name),'ot')
+   dist_head=(/"E_lq","N_lq","i_l "," iq "/)
+   call msg('o '//trim(file_name),"#",dist_head,INDENT=0,USE_TABS=.true.)
+   call msg('o '//trim(file_name),"#")
+   !
+   do j_exc=N_exc,1,-1
+     dist_data=(/EXC_E_lq(EXC_indx(j_exc))*HA2EV,EXC_N_lq(j_exc)/Z,&
+     & real(EXC_table(EXC_indx(j_exc),1),SP),real(EXC_table(EXC_indx(j_exc),2),SP)/)
+     call msg('o '//trim(file_name),'',dist_data,INDENT=-2,USE_TABS=.true.)
+   enddo
+   !
+   call of_open_close(trim(file_name))
+   !
+ endif
  !
  ! Print the integrated PES
  !
