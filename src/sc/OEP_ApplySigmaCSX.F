@@ -145,7 +145,7 @@ subroutine OEP_ApplySigmaCSX(X,Xw,E,k,q,U_csx)
          isc%os=(/iv2,k%sstar(qindx_S(ik,iq,1),:),1/)
          isc%qs(1)=qindx_S(ik,iq,2)
          os=isc%os(3)
-         lostr = (S_contains_TRos)
+         lostr = S_contains_TR(os)
          call scatter_Bamp(isc)
 #if defined _DOUBLE
          call zgemv('N', X%ng, X%ng, (1._SP,0._SP), PPaR, X%ng, conjg(isc%rhotw),1,(0._SP,0_SP), u,1)
