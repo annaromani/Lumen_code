@@ -626,7 +626,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    if (l_dos.or.l_bands) call INIT_QP_ctl_switch('G')
    if (l_sp_symm) then
      call INIT_QP('')
-     call initactivate(1,"Symm_thresh")
+     call initactivate(1,"Symm_thresh FFTGvecs")
    endif
    if (l_dos) then
      call initactivate(1,"DOSERange DOSESteps DOS_broad DOS_bands DOSUsesOcc")
@@ -732,7 +732,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    if (l_exc_wf.and.l_average_eh) call initactivate(1,"EHdensity")
    if (l_exc_wf.and.n_spin>1) call initactivate(1,"ElecSpin HoleSpin")
    if (l_spin) call initactivate(1,"Degen_Step")
-   if (l_exc_symm) call initactivate(1,"Degen_Step Symm_thresh MinimizeMem")
+   if (l_exc_symm) call initactivate(1,"Degen_Step Symm_thresh FFTGvecs MinimizeMem")
 #if defined _YPP_ELPH
    if (l_eliashberg)  call initactivate(1,"Degen_Step") 
 #endif
