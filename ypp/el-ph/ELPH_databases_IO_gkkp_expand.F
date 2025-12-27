@@ -202,7 +202,7 @@ subroutine ELPH_databases_IO_gkkp_expand(mode,iq,iq_s,k,q,qindx_ID,qindx_ID_frag
      !
    endif
    !
-   if (iq_s>nsym/(i_time_rev+1)) then
+   if (S_contains_TR(iq_s)) then
      ik_bz_gkkp=k%k_table(ok,sop_tab(sop_inv(iq_s-nsym/2),os))
    else
      ik_bz_gkkp=k%k_table(ik,sop_tab(sop_inv(iq_s),is))
