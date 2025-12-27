@@ -164,7 +164,9 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  NK=Xk%nibz
  if (l_full_expansion) NK=Xk%nbz
  !
- YAMBO_ALLOC(ARPES_int,(BS_bands(1):Xen%nbf(1),NK,1))   ! last dimension is for number of excitons
+ ! Last dimension is for number of excitons
+ ! Since I use it inside the loop over excitons, it is always 1
+ YAMBO_ALLOC(ARPES_int,(BS_bands(1):Xen%nbf(1),NK,1))
  !
  ID_ARPES=3
  YAMBO_ALLOC(INTERP_obj(ID_ARPES)%INTERP,(RT_conf%W_n_steps,CIRCUIT_K%nibz,2))
@@ -258,7 +260,10 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
        if(     l_full_expansion) i_karpes=i_kbz
        if(.not.l_full_expansion) i_karpes=i_kibz
        !
-       ! Quantity to be interpolated
+       ! Quantity to be interpolated.
+       ! Associate to every pole eps_(v,k-q)+E_l(q) an intensity
+       ! Here we are inside the loop over excitons, so the last index is always one
+       ! Instead I sum over the conduction band index
        !
        ARPES_int(i_v,i_karpes,1)=ARPES_int(i_v,i_karpes,1)+abs(BS_mat(i_cvk,i_l))**2
        !
@@ -308,8 +313,12 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
            F_tmp(i_w)=Lorentzian_FT(GreenF_T_and_W%W(i_w),(Ev+BS_E(i_l)),"r")
          enddo
          !
+	 ! Here I have the k-interpolated pole, times the k-interpolated intensity,
+         ! times the exciton occupation. This is at fixed exciton and q-index
          F_tmp=F_tmp*INTERP_obj(ID_ARPES_int)%INTERP(i_v,i_kibz,1)*N_lq
          !
+	 ! F_tmp is frequency dependent. The valence and exciton index are not
+	 ! needed anymore. I can accumulate
          INTERP_obj(ID_ARPES)%INTERP(:,i_kibz,1)=INTERP_obj(ID_ARPES)%INTERP(:,i_kibz,1)+ real(F_tmp,SP)
          INTERP_obj(ID_ARPES)%INTERP(:,i_kibz,2)=INTERP_obj(ID_ARPES)%INTERP(:,i_kibz,2)-aimag(F_tmp)
          !
