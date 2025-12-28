@@ -260,9 +260,12 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
    ! Now I want to rewrite wf_ks(r)= wf_k(r(s^-1))
    !
    do is=1,nsym+1
-     if( .not.S_contains_TR(is) .and. is<=nsym ) M1=matmul( dl_sop(:,:,sop_inv(is)),transpose(a))
-     if(      S_contains_TR(is) .and. is<=nsym ) M1=matmul(-dl_sop(:,:,sop_inv(is)),transpose(a))
-     if( is==nsym+1 )                            M1=matmul( space_inv,transpose(a))
+     if( is==nsym+1 )  then
+       M1=matmul( space_inv,transpose(a))
+     else
+       M1=matmul( dl_sop(:,:,sop_inv(is)),transpose(a))
+       if(S_contains_TR(is)) M1=-M1
+     endif
      M2=matmul(b,M1)/2.0_SP/pi
      forall (i1=1:3,i2=1:3) M2(i1,i2)=M2(i1,i2)*fft_dim(i1)/fft_dim(i2)
      !
