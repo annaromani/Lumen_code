@@ -27,9 +27,9 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  implicit none
  !
  integer, intent(out)   :: old_nsym
- real(SP),intent(out)   :: old_dl_sop(3,3,nsym)
- integer, intent(out)   :: old_sop_inv(nsym)
- integer(LP), intent(out)   :: S_contains_TR(nsym)
+ real(SP),intent(out)   :: old_dl_sop(3,3,nsym*n_spinor)
+ integer, intent(out)   :: old_sop_inv(nsym*n_spinor)
+ integer(LP), intent(out)   :: S_contains_TR(nsym*n_spinor)
  !
  ! Work space
  !
@@ -102,6 +102,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  do is=1,nsym
   if(is>nsym/(1+i_time_rev)) S_contains_TR(is)=1
  enddo
+ if (n_spinor==2) S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
  !
  spatial_nsym=nsym/(1+i_time_rev)
  !
@@ -208,10 +209,13 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
      enddo
    endif
    !
-   YAMBO_ALLOC(dl_sop_tmp,(3,3,nsym))
+   YAMBO_ALLOC(dl_sop_tmp,(3,3,nsym*n_spinor))
    dl_sop_tmp(1:3,1:3,1:nsym)=dl_sop(1:3,1:3,1:nsym)
+   if (n_spinor==2) then
+     dl_sop_tmp(1:3,1:3,nsym+1:2*nsym)=dl_sop_tmp(1:3,1:3,1:nsym)
+   endif
    YAMBO_FREE(dl_sop)
-   YAMBO_ALLOC(dl_sop,(3,3,nsym))
+   YAMBO_ALLOC(dl_sop,(3,3,nsym*n_spinor))
    dl_sop=dl_sop_tmp
    YAMBO_FREE(dl_sop_tmp)
    !
@@ -258,6 +262,8 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  endif
  !
  ! Check group table
+ !
+ call build_spin_sop()
  !
  call symmetry_group_table('s')
  !

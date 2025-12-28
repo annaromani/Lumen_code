@@ -39,7 +39,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  integer,intent(in)          :: kpoints_map(2,k%nibz)
  !
  integer,intent(in)       :: old_nsym
- integer(LP),intent(in)       :: S_contains_TR(old_nsym)
+ integer(LP),intent(in)       :: S_contains_TR(old_nsym*n_spinor)
  !
  ! Work space
  !

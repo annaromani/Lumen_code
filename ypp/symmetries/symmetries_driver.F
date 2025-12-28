@@ -39,7 +39,7 @@ subroutine symmetries_driver(E,Xk)
  !
  type(bz_samp)         :: Xk_save
  ! 
- integer               :: old_sop_inv(nsym)
+ integer               :: old_sop_inv(nsym*n_spinor)
  logical               :: l_keep_k_grid
  !
  integer               :: old_nkpt,ID,io_old_SYMMs
@@ -52,8 +52,8 @@ subroutine symmetries_driver(E,Xk)
  integer            :: iq,ID_gkkp,io_err
 #endif
  !
- YAMBO_ALLOC(old_dl_sop,(3,3,nsym))
- YAMBO_ALLOC(old_S_contains_TR,(nsym))
+ YAMBO_ALLOC(old_dl_sop,(3,3,nsym*n_spinor))
+ YAMBO_ALLOC(old_S_contains_TR,(nsym*n_spinor))
  !     
  if (core_io_path==more_io_path) more_io_path=trim(core_io_path)//"/FixSymm"
  !
