@@ -152,8 +152,8 @@ if (run_gpu) then
   endif 
 endif
 
-#if defined _OPENMP && !defined _GPU
-  elpa_nthreads = 1 !int(n_threads_K,kind=YDIAGO_INT)
+#if defined _OPENMP && _ELPA_OMP && !defined _GPU
+  elpa_nthreads = int(n_threads_K,kind=YDIAGO_INT)
 #else 
   elpa_nthreads = 1 
 #endif
