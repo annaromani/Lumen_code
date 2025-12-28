@@ -130,8 +130,8 @@ integer function variables_NL(ID)
 &         R0=Efield(i_Prb)%intensity,CHECK=.true.,OP=(/"=="/),UNIT=AU2KWCMm2, &
 &         DESCRIPTOR=NL_desc)
 
-   call def_variable_elemental(ID,"Field_Damping_"//trim(intc(i_Prb)),1,SP,0)
-   call io_variable_elemental(ID,VAR="[FIELDs] Damping           ",TERMINATOR="[fs]",&
+   call def_variable_elemental(ID,"Field_FWHM"//trim(intc(i_Prb)),1,SP,0)
+   call io_variable_elemental(ID,VAR="[FIELDs] FWHM           ",TERMINATOR="[fs]",&
 &         R0=Efield(i_Prb)%FWHM,CHECK=.true.,OP=(/"=="/),& 
 &         DESCRIPTOR=NL_desc)
 
@@ -144,6 +144,11 @@ integer function variables_NL(ID)
    call io_variable_elemental(ID,VAR=" [FIELDs] Initial time      ",TERMINATOR="[fs]",&
 &         R0=Efield(i_Prb)%t_initial,CHECK=.true.,OP=(/"=="/),UNIT=AUT2FS,&
 &         DESCRIPTOR=NL_desc)
+
+   call def_variable_elemental(ID,"Field_peak_"//trim(intc(i_Prb)),1,SP,0)
+   call io_variable_elemental(ID,VAR="[FIELDs] Field_peak", TERMINATOR="[times sigma]",&
+&          R0=Efield(i_Prb)%peak, CHECK=.true., OP=(/"=="/),&
+&          DESCRIPTOR=NL_desc)
 
  enddo
  !

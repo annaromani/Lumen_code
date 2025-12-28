@@ -245,7 +245,7 @@ subroutine NL_initialize(E,k)
    call warning('Variables Field1_Freq and Field1_NFreqs ignored')
  endif
  !
- if(.not.l_pump_and_probe.and.Efield(1)%ef_name/='SOFTSIN'.and.Efield(1)%ef_name/='SIN') &
+ if(.not.l_pump_and_probe.and.Efield(1)%ef_name/='SOFTSIN'.and.Efield(1)%ef_name/='SIN'.and.Efield(1)%ef_name/='QSSIN') &
     call warning(' Non-linear optics properties can be obtained with SOFTSIN/SIN fields only')
  !
  call STRING_split(Efield(1)%ef_name,field_defs)
@@ -269,7 +269,7 @@ subroutine NL_initialize(E,k)
  !
  W_0=Efield(1)%frequency
  sigma=Efield(1)%width
- T_0=pi/W_0*(real(nint(W_0/pi*3._SP*sigma),SP))
+ T_0=pi/W_0*(real(nint(W_0/pi*Efield(1)%peak*sigma),SP))
  if(Efield(1)%ef_name=='SPULSE') T_0=sigma
  !
  ! Important in the Time-dependent Schrodinger Eq.

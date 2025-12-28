@@ -127,8 +127,8 @@ integer function io_NL(what,ID)
    call io_variable_elemental(ID_frag,VAR="[FIELDs] Intensity     ",TERMINATOR="[kWCMm2]",&
 &         R0=Efield(i_Prb)%intensity,CHECK=.true.,OP=(/"=="/),UNIT=AU2KWCMm2)
 
-   call def_variable_elemental(ID_frag,"Field_Damping_"//trim(intc(i_Prb)),1,SP,0)
-   call io_variable_elemental(ID_frag,VAR="[FIELDs] Damping           ",TERMINATOR="[fs]",&
+   call def_variable_elemental(ID_frag,"Field_FWHM_"//trim(intc(i_Prb)),1,SP,0)
+   call io_variable_elemental(ID_frag,VAR="[FIELDs] FWHM          ",TERMINATOR="[fs]",&
 &         R0=Efield(i_Prb)%FWHM,CHECK=.true.,OP=(/"=="/))
 
    call def_variable_elemental(ID_frag,"Field_Freq_"//trim(intc(i_Prb)),1,SP,0)
@@ -138,6 +138,10 @@ integer function io_NL(what,ID)
    call def_variable_elemental(ID_frag,"Field_Initial_time_"//trim(intc(i_Prb)),1,SP,0)
    call io_variable_elemental(ID_frag,VAR=" [FIELDs] Initial time      ",TERMINATOR="[fs]",&
 &         R0=Efield(i_Prb)%t_initial,CHECK=.true.,OP=(/"=="/),UNIT=AUT2FS)
+
+  call def_variable_elemental(ID_frag,"Field_peak_"//trim(intc(i_Prb)),1,SP,0)
+  call io_variable_elemental(ID_frag,VAR="[FIELDs] Field_peak ",TERMINATOR="[times sigma]", &
+&         R0=Efield(i_Prb)%peak,CHECK=.true.,OP=(/"=="/))
 
  enddo
  !
