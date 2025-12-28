@@ -229,7 +229,7 @@ contains
     if (any(symafm==-1)) then
       trev=-99
       do is=1,a_nsym
-        write(*,*) symafm(is)
+        !write(*,*) symafm(is)
         det_s=m3det_i(asop(:,:,is))
         if (symafm(is)*det_s==-1)  trev(is)=1
         if (symafm(is)*det_s== 1)  trev(is)=0
