@@ -327,7 +327,7 @@ integer function io_DB1(E,k,ID)
  call io_bulk(ID, VAR="SYMMETRY", VAR_SZ=shape(dl_sop(:,:,:nsym)) )
  call io_bulk(ID, R3=dl_sop(:,:,:nsym))
  !
- if (read_is_on(ID) .and. n_spinor==2) then
+ if (read_is_on(ID)) then
    do is=1,nsym
      S_contains_TR(is)=is>nsym/(1+i_time_rev)
    enddo
