@@ -65,11 +65,11 @@ subroutine EXCPH_eval_sat(iq_bz,q)
        !
        if(abs(E_alpha-E_beta)<=deg_exc_thrshld) cycle 
        !
-       if(abs(BS_Sat_E(il,i_beta,i_alpha))>EXCPH_deltaE_treshold) &
-&         BS_Sat_WEIGHT(il,i_beta,i_alpha)       =EXCPH_gaux/abs(BS_Sat_E(il,i_beta,i_alpha))**2
+!       if(abs(BS_Sat_E(il,i_beta,i_alpha))>EXCPH_deltaE_treshold) &
+       BS_Sat_WEIGHT(il,i_beta,i_alpha)       =EXCPH_gaux/abs(BS_Sat_E(il,i_beta,i_alpha))**2
        !
-       if(abs(BS_Sat_E_PH_abs(il,i_beta,i_alpha))>EXCPH_deltaE_treshold) &
-&         BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)=EXCPH_gaux/abs(BS_Sat_E_PH_abs(il,i_beta,i_alpha))**2
+!       if(abs(BS_Sat_E_PH_abs(il,i_beta,i_alpha))>EXCPH_deltaE_treshold) &
+       BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)=EXCPH_gaux/abs(BS_Sat_E_PH_abs(il,i_beta,i_alpha))**2
        !
      enddo
    enddo
