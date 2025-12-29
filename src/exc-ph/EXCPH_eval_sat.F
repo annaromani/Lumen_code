@@ -57,7 +57,7 @@ subroutine EXCPH_eval_sat(iq_bz,q)
        ! I divide for q%nbz for the scaling of the A_cv^k a second division is in the 
        ! definition of eps_ph(w) and I think it is consistent
        !
-       EXCPH_gaux=EXCPH_Gkkp_sq(il,i_beta,i_alpha)/real(q%nbz,SP)
+       EXCPH_gaux=EXCPH_Gkkp_sq(il,i_beta,i_alpha) !/real(q%nbz,SP)
        if(l_no_matrix_elements) EXCPH_gaux=1._SP
        !
        ! I exclude these cases becase we need degenerate perturbation theory
