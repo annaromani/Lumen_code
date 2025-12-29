@@ -21,6 +21,7 @@ reset_LIBS="$LIBS"
 
 enable_scalapack="no"
 enable_elpa="no"
+enable_elpa_omp="no"
 
 internal_slk="no"
 internal_elpa="no"
@@ -117,7 +118,7 @@ if test "$mpibuild"  = "yes"; then
     acx_elpa_save_LIBS="$ELPA_LIBS"
     LIBS="$LIBS $FLIBS $SCALAPACK_LIBS $LAPACK_LIBS $BLAS_LIBS"
     # First, check ELPA_LIBS environment variable
-    if test "x$ELPA_LIBS" != x; then
+    if test "x$ELPA_LIBS" != "x" ; then
       save_LIBS="$LIBS"; LIBS="$ELPA_LIBS $LIBS"
       save_FCFLAGS="$FCFLAGS"; FCFLAGS="$ELPA_INCS/modules/ $FCFLAGS"
       #AC_MSG_CHECKING([for $elpa_routine in $ELPA_LIBS])
@@ -127,6 +128,10 @@ if test "$mpibuild"  = "yes"; then
       AC_LINK_IFELSE($testprog_elpa,  [enable_elpa="yes"; elpa_msg="yes"], [enable_elpa="internal"; elpa_msg="not working, fallback to internal"; ELPA_LIBS=""])
       AC_MSG_RESULT($enable_elpa)
       ELPA_LIBS="$acx_elpa_save_LIBS"
+      ELPA_OMP=`echo $ELPA_LIBS | grep elpa_openmp`
+      if test "x$ELPA_OMP" != "x" ; then
+        enable_elpa_omp="yes";
+      fi
       LIBS="$save_LIBS"
       FCFLAGS="$save_FCFLAGS"
     else
@@ -165,10 +170,16 @@ if test "$mpibuild"  = "yes"; then
   if test "$mpif_found" = "yes" && test "$enable_elpa" = "internal"; then
     enable_elpa="yes"
     internal_elpa="yes"
-    ELPA_LIBS="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs1="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs2="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa_openmp.a"
     ELPA_INCS="${IFLAG}${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/include/"
-    if test -e "${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"; then
+    if test -e "$elpa_libs1"; then
       compile_elpa="no"
+      ELPA_LIBS="$elpa_libs1"
+    elif test -e "$elpa_libs2"; then
+      compile_elpa="no"
+      ELPA_LIBS="$elpa_libs2"
+      enable_elpa_omp="yes"
     else
       compile_elpa="yes"
     fi
@@ -180,6 +191,9 @@ if test "$enable_scalapack" = "yes" ; then
   def_scalapack="-D_SCALAPACK"
   if test "$enable_elpa" = "yes" ; then
     def_elpa="-D_ELPA"
+    if test "$enable_elpa_omp" = "yes" ; then
+      def_elpa="-D_ELPA -D_ELPA_OMP"
+    fi
   else
     enable_elpa="no"
     def_elpa=""

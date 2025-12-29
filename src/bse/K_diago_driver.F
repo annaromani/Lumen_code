@@ -627,24 +627,28 @@ subroutine K_diago_driver(iq,W,X_static)
      if (l_slepc) then
        !
        if (index(BSS_slepc_matrix_format,'explicit')>0) &
-       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix re-distributed from internal to slepc parallel scheme')
+       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
+       &  're-distributed from internal to slepc parallel scheme')
        if (BSS_slepc_matrix_format=='shell')            &
-       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix used with yambo parallel distribution scheme')
+       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
+       &           'used with yambo parallel distribution scheme')
        !
        call SlepcInitialize(PETSC_NULL_CHARACTER,ierr)
+       !
+       if (BSS_target_E/=0._SP .and. BSS_slepc_pseudo_herm) then 
+         BSS_slepc_pseudo_herm = .false. 
+         call warning('Target energy not supported in pseudo-hermitian case. '//&
+         &                          'Switching to non-hermitian diagonalization')
+       endif
+       if (BSS_slepc_precondition/="none" .and. BSS_slepc_pseudo_herm) then 
+         BSS_slepc_pseudo_herm = .false. 
+         call warning('Preconditioning not supported in pseudo-hermitian case. '//&
+         &                            'Switching to non-hermitian diagonalization')
+       endif
        !
      endif
      !
 #endif
-     !
-     if (BSS_target_E/=0._SP .and. BSS_slepc_pseudo_herm) then 
-       BSS_slepc_pseudo_herm = .false. 
-       call warning('Target energy not supported in pseudo-hermitian case. Switching to non-hermitian diagonalization')
-     endif
-     if (BSS_slepc_precondition/="none" .and. BSS_slepc_pseudo_herm) then 
-       BSS_slepc_pseudo_herm = .false. 
-       call warning('Preconditioning not supported in pseudo-hermitian case. Switching to non-hermitian diagonalization')
-     endif
      !
 #if defined _SCALAPACK
      if (l_ldiago) then
