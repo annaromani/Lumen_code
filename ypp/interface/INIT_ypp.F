@@ -686,7 +686,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    endif
    !
    if (l_RT_abs) then
-     call initactivate(1,"TRabsVelFullExpr TRabsGoldModes")
+     call initactivate(1,"BSQindex TRabsVelFullExpr TRabsGoldModes")
      call initactivate(1,"TRabsOBS TRabsDIPdir TRabsDIPplane TRabsMODE TRabsEtresh")
    endif
    if (l_RT_fields) then

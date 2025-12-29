@@ -162,6 +162,6 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  call excitons_read(k,Xk,en,Xen,BSiq,"clean",.true.,io_err)
  !
- if((.not.l_sort).and.l_flag) deallocate(EXCITONS_user_indexes)
+ if((.not.l_sort).and.allocated(EXCITONS_user_indexes)) deallocate(EXCITONS_user_indexes)
  !
 end subroutine

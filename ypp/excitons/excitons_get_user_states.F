@@ -68,12 +68,16 @@ subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
    !
    do i_st=i_start,i_end
      !
+     if (i_st==0) cycle
+     !
      n_user=n_user+1
      !
      call ADD_me_to_the_list(i_st,TMP_index)
      !
    enddo
  enddo
+ !
+ if (i_start==0 .or. i_end==0) return
  !
  if (EXCITONS_n_user_states>n_user) &
  & call warning(" "//trim(intc(EXCITONS_n_user_states-n_user))//&
