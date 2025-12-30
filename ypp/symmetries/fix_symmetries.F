@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
+subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contains_TR)
  !
  use pars,                ONLY:LP,SP
  use com,                 ONLY:msg
@@ -20,16 +20,17 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  use electrons,           ONLY:n_spinor,Spin_magn
  use R_lattice,           ONLY:rl_sop
  use vec_operate,         ONLY:v_norm
- use D_lattice,           ONLY:nsym,dl_sop,i_time_rev,alat,mag_syms,&
+ use D_lattice,           ONLY:nsym,dl_sop,i_time_rev,alat,mag_syms,spin_sop,&
 &                              i_space_inv,sop_inv,inv_index,symmetry_group_table
  use y_memory_alloc
  !
  implicit none
  !
- integer, intent(out)   :: old_nsym
- real(SP),intent(out)   :: old_dl_sop(3,3,nsym*n_spinor)
- integer, intent(out)   :: old_sop_inv(nsym*n_spinor)
- integer(LP), intent(out)   :: S_contains_TR(nsym*n_spinor)
+ integer, intent(out)     :: old_nsym
+ real(SP),intent(out)     :: old_dl_sop(3,3,nsym*n_spinor)
+ complex(SP),intent(out)  :: old_spin_sop(n_spinor,n_spinor,nsym*n_spinor)
+ integer, intent(out)     :: old_sop_inv(nsym*n_spinor)
+ integer(LP), intent(out) :: S_contains_TR(nsym*n_spinor)
  !
  ! Work space
  !
@@ -110,6 +111,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
  old_spatial_nsym=spatial_nsym
  old_trev_nsym=nsym-spatial_nsym
  old_dl_sop=dl_sop
+ old_spin_sop=spin_sop
  old_sop_inv=sop_inv
  !
  if (use_B_field) then

@@ -54,6 +54,7 @@ module D_lattice
  ! Full symmetries after removing them with ypp -y
  integer  :: old_nsym
  real(SP), allocatable :: old_dl_sop(:,:,:)
+ complex(SP), allocatable :: old_spin_sop(:,:,:)
  integer,  allocatable :: kpoints_map(:,:)
  integer(LP),  allocatable :: old_S_contains_TR(:)
  !                       
