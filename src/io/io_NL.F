@@ -129,7 +129,7 @@ integer function io_NL(what,ID)
 
    call def_variable_elemental(ID_frag,"Field_FWHM_"//trim(intc(i_Prb)),1,SP,0)
    call io_variable_elemental(ID_frag,VAR="[FIELDs] FWHM          ",TERMINATOR="[fs]",&
-&         R0=Efield(i_Prb)%FWHM,CHECK=.true.,OP=(/"=="/))
+&         R0=Efield(i_Prb)%FWHM,CHECK=.true.,OP=(/"=="/),UNIT=AUT2FS)
 
    call def_variable_elemental(ID_frag,"Field_Freq_"//trim(intc(i_Prb)),1,SP,0)
    call io_variable_elemental(ID_frag,VAR="[FIELDs] Frequency    ",TERMINATOR="[eV]",&
