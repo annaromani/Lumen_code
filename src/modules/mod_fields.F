@@ -155,7 +155,7 @@ module fields
      E%ef_pol       ='none'
      E%versor       =(/1._SP,0._SP,0._SP/)
      E%versor_circ  =(/0._SP,1._SP,0._SP/)
-     E%peak         =10._SP
+     E%peak         =3._SP
    end subroutine
    !
    subroutine A_vecpot_reset(A)
