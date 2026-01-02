@@ -146,7 +146,7 @@ function small_a(T,dt,E_field,order,envelop_only)
     case('GAUSS','QSSIN','QSFIELD','PULSE','SPULSE')
       ! Fields which need T_0
       W_0=E_field%frequency
-      T_0_fac=E_field%peak*sigma_eff # note this conflicts/replicates the lines below...
+      T_0_fac=E_field%peak*sigma_eff ! note this conflicts/replicates the lines below...
       if(trim(field_defs(2))=="1SIGMA" .or. trim(field_defs(3))=="1SIGMA") T_0_fac=1._SP*sigma_eff
       if(trim(field_defs(2))=="2SIGMA" .or. trim(field_defs(3))=="2SIGMA") T_0_fac=2._SP*sigma_eff
       if(trim(field_defs(2))=="3SIGMA" .or. trim(field_defs(3))=="3SIGMA") T_0_fac=3._SP*sigma_eff
