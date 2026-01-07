@@ -52,6 +52,8 @@ subroutine En_k_plus_q_interpolate(k,q,E,iqbz)
  nq_around=q%FGbz%k_range(iqbz,2)-q%FGbz%k_range(iqbz,1)
  n_k_plus_q=nq_around*k%nibz
  !
+ if (n_k_plus_q==0) return
+ !
  ! Generate k'=k+q  vectors
  ! ============================================
  call bz_samp_reset(k_plus_q)
