@@ -153,17 +153,19 @@ subroutine X_irredux_residuals(Xen,Xk,X,Dip,i_cg,iq,Xo_res,Xo_scatt,&
        !DEV_OMPGPU target map(present,alloc:g_rot,rhotw_save,Xo_scatt_rhotw_p)
        !DEV_OMPGPU teams loop private(ig2)
        !DEV_OMP parallel do default(shared), private(ig1,ig2)
-       !
-       do ig1=2,X_ng
-         ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
-         Xo_scatt_rhotw_p(ig1)=rhotw_save(ig2)
-       enddo
+       if (is>nsym/(i_time_rev+1)) then
+         do ig1=2,X_ng
+           ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
+           Xo_scatt_rhotw_p(ig1)=conjg(rhotw_save(ig2))
+         enddo
+       else
+         do ig1=2,X_ng
+           ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
+           Xo_scatt_rhotw_p(ig1)=rhotw_save(ig2)
+         enddo
+       endif
        !DEV_OMPGPU end target
        !DEV_ACC_DEBUG end data
-       !
-       if (is>nsym/(i_time_rev+1)) then
-         call devxlib_conjg_d( Xo_scatt_rhotw_p )
-       endif
        !
      endif
      !
@@ -274,16 +276,19 @@ subroutine X_irredux_residuals(Xen,Xk,X,Dip,i_cg,iq,Xo_res,Xo_scatt,&
      !DEV_OMPGPU target map(present,alloc:g_rot,rhotw_save,Xo_scatt_rhotw_p)
      !DEV_OMPGPU teams loop private(ig1,ig2)
      !DEV_OMP parallel do default(shared), private(ig1,ig2)
-     do ig1=1,X_ng
-       ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
-       Xo_scatt_rhotw_p(ig1)=rhotw_save(ig2)
-     enddo
+     if (is>nsym/(i_time_rev+1)) then
+       do ig1=1,X_ng
+         ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
+         Xo_scatt_rhotw_p(ig1)=conjg(rhotw_save(ig2))
+       enddo
+     else
+       do ig1=1,X_ng
+         ig2=DEV_VAR(g_rot)(ig1,sop_inv_l)
+         Xo_scatt_rhotw_p(ig1)=rhotw_save(ig2)
+       enddo
+     endif
      !DEV_OMPGPU end target
      !DEV_ACC_DEBUG end data
-     !
-     if (is>nsym/(i_time_rev+1)) then
-       call devxlib_conjg_d(Xo_scatt_rhotw_p)
-     endif
      !
      !DEV_ACC_DEBUG data present(Xo_res,Xo_scatt_rhotw_p,G_m_G)
      !DEV_ACC parallel loop collapse(2)
