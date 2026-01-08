@@ -52,6 +52,10 @@ subroutine En_k_plus_q_interpolate(k,q,E,iqbz)
  nq_around=q%FGbz%k_range(iqbz,2)-q%FGbz%k_range(iqbz,1)
  n_k_plus_q=nq_around*k%nibz
  !
+ ! Set dimensions
+ GKKP%E_dg_kpq(iqbz)%nk       =k%nibz
+ GKKP%E_dg_kpq(iqbz)%nq_around=nq_around
+ !
  if (n_k_plus_q==0) return
  !
  ! Generate k'=k+q  vectors
@@ -101,8 +105,6 @@ subroutine En_k_plus_q_interpolate(k,q,E,iqbz)
  !
  ! Store E(k+q) energies in the GKKP
  ! ==========================================
- GKKP%E_dg_kpq(iqbz)%nk       =k%nibz
- GKKP%E_dg_kpq(iqbz)%nq_around=nq_around
  call FineGd_E_kpq_alloc(GKKP%E_dg_kpq(iqbz))
  !
  ic=1
