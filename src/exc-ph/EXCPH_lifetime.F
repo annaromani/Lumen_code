@@ -15,7 +15,7 @@ subroutine EXCPH_lifetime(k,q,X)
  use units,          ONLY:HA2EV,HA2CMm1
  use pars,           ONLY:SP,cZERO,rZERO,schlen,pi
  use electrons,      ONLY:levels
- use R_lattice,      ONLY:bz_samp,bz_map
+ use R_lattice,      ONLY:bz_samp
  use parser_m,       ONLY:parser
  use com,            ONLY:msg,of_open_close
  use X_m,            ONLY:X_t
@@ -24,13 +24,12 @@ subroutine EXCPH_lifetime(k,q,X)
  use EXCPH,          ONLY:EXCPH_sum,EXCPH_states,BS_E,BS_all_E,BS_E_in,L_damping,n_exc_in, &
 &                         EXC_LifeTime,min_EXC_E,EXCPH_Gkkp_sq,DB_Q_map,l_no_matrix_elements, &
 &                         RESIDUALS_and_EIGENVALUES_alloc,RESIDUALS_and_EIGENVALUES_free,alphaQ, &
-&                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth,l_interp_G2 
+&                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth 
  use ELPH,           ONLY:use_PH_DbGd,elph_branches,FAN_deltaE_treshold,Q_io_map
  use BS_solvers,     ONLY:deg_exc_thrshld
  use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm,degeneration_average
  use frequency,      ONLY:w_samp
  use stderr,         ONLY:intc
- use ELPH,           ONLY:ph_modes
  use parallel_m,     ONLY:PP_indexes,myid,PP_indexes_reset
  use parallel_int,   ONLY:PP_redux_wait,PARALLEL_index
  use LIVE_t,         ONLY:live_timing
@@ -49,14 +48,12 @@ subroutine EXCPH_lifetime(k,q,X)
  integer, external :: io_EXCPH_gkkp,io_ELPH
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
- integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
+ integer  :: min_pos(1),first_exc_grp(n_exc_in),n_of_exc_grp(n_exc_in),n_deg_grp
  logical  :: l_keep_deg,l_extend_output
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
  real(SP) , allocatable :: EXC_life_of_q(:,:),EXC_pole_of_q(:,:)
  type(PP_indexes)::px
- type(bz_map) :: q_map
- real(SP), allocatable :: Grad_EXCPH_Gkkp_sq(:,:,:,:),EXCPH_Gkkp_sq_plus(:,:,:),EXCPH_Gkkp_sq_minus(:,:,:)
  !
  ! Initialization
  call parser('NoMatrxEl',l_no_matrix_elements)
@@ -139,21 +136,6 @@ subroutine EXCPH_lifetime(k,q,X)
  ! Turn on double-grid if presents
  call EXCPH_double_grid_setup(q)
  !
- ! Calculate the life-times
- !
- if(l_interp_G2) then
-   !
-   if(.not.use_PH_DbGd) &
-&     call error("G2 interpolation possible only with double-grid")
-   if(l_EXCPH_offdiago) &
-&     call error("G2 interpolation not compatible with EXCPH off-diagoanl")
-   !
-   ! Map q-points on a regular grid for linear interpolation of |G^2|
-   !
-   call k_map_nearest_by_dir(q,q_map)
-   !
- endif
- !
  ! Allocation
  call EXCPH_Ltime_alloc()
  !
@@ -170,7 +152,7 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    if (.not.px%element_1D(iq_bz)) cycle
    !
-   if(l_interp_G2) call eval_G2_grad(iq_bz)
+   IO_ACT=manage_action(RD_CL_IF_END,iq_bz,1,q%nbz,PAR_INDEX=px)
    !
    call load_EXCPH(iq_bz)
    !
@@ -196,18 +178,10 @@ subroutine EXCPH_lifetime(k,q,X)
          !
          if(l_no_matrix_elements) ExcPhM=1._SP 
          !
-         if(.not.use_PH_DbGd) Pole=Simple_Pole()
-         if(use_PH_DbGd)      Pole=DbGrid_Pole(l_interp_G2)
+         if(.not.use_PH_DbGd) Pole=Simple_pole()
+         if(use_PH_DbGd)      Pole=DbGrid_pole()
          !
-         if(l_interp_G2) then
-           !      
-           ! If we interpoalte the numberator it will automatically
-           ! included in the Pole variable
-           !
-           EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+Pole
-         else
-           EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+ExcPhM*Pole
-         endif
+         EXC_LifeTime(i_alpha)=EXC_LifeTime(i_alpha)+ExcPhM*Pole
          if (l_EXCPH_offdiago) then
            EXC_LineWidth(i_alpha)=EXC_LineWidth(i_alpha)+REAL(ExcPhW,SP)*Pole
          endif
@@ -282,11 +256,6 @@ subroutine EXCPH_lifetime(k,q,X)
       EXC_life_of_q=rZERO
       EXC_pole_of_q=rZERO
     endif
-    if(l_interp_G2) then
-      YAMBO_ALLOC(Grad_EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2),3))
-      YAMBO_ALLOC(EXCPH_Gkkp_sq_minus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
-      YAMBO_ALLOC(EXCPH_Gkkp_sq_plus,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
-    endif
     !
     YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
     EXC_LifeTime=rZERO
@@ -309,63 +278,8 @@ subroutine EXCPH_lifetime(k,q,X)
        deallocate(EXC_life_of_q)
        deallocate(EXC_pole_of_q)
     endif
-    if(l_interp_G2) then
-      YAMBO_FREE(Grad_EXCPH_Gkkp_sq)
-      YAMBO_FREE(EXCPH_Gkkp_sq_minus)
-      YAMBO_FREE(EXCPH_Gkkp_sq_plus)
-    endif
     ! 
   end subroutine EXCPH_Ltime_free
-  !
-  subroutine eval_G2_grad(iq_bz_in)
-    use pars,           ONLY:rZERO
-    use vec_operate,    ONLY:k_periodic_idx
-    implicit none
-    integer, intent(in) :: iq_bz_in
-    !
-    ! Working space
-    !
-    integer  :: id_red,iq_plus,iq_minus,idx(3),istep
-    real(SP) :: delta_q
-    !
-    Grad_EXCPH_Gkkp_sq=rZERO
-    !
-    do id_red=1,3  ! loop on reciprocal lattice
-      !
-      if(q_map%max_kdir(id_red)==1) then ! non-periodic directions
-        Grad_EXCPH_Gkkp_sq(:,:,:,id_red)  =rZERO
-	cycle
-      endif
-      !
-      ! Generate q_minus=Q-\delta_q
-      !
-      idx=q_map%k_map_inv(iq_bz_in,:)
-      idx(id_red)=idx(id_red)-istep
-      idx=k_periodic_idx(idx,q_map)
-      iq_minus=q_map%k_map_dir(idx(1),idx(2),idx(3))
-      !
-      call load_EXCPH(iq_minus)
-      !
-      EXCPH_Gkkp_sq_minus=EXCPH_Gkkp_sq
-      !
-      ! Generate q_plus=Q+\delta_q
-      !
-      idx=q_map%k_map_inv(iq_bz_in,:)
-      idx(id_red)=idx(id_red)+istep
-      idx=k_periodic_idx(idx,q_map)
-      iq_plus=q_map%k_map_dir(idx(1),idx(2),idx(3))
-      !
-      call load_EXCPH(iq_plus)
-      !
-      EXCPH_Gkkp_sq_plus=EXCPH_Gkkp_sq
-      !
-      Grad_EXCPH_Gkkp_sq(:,:,:,id_red)=(EXCPH_Gkkp_sq_plus-EXCPH_Gkkp_sq_minus)/q_map%q_step(id_red)
-      !
-    enddo ! loop on id_red 
-    !
-    return
-    !  
-  end subroutine eval_G2_grad
   !
   subroutine load_EXCPH(iq_bz_in)
     implicit none
@@ -427,27 +341,22 @@ subroutine EXCPH_lifetime(k,q,X)
     !
   end function Simple_Pole
   !
-  function DbGrid_Pole(l_interp_EXCPH)
+  function DbGrid_pole()
     use EXCPH,          ONLY:min_EXC_E_DbGd,EXC_E_DbGd
     use ELPH,           ONLY:FAN_deltaE_treshold,PH_freqs,PH_freqs_sq,Q_io_map
     use functions,      ONLY:bose_f,boltzman_f,Lorentzian_func
-    use vec_operate,    ONLY:c2a
     implicit none
     !
-    logical, intent(in) :: l_interp_EXCPH
-    real(SP) :: DbGrid_Pole
+    real(SP) :: DbGrid_pole
     real(SP) :: E_alpha,E_beta
     real(SP) :: ph_E,N_bose,F_boltz
-    integer  :: nq_around,iq_fg,iE_fg,id_red
+    integer  :: nq_around,iq_fg,iE_fg
     real(SP) :: weight_dbgd
     real(SP), external :: get_ph_E_DbGd
-    real(SP) :: q_fg(3),q_cg(3),G2_var,delta_q(3)
     !
-    DbGrid_Pole=rZERO
+    DbGrid_pole=rZERO
     !
     E_alpha=real(BS_E_in(i_alpha),SP)
-    !
-    call c2a(v_in=q%ptbz(iq_bz,:),v_out=q_cg,mode='ki2a') ! To be converted in crystal 
     !
     nq_around  =q%FGbz%k_range(iq_bz,2)-q%FGbz%k_range(iq_bz,1) 
     weight_dbgd=1._SP/real(nq_around+1._SP,SP)                  
@@ -466,8 +375,6 @@ subroutine EXCPH_lifetime(k,q,X)
         !
         E_beta=BS_all_E(i_beta,iq)  ! Getting this in the IBZ for the equivalent iq to iq_bz
         !
-        q_fg =q%FGbz%pt(iq_fg,:)                 ! q-point for the G2 interpolation
-        !
         ! If there is the double-grid I read the gamma phonons from there
         ! because they include the LO-TO splitting and the acustic sum rule
         !
@@ -475,9 +382,6 @@ subroutine EXCPH_lifetime(k,q,X)
         !
       else
         iE_fg=q%FGbz%E_map(iq_fg)                ! Map w(q) from BZ to IBZ
-        !
-        call c2a(v_in=q%FGbz%pt(iq_fg,:),v_out=q_fg,mode='ki2a')      ! q-point for the G2 interpolation
-        !
         ph_E =PH_freqs%FG%E(il,iE_fg,1)          ! w(q_db) phonon energy in the D-Grid
         !
         E_beta=EXC_E_DbGd(i_beta,iq_fg)          ! E(q_bz) exciton energy in the D-Grid
@@ -496,27 +400,8 @@ subroutine EXCPH_lifetime(k,q,X)
       N_bose  =bose_f(ph_E)
       F_boltz=boltzman_f(E_beta-min_EXC_E_DbGd)  ! Bose function? Boltzman function?
       !
-      if(l_interp_EXCPH) then
-        !      
-        ! EXCPH_gkkp(q_fg)=EXCPH_gkkp(q(cg)+\Delta_q(:)*\Grad EXCPH_gkkp(:)
-	!
-	delta_q=q_fg-q_cg
-	delta_q=delta_q-nint(delta_q) ! Bring in the BZ between [-0.5:0.5]
-        !
-	G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
-	G2_var=G2_var+dot_product(delta_q,Grad_EXCPH_Gkkp_sq(il,i_beta,i_alpha,:))
-	!
-	! This function can in principle be negative in some point
-	! I fix in this way
-	!
-	if(G2_var<0._SP) G2_var=EXCPH_Gkkp_sq(il,i_beta,i_alpha)
-        !
-      else
-        G2_var=1._SP      
-      endif
-      !
-      DbGrid_Pole=DbGrid_Pole+G2_var*((1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
-&                                   +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping))
+      DbGrid_pole=DbGrid_pole+(1._SP+N_bose+F_boltz)*Lorentzian_func(E_alpha-E_beta-ph_E,L_damping) &
+&                                  +(N_bose-F_boltz)*Lorentzian_func(E_alpha-E_beta+ph_E,L_damping)
       !
     enddo
     !
