@@ -187,8 +187,8 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
            PL_ii(iw,3)     =PL_ii(iw,3)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
            !
            if(l_prt_pl_q_res) then
-              PL_ii_q(iw,1,iq_ibz)     =PL_ii_q(iw,1,iq_ibz)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) ! /real(q%nbz,SP)
-              PL_ii_q(iw,3,iq_ibz)     =PL_ii_q(iw,3,iq_ibz)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) ! /real(q%nbz,SP)
+              PL_ii_q(iw,1,iq_ibz)     =PL_ii_q(iw,1,iq_ibz)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
+              PL_ii_q(iw,3,iq_ibz)     =PL_ii_q(iw,3,iq_ibz)+(W+2.*ph_E)**2*Sat_alpha_emiss*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
            endif
            !
          enddo
