@@ -11,13 +11,13 @@
 !
 subroutine EXCPH_eval_sat(iq_bz,q)
  !
- use pars,           ONLY:SP,cZERO,rZERO
+ use pars,           ONLY:SP,cI,cZERO,rZERO
  use R_lattice,      ONLY:bz_samp
  use D_lattice,      ONLY:nsym
  use ELPH,           ONLY:elph_branches,PH_freqs_sq,FAN_deltaE_treshold,Q_io_map
  use EXCPH,          ONLY:BS_Sat_E,BS_Sat_E_PH_abs,BS_Sat_WEIGHT,BS_Sat_WEIGHT_PH_abs, &
 &                         BS_all_E,BS_E_in,EXCPH_Gkkp_sq,EXCPH_sum,EXCPH_states,DB_Q_map, &
-&                         l_no_matrix_elements,EXCPH_deltaE_treshold
+&                         l_no_matrix_elements,EXCPH_deltaE_treshold,L_damping
  !
  use y_memory_alloc
  !

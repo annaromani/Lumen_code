@@ -48,7 +48,7 @@ subroutine EXCPH_lifetime(k,q,X)
  integer, external :: io_EXCPH_gkkp,io_ELPH
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
- integer  :: min_pos(1),first_exc_grp(n_exc_in),n_of_exc_grp(n_exc_in),n_deg_grp
+ integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
  logical  :: l_keep_deg,l_extend_output
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
