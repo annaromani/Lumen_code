@@ -21,7 +21,7 @@ include ../config/external_libs_defs.mk
 #
 PETSC_ARCH=yambo_${yprecision}_complex
 CONFFLAGS=--prefix="$(LIBPATH)" $(petsc_flgs) \
-         CC=$(cc) FC=$(fc) \
+         CC=$(cc) FC=$(fc) CXX=$(cc) \
          --PETSC_ARCH=${PETSC_ARCH} \
          --with-ssl=0 \
          --with-x=0 \
