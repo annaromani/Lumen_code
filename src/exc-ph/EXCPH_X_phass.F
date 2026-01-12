@@ -227,8 +227,6 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
              !
            endif
            !
-           ! Add the satellites to the dielectric constant and luminescence
-           !
            Epsilon_ii(iw,1)=Epsilon_ii(iw,1)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
            Epsilon_ii(iw,3)=Epsilon_ii(iw,3)+Sat_alpha_abs*BS_R(i_alpha)*q%weights(iq_ibz) !/real(q%nbz,SP)
            !
@@ -431,7 +429,7 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
    call msg('sr',' Max satellite weight: ')
    do i1=EXCPH_states(1),EXCPH_states(2)
      iq_bz  = max_Sat_pos(i1,1) 
-     write(*,*) 'passo qui ',iq_bz
+!     write(*,*) 'passo qui ',iq_bz
      iq_db  =Q_io_map(iq_bz)
      iq_ibz =q%sstar(iq_bz,1)
      ph_E=sqrt(abs(ph_freqs_sq(iq_db,max_Sat_pos(i1,2))))

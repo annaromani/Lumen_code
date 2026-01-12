@@ -43,7 +43,6 @@ subroutine Satellite_Simple(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  use units,         ONLY:HA2CMm1
  use electrons,     ONLY:nel_cond
  use R_lattice,     ONLY:bz_samp
- use D_lattice,     ONLY:nsym
  use pars,          ONLY:SP,cZERO,rZERO
  use EXCPH,         ONLY:BS_Sat_E,BS_Sat_WEIGHT,BS_all_E,BS_Sat_E_PH_abs,BS_Sat_WEIGHT_PH_abs,BS_E_in, &
 &                        min_EXC_E,DB_Q_map,EXC_occ
