@@ -8,18 +8,48 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate exciton-phonon matrix elements and satellites renormalizations
-!!
-!! @param[in]       E                quasi-particle index
-!! @param[in]       k                q-index in the BZ
-!! @param[in]       q                q-index in distributed array
-!! @param[in]       X                phonon-branch index
-!!
-!! @param[out]      EXCPH_gkkp                  Exciton-phonon matrix elements
-!! @param[out]      EXCPH_gkkp_sq               Exciton-phonon matrix elements squared
-!
 subroutine EXCPH_gkkp_driver(E,k,q,X)
- !
+ !! **EXCPH_gkkp_driver - Exciton-Phonon Coupling Matrix Element Calculation**
+ !!
+ !! Computes exciton-phonon matrix elements by combining electron-phonon couplings
+ !! with exciton wavefunctions. The calculation involves rotating exciton states to
+ !! different q-points in the Brillouin zone and evaluating the coupling strength.
+ !!
+ !! **Physical Quantity**:
+ !!
+ !! G^{exc}_{\alpha,\beta}(q,\nu) = ⟨\alpha,q+Q=q|\partial_q V_\nu|\beta,Q=0⟩
+ !!
+ !! where \alpha, \beta are exciton state indices, q is the phonon wavevector, and \nu is the
+ !! phonon branch. This matrix element describes how a phonon with branch \nu at
+ !! wavevector q couples initial exciton state \beta at Gamma (Q=0) to final exciton
+ !! state \alpha at q-point Q=q. 
+ !!
+ !! Current implementation assumes initial exciton at Q=0 (Gamma point only).
+ !! The most general form allows arbitrary Q: G^{exc}(Q,q,\nu), but this code restricts
+ !! to the case where exciton momentum transfer equals phonon momentum.
+ !!
+ !! **Main Algorithm**:
+ !!   1. Load electron-phonon matrix elements (gkkp_expanded) from database
+ !!   2. Setup q-point and k-point Brillouin zone tables and symmetry operations
+ !!   3. For each q-point in IBZ:
+ !!      - Load exciton wavefunctions at this q-point
+ !!      - Rotate wavefunctions using symmetry operations
+ !!      - For each phonon branch:
+ !!        * Call EXCPH_gkkp_eval to compute coupling matrix elements
+ !!        * Save results to disk
+ !!   4. Write complete exciton-phonon database to disk
+ !!
+ !! **Input Parameters**:
+ !!   - E: Electronic structure (bands, energies, occupations)
+ !!   - k: k-point grid in the Brillouin zone
+ !!   - q: q-point grid for phonons
+ !!   - \chi: Response function data structure
+ !!
+ !! **Output**:
+ !!   - EXCPH_gkkp database file containing matrix elements
+ !!
+ !! **References**:
+ !!   - Paleari et al., PhysRevLett.122.187401
  use pars,           ONLY:SP,cZERO,rZERO,schlen
  use electrons,      ONLY:levels
  use R_lattice,      ONLY:bz_samp,qindx_B
