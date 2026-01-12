@@ -8,8 +8,51 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate phonon-assisted absorption and emission (see PRL 122, 187401 )
-!
+subroutine EXCPH_optics(E,k,q,X,wv)
+ !! **EXCPH_optics - Phonon-Assisted Optical Properties Calculation**
+ !!
+ !! Computes absorption and luminescence spectra including phonon-assisted processes.
+ !! These are processes where a single photon combines with phonon creation/annihilation,
+ !! allowing otherwise forbidden transitions.
+ !!
+ !! **Physical Phenomena**:
+ !!   - Phonon-assisted absorption: photon + phonon excitation → electronic transition
+ !!   - Satellite peaks in luminescence at E_exc ± ω_phonon
+ !!   - Temperature-dependent intensities from Bose occupations
+ !!   - Exciton population effects from quasi-Fermi distributions
+ !!
+ !! **Output Spectra**:
+ !!   Three components are computed and printed:
+ !!   1. Direct: Standard exciton absorption/emission
+ !!   2. No-satellite: Phonon broadening without resonant coupling
+ !!   3. Satellite: Pure phonon-assisted resonant peaks
+ !!
+ !! **Main Workflow**:
+ !!   1. Load exciton wavefunctions and energies from database
+ !!   2. Setup frequency grid and damping parameters
+ !!   3. Load exciton-phonon matrix elements
+ !!   4. Choose calculation method:
+ !!      - Standard: EXCPH_X_phass (from self-energy)
+ !!      - Perturbative: EXCPH_X_phass_from_Hpert (perturbation theory)
+ !!   5. Compute optical tensor components (xx, yy, zz)
+ !!   6. Write results to output files
+ !!
+ !! **Output Files**:
+ !!   - eps_bse_ph_ass: Dielectric function with phonon coupling
+ !!   - pl_bse_ph_ass: Photoluminescence spectrum
+ !!   - (with _dbgd suffix if double-grid is enabled)
+ !!
+ !! **Input Parameters**:
+ !!   - E: Electronic structure
+ !!   - k: k-point grid
+ !!   - q: q-point grid
+ !!   - X: Response functions
+ !!   - wv: Frequency sampling for spectra
+ !!
+ !! **References**:
+ !!   - Physical Review Letters 122, 187401 (2019)
+ !!   - Paleari, Rivetti et al., "Phonon-Assisted Luminescence in Semiconductors"
+ !
 subroutine EXCPH_optics(E,k,q,X,wv)
  !
  use units,          ONLY:HA2EV

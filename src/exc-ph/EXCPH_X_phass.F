@@ -8,16 +8,63 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate X(w) including ph-assisted transitions
-!
-! @param[in]       wv                  frequencies range
-! @param[in]       EXCPH_gkkp          read from file
-! @param[in]       Bose_Temp           Bose temperature for phonons
-! @param[in]       Boltz_Temp          Boltz temperature for excitons
-!
-! @param[out]      Epsilon_ii          Phonon-assisted dielectric constant
-! @param[out]      PL_ii               Phonon-assisted luminescence
-!
+subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
+ !! **EXCPH_X_phass - Phonon-Assisted Optical Susceptibility**
+ !!
+ !! Calculates the frequency-dependent dielectric function and luminescence
+ !! intensity including one-phonon absorption and emission processes. This
+ !! routine computes the full optical response including satellite peaks and
+ !! phonon-broadening effects.
+ !!
+ !! **Physical Processes**:
+ !!
+ !!   1. Direct transitions: Exciton absorption at E_exc
+ !!      χ_direct(ω) = Σ_α |R_α|^2 / (E_α - ω - iΓ)
+ !!
+ !!   2. Phonon-assisted (resonant): At E_exc ± ω_ν
+ !!      χ_sat(ω) = Σ_{α,β,ν} |G^exc_{α,β}|^2 / (E_α - ω ∓ ω_ν - iΓ)
+ !!
+ !!   3. Phonon-broadened: Extended tail from off-resonant coupling
+ !!      χ_phass(ω) = Total phonon-assisted contribution
+ !!
+ !! **Main Workflow**:
+ !!   1. Allocate frequency-dependent response arrays
+ !!   2. Setup broadening (damping) parameters
+ !!   3. Load exciton-phonon matrix elements for all q-points
+ !!   4. For each frequency ω:
+ !!      - Compute direct exciton contribution
+ !!      - Add one-phonon satellite contributions (emission and absorption)
+ !!      - Add temperature-dependent Bose factors
+ !!      - Include exciton population factors (if carrier injection)
+ !!   5. Symmetrize and normalize tensor components
+ !!   6. Store three output components for analysis
+ !!
+ !! **Temperature Dependence**:
+ !!   - Bose occupation: n_ν = 1/(exp(ω_ν/k_B T) - 1)
+ !!   - Exciton population: f_α from quasi-Fermi distribution
+ !!   - Satellite intensities scale with (n_ν + 1) for emission
+ !!
+ !! **Output Arrays**:
+ !!   - Epsilon_ii(iw, component):
+ !!     1 = Phonon-assisted
+ !!     2 = No-satellite (broadening only)
+ !!     3 = Satellite (resonant peaks)
+ !!   - PL_ii(iw, component): Same decomposition for luminescence
+ !!
+ !! **Input Parameters**:
+ !!   - wv: Frequency sampling grid
+ !!   - q: q-point grid for phonon momenta
+ !!   - Implicit: Exciton-phonon matrix elements and phonon frequencies
+ !!
+ !! **Options**:
+ !!   - DbGdWEIGHTs: Apply weights on double-grid (default: False)
+ !!   - DbGdOnlyPh: Double-grid for phonons only (default: False)
+ !!   - PLqres: Print per-q-point luminescence (default: False)
+ !!
+ !! **References**:
+ !!   - Paleari et al., PRL 122, 187401 (2019)
+ !!   - Theory in EXCPH_THEORY.md documentation
+ !
 subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  !
  use frequency,     ONLY:w_samp

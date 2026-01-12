@@ -6,6 +6,29 @@
 ! Authors (see AUTHORS file for details): AM CA DS
 !
 subroutine RT_Hamiltonian(dG_in,A_input,E,k)
+ !! **RT_Hamiltonian - Real-Time Single-Particle Hamiltonian Construction**
+ !!
+ !! Computes the time-dependent single-particle Hamiltonian at each RT step.
+ !!
+ !! **Physical Framework**:
+ !!  The Kadanoff-Baym equation for the lesser Green's function is:
+ !!
+ !! \(i\hbar\frac{\partial G^<}{\partial t} - [H(t), G^<(t)] = S_{xc}(t)\)
+ !!
+ !!  where the Hamiltonian is decomposed as:
+ !!
+ !! \(H^{RT}(t) = H^{EQ} + \Delta\Sigma^{Hxc}[G(t)] + U^{ext}(t)\)
+ !!
+ !! **Components**:
+ !!   - **Equilibrium Hamiltonian** \(H^{EQ}\): Static DFT Hamiltonian
+ !!   - **Dynamic Self-Energy** \(\Delta\Sigma^{Hxc}\): Updated each timestep from charge density
+ !!   - **External Field** \(U^{ext}(t)\): Laser or applied perturbation
+ !!
+ !! **Approximations Available**:
+ !!   - **IP**: Hartree-Fock (no self-energy correction)
+ !!   - **TD-HARTREE**: Time-dependent Hartree (only Coulomb)
+ !!   - **TD-LDA/GGA**: Time-dependent DFT (Hartree + XC)
+ !!   - **TD-SEX**: Time-dependent Sextic (GW-based, static kernel only)
  !
  ! 1) The KBE is coded in terms of :
  !
@@ -57,10 +80,14 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
  !
  implicit none
  !
- type(levels),  intent(inout) :: E
- type(bz_samp), intent(in)    :: k
- complex(SP),   intent(in)    :: dG_in(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range(1):PAR_G_k_range(2),n_sp_pol)
- type(gauge_field), intent(in):: A_input
+ type(levels), intent(inout) :: E
+ !! Electronic structure with updated eigenvalues and eigenvectors
+ type(bz_samp), intent(in) :: k
+ !! K-point grid
+ complex(SP), intent(in) :: dG_in(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range(1):PAR_G_k_range(2),n_sp_pol)
+ !! Time-dependent change in lesser Green's function: \(dG^<(t)\)
+ type(gauge_field), intent(in) :: A_input
+ !! Gauge field (vector potential or electric field)
  !
  ! Work Space
  !
