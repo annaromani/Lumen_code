@@ -13945,6 +13945,7 @@ reset_LIBS="$LIBS"
 
 enable_scalapack="no"
 enable_elpa="no"
+enable_elpa_omp="no"
 
 internal_slk="no"
 internal_elpa="no"
@@ -14062,7 +14063,7 @@ printf "%s\n" "$enable_scalapack" >&6; }
     acx_elpa_save_LIBS="$ELPA_LIBS"
     LIBS="$LIBS $FLIBS $SCALAPACK_LIBS $LAPACK_LIBS $BLAS_LIBS"
     # First, check ELPA_LIBS environment variable
-    if test "x$ELPA_LIBS" != x; then
+    if test "x$ELPA_LIBS" != "x" ; then
       save_LIBS="$LIBS"; LIBS="$ELPA_LIBS $LIBS"
       save_FCFLAGS="$FCFLAGS"; FCFLAGS="$ELPA_INCS/modules/ $FCFLAGS"
       #AC_MSG_CHECKING([for $elpa_routine in $ELPA_LIBS])
@@ -14085,6 +14086,10 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $enable_elpa" >&5
 printf "%s\n" "$enable_elpa" >&6; }
       ELPA_LIBS="$acx_elpa_save_LIBS"
+      ELPA_OMP=`echo $ELPA_LIBS | grep elpa_openmp`
+      if test "x$ELPA_OMP" != "x" ; then
+        enable_elpa_omp="yes";
+      fi
       LIBS="$save_LIBS"
       FCFLAGS="$save_FCFLAGS"
     else
@@ -14123,10 +14128,16 @@ printf "%s\n" "$enable_elpa" >&6; }
   if test "$mpif_found" = "yes" && test "$enable_elpa" = "internal"; then
     enable_elpa="yes"
     internal_elpa="yes"
-    ELPA_LIBS="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs1="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs2="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa_openmp.a"
     ELPA_INCS="${IFLAG}${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/include/"
-    if test -e "${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"; then
+    if test -e "$elpa_libs1"; then
       compile_elpa="no"
+      ELPA_LIBS="$elpa_libs1"
+    elif test -e "$elpa_libs2"; then
+      compile_elpa="no"
+      ELPA_LIBS="$elpa_libs2"
+      enable_elpa_omp="yes"
     else
       compile_elpa="yes"
     fi
@@ -14138,6 +14149,9 @@ if test "$enable_scalapack" = "yes" ; then
   def_scalapack="-D_SCALAPACK"
   if test "$enable_elpa" = "yes" ; then
     def_elpa="-D_ELPA"
+    if test "$enable_elpa_omp" = "yes" ; then
+      def_elpa="-D_ELPA -D_ELPA_OMP"
+    fi
   else
     enable_elpa="no"
     def_elpa=""
@@ -14773,11 +14787,11 @@ printf %s "checking for HDF5 using automatic library list... " >&6; } ;
       if test -d "$with_hdf5_includedir" ; then try_hdf5_incdir=$with_hdf5_includedir ; fi
       #
       if test -d "$try_hdf5_libdir" ; then try_HDF5_LIBS="-L$try_hdf5_libdir -lhdf5_hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5" ; fi
-      if test "$use_libz"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lz"   ; fi
-      if test "$use_libsz"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lsz"  ; fi
       if test "$use_libm"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lm"   ; fi
       if test "$use_libdl"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -ldl"  ; fi
       if test "$use_libcurl" = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lcurl"; fi
+      if test "$use_libsz"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lsz"  ; fi
+      if test "$use_libz"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lz"   ; fi
       if test x"$try_hdf5_incdir" == "x" ; then
         if test -d "$with_hdf5_path/include/" ; then $try_hdf5_incdir="$with_hdf5_path/include/"; fi
       fi

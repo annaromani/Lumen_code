@@ -7,6 +7,9 @@
 !
 function RIntegrate(F,W,N)
  !
+ ! I=\int F(w) dw = sum_i 0.5*[F(i+1)-F(i)]/[w(i+1)-w(i)]*[w^2(i+1)-w^2(i)]+
+ !                       F(i)*[w(i+1)-w(i)]-[F(i+1)-F(i)]*w(i)
+ !
  use pars,    ONLY:SP
  implicit none
  integer,     intent(in)  :: N

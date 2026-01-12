@@ -57,9 +57,8 @@ subroutine el_magnetization(en,Xk,magn,bands)
  !
  if (n_spin==1) return
  !
- wf_rspace_size=size(WF%r(:,1,1))
- !
  l_WFs_on_the_fly=.not.allocated(WF%r)
+ if (.not.l_WFs_on_the_fly) wf_rspace_size=size(WF%r(:,1,1))
  !
  do i_sp_pol=1,n_sp_pol
    bands_range=(/1,en%nbm(i_sp_pol)/)
