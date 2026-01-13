@@ -53,8 +53,6 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  !!   - Physical Review Letters 122, 187401 (2019)
  !!   - Paleari, Rivetti et al., "Phonon-Assisted Luminescence in Semiconductors"
  !
-subroutine EXCPH_optics(E,k,q,X,wv)
- !
  use units,          ONLY:HA2EV
  use pars,           ONLY:SP,cZERO,schlen,rZERO
  use vec_operate,    ONLY:iku_v_2D_norm,c2a
