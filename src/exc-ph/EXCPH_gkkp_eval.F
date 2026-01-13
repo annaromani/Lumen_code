@@ -54,8 +54,6 @@ subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
  !! **References**:
  !!   - Paleari PhD thesis
  !
-subroutine EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp)
- !
  use pars,           ONLY:SP,cZERO,rZERO,cONE
  !use D_lattice,      ONLY:sop_inv,sop_tab
  use R_lattice,      ONLY:bz_samp!,qindx_C

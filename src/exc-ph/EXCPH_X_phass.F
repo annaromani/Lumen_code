@@ -65,8 +65,6 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  !!   - Paleari et al., PRL 122, 187401 (2019)
  !!   - Theory in EXCPH_THEORY.md documentation
  !
-subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
- !
  use frequency,     ONLY:w_samp
  use vec_operate,   ONLY:c2a
  use pars,          ONLY:SP,cZERO,rZERO,schlen

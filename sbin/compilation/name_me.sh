@@ -29,7 +29,7 @@ if [[ ! "$compdir" == "$srcdir" ]] ; then
 fi
 #
 if [ "$2" == "search" ]; then
- file_F_src=`find $srcdir -name $file_F -not -path "/*objects.save/*" -not -path "*archive*" -not -path "*$IO_no_dir*"`
+ file_F_src=`find $srcdir -name $file_F -not -path "/*objects.save/*" -not -path "*/doc*" -not -path "*/config*" -not -path "*/sbin*" -not -path "*/archive*" -not -path "*$IO_no_dir*"`
 else
  file_F_src=$file_F
 fi
@@ -53,7 +53,7 @@ if [ ! -z $file_F_src ]; then
 fi
 #
 if [ "$2" == "search" ]; then
- file_c_src=`find $srcdir -name $file_c -not -path "/*objects.save/*" -not -path "*archive*" -not -path "*$IO_no_dir*"`
+ file_c_src=`find $srcdir -name $file_c -not -path "/*objects.save/*" -not -path "*/doc*" -not -path "*/config*" -not -path "*/sbin*" -not -path "*/archive*" -not -path "*$IO_no_dir*"`
 else
  file_c_src=$file_c
 fi
@@ -77,7 +77,7 @@ if [ ! -z $file_c_src ]; then
 fi
 #
 if [ "$2" == "search" ]; then
- file_f_src=`find $srcdir -name $file_f -not -path "/*objects.save/*" -not -path "*archive*" -not -path "*$IO_no_dir*"`
+ file_f_src=`find $srcdir -name $file_f -not -path "/*objects.save/*" -not -path "*/doc*" -not -path "*/config*" -not -path "*/sbin*" -not -path "*/archive*" -not -path "*$IO_no_dir*"`
 else
  file_f_src=$file_f
 fi
