@@ -3438,8 +3438,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="26345"
-SHASH="5d014f95da"
+SREVISION="26394"
+SHASH="578405231a"
 
 
 
@@ -14787,11 +14787,11 @@ printf %s "checking for HDF5 using automatic library list... " >&6; } ;
       if test -d "$with_hdf5_includedir" ; then try_hdf5_incdir=$with_hdf5_includedir ; fi
       #
       if test -d "$try_hdf5_libdir" ; then try_HDF5_LIBS="-L$try_hdf5_libdir -lhdf5_hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5" ; fi
-      if test "$use_libz"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lz"   ; fi
-      if test "$use_libsz"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lsz"  ; fi
       if test "$use_libm"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lm"   ; fi
       if test "$use_libdl"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -ldl"  ; fi
       if test "$use_libcurl" = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lcurl"; fi
+      if test "$use_libsz"   = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lsz"  ; fi
+      if test "$use_libz"    = "yes"; then try_HDF5_LIBS="$try_HDF5_LIBS -lz"   ; fi
       if test x"$try_hdf5_incdir" == "x" ; then
         if test -d "$with_hdf5_path/include/" ; then $try_hdf5_incdir="$with_hdf5_path/include/"; fi
       fi

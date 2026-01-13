@@ -30,7 +30,7 @@ subroutine EXCPH_ave_sat_DbGrid(iq_bz,q)
  complex(SP) :: W_DG,W_DG_PH_abs
  real(SP), external :: get_ph_E_DbGd
  !
- ! Calculate satellites weights and renormalization factors without double-grid
+ ! Calculate satellites weights and renormalization factors with double-grid
  !
  do i_alpha=EXCPH_states(1),EXCPH_states(2)
    !
