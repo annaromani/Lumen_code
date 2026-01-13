@@ -97,6 +97,10 @@ subroutine INIT_activate()
    !call CPU_activate("SLK")
  endif
  !
+#if defined _PAR_IO
+ call CPU_activate("BZINDX")
+#endif
+ !
 #if defined _SC
  if (l_eval_collisions .or. l_sc_run) then
    call CPU_activate("SE")
@@ -479,7 +483,7 @@ subroutine INIT_activate()
  if (l_EXCPH_gkkp)     call initactivate(1,'ELPhExcStates ELPhExcSum LoutPath FANdEtresh EkpqShFact LDamping')
  if (l_EXCPH_gkkp)     call initactivate(1,'ConstElph AbsElph AbsExc HoleContributionOnly ElectronContributionOnly MaxKShells')
  if (l_EXCPH_lifetime) call initactivate(1,'BoseTemp ElPhModes EXCTemp AlphaQ ExcPhOffDiago')
- if (l_EXCPH_lifetime) call initactivate(1,'NoMatrxEl KeepDeg ')
+ if (l_EXCPH_lifetime) call initactivate(1,'InterpG2 NoMatrxEl KeepDeg ')
  if (l_EXCPH_optics)  then
    call initactivate(1,'EXCTemp AlphaQ ElPhModes PLqres DbGdOnlyPh DbGdWEIGHTs NoMatrxEl EnRngeXd DmRngeXd ETStpsXd')
    call initactivate(1,'EXCPHdEtresh DbGdOnlyPh DbGdWEIGHTs NoMatrxEl EnRngeXd DmRngeXd ETStpsXd')

@@ -8,8 +8,64 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate exciton non-radiative life-time induced by phonon-scattering
-!!
+subroutine EXCPH_lifetime(k,q,X)
+ !! **EXCPH_lifetime - Non-Radiative Exciton Lifetime from Phonon Scattering**
+ !!
+ !! Calculates the inverse lifetime (decay rate) of each exciton state due to
+ !! inelastic scattering with phonons. This is a key quantity for understanding
+ !! exciton dynamics and non-radiative recombination in semiconductors.
+ !!
+ !! **Physical Formula**:
+ !!
+ !! 1/\tau_{nr} = 2\pi \sum_{\beta,\nu,q} |G^{exc}_{\alpha,\beta}(q,\nu)|^2 \delta(E_\alpha - E_\beta \mp \omega_\nu)
+ !!
+ !! where:
+ !!   - G^exc: Exciton-phonon matrix element
+ !!   - E_\alpha, , E_\beta: Energies of exciton states
+ !!   - \omega_\nu: Phonon frequency
+ !!   - \delta: Delta function (replaced by Lorentzian for numerical integration)
+ !!   - \mp signs represent phonon emission (-) and absorption (+) processes
+ !!
+ !! **Temperature Dependence**:
+ !!
+ !! The lifetime includes temperature effects through phonon occupations:
+ !!
+ !! 1/\tau = \sum_{\beta,\nu} |G^exc|^2 [n_\nu/(E_\alpha-E_\beta-\omega_\nu) + (n_\nu+1)/(E_\alpha-E_\beta+\omega_\nu)]
+ !!
+ !! where n_\nu = 1/(exp(\omega_\nu/k_B T) - 1) is the Bose distribution.
+ !!
+ !! **Main Workflow**:
+ !!   1. Load exciton energies and wavefunctions
+ !!   2. Load exciton-phonon matrix elements
+ !!   3. Find energy degenerate groups (optional)
+ !!   4. Setup double-grid if requested
+ !!   5. For each exciton state α:
+ !!      - Sum over all decay channels (final states β and phonons ν)
+ !!      - Apply energy conservation with broadening
+ !!      - Include temperature-dependent phonon populations
+ !!      - Accumulate lifetime contributions
+ !!   6. Convert to physical units and write output
+ !!
+ !! **Output**:
+ !!   - EXC_LifeTime: Array of lifetimes (in atomic units)
+ !!   - EXC_LineWidth: Spectral linewidth (if computed)
+ !!   - Text files with detailed breakdown per state and process
+ !!
+ !! **Key Features**:
+ !!   - Handles degenerate exciton states with averaging
+ !!   - Optional off-diagonal self-energy terms for interband transitions
+ !!   - Temperature-dependent Bose occupations
+ !!   - Detailed output per q-point and phonon branch
+ !!   - Double-grid support for improved convergence
+ !!
+ !! **Parameters**:
+ !!   - KeepDeg: Maintain degenerate state splitting (default: False)
+ !!   - ExtendOutput: Output per q-point lifetime (default: False)
+ !!   - ExcPhOffDiago: Include off-diagonal contributions (default: False)
+ !!
+ !! **References**:
+ !!   - Paleari, PhD thesis
+ !
 subroutine EXCPH_lifetime(k,q,X)
  !
  use units,          ONLY:HA2EV,HA2CMm1
@@ -26,12 +82,13 @@ subroutine EXCPH_lifetime(k,q,X)
 &                         RESIDUALS_and_EIGENVALUES_alloc,RESIDUALS_and_EIGENVALUES_free,alphaQ, &
 &                         l_EXCPH_offdiago,EXCPH_Gkkp,EXC_LineWidth 
  use ELPH,           ONLY:use_PH_DbGd,elph_branches,FAN_deltaE_treshold,Q_io_map
- use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm
+ use BS_solvers,     ONLY:deg_exc_thrshld
+ use vec_operate,    ONLY:degeneration_finder,iku_v_norm,iku_v_2D_norm,degeneration_average
  use frequency,      ONLY:w_samp
  use stderr,         ONLY:intc
- use parallel_m,    ONLY:PP_indexes,myid,PP_indexes_reset
- use parallel_int,  ONLY:PP_redux_wait,PARALLEL_index
- use LIVE_t,        ONLY:live_timing
+ use parallel_m,     ONLY:PP_indexes,myid,PP_indexes_reset
+ use parallel_int,   ONLY:PP_redux_wait,PARALLEL_index
+ use LIVE_t,         ONLY:live_timing
  !
  use y_memory_alloc
  !
@@ -47,13 +104,14 @@ subroutine EXCPH_lifetime(k,q,X)
  integer, external :: io_EXCPH_gkkp,io_ELPH
  integer  :: iq,iq_s,iq_bz,i_alpha,j_alpha,i_beta,il,i_star,iq_db,igrp
  integer  :: elph_branches_save(2)
- integer  :: min_pos(1),first_exc_grp(n_exc_in),n_of_exc_grp(n_exc_in),n_deg_grp
+ integer  :: min_pos(1),first_exc_grp(n_exc_in,q%nibz),n_of_exc_grp(n_exc_in,q%nibz),n_deg_grp(q%nibz)
  logical  :: l_keep_deg,l_extend_output
  real(SP) :: ExcPhM,EXC_life_average,EXC_line_average,EXC_energy_average,Pole
  complex(SP) :: ExcPhW
  real(SP) , allocatable :: EXC_life_of_q(:,:),EXC_pole_of_q(:,:)
  type(PP_indexes)::px
  !
+ ! Initialization
  call parser('NoMatrxEl',l_no_matrix_elements)
  call parser('KeepDeg',  l_keep_deg)
  call parser('ExtendOutput', l_extend_output)
@@ -73,12 +131,7 @@ subroutine EXCPH_lifetime(k,q,X)
  ! Allocations 
  !
  call RESIDUALS_and_EIGENVALUES_alloc(q)
- if (l_extend_output) then
-   allocate(EXC_life_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
-   allocate(EXC_pole_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
-   EXC_life_of_q=rZERO
-   EXC_pole_of_q=rZERO
- endif
+
  !
  ! Load excitonic energies 
  !
@@ -88,35 +141,29 @@ subroutine EXCPH_lifetime(k,q,X)
  do iq=1,q%nibz
    call EXCPH_load_L(iq,X,'eigenvalues','Lout')
    BS_all_E(:,iq)=real(BS_E(:)) ! I suppose the BSE eigenvalues are real
-   !write(*,*) iq,BS_all_E(:,iq)
  enddo
  !
+ ! Apply 2D stretching if requested
  if(alphaQ/=rZERO) then
-   !      
    call msg('rs','Excitonic bands 2D stretching :',alphaQ)
-   !
    do iq=1,q%nibz
      BS_all_E(:,iq)=BS_all_E(:,iq)+alphaQ*iku_v_2D_norm(q%pt(iq,:3))
    enddo
-   !
  endif
  !
- ! Here we find the degenerations of the first n_exc_in values of BS_all_E at gamma
+ ! Here we find the degenerations of the first n_exc_in values of BS_all_E at all q-points
  ! and we set their energies to exactly the same value (average). This is to
- ! improve the quality of the interpolation at gamma in the case of double grid 
+ ! improve the quality of the interpolation in the case of double grid 
  ! (try to avoid unphysical splitting of degenerate states) 
  !
- call degeneration_finder(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
- &                       Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),1),&
- &                 deg_accuracy=0.001/HA2EV,Include_single_values=.true.)
- !
- do igrp=1,n_deg_grp
-   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
-   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
-   EXC_energy_average=sum(BS_all_E(j_alpha:i_alpha,1))/real(n_of_exc_grp(igrp),SP)
-   BS_all_E(j_alpha:i_alpha,1)=EXC_energy_average
+ do iq=1,q%nibz
+   call degeneration_finder(n_exc_in,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq),&
+   &                 deg_accuracy=deg_exc_thrshld,Include_single_values=.true.)
+   !
+   call degeneration_average(n_exc_in,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(EXCPH_states(1):EXCPH_states(2),iq))
  enddo
- !
  !
  ! Load the Exciton-phonon elements and phonon energies
  !
@@ -145,14 +192,8 @@ subroutine EXCPH_lifetime(k,q,X)
  ! Turn on double-grid if presents
  call EXCPH_double_grid_setup(q)
  !
- ! Calculate the life-times
- !
- YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
- EXC_LifeTime=rZERO
- if (l_EXCPH_offdiago) then
-   YAMBO_ALLOC(EXC_LineWidth,(EXCPH_states(1):EXCPH_states(2)))
-   EXC_LineWidth=rZERO
- endif
+ ! Allocation
+ call EXCPH_Ltime_alloc()
  !
  call PP_indexes_reset(px)
  call PARALLEL_index(px,(/q%nbz/))
@@ -169,15 +210,7 @@ subroutine EXCPH_lifetime(k,q,X)
    !
    IO_ACT=manage_action(RD_CL_IF_END,iq_bz,1,q%nbz,PAR_INDEX=px)
    !
-   call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_bz/),MODE=DUMP,ID=ID_exc_gkkp)
-   io_err=io_EXCPH_gkkp(ID_exc_gkkp)
-   if(io_err/=0) call error('excph_gkkp databases not found!')
-   !
-   !iq_db=DB_Q_map(iq_bz)
-   iq_db=Q_io_map(iq_bz)
-   call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_db/),MODE=DUMP,ID=ID_gkkp)
-   io_err=io_ELPH(ID_gkkp,'gkkp_expanded no_matrix_elements')
-   if(io_err/=0) call error('gkkp_expanded databases not found!')
+   call load_EXCPH(iq_bz)
    !
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
@@ -216,16 +249,16 @@ subroutine EXCPH_lifetime(k,q,X)
          ! write(100+i_alpha,*) i_alpha,EXC_LifeTime(i_alpha)
          ! DS Debug >
          !
-       enddo
+       enddo ! i_l
        !
-     enddo
+     enddo ! i_beta
      !
-   enddo
+   enddo ! i_alpha
    !
    call live_timing(steps=1)
    !
- enddo
- enddo
+ enddo ! i_start
+ enddo ! iq
  !
  call live_timing( )
  !
@@ -240,23 +273,19 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  call PP_indexes_reset(px)
  !
- ! Perform average
+ ! Average lifetimes over degenerate groups (use input energies BS_E_in)
  !
- call degeneration_finder(n_exc_in,first_exc_grp,n_of_exc_grp,n_deg_grp,&
+ call degeneration_finder(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1),&
  &                    Er=real(BS_E_in(EXCPH_states(1):EXCPH_states(2))),&
  &                 deg_accuracy=0.001/HA2EV,Include_single_values=.true.)
  !
- do igrp=1,n_deg_grp
-   j_alpha=first_exc_grp(igrp)+EXCPH_states(1)-1
-   i_alpha=first_exc_grp(igrp)+n_of_exc_grp(igrp)+EXCPH_states(1)-2
-   EXC_life_average=sum(EXC_LifeTime(j_alpha:i_alpha))/real(n_of_exc_grp(igrp),SP)
-   EXC_LifeTime(j_alpha:i_alpha)=EXC_life_average
-   if (l_EXCPH_offdiago) then
-     EXC_line_average=sum(EXC_LineWidth(j_alpha:i_alpha))/real(n_of_exc_grp(igrp),SP) 
-     EXC_LineWidth(j_alpha:i_alpha)=EXC_line_average
-   endif
- enddo
+ 
+ call degeneration_average(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1),&
+ &                        Er=EXC_LifeTime(EXCPH_states(1):EXCPH_states(2)))
+ if (l_EXCPH_offdiago)  call degeneration_average(n_exc_in,first_exc_grp(:,1),n_of_exc_grp(:,1),n_deg_grp(1), &
+ &                        Er=EXC_LineWidth(EXCPH_states(1):EXCPH_states(2)))
  !
+ ! Convert to final units          
  EXC_LifeTime=EXC_LifeTime*2._SP*pi/real(q%nbz,SP)
  if (l_EXCPH_offdiago) EXC_LineWidth=EXC_LineWidth*2._SP*pi/real(q%nbz,SP)
  !
@@ -270,17 +299,60 @@ subroutine EXCPH_lifetime(k,q,X)
  endif
  !
  ! Deallocations
- !
- YAMBO_FREE(EXC_LifeTime)
- if (l_EXCPH_offdiago) then
-   YAMBO_FREE(EXC_LineWidth)
- endif
- call RESIDUALS_and_EIGENVALUES_free()
- if (l_extend_output) then
-   deallocate(EXC_life_of_q)
- endif
+ call EXCPH_Ltime_free()
  !
  contains
+  !
+  subroutine EXCPH_Ltime_alloc()
+    implicit none
+    !
+    if (l_extend_output) then
+      allocate(EXC_life_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
+      allocate(EXC_pole_of_q(EXCPH_states(1):EXCPH_states(2),q%nbz))
+      EXC_life_of_q=rZERO
+      EXC_pole_of_q=rZERO
+    endif
+    !
+    YAMBO_ALLOC(EXC_LifeTime,(EXCPH_states(1):EXCPH_states(2)))
+    EXC_LifeTime=rZERO
+    if (l_EXCPH_offdiago) then
+      YAMBO_ALLOC(EXC_LineWidth,(EXCPH_states(1):EXCPH_states(2)))
+      EXC_LineWidth=rZERO
+    endif
+    !  
+  end subroutine EXCPH_Ltime_alloc
+  !
+  subroutine EXCPH_Ltime_free()
+    implicit none
+    !
+    YAMBO_FREE(EXC_LifeTime)
+    if (l_EXCPH_offdiago) then
+      YAMBO_FREE(EXC_LineWidth)
+    endif
+    call RESIDUALS_and_EIGENVALUES_free()
+    if (l_extend_output)  then
+       deallocate(EXC_life_of_q)
+       deallocate(EXC_pole_of_q)
+    endif
+    ! 
+  end subroutine EXCPH_Ltime_free
+  !
+  subroutine load_EXCPH(iq_bz_in)
+    implicit none
+    integer, intent(in) :: iq_bz_in
+    !
+    IO_ACT=manage_action(RD_CL_IF_END,iq_bz_in,1,q%nbz,PAR_INDEX=px)
+    !
+    call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_bz_in/),MODE=DUMP,ID=ID_exc_gkkp)
+    io_err=io_EXCPH_gkkp(ID_exc_gkkp)
+    if(io_err/=0) call error('excph_gkkp databases not found!')
+    !
+    iq_db=Q_io_map(iq_bz_in)
+    call io_control(ACTION=IO_ACT,COM=REP,SEC=(/1+iq_db/),MODE=DUMP,ID=ID_gkkp)
+    io_err=io_ELPH(ID_gkkp,'gkkp_expanded no_matrix_elements')
+    if(io_err/=0) call error('gkkp_expanded databases not found!')
+    !
+  end subroutine load_EXCPH 
   !
   function Simple_pole()
     use EXCPH,          ONLY:min_EXC_E,DB_Q_map

@@ -49,6 +49,7 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
 &                        EXC_occ,EXC_occ_DbGd                         
  use ELPH,          ONLY:PH_freqs,FAN_deltaE_treshold,PH_freqs_sq,Q_io_map
  use functions,     ONLY:bose_f,boltzman_f
+ use BS_solvers,     ONLY:deg_exc_thrshld
  !
  use y_memory_alloc
  !
@@ -63,7 +64,7 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  !
  real(SP)    :: PH_E,E_alpha,boltzm_factor,weight_dbgd,E_beta,BS_ave_W,BS_ave_W_PH_abs,bose_factor
  complex(SP) :: BS_Sat_E_DbGd,BS_Sat_E_DbGd_PH_abs
- integer     :: nq_around,iq_fg,iE_fg,iq_ibz,iq_db
+ integer     :: iq_fg,iE_fg,iq_ibz,iq_db
  complex(SP) :: pole
  real(SP), external :: get_ph_E_DbGd
  !
@@ -102,8 +103,6 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
    !
    if(ph_E<FAN_deltaE_treshold) cycle
    !
-   weight_dbgd=weight_dbgd+1._SP
-   !
    bose_factor=bose_f(ph_E)
    !
    if(l_DbGd_PH_only) then
@@ -137,8 +136,12 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
    !
    ! Evaluate BS_Sat energies in the double-grid
    !
-   BS_Sat_E_DbGd       =E_beta-BS_E_in(i_alpha)+ph_E
-   BS_Sat_E_DbGd_PH_abs=E_beta-BS_E_in(i_alpha)-ph_E
+   BS_Sat_E_DbGd       =E_beta-E_alpha+ph_E
+   BS_Sat_E_DbGd_PH_abs=E_beta-E_alpha-ph_E
+   !
+   if(abs(E_alpha-E_beta)<=deg_exc_thrshld) cycle 
+   !
+   weight_dbgd=weight_dbgd+1._SP
    !
    pole=E_alpha+BS_Sat_E_DbGd
    !

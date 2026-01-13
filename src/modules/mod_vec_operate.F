@@ -213,9 +213,7 @@ module vec_operate
      ! Cross product
      !
      U_cross=rZERO
-     do concurrent (i=1:3,j=1:3) 
-       U_cross(i,j) = axis(i)*axis(j)
-     enddo
+     forall (i=1:3,j=1:3) U_cross(i,j) = axis(i)*axis(j)
      R=R+(1.0_SP-cos(angle))*U_cross
      !
      axis_rotation=matmul(R,vec)
@@ -592,9 +590,7 @@ module vec_operate
      if (.not.present(arrout)) arrin=l_arrout
      if (present(indx)) indx=l_indx
      if (present(indx_m1)) then
-       do concurrent ( i=1:n) 
-         indx_m1(l_indx(i))=i
-       enddo
+       forall (i=1:n) indx_m1(l_indx(i))=i
      endif
      deallocate(l_indx,l_arrout)
    end subroutine r_sort
@@ -695,13 +691,23 @@ module vec_operate
      if (.not.present(arrout) ) arrin =l_arrout
      if (     present(indx)   ) indx  =l_indx
      if (     present(indx_m1)) then
-       do concurrent ( i=1:n) 
-         indx_m1(l_indx(i))=i
-       enddo
+       forall ( i=1:n) indx_m1(l_indx(i))=i
      endif
      deallocate(l_indx,l_arrout)
    end subroutine i_sort
    !
+   !> @brief Find degeneracy in a sorted energy array
+   !
+   !! @param[in]       n			   number of elements of the array
+   !! @param[in]       Er                          energies array
+   !! @param[in]       Ei                          ????
+   !! @param[in]       deg_accuracy		   degenerate accuracy threasold 
+   !! @param[in]       Include_single_values	   if .true. include in deg-list groups with a single element
+   !!
+   !! @param[out]      first_deg_el		   list of first elements of degenerate sub-spaces
+   !! @param[out]      deg_elmnts	           number of elements of each degenerate sub-space
+   !! @param[out]      deg_grps	           	   number of degenerate sub-spaces
+   ! 
    subroutine degeneration_finder(n,first_deg_el,deg_elmnts,deg_grps,&
 &                                 Ei,Er,deg_accuracy,Include_single_values)
      !
@@ -810,6 +816,28 @@ module vec_operate
      !
    end subroutine
    !
+   ! Average degenerate states in the thir sub-space
+   !
+   subroutine degeneration_average(n,first_deg_el,deg_elmnts,deg_grps,Er)
+     
+     integer,  intent(in)    :: n
+     integer,  intent(in)    :: first_deg_el(n),deg_elmnts(n),deg_grps
+     real(SP), intent(inout) :: Er(n)
+     !
+     ! Work space
+     !
+     integer  :: j_alpha,i_alpha,igrp
+     real(SP) :: ave_energy
+     !
+     do igrp=1,deg_grps
+       j_alpha=first_deg_el(igrp)
+       i_alpha=first_deg_el(igrp)+deg_elmnts(igrp)-1
+       ave_energy=sum(Er(j_alpha:i_alpha))/real(deg_elmnts(igrp),SP)
+       Er(j_alpha:i_alpha)=ave_energy
+     enddo
+     !  
+   end subroutine
+   !    
    ! Least common multiple (LCM)
    !    
    integer function lcm(a, b)

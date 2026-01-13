@@ -175,7 +175,7 @@ module interfaces
    subroutine MATRIX_slepc(M_slepc,n_eig,V_right,V_left,E_real,E_cmpl)
      !
      use pars,           ONLY:SP,schlen
-     use petscmatdef,    ONLY:tmat
+     use petscmatdef,    ONLY:tMat
      Mat                         :: M_slepc      ! matrix to diagonalize of stype from slepc
      integer                     :: n_eig        ! number of eigenvalues to compute
      complex(SP)                 :: V_right(:,:) ! right eigenvalues
@@ -264,7 +264,7 @@ module interfaces
      character(*),intent(in)  :: mode
      integer,     intent(in)  :: i_BS_mat, neigs_this_cpu, neig_shift
      complex(SP), allocatable,         intent(in)  :: BS_E(:)
-     complex(SP), pointer,             intent(out) :: BS_R_left(:)
+     complex(SP), pointer,             intent(inout) :: BS_R_left(:)
      complex(SP), target, allocatable, intent(in)  :: BS_V_left(:,:)
      complex(SP), pointer, optional,   intent(in)  :: BS_Overlap(:,:) 
    end subroutine K_diago_L_res

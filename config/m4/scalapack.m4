@@ -9,34 +9,29 @@
 AC_DEFUN([AC_SLK_SETUP],[
 
 AC_ARG_ENABLE(par_linalg,   AS_HELP_STRING([--enable-par-linalg],[Use parallel linear algebra. Default is no]))
-AC_ARG_WITH(blacs_libs,    [AS_HELP_STRING([--with-blacs-libs=(libs|mkl)],[Use BLACS libraries <libs> or setup MKL],[32])])
 AC_ARG_WITH(scalapack_libs,[AS_HELP_STRING([--with-scalapack-libs=(libs|mkl)],[Use SCALAPACK libraries <libs> or setup MKL],[32])])
 AC_ARG_WITH(elpa_libs,     [AS_HELP_STRING([--with-elpa-libs=(libs)],[Use ELPA libraries <libs>],[32])])
 AC_ARG_WITH(elpa_includedir,AS_HELP_STRING([--with-elpa-includedir=<path>],[Path to the elpa include directory],[32]))
 
 SCALAPACK_LIBS=""
-BLACS_LIBS=""
 ELPA_LIBS=""
 ELPA_INCS=""
 
 reset_LIBS="$LIBS"
 
 enable_scalapack="no"
-enable_blacs="no"
 enable_elpa="no"
+enable_elpa_omp="no"
 
 internal_slk="no"
-internal_blacs="no"
 internal_elpa="no"
 
 compile_slk="no"
-compile_blacs="no"
 compile_elpa="no"
 
 #
-# Set fortran linker names of BLACS/SCALAPACK functions to check for.
+# Set fortran linker names of SCALAPACK functions to check for.
 #
-blacs_routine="blacs_set"
 scalapack_routine="pcheev"
 elpa_routine="elpa_init"
 mpi_routine=MPI_Init
@@ -78,22 +73,8 @@ fi
 # Parse configure options
 #
 if test "$enable_par_linalg" = "yes" ; then
-  enable_blacs="internal" ;
   enable_scalapack="internal" ;
 fi
-#
-case $with_blacs_libs in
-  yes) enable_blacs="internal" ;;
-  no)  enable_blacs="no" ; enable_par_linalg="no" ;;
-  mkl) 
-    if test "$try_mkl_scalapack" = "no" ; then
-       enable_blacs="no" ; enable_par_linalg="no" 
-    else
-       enable_blacs="check"; BLACS_LIBS="$try_mkl_scalapack" 
-    fi
-    ;;
-  *) enable_blacs="check"; BLACS_LIBS="$with_blacs_libs" ;;
-esac
 #
 case $with_scalapack_libs in
   yes) enable_scalapack="internal" ;;
@@ -116,27 +97,10 @@ esac
 #
 if test "$mpibuild"  = "yes"; then
   #
-  if test "$enable_blacs" = "check" ; then
-    #
-    acx_blacs_save_LIBS="$BLACS_LIBS"
-    LIBS="$LIBS $FLIBS $LAPACK_LIBS $BLAS_LIBS"
-    # First, check BLACS_LIBS environment variable
-    if test "x$BLACS_LIBS" != x; then
-      save_LIBS="$LIBS"; LIBS="$BLACS_LIBS $LIBS"
-      AC_MSG_CHECKING([for $blacs_routine in $BLACS_LIBS])
-      AC_TRY_LINK_FUNC($blacs_routine, [enable_blacs="yes"], [enable_blacs="internal"; BLACS_LIBS=""])
-      AC_MSG_RESULT($enable_blacs)
-      BLACS_LIBS="$acx_blacs_save_LIBS"
-      LIBS="$save_LIBS"
-    else
-      enable_blacs="no";
-    fi
-    #
-  fi
   #
   if test "$enable_scalapack" = "check" ; then
     acx_scalapack_save_LIBS="$SCALAPACK_LIBS"
-    LIBS="$LIBS $FLIBS $LAPACK_LIBS $BLAS_LIBS $BLACS_LIBS"
+    LIBS="$LIBS $FLIBS $LAPACK_LIBS $BLAS_LIBS"
     # First, check SCALAPACK_LIBS environment variable
     if test "x$SCALAPACK_LIBS" != x; then
       save_LIBS="$LIBS"; LIBS="$SCALAPACK_LIBS $LIBS"
@@ -152,9 +116,9 @@ if test "$mpibuild"  = "yes"; then
   #
   if test "$enable_elpa" = "check" ; then
     acx_elpa_save_LIBS="$ELPA_LIBS"
-    LIBS="$LIBS $FLIBS $SCALAPACK_LIBS $LAPACK_LIBS $BLAS_LIBS $BLACS_LIBS"
+    LIBS="$LIBS $FLIBS $SCALAPACK_LIBS $LAPACK_LIBS $BLAS_LIBS"
     # First, check ELPA_LIBS environment variable
-    if test "x$ELPA_LIBS" != x; then
+    if test "x$ELPA_LIBS" != "x" ; then
       save_LIBS="$LIBS"; LIBS="$ELPA_LIBS $LIBS"
       save_FCFLAGS="$FCFLAGS"; FCFLAGS="$ELPA_INCS/modules/ $FCFLAGS"
       #AC_MSG_CHECKING([for $elpa_routine in $ELPA_LIBS])
@@ -164,6 +128,10 @@ if test "$mpibuild"  = "yes"; then
       AC_LINK_IFELSE($testprog_elpa,  [enable_elpa="yes"; elpa_msg="yes"], [enable_elpa="internal"; elpa_msg="not working, fallback to internal"; ELPA_LIBS=""])
       AC_MSG_RESULT($enable_elpa)
       ELPA_LIBS="$acx_elpa_save_LIBS"
+      ELPA_OMP=`echo $ELPA_LIBS | grep elpa_openmp`
+      if test "x$ELPA_OMP" != "x" ; then
+        enable_elpa_omp="yes";
+      fi
       LIBS="$save_LIBS"
       FCFLAGS="$save_FCFLAGS"
     else
@@ -173,10 +141,8 @@ if test "$mpibuild"  = "yes"; then
   #
   if test x"$enable_par_linalg" = "xyes"; then
     if test x"$enable_int_linalg" = "xyes"; then
-      enable_blacs="internal";
       enable_scalapack="internal";
     else
-      if test "$enable_blacs"     = "no"; then enable_blacs="internal"    ; fi
       if test "$enable_scalapack" = "no"; then enable_scalapack="internal"; fi
     fi
   fi
@@ -189,16 +155,6 @@ if test "$mpibuild"  = "yes"; then
   #  fi
   #fi
   #
-  if test "$mpif_found" = "yes" && test "$enable_blacs" = "internal"; then
-    enable_blacs="yes";
-    internal_blacs="yes";
-    BLACS_LIBS="${extlibs_path}/${FCKIND}/${FC}/lib/libblacs.a ${extlibs_path}/${FCKIND}/${FC}/lib/libblacs_C_init.a ${extlibs_path}/${FCKIND}/${FC}/lib/libblacs_init.a";
-    if test -e "${extlibs_path}/${FCKIND}/${FC}/lib/libblacs.a" && test -e "${extlibs_path}/${FCKIND}/${FC}/lib/libblacs_init.a"; then
-      compile_blacs="no"
-    else
-      compile_blacs="yes"
-    fi
-  fi
   #
   if test "$mpif_found" = "yes" && test "$enable_scalapack" = "internal"; then
     enable_scalapack="yes"
@@ -214,10 +170,16 @@ if test "$mpibuild"  = "yes"; then
   if test "$mpif_found" = "yes" && test "$enable_elpa" = "internal"; then
     enable_elpa="yes"
     internal_elpa="yes"
-    ELPA_LIBS="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs1="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"
+    elpa_libs2="${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa_openmp.a"
     ELPA_INCS="${IFLAG}${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/include/"
-    if test -e "${extlibs_path}/${FCKIND}/${FC}/${GPU_SUPPORT}/lib/libelpa.a"; then
+    if test -e "$elpa_libs1"; then
       compile_elpa="no"
+      ELPA_LIBS="$elpa_libs1"
+    elif test -e "$elpa_libs2"; then
+      compile_elpa="no"
+      ELPA_LIBS="$elpa_libs2"
+      enable_elpa_omp="yes"
     else
       compile_elpa="yes"
     fi
@@ -225,10 +187,13 @@ if test "$mpibuild"  = "yes"; then
   #
 fi
 #
-if test "$enable_blacs" = "yes" && test "$enable_scalapack" = "yes" ; then
+if test "$enable_scalapack" = "yes" ; then
   def_scalapack="-D_SCALAPACK"
   if test "$enable_elpa" = "yes" ; then
     def_elpa="-D_ELPA"
+    if test "$enable_elpa_omp" = "yes" ; then
+      def_elpa="-D_ELPA -D_ELPA_OMP"
+    fi
   else
     enable_elpa="no"
     def_elpa=""
@@ -239,25 +204,20 @@ if test "$enable_blacs" = "yes" && test "$enable_scalapack" = "yes" ; then
   fi
 else
   enable_scalapack="no"
-  enable_blacs="no"
   enable_elpa="no"
   def_scalapack=""
   def_elpa=""
-  BLACS_LIBS=""
   SCALAPACK_LIBS=""
   ELPA_LIBS=""
   ELPA_INCS=""
-  compile_blacs="no"
   compile_slk="no"
   compile_elpa="no"
-  internal_blacs="no"
   internal_slk="no"
   internal_elpa="no"
 fi
 #
 LIBS="$reset_LIBS"
 #
-AC_SUBST(BLACS_LIBS)
 AC_SUBST(SCALAPACK_LIBS)
 AC_SUBST(ELPA_LIBS)
 AC_SUBST(ELPA_INCS)
@@ -267,8 +227,6 @@ AC_SUBST(def_scalapack)
 AC_SUBST(def_elpa)
 AC_SUBST(compile_slk)
 AC_SUBST(internal_slk)
-AC_SUBST(compile_blacs)
-AC_SUBST(internal_blacs)
 AC_SUBST(compile_elpa)
 AC_SUBST(internal_elpa)
 

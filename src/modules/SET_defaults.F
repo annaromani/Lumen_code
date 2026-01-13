@@ -49,7 +49,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
 &                     Haydock_threshold,Haydock_iterIO,Haydock_iterMAX,BSS_uses_DbGd,BSS_Wd,BSS_n_eig,BSS_n_eig_Input,&
 &                     BSS_damp_reference,BSS_Vnl_included,BSS_uses_GreenF,BSS_inversion_mode,BSS_target_E,&
 &                     BSS_perturbative_width,K_INV_EPS,K_INV_PL,K_INV_PI_PH,BSS_desc,BSS_ldiago_solver,BSS_trange_E,&
-&                     BSS_kernel_IO_on_the_fly,BSS_kernel_stored_size,BSS_kernel_last_stored_block
+&                     BSS_kernel_IO_on_the_fly,BSS_kernel_stored_size,BSS_kernel_last_stored_block,deg_exc_thrshld
  use descriptors,ONLY:IO_desc_reset
 #if defined _SLEPC && !defined _NL
  use BS_solvers, ONLY:BSS_slepc_extraction,BSS_slepc_ncv,BSS_slepc_tol,BSS_slepc_maxit,&
@@ -497,6 +497,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  BSS_target_E=0._SP
  BSS_trange_E=-1._SP/HA2EV
  MAX_BSK_LIN_size=45000*45000 ! 46341 is the sqare root of the maximum integer in IP: 2147483647
+ deg_exc_thrshld=0.001_SP/HA2EV
  !
  call IO_desc_reset(BSS_desc)
  !
@@ -564,8 +565,8 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  Lout_path='none'
  EXCPH_states=(/1,1/)
  EXCPH_sum=(/1,1/)
- L_damping=0.0005/HA2EV ! set to 0.5 meV
- EXCPH_deltaE_treshold=1.E-6_SP/HA2EV ! This is a cutoff for denominator in the exc-ph spectra
+ L_damping=0.005/HA2EV ! set to 5 meV
+ EXCPH_deltaE_treshold=0.001/HA2EV ! This is a cutoff for denominator in the exc-ph spectra
  EXC_q0=(/0.0,0.0,0.0/)
  alphaQ=rZERO
  EXCPH_kthresh=-1. ! If negative, use all kpoints (turn positive only for debug)

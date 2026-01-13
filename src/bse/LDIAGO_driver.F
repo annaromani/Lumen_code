@@ -31,6 +31,9 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
   use LIVE_t,         ONLY:live_timing
   use com,            ONLY:msg
   use ldiago_interface
+#if defined _MPI
+  USE mpi
+#endif
   !
   implicit none
   !
@@ -66,7 +69,7 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
   ! Local variables
   type(c_ptr)                        :: mpicxt, diago_mat, evecs
   integer                            :: nProcs, my_rank, neig_tmp
-  integer(YDIAGO_INT)                :: SL_H_dim, ProcX, ProcY, elpa_nthreads, mpi_comm
+  integer(YDIAGO_INT)                :: SL_H_dim, ProcX, ProcY, elpa_nthreads, mpi_comm_diago
   integer(ERROR_INT)                 :: error_diago ! diagonalization error code
   integer                            :: ierr !! mpi error code 
   integer(YDIAGO_INT)                :: neig_found, i_c, i_r, blacs_blk_size 
@@ -91,6 +94,10 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
 
   integer                            :: evec_fac = 1
   ! evec_fac = 2 if bse_solver function was used to diagonalize else 1
+
+#if !defined _MPI
+  call error("LDIAGO implementation needs MPI. Do not use LDIAGO solver.")
+#endif
 
   if(PRESENT(neigs_range)) then
     if(neigs_range(1)>0) then
@@ -145,7 +152,7 @@ if (run_gpu) then
   endif 
 endif
 
-#if defined _OPENMP && !defined _GPU
+#if defined _OPENMP && _ELPA_OMP && !defined _GPU
   elpa_nthreads = int(n_threads_K,kind=YDIAGO_INT)
 #else 
   elpa_nthreads = 1 
@@ -191,9 +198,9 @@ endif
   blacs_blk_size = 1
 #endif
 
-  mpi_comm = MPI_COMM_WORLD
+  mpi_comm_diago = MPI_COMM_WORLD
 
-  mpicxt = BLACScxtInit_Fortran('R', mpi_comm, ProcX, ProcY)
+  mpicxt = BLACScxtInit_Fortran('R', mpi_comm_diago, ProcX, ProcY)
   if (.not. c_associated(mpicxt)) then
     call error("Failed to initiate BLACS context")
   end if

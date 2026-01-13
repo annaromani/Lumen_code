@@ -26,7 +26,7 @@ subroutine K_diago_driver(iq,W,X_static)
  use stderr,         ONLY:intc
  use units,          ONLY:HA2EV
  use BS,             ONLY:BS_K_coupling,BS_H_dim,BS_K_dim,BS_perturbative_SOC,&
-&                         BS_res_ares_n_mat,l_BS_ares_from_res,&
+&                         BS_res_ares_n_mat,l_BS_ares_from_res,BS_nT_grps,&
 &                         l_BS_abs,l_BS_kerr,l_BS_kerr_asymm,l_BS_magnons,l_BS_photolum,l_BS_dichroism,&
 &                         l_BS_mespin,l_BS_meorb
  use BS_solvers,     ONLY:io_BSS_diago,BSS_perturbative_width,BSS_mode,BSS_resize_only,BSS_resize_and_save,BSS_n_eig_Input, &
@@ -46,6 +46,7 @@ subroutine K_diago_driver(iq,W,X_static)
  use IO_m,           ONLY:REP,VERIFY,OP_WR_CL,OP_RD_CL
  use parser_m,       ONLY:parser
  use timing_m,       ONLY:timing
+ use parallel_m,     ONLY:CPU_structure
  use parallel_int,   ONLY:PP_wait
 #if defined _SLEPC && !defined _NL
  use petscsys
@@ -55,7 +56,7 @@ subroutine K_diago_driver(iq,W,X_static)
  !
  use interfaces,     ONLY:MATRIX_slepc
  use BS_solvers,     ONLY:BSS_slepc_approach,BSS_slepc_matrix_format,&
-&                         Slepc_v,BS_HAYVEC_free
+&                         Slepc_v,BS_HAYVEC_free,BS_HAYVEC_alloc
 #endif
  use y_memory_alloc
  !
@@ -86,33 +87,33 @@ subroutine K_diago_driver(iq,W,X_static)
  ! Excitonic hamiltonian, residuals independent
  !==============================================
  real(SP),allocatable    :: BS_E_real(:)
- real(SP)   ,pointer     :: BS_E_SOC_corr(:,:) => null()
+ real(SP)   ,pointer     :: BS_E_SOC_corr(:,:)
  complex(SP),allocatable :: BS_corrections(:,:)
  !
  ! Coupling
  complex(SP),allocatable         :: BS_mat(:,:)
  complex(SP),allocatable, target :: BS_V_left(:,:)
  complex(SP),allocatable, target :: BS_V_right(:,:)
- complex(SP),pointer             :: BS_overlap(:,:)    => null()
+ complex(SP),pointer             :: BS_overlap(:,:)
  !
  ! Residuals, different for each response function
  !=================================================
- complex(SP),pointer     :: BS_R_left_abs(:)     => null()
- complex(SP),pointer     :: BS_R_right_abs(:)    => null()
+ complex(SP),pointer     :: BS_R_left_abs(:)
+ complex(SP),pointer     :: BS_R_right_abs(:)
  !
- real(SP),   pointer     :: BS_R_PL(:,:)         => null()
+ real(SP),   pointer     :: BS_R_PL(:,:)
  !
- complex(SP),pointer     :: BS_R_left_kerr(:)      => null()
- complex(SP),pointer     :: BS_R_right_kerr(:)     => null()
- complex(SP),pointer     :: BS_R_right_dich(:,:)   => null()
- complex(SP),pointer     :: BS_R_right_mespin(:,:) => null()
- complex(SP),pointer     :: BS_R_right_meorb(:,:)  => null()
+ complex(SP),pointer     :: BS_R_left_kerr(:)
+ complex(SP),pointer     :: BS_R_right_kerr(:)
+ complex(SP),pointer     :: BS_R_right_dich(:,:)
+ complex(SP),pointer     :: BS_R_right_mespin(:,:)
+ complex(SP),pointer     :: BS_R_right_meorb(:,:)
  !
- complex(SP),pointer     :: BS_R_left_magn(:,:)  => null()
- complex(SP),pointer     :: BS_R_right_magn(:,:) => null()
+ complex(SP),pointer     :: BS_R_left_magn(:,:)
+ complex(SP),pointer     :: BS_R_right_magn(:,:)
  !
  ! Temporary pointer 
- complex(SP),pointer     :: tmp_res_ptr(:)      => null()
+ complex(SP),pointer     :: tmp_res_ptr(:)
  !
  ! I/O
  integer                 :: io_err,ID
@@ -218,6 +219,8 @@ subroutine K_diago_driver(iq,W,X_static)
 #if defined _SLEPC && !defined _NL
      if(l_slepc) then
        !
+       call K_slepc_local_init()
+       !
        if (index(BSS_slepc_matrix_format,"shell")>0) then
          ! 1. Here we will define a PetscShell matrix and define the matrix-vector multiplication
          ! using the K_multiply_by_V function used in the Haydock method
@@ -318,10 +321,9 @@ subroutine K_diago_driver(iq,W,X_static)
 #if defined _SLEPC && !defined _NL
      !
      if (l_slepc) then
+       call K_slepc_local_free()
        ! BSS_n_eig could be lowered by MATRIX_slepc
        if (BSS_n_eig_before_solver>BSS_n_eig) call K_slepc_resize_variables()
-       ! Destroy the matrix
-       call MatDestroy(slepc_mat,ierr)
      endif
      !
 #endif
@@ -459,20 +461,20 @@ subroutine K_diago_driver(iq,W,X_static)
 #endif
    endif
    !
+   ! CLEAN
+   !
    YAMBO_FREE(BS_E)
    call local_free( )
    !
  enddo
  !
+#if defined _SLEPC && !defined _NL
+ if (l_slepc) call SlepcFinalize(ierr)
+#endif
+ !
  ! Initialize & write the output file 
  !====================================
  call K_OUTPUT(iq,W,"open dump close "//trim(Solver),"ALL")
- !
- ! CLEAN
- !
-#if defined _SLEPC && !defined _NL
- if(l_slepc) call K_slepc_local_free()
-#endif
  !
  call timing(trim(Solver)//' Solver',OPR='stop')
  !
@@ -625,24 +627,28 @@ subroutine K_diago_driver(iq,W,X_static)
      if (l_slepc) then
        !
        if (index(BSS_slepc_matrix_format,'explicit')>0) &
-       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix re-distributed from internal to slepc parallel scheme')
+       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
+       &  're-distributed from internal to slepc parallel scheme')
        if (BSS_slepc_matrix_format=='shell')            &
-       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix used with yambo parallel distribution scheme')
+       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
+       &           'used with yambo parallel distribution scheme')
        !
        call SlepcInitialize(PETSC_NULL_CHARACTER,ierr)
+       !
+       if (BSS_target_E/=0._SP .and. BSS_slepc_pseudo_herm) then 
+         BSS_slepc_pseudo_herm = .false. 
+         call warning('Target energy not supported in pseudo-hermitian case. '//&
+         &                          'Switching to non-hermitian diagonalization')
+       endif
+       if (BSS_slepc_precondition/="none" .and. BSS_slepc_pseudo_herm) then 
+         BSS_slepc_pseudo_herm = .false. 
+         call warning('Preconditioning not supported in pseudo-hermitian case. '//&
+         &                            'Switching to non-hermitian diagonalization')
+       endif
        !
      endif
      !
 #endif
-     !
-     if (BSS_target_E/=0._SP .and. BSS_slepc_pseudo_herm) then 
-       BSS_slepc_pseudo_herm = .false. 
-       call warning('Target energy not supported in pseudo-hermitian case. Switching to non-hermitian diagonalization')
-     endif
-     if (BSS_slepc_precondition/="none" .and. BSS_slepc_pseudo_herm) then 
-       BSS_slepc_pseudo_herm = .false. 
-       call warning('Preconditioning not supported in pseudo-hermitian case. Switching to non-hermitian diagonalization')
-     endif
      !
 #if defined _SCALAPACK
      if (l_ldiago) then
@@ -708,6 +714,9 @@ subroutine K_diago_driver(iq,W,X_static)
      endif
 #endif
      !
+     ! LA for old diago solver
+     if (l_diago) call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,CPU_structure(4)%nCPU_lin_algebra_DIAGO)
+     !
    end subroutine K_local_init
    !
    subroutine BSS_n_eig_init()
@@ -716,6 +725,20 @@ subroutine K_diago_driver(iq,W,X_static)
      !=================================
      !
      BSS_n_eig=BSS_n_eig_Input
+     !
+     nullify(BS_overlap)
+     nullify(BS_E_SOC_corr)
+     nullify(BS_R_right_abs)
+     nullify(BS_R_left_abs)
+     nullify(BS_R_right_kerr)
+     nullify(BS_R_left_kerr)
+     nullify(BS_R_right_dich)
+     nullify(BS_R_right_mespin)
+     nullify(BS_R_right_meorb)
+     nullify(BS_R_right_magn)
+     nullify(BS_R_left_magn)
+     nullify(BS_R_PL)
+     nullify(tmp_res_ptr)
      !
      if (l_slepc) then
        !
@@ -780,6 +803,20 @@ subroutine K_diago_driver(iq,W,X_static)
    !
 #if defined _SLEPC && !defined _NL
    !
+   subroutine K_slepc_local_init()
+     integer          :: domk(BS_nT_grps)
+     !
+     if (BSS_slepc_matrix_format=='shell') then
+       call PARALLEL_Haydock_VEC_COMMs('assign')
+       allocate(Slepc_v%Vi(BS_nT_grps))
+       allocate(Slepc_v%Vo(BS_nT_grps))
+       domk=1
+       call BS_HAYVEC_alloc(Slepc_v%Vi,domk)
+       call BS_HAYVEC_alloc(Slepc_v%Vo,domk)
+     endif
+     !
+   end subroutine K_slepc_local_init
+   !
    subroutine K_slepc_local_free()
      !
      if (BSS_slepc_matrix_format=='shell') then
@@ -790,7 +827,9 @@ subroutine K_diago_driver(iq,W,X_static)
        call PARALLEL_Haydock_VEC_COMMs('reset')
      endif
      !
-     call SlepcFinalize(ierr)
+     ! Destroy the matrix
+     call MatDestroy(slepc_mat,ierr)
+     !
    end subroutine K_slepc_local_free
 #endif
    !

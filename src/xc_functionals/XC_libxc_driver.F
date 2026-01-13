@@ -217,8 +217,10 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
      YAMBO_FREE(drho_tmp)
    endif
    !
-   do concurrent (is1=1:n_spin,i1=1:fft_size) 
-     drho(i1,is1,:) = drho(i1,is1,:)*fft_size/DL_vol*2._SP*pi/alat(:)
+   do is1=1,n_spin
+     do i1=1,fft_size
+       drho(i1,is1,:) = drho(i1,is1,:)*fft_size/DL_vol*2._SP*pi/alat(:)
+     enddo
    enddo
    !
    do i1 = 1,fft_size
@@ -243,7 +245,7 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
  if (FUNCTIONAL == XC_LDA_C_KP) then ! Special case, XC_LDA_C_KP not available from libxc
    select case(ORDER)
      case(0)
-       do concurrent (i1=1:fft_size) 
+       do i1=1,fft_size 
          rspts(i1)=(3._DP/4._DP/pi_DP/real(spin_rho_SP(i1,1)/DL_vol,DP))**(1._DP/3._DP)
        enddo
        call xc_rpa_kp(rspts,v1rho)
@@ -261,7 +263,7 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
  !
  ORDER_NOW=ORDER
  if (l_Fxc_from_Vxc.and.ORDER==2) then
-   call msg('s',' Evaluating Fxc as numerical functional derivative of Vxc')
+   call msg('s',' Evaluating Fxc as numerical derivative of Vxc')
    PERT_FAC=1.000001_DP
    ORDER_NOW=1
    YAMBO_ALLOC(V_xc_pert,(fft_size,n_spin))
@@ -276,15 +278,19 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
          E_xc = E_xc + real(tmp_exc,SP)    
        case(1)
          call xc_f03_lda_vxc(fnctl(ixc)%conf, size_IPL, spin_rho_DP(1,1), v1rho(1,1))
-         do concurrent (i1=1:fft_size,i2=1:n_spin) 
-           V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+         do i1=1,fft_size
+           do i2=1,n_spin 
+             V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+           enddo
          enddo
          ! Needed to build F_xc from functional derivative for n_spin=1
          if (l_Fxc_from_Vxc.and.ORDER==2) then
            spin_rho_DP=spin_rho_DP*PERT_FAC
            call xc_f03_lda_vxc(fnctl(ixc)%conf, size_IPL, spin_rho_DP(1,1), v1rho(1,1))
-           do concurrent (i1=1:fft_size,i2=1:n_spin) 
-             V_xc_pert(i1,i2) = V_xc_pert(i1,i2) + real(v1rho(i2,i1),SP)
+           do i1=1,fft_size
+             do i2=1,n_spin 
+               V_xc_pert(i1,i2) = V_xc_pert(i1,i2) + real(v1rho(i2,i1),SP)
+             enddo
            enddo
            spin_rho_DP=spin_rho_DP/PERT_FAC
          endif
@@ -296,8 +302,10 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
            ! In the magnons case, I could use it also for F_xc_mat with n_sp_pol==2,
            ! avoiding the call to XC_eval_lda_kernel
            ! Howerver, the latter is more precise, since it works with DP quantities
-           do concurrent (i1=1:fft_size,i2=1:n_spin) 
-             V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+           do i1=1,fft_size
+             do i2=1,n_spin 
+               V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+             enddo
            enddo
          endif
          ! Needed to build Fxc unless in magnons case with n_sp_pol==2
@@ -343,8 +351,10 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
            ! avoiding the call to XC_eval_gga_kernel
            ! Howerver but the latter is more precise, since it works with DP quantities
            !call XC_eval_gga_potential(v1rho,v1sigma,drho,V_xc)
-           do concurrent (i1=1:fft_size,i2=1:n_spin) 
-             V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+           do i1=1,fft_size
+             do i2=1,n_spin 
+               V_xc(i1,i2) = V_xc(i1,i2) + real(v1rho(i2,i1),SP)
+             enddo
            enddo
          endif
          ! Needed to build Fxc unless in magnons case with n_sp_pol==2
@@ -362,11 +372,19 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
    if (FUNCTIONAL==XC_HYB_GGA_XC_GAUPBE*XC_FACTOR)  E_xc_val= E_xc_val-EXX_FRACTION*real(exsr,SP)
  endif
  !
- if (l_Fxc_from_Vxc.and.ORDER==2) then
-   do ifft=1,fft_size
-     if (abs(spin_rho_DP(1,ifft))<rho_map_thresh) cycle
-     F_xc(ifft,1,1)=real( real(V_xc_pert(ifft,1)-V_xc(ifft,1),DP)/(spin_rho_DP(1,ifft)*(PERT_FAC-1._DP)),SP)
-   enddo
+ if (ORDER==2) then
+   if (l_Fxc_from_Vxc) then
+     ! Compute the functional derivative
+     do ifft=1,fft_size
+       if (abs(spin_rho_DP(1,ifft))<max(rho_map_thresh,1.E-8)) cycle
+       F_xc(ifft,1,1)=real( real(V_xc_pert(ifft,1)-V_xc(ifft,1),DP)/(spin_rho_DP(1,ifft)*(PERT_FAC-1._DP)),SP)
+     enddo
+   endif
+   ! Remove low density points
+   !do ifft=1,fft_size
+   !  if (abs(spin_rho_DP(1,ifft))>max(rho_map_thresh,1.E-8)) cycle
+   !  F_xc(ifft,1,1)=0._SP
+   !enddo
  endif
  !
  if (EvaluateDGradient) then

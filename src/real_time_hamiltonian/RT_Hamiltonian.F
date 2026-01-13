@@ -6,6 +6,29 @@
 ! Authors (see AUTHORS file for details): AM CA DS
 !
 subroutine RT_Hamiltonian(dG_in,A_input,E,k)
+ !! **RT_Hamiltonian - Real-Time Single-Particle Hamiltonian Construction**
+ !!
+ !! Computes the time-dependent single-particle Hamiltonian at each RT step.
+ !!
+ !! **Physical Framework**:
+ !!  The Kadanoff-Baym equation for the lesser Green's function is:
+ !!
+ !! \(i\hbar\frac{\partial G^<}{\partial t} - [H(t), G^<(t)] = S_{xc}(t)\)
+ !!
+ !!  where the Hamiltonian is decomposed as:
+ !!
+ !! \(H^{RT}(t) = H^{EQ} + \Delta\Sigma^{Hxc}[G(t)] + U^{ext}(t)\)
+ !!
+ !! **Components**:
+ !!   - **Equilibrium Hamiltonian** \(H^{EQ}\): Static DFT Hamiltonian
+ !!   - **Dynamic Self-Energy** \(\Delta\Sigma^{Hxc}\): Updated each timestep from charge density
+ !!   - **External Field** \(U^{ext}(t)\): Laser or applied perturbation
+ !!
+ !! **Approximations Available**:
+ !!   - **IP**: Hartree-Fock (no self-energy correction)
+ !!   - **TD-HARTREE**: Time-dependent Hartree (only Coulomb)
+ !!   - **TD-LDA/GGA**: Time-dependent DFT (Hartree + XC)
+ !!   - **TD-SEX**: Time-dependent Sextic (GW-based, static kernel only)
  !
  ! 1) The KBE is coded in terms of :
  !
@@ -57,10 +80,14 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
  !
  implicit none
  !
- type(levels),  intent(inout) :: E
- type(bz_samp), intent(in)    :: k
- complex(SP),   intent(in)    :: dG_in(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range(1):PAR_G_k_range(2),n_sp_pol)
- type(gauge_field), intent(in):: A_input
+ type(levels), intent(inout) :: E
+ !! Electronic structure with updated eigenvalues and eigenvectors
+ type(bz_samp), intent(in) :: k
+ !! K-point grid
+ complex(SP), intent(in) :: dG_in(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range(1):PAR_G_k_range(2),n_sp_pol)
+ !! Time-dependent change in lesser Green's function: \(dG^<(t)\)
+ type(gauge_field), intent(in) :: A_input
+ !! Gauge field (vector potential or electric field)
  !
  ! Work Space
  !
@@ -106,7 +133,7 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
    !
    deallocate(delta_rho)
    !
-   if(n_spin>1 .and. eval_DFT) then
+   if(n_spin>1 .and. eval_DFT.and..not.l_use_Hxc_collisions) then
      allocate(delta_magn(fft_size,3))
      call el_magnetization_matrix(dG_in,E,k,delta_magn,RT_bands(1))
      magn_n=magn_reference+delta_magn
@@ -115,7 +142,7 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
    !
    ! The Vxc term
    !--------------
-   if (eval_DFT) then
+   if (eval_DFT.and..not.l_use_Hxc_collisions) then
      call XC_potential_driver(E,k,WF_kind,WF_xc_functional,1)
      V_xc_sc=V_xc-REF_V_xc_sc
    endif
@@ -127,7 +154,7 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
      allocate(V_scf(fft_size))
      V_scf=cZERO
      if(eval_HARTREE) V_scf=V_scf+V_Hartree_sc(:,1)
-     if(eval_DFT)     then
+     if(eval_DFT.and..not.l_use_Hxc_collisions)  then
        allocate(V_xc_mat(fft_size,n_spinor,n_spinor))
        call Build_V_xc_mat(V_xc_sc,V_xc_mat)
        V_scf=V_scf+V_xc_mat(:,1,1)+V_xc_mat(:,2,2)
@@ -153,9 +180,7 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
      !
      call PP_redux_wait(H_nl_sc,COMM=PAR_COM_Xk_ibz_A2A%COMM)
      !
-     do concurrent (ik_RT=RTibz%k_range(ik,1):RTibz%k_range(ik,2)) 
-       Ho_plus_Sigma(:,:,ik_RT,i_sp_pol)=H_nl_sc
-     enddo
+     forall (ik_RT=RTibz%k_range(ik,1):RTibz%k_range(ik,2)) Ho_plus_Sigma(:,:,ik_RT,i_sp_pol)=H_nl_sc
      !
    enddo
    enddo
@@ -171,6 +196,7 @@ subroutine RT_Hamiltonian(dG_in,A_input,E,k)
    !
    call Build_dG_avg(dG_in,dG_avg)
    call COLLISIONS_compose_rt(dG_avg)
+   !
    !
    ! Add RT_Vnl_xc to Ho_plus_Sigma 
    !---------------------------------

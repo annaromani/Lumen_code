@@ -93,7 +93,8 @@ gfortran_*
 src/wf_and_fft/sgfft.F
 bin/*
 lib/bin/*
-
+doc/ford_output
+doc/ford_output/*
 # source #
 ##########
 src/external_c/.objects
@@ -138,9 +139,9 @@ autom4te.cache
 
 #Scripts
 compile_yambo_gcc
-gfortran*.sh
-pgi*.sh
-nvidia*.sh
+gfortran*.sh*
+nvfortran*.sh*
+ifx*.sh*
 git_nmd.sh
 
 #Configuation files
