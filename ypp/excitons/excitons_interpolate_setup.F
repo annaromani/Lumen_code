@@ -21,7 +21,8 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  use YPPm,          ONLY:BS_E,EXCITONS_user_indexes,EXCITONS_n_user_states,coo_out,K_transform,&
  &                       l_exc_occ_interp,EXCITONS_n_user_states,&
  &                       l_magnons,BS_R_left,BS_R_right,BS_R_left_magn,BS_R_right_magn,exc_kind
- use BS_solvers,    ONLY:BSS_n_eig
+ use vec_operate,   ONLY:degeneration_finder,degeneration_average
+ use BS_solvers,    ONLY:BSS_n_eig,deg_exc_thrshld
  use com,           ONLY:msg
  use IO_int,              ONLY:io_control
  use IO_m,                ONLY:OP_APP_CL,REP,OP_RD_CL
@@ -40,6 +41,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  !
  type(levels)  ::E_QF
  integer :: iq,i_c,i_l,io_err,ID,EXC_n_states_ref,BSS_n_eig_ref,n_eig
+ integer, allocatable :: first_exc_grp(:,:),n_of_exc_grp(:,:),n_deg_grp(:)
  real(SP), allocatable    :: EXC_occ(:,:)
  real(SP), allocatable    :: values(:)
  real(SP) :: Res(BSS_n_eig),BS_E_degs(BSS_n_eig)
@@ -148,6 +150,18 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
    deallocate(headings)
    !
  endif
+ !
+ ! Symmetrize degenerate energies for better interpolation
+ !
+ allocate(first_exc_grp(EXC_n_states_ref,q%nibz),n_of_exc_grp(EXC_n_states_ref,q%nibz),n_deg_grp(q%nibz))
+ do iq=1,q%nibz
+   call degeneration_finder(EXC_n_states_ref,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(:,iq),deg_accuracy=deg_exc_thrshld,Include_single_values=.true.)
+   !
+   call degeneration_average(EXC_n_states_ref,first_exc_grp(:,iq),n_of_exc_grp(:,iq),n_deg_grp(iq),&
+   &                      Er=BS_all_E(:,iq))
+ enddo
+ deallocate(first_exc_grp,n_of_exc_grp,n_deg_grp)
  !
  ! Fourier interpolation of exciton dispersion
  !

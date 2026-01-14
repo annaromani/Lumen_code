@@ -8,25 +8,66 @@
 !
 #include<y_memory.h>
 !
-!> @brief Calculate phonon-assisted absorption and emission (see PRL 122, 187401 )
-!
 subroutine EXCPH_optics(E,k,q,X,wv)
+ !! **EXCPH_optics - Phonon-Assisted Optical Properties Calculation**
+ !!
+ !! Computes absorption and luminescence spectra including phonon-assisted processes.
+ !! These are processes where a single photon combines with phonon creation/annihilation,
+ !! allowing otherwise forbidden transitions.
+ !!
+ !! **Physical Phenomena**:
+ !!   - Phonon-assisted absorption: photon + phonon excitation → electronic transition
+ !!   - Satellite peaks in luminescence at E_exc ± ω_phonon
+ !!   - Temperature-dependent intensities from Bose occupations
+ !!   - Exciton population effects from quasi-Fermi distributions
+ !!
+ !! **Output Spectra**:
+ !!   Three components are computed and printed:
+ !!   1. Direct: Standard exciton absorption/emission
+ !!   2. No-satellite: Phonon broadening without resonant coupling
+ !!   3. Satellite: Pure phonon-assisted resonant peaks
+ !!
+ !! **Main Workflow**:
+ !!   1. Load exciton wavefunctions and energies from database
+ !!   2. Setup frequency grid and damping parameters
+ !!   3. Load exciton-phonon matrix elements
+ !!   4. Choose calculation method:
+ !!      - Standard: EXCPH_X_phass (from self-energy)
+ !!      - Perturbative: EXCPH_X_phass_from_Hpert (perturbation theory)
+ !!   5. Compute optical tensor components (xx, yy, zz)
+ !!   6. Write results to output files
+ !!
+ !! **Output Files**:
+ !!   - eps_bse_ph_ass: Dielectric function with phonon coupling
+ !!   - pl_bse_ph_ass: Photoluminescence spectrum
+ !!   - (with _dbgd suffix if double-grid is enabled)
+ !!
+ !! **Input Parameters**:
+ !!   - E: Electronic structure
+ !!   - k: k-point grid
+ !!   - q: q-point grid
+ !!   - X: Response functions
+ !!   - wv: Frequency sampling for spectra
+ !!
+ !! **References**:
+ !!   - Physical Review Letters 122, 187401 (2019)
+ !!   - Paleari, Rivetti et al., "Phonon-Assisted Luminescence in Semiconductors"
  !
  use units,          ONLY:HA2EV
  use pars,           ONLY:SP,cZERO,schlen,rZERO
  use vec_operate,    ONLY:iku_v_2D_norm,c2a
  use electrons,      ONLY:levels,nel_cond,E_reset
- use R_lattice,      ONLY:bz_samp,bare_qpg,d3k_factor
+ use R_lattice,      ONLY:bz_samp
  use D_lattice,      ONLY:Boltz_Temp
  use X_m,            ONLY:X_t
  use com,            ONLY:msg,of_open_close
  use EXCPH,          ONLY:EXCPH_sum,EXCPH_states,L_kind_in,L_kind_out,BS_E,BS_all_E,BS_E_in,   &
-&                         BS_R_left,BS_R_right,BS_R,BSE_alloc,BSE_free,EXC_occ,alphaQ,q_DbGd,  &
+&                         BSE_alloc,BSE_free,EXC_occ,alphaQ,q_DbGd,  &
 &                         RESIDUALS_and_EIGENVALUES_free, RESIDUALS_and_EIGENVALUES_alloc,EXC_E_DbGd,  &
 &                         l_DbGd_PH_only,l_DbGd_WEIGHTs,l_no_matrix_elements,Sat_alloc,Sat_free, &
 &                         min_EXC_E_DbGd,min_pos_E_DbGd
- use ELPH,           ONLY:use_PH_DbGd,ph_modes
- use BS_solvers,     ONLY:BSS_eh_table,BSS_alloc,BSS_free
+ use ELPH,           ONLY:use_PH_DbGd
+ use BS_solvers,     ONLY:BSS_alloc,BSS_free
  use BS,             ONLY:BSE_prop,BS_dip_size
  use frequency,      ONLY:w_samp
  use parser_m,       ONLY:parser
@@ -46,7 +87,7 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  integer, parameter  :: n_output=7
  real(SP)            :: output_data(n_output),E_fermi_h,E_fermi_e,v_tmp(3)
  character(schlen)   :: headers(n_output)
- integer             :: iw,iq,i_alpha,max_filling,EXC_n_sum,i_beta
+ integer             :: iw,iq,max_filling,EXC_n_sum,i_beta
  integer, allocatable:: EXC_indexes(:)
  character(schlen)   :: dbgd_string
  character(schlen) :: q_point 

@@ -32,7 +32,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  ! Plasmon Pole & COHSEX Correlation Self-Energy
  !
- use pars,          ONLY:DP,SP,pi,schlen,cZERO,cI,cONE
+ use pars,          ONLY:DP,SP,pi,pi_DP,schlen,cZERO,cI,cONE
  use units,         ONLY:HA2EV
  use stderr,        ONLY:intc
  use frequency,     ONLY:w_samp,W_reset
@@ -747,20 +747,26 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
              endif
              !
              ! inline bose_f function
-             bose_PPA_E=0.
-             if (PPA_E<0.) bose_PPA_E=-spin_occ
              if (Finite_Tel) then
-               if (abs(PPA_E)>epsilon(1.)) then
-                 if (abs(PPA_E)<=bose_E_cut*Bose_Temp) bose_PPA_E=spin_occ*Bose_Temp/PPA_E
-                 if (abs(PPA_E)> bose_E_cut*Bose_Temp) bose_PPA_E=spin_occ/(exp(PPA_E/Bose_Temp)-1.)
-               else
+               if (abs(PPA_E)<=epsilon(1.)) then
                  bose_PPA_E=spin_occ*Bose_Temp/epsilon(1.)
+               else if (abs(PPA_E)<=bose_E_cut*Bose_Temp) then
+                 bose_PPA_E=spin_occ*Bose_Temp/PPA_E
+               else
+                 bose_PPA_E=real(real(spin_occ,DP)/(exp(real(PPA_E/Bose_Temp,DP))-1._DP),SP)
+               endif
+             else
+               if (PPA_E<0._SP) then
+                 bose_PPA_E=-spin_occ
+               else
+                 bose_PPA_E=0._SP
                endif
              endif
              !
-             ctmp = -4._SP/spin_occ*pi*isc_rhotw_p(ig1)*conjg_iscp_rhotw(ig2)*(-PPA_R)*&
-&                   ( (spin_occ-f_kmq+bose_PPA_E)/(W_i-E_kmq-PPA_E)+&
-&                     (f_kmq+bose_PPA_E)/(conjg(W_i)-E_kmq+PPA_E))
+             ctmp = 4._DP*pi_DP/real(spin_occ,DP)*cmplx(PPA_R,kind=DP)*        &
+             &   cmplx(isc_rhotw_p(ig1)*conjg_iscp_rhotw(ig2),kind=DP)*        &
+             & ( cmplx((spin_occ-f_kmq+bose_PPA_E)/(W_i-E_kmq-PPA_E),kind=DP)+ &
+             &   cmplx((f_kmq+bose_PPA_E)/(conjg(W_i)-E_kmq+PPA_E)  ,kind=DP)  )
              !
 #ifdef _GPU
              dp_dummy_r=dp_dummy_r+real(ctmp,DP)

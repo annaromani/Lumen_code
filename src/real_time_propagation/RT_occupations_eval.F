@@ -6,7 +6,21 @@
 ! Authors (see AUTHORS file for details): AM
 !
 subroutine RT_occupations_eval(dG)
- !
+ !! **RT_occupations_eval - Extract Occupations from Green's Function**
+ !!
+ !! Computes time-dependent band occupations at each RT timestep by extracting
+ !! the diagonal elements of the lesser Green's function.
+ !!
+ !! **Physical Formula**:
+ !!
+ !! \(f_n(k,t) = \text{Im}[G^<_{nn}(k,t,t)]\)
+ !!
+ !! where \(G^<_{nn}(k,t,t)\) is the diagonal component of the lesser Green's function.
+ !!
+ !! **Features**:
+ !!   - Handles both electron and hole occupations
+ !!   - Optional density matrix rotation to eigenbasis
+ !!   - Computes occupation statistics (average occupation, number of carriers)
  use pars,           ONLY:SP
  use parallel_m,     ONLY:PAR_IND_Xk_ibz,PAR_COM_Xk_ibz_INDEX,PAR_G_k_range
  use parallel_int,   ONLY:PP_redux_wait
@@ -18,6 +32,7 @@ subroutine RT_occupations_eval(dG)
  implicit none
  !
  complex(SP), intent(in) :: dG(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range(1):PAR_G_k_range(2),n_sp_pol)
+ !! Change in lesser Green's function: \(dG^<(t) = G^<(t) - G^<_{\text{ref}}\)
  !
  ! Work Space
  !

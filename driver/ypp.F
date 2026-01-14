@@ -6,6 +6,17 @@
 ! Authors (see AUTHORS file for details): AM
 !
 integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir,js)
+ !! **YPP - Post-Processing & Analysis Driver**
+ !!
+ !! Analyzes and post-processes results from yambo and yambo_rt calculations.
+ !! Provides spectrum generation, band structure analysis, and excited-state
+ !! spectroscopy including excitons, real-time dynamics, and quasi-particle databases.
+ !!
+ !! **Main Workflow**:
+ !!   1. Initialize YPP system and load ground state
+ !!   2. Load response function / real-time databases
+ !!   3. Execute analysis modules (RT, electrons, excitons, etc.)
+ !!   4. Export formatted results and spectra
  !
  use drivers,             ONLY:infile_editing
  use stderr,              ONLY:write_to_log,STRING_same
@@ -41,16 +52,36 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
  implicit none
  !
- type(levels)                 :: en,Xen,Ken
- type(bz_samp)                :: k,Xk,q
- integer,          intent(in) :: lnstr,iind,iod,ijs,np,pid,icd
- integer,       intent(inout) :: iinf
+ type(levels) :: en,Xen,Ken
+ type(bz_samp) :: k,Xk,q
+ integer, intent(in) :: lnstr
+ !! Length of input string
+ integer, intent(in) :: iind
+ !! Input directory path length
+ integer, intent(in) :: iod
+ !! Output directory path length
+ integer, intent(in) :: ijs
+ !! Job string length
+ integer, intent(in) :: np
+ !! Number of MPI processes
+ integer, intent(in) :: pid
+ !! MPI process rank (0 = master)
+ integer, intent(in) :: icd
+ !! Current directory path length
+ integer, intent(inout) :: iinf
+ !! I/O information (return status)
  character(lnstr), intent(in) :: instr
- character(iinf),  intent(in) :: inf
- character(iind),  intent(in) :: ind
- character(iod),   intent(in) :: od
- character(ijs),   intent(in) :: js
- character(icd),   intent(in) :: com_dir
+ !! Input string with directives
+ character(iinf), intent(in) :: inf
+ !! Input file path
+ character(iind), intent(in) :: ind
+ !! Input database directory
+ character(iod), intent(in) :: od
+ !! Output database directory
+ character(ijs), intent(in) :: js
+ !! Job string identifier
+ character(icd), intent(in) :: com_dir
+ !! Communication directory
  ! 
  ! ... I/O 
  logical           :: l_flag
@@ -277,6 +308,11 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
 contains
   !
+!> ypp_finalize
+!>
+!> @param STRING
+!> @param instr
+!>
   subroutine ypp_finalize(STRING,instr)
     character(*) :: STRING
     character(*) :: instr
