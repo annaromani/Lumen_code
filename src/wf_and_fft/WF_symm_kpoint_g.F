@@ -10,7 +10,7 @@
 #include<dev_defs.h>                                                    
 !
 !
-subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
+subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !
  use pars,          ONLY:SP,cZERO
  use electrons,     ONLY:n_spinor
@@ -27,8 +27,6 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  integer,       intent(in) :: b_to_load(2)
  integer,       intent(in) :: ik,i_sp_pol,isymm,ig0
  type (WAVEs), target, intent(inout) :: WF
- complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
- integer,              optional, intent(in) :: isref,igref
  !
  ! Work space
  !
@@ -50,33 +48,14 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  !
  isymm_m1=sop_inv(isymm)
  !  
- if (n_spinor==2) then
-   if(present(ssop)) then
-     ssop_loc=ssop
-   else
-     ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
-   endif
- endif
+ ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
  !
- if (present(igref).or.present(isref)) then
-   if (.not.present(isref)) call error("WF_symm_kpoint_g: igref provided, but not isref")
-   if (.not.present(igref)) call error("WF_symm_kpoint_g: isref provided, but not igref")
-   do ic=1,wf_nc_k(ik)
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igp=DEV_VAR(g_rot)(ig,isref)
-     igs=DEV_VAR(G_m_G)(igp,igref)
-     igr=DEV_VAR(g_rot)(igs,isymm)
-     wf_tab_loc(ic,1)=igs
-     wf_tab_loc(ic,2)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- else
-   do ic=1,wf_nc_k(ik)
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igr=DEV_VAR(g_rot)(ig,isymm)
-     wf_tab_loc(ic,1)=ig
-     wf_tab_loc(ic,2)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- endif
+ do ic=1,wf_nc_k(ik)
+   ig=DEV_VAR(wf_igk)(ic,ik)
+   igr=DEV_VAR(g_rot)(ig,isymm)
+   wf_tab_loc(ic,1)=ig
+   wf_tab_loc(ic,2)=DEV_VAR(G_m_G)(igr,ig0)
+ enddo
  !
  do ib=b_to_load(1),b_to_load(2)
    !
