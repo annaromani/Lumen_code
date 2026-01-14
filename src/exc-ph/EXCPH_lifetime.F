@@ -66,8 +66,6 @@ subroutine EXCPH_lifetime(k,q,X)
  !! **References**:
  !!   - Paleari, PhD thesis
  !
-subroutine EXCPH_lifetime(k,q,X)
- !
  use units,          ONLY:HA2EV,HA2CMm1
  use pars,           ONLY:SP,cZERO,rZERO,schlen,pi
  use electrons,      ONLY:levels
