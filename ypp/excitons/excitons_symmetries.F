@@ -43,15 +43,16 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max
  integer  :: ik,i_sp_pol,iqbz,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID
  !
- complex(SP) :: exc_trace(12,EXCITONS_n_user_states,EXCITONS_n_user_states)
- complex(SP) :: exc_reps(12,EXCITONS_n_user_states,EXCITONS_n_user_states,EXCITONS_n_user_states)
+ complex(SP), allocatable :: exc_trace(:,:,:)
+ complex(SP), allocatable :: exc_reps(:,:,:,:)
  !
- integer  :: exc_sbgr(EXCITONS_n_user_states,EXCITONS_n_user_states),n_sub_grps(EXCITONS_n_user_states),&
- &           ref_exc_grp(EXCITONS_n_user_states,EXCITONS_n_user_states),&
- &           ref_exc_sbgr(EXCITONS_n_user_states,EXCITONS_n_user_states)
+ integer, allocatable  :: exc_sbgr(:,:)
+ integer, allocatable  :: n_sub_grps(:)
+ integer, allocatable  :: ref_exc_grp(:,:)
+ integer, allocatable  :: ref_exc_sbgr(:,:)
  !
  character(schlen)    :: filebse,titles(4),loc_msg,loc_fmt
- character(schlen)    :: exc_character(EXCITONS_n_user_states,EXCITONS_n_user_states)
+ character(schlen), allocatable :: exc_character(:,:)
  !
  integer, external :: io_QINDX
  !
@@ -148,6 +149,14 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  &                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
  !
  ! Compute the reps
+ YAMBO_ALLOC(exc_reps,(12,n_of_exc_max,n_of_exc_max,n_deg_grp))
+ YAMBO_ALLOC(exc_trace,(12,n_of_exc_max,n_deg_grp))
+ allocate(exc_character(n_of_exc_max,n_deg_grp))
+ !
+ YAMBO_ALLOC(exc_sbgr,(EXCITONS_n_user_states,EXCITONS_n_user_states))
+ YAMBO_ALLOC(n_sub_grps,(EXCITONS_n_user_states))
+ YAMBO_ALLOC(ref_exc_grp,(EXCITONS_n_user_states,EXCITONS_n_user_states))
+ YAMBO_ALLOC(ref_exc_sbgr,(EXCITONS_n_user_states,EXCITONS_n_user_states))
  !
  call compute_exc_reps(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,&
  &          n_of_exc,first_exc,S_index,iqbz,l_min_mem,Xk,qpt,exc_reps)
@@ -158,15 +167,16 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  ! Now I refine the number of irreps using the reps.
  ! The first guess was obtained with the degeneration finder
  !
- call refine_groups(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
-                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,ref_exc_grp,&
-                        &   exc_reps)
+ call refine_groups(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,ref_exc_grp,exc_reps)
  !
  ! Finally I compute the exciton character
  !
- call get_character_exc(EXCITONS_n_user_states,n_deg_grp,n_of_exc,first_exc, &
+ call get_character_exc(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
                         &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
                         &   exc_trace,exc_reps,exc_character,.true.,iq)
+ !
+ YAMBO_FREE(exc_reps)
  !
  titles=(/" E[eV]  ","i_lambda"," n_deg  ","exc-symm"/)
  call msg("o "//trim(filebse),"#")
@@ -186,6 +196,14 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
      !
    enddo
  enddo
+ !
+ YAMBO_FREE(exc_trace)
+ deallocate(exc_character)
+ !
+ YAMBO_FREE(exc_sbgr)
+ YAMBO_FREE(n_sub_grps)
+ YAMBO_FREE(ref_exc_grp)
+ YAMBO_FREE(ref_exc_sbgr)
  !
  call of_open_close(filebse)
  !
@@ -211,7 +229,7 @@ subroutine compute_exc_reps(nstates,n_deg_grp,n_of_exc_max,n_of_exc,&
  integer,       intent(in)  :: S_index(nstates)
  integer,       intent(in)  :: iqbz
  logical,       intent(in)  :: l_min_mem
- complex(SP),   intent(out) :: loc_reps(12,nstates,nstates,nstates)
+ complex(SP),   intent(out) :: loc_reps(12,n_of_exc_max,n_of_exc_max,n_deg_grp)
  !
  type(bz_samp), intent(inout) :: qpt,Xk
  !
@@ -281,7 +299,7 @@ subroutine compute_exc_reps(nstates,n_deg_grp,n_of_exc_max,n_of_exc,&
 end subroutine compute_exc_reps
 !
 !
-subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
+subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
                         &   n_sub_grps,ref_exc_sbgr,exc_sbgr,ref_exc_grp,&
                         &   loc_reps   )
  !
@@ -293,11 +311,11 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
  !
  implicit none
  !
- integer,      intent(in)  :: nstates,n_deg_grp
+ integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max
  integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
  integer,      intent(out) :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
  integer,      intent(out) :: exc_sbgr(nstates,nstates),ref_exc_grp(nstates,nstates)
- complex(SP),  intent(in)  :: loc_reps(12,nstates,nstates,nstates)
+ complex(SP),  intent(in)  :: loc_reps(12,n_of_exc_max,n_of_exc_max,n_deg_grp)
  !
  ! Workspace
  !
@@ -346,7 +364,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc,first_exc, &
 end subroutine refine_groups
 !
 !
-subroutine get_character_exc(nstates,n_deg_grp,n_of_exc,first_exc, &
+subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
                         &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
                         &   loc_trace,loc_reps,loc_character,l_prt_debug,iq)
  !
@@ -360,13 +378,13 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc,first_exc, &
  !
  implicit none
  !
- integer,      intent(in)  :: nstates,n_deg_grp
+ integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max
  integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
  integer,      intent(in)  :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
  integer,      intent(in)  :: exc_sbgr(nstates,nstates)
- complex(SP),  intent(out) :: loc_trace(12,nstates,nstates)
- complex(SP),  intent(in)  :: loc_reps(12,nstates,nstates,nstates)
- character(*), intent(out) :: loc_character(nstates,nstates)
+ complex(SP),  intent(out) :: loc_trace(12,n_of_exc_max,n_deg_grp)
+ complex(SP),  intent(in)  :: loc_reps(12,n_of_exc_max,n_of_exc_max,n_deg_grp)
+ character(*), intent(out) :: loc_character(n_of_exc_max,n_deg_grp)
  logical,      intent(in)  :: l_prt_debug
  integer,      intent(in)  :: iq
  !
