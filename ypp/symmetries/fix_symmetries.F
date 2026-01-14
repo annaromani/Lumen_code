@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contains_TR)
+subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,old_S_contains_TR)
  !
  use pars,                ONLY:LP,SP
  use com,                 ONLY:msg
@@ -20,7 +20,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contain
  use electrons,           ONLY:n_spinor,Spin_magn
  use R_lattice,           ONLY:rl_sop
  use vec_operate,         ONLY:v_norm
- use D_lattice,           ONLY:nsym,dl_sop,i_time_rev,alat,mag_syms,spin_sop,&
+ use D_lattice,           ONLY:nsym,dl_sop,i_time_rev,alat,mag_syms,spin_sop,S_contains_TR,&
 &                              i_space_inv,sop_inv,inv_index,symmetry_group_table
  use y_memory_alloc
  !
@@ -30,7 +30,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contain
  real(SP),intent(out)     :: old_dl_sop(3,3,nsym*n_spinor)
  complex(SP),intent(out)  :: old_spin_sop(n_spinor,n_spinor,nsym*n_spinor)
  integer, intent(out)     :: old_sop_inv(nsym*n_spinor)
- integer(LP), intent(out) :: S_contains_TR(nsym*n_spinor)
+ integer(LP), intent(out) :: old_S_contains_TR(nsym*n_spinor)
  !
  ! Work space
  !
@@ -99,11 +99,11 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contain
  !
  ! Time-reversal related Symmetries
  !
- S_contains_TR=0
+ old_S_contains_TR=0
  do is=1,nsym
-  if(is>nsym/(1+i_time_rev)) S_contains_TR(is)=1
+  if(is>nsym/(1+i_time_rev)) old_S_contains_TR(is)=1
  enddo
- if (n_spinor==2) S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
+ if (n_spinor==2) old_S_contains_TR(nsym+1:)=old_S_contains_TR(:nsym)
  !
  spatial_nsym=nsym/(1+i_time_rev)
  !
@@ -266,6 +266,14 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,S_contain
  ! Check group table
  !
  call build_spin_sop()
+ !
+ YAMBO_FREE(S_contains_TR)
+ YAMBO_ALLOC(S_contains_TR,(nsym*n_spinor))
+ S_contains_TR=0
+ do is=1,nsym
+  if(is>nsym/(1+i_time_rev)) S_contains_TR(is)=1
+ enddo
+ if (n_spinor==2) S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
  !
  call symmetry_group_table('s')
  !
