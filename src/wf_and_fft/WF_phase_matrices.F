@@ -55,7 +55,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  integer           :: ikbz,iRkbz,isk,isloop,isk_c,isk_y,iGk_y,iGk_c,iGk,iGloop,istark,&
  &                    iby,ibc,iby_phase,ibc_phase,i_sp_pol,ik,&
  &                    ifrag,s_count,i_wf_y,i_wf_c,iGp,ng_tmp,nb,NG_max
- complex(SP)       :: det,charac(blim(2)-blim(1)+1,nsym+n_spinor)
+ complex(SP)       :: det,charac(blim(2)-blim(1)+1,nsym*n_spinor)
  complex(SP)       :: spin_sop_composed(2,2),s1(2,2),s2(2,2)
 #if defined _CUDA
  complex(SP) DEV_ATTR     :: spin_sop_composed_d(2,2)
