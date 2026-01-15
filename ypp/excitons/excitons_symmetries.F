@@ -153,10 +153,10 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  YAMBO_ALLOC(exc_trace,(12,n_of_exc_max,n_deg_grp))
  allocate(exc_character(n_of_exc_max,n_deg_grp))
  !
- YAMBO_ALLOC(exc_sbgr,(EXCITONS_n_user_states,EXCITONS_n_user_states))
- YAMBO_ALLOC(n_sub_grps,(EXCITONS_n_user_states))
- YAMBO_ALLOC(ref_exc_grp,(EXCITONS_n_user_states,EXCITONS_n_user_states))
- YAMBO_ALLOC(ref_exc_sbgr,(EXCITONS_n_user_states,EXCITONS_n_user_states))
+ YAMBO_ALLOC(exc_sbgr,(n_of_exc_max,n_deg_grp))
+ YAMBO_ALLOC(n_sub_grps,(n_deg_grp))
+ YAMBO_ALLOC(ref_exc_grp,(n_of_exc_max,n_deg_grp))
+ YAMBO_ALLOC(ref_exc_sbgr,(n_of_exc_max,n_deg_grp))
  !
  call compute_exc_reps(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,&
  &          n_of_exc,first_exc,S_index,iqbz,l_min_mem,Xk,qpt,exc_reps)
@@ -313,8 +313,8 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
  !
  integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max
  integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
- integer,      intent(out) :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
- integer,      intent(out) :: exc_sbgr(nstates,nstates),ref_exc_grp(nstates,nstates)
+ integer,      intent(out) :: n_sub_grps(n_deg_grp),ref_exc_sbgr(n_of_exc_max,n_deg_grp)
+ integer,      intent(out) :: exc_sbgr(n_of_exc_max,n_deg_grp),ref_exc_grp(n_of_exc_max,n_deg_grp)
  complex(SP),  intent(in)  :: loc_reps(12,n_of_exc_max,n_of_exc_max,n_deg_grp)
  !
  ! Workspace
@@ -380,8 +380,8 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
  !
  integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max
  integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
- integer,      intent(in)  :: n_sub_grps(nstates),ref_exc_sbgr(nstates,nstates)
- integer,      intent(in)  :: exc_sbgr(nstates,nstates)
+ integer,      intent(in)  :: n_sub_grps(n_deg_grp),ref_exc_sbgr(n_of_exc_max,n_deg_grp)
+ integer,      intent(in)  :: exc_sbgr(n_of_exc_max,n_deg_grp)
  complex(SP),  intent(out) :: loc_trace(12,n_of_exc_max,n_deg_grp)
  complex(SP),  intent(in)  :: loc_reps(12,n_of_exc_max,n_of_exc_max,n_deg_grp)
  character(*), intent(out) :: loc_character(n_of_exc_max,n_deg_grp)
