@@ -32,7 +32,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !
  complex(SP)              DEV_ATTR :: WF_k_tmp(wf_ng,n_spinor)
  complex(SP), pointer     DEV_ATTR :: WF_p(:,:)
- complex(SP)              DEV_ATTR :: ssop_loc(2,2)
+ complex(SP)              DEV_ATTR :: ssop_loc(n_spinor,n_spinor)
  integer                  DEV_ATTR :: wf_tab_loc(wf_ng,2)
  !
  real(SP)    :: krot(3),G_cc(3)
@@ -48,7 +48,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !
  isymm_m1=sop_inv(isymm)
  !  
- ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
+ if (n_spinor==2) ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
  !
  do ic=1,wf_nc_k(ik)
    ig=DEV_VAR(wf_igk)(ic,ik)
