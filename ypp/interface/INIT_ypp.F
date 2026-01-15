@@ -615,9 +615,12 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #endif
  if (l_flag) then
    call initactivate(1,"OutputAlat cooIn cooOut NormN NelFac")
-   if (l_flag) call initactivate(1,"NelCond BANDS_bands")
+   if (l_bands) call initactivate(1,"NelCond BANDS_bands")
    call initactivate(1,"CIRCUIT_E_DB_path BANDS_path BANDS_steps BANDS_built_in")
+ endif
+ if (l_flag) then
    call initactivate(1,"INTERP_mode OutputAlat cooIn cooOut NormN NelFac")
+   if (l_bands) call initactivate(1,"BANDS_bands")
    call initactivate(1,"INTERP_Shell_Fac INTERP_NofNN")
  endif
  !
