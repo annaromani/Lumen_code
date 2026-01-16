@@ -436,7 +436,8 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
  l_char_table_imag=maxval(abs(real(cI*char_mat,SP)))>0.01_SP
  !
  max_deg=nint(maxval(real(abs(char_mat(:,1)),SP)))
- if (l_char_table_imag) max_deg=max_deg*2
+ ! DS TEST: removing this for excitons
+ !if (l_char_table_imag) max_deg=max_deg*2
  !
  debug_file_to_open=.true.
  l_char_not_found=.false.
@@ -507,7 +508,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
    !
    loc_character(i_sub_grp,i_grp)=trim(tmp_ch)
    !
-   if (l_char_not_found.and.l_prt_debug) then
+   if ((l_char_not_found.or.l_mixed_states).and.l_prt_debug) then
      !
      if (debug_file_to_open) then
        filedebug="exc_qpt"//trim(intc(iq))//"_E+syms_sorted_dbg"
