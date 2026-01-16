@@ -12,21 +12,15 @@
 subroutine K_WF_phases(Xk)
  !
  ! This routine evaluates the WF phases needed to evaluate the correlation
- ! collisions
+ ! collisions in the standard algorithm:
+ !   PHASE_{m,k_i^ibz}(S_l,S') = <m S_l k_i^ibz | m S' k_i^ibz >      (1)
  !
- !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>  =
- !                                <n k1_ibz |exp iG.r|m k2_ibz s1^{-1} x s2 > 
+ ! under the condition:
+ !   S_l * k_i^ibz = S' * k_i^ibz = k_i^bz,                           (2)
  !
- ! now, in general, s1^{-1} x s2 is not a symmetry in the star of k2_ibz, so we
- ! define and use the table Xk%s_table:
+ ! i.e. the two symmetries S_l and S' lead to the same k-point in the BZ.
  !
- ! is_in_the_star_of_k2=Xk%s_table(k2,s1^{-1} x s2 )
- !
- ! to get
- !
- !  <n k1_bz |exp iG.r|m k2_bz> =  <n k1_ibz |exp iG.r|m k2_ibz  is_in_the_star_of_k2>*PHASE
- !
- ! where |k2 ib s1^{-1} x s2 > = PHASE * |k2 ib is_in_the_star_of_k2>
+ ! However, S_l is the default one used by lumen to define the WFs(:,k_i^bz)
  !
  use pars,          ONLY:SP,cZERO
  use FFT_m,         ONLY:fft_size

@@ -10,21 +10,17 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-!************************* WARNING **************************
-!* In this subroutine there is a bug for finite q (iq/=1)   *
-!* plus spin-orbit that we were not able to solve yet.      * 
-!* An alternative subroutine that applies symmetries in a   *
-!* different way is proposed K_correlation_kernel_dir.F     *
-!* This second subroutine is automatically called when      *
-!* iq/=1 and spin_orbit is present.                         *
-!************************************************************
-!
-!
 function K_correlation_kernel_std(i_block,i_p,i_pmq,                               &
 &                                 i_k_s,i_kp_s,i_n_k,i_n_p,i_kmq_s,i_kp_mq_s,i_m_k,i_m_p,  &
 &                                 i_kmq_t,i_pmq_t,i_k_sp_pol_n,i_p_sp_pol_n,i_k_sp_pol_m,i_p_sp_pol_m, &
 &                                 iq_W,iq_W_s,ig_W,i_k_s_m1,iq_W_s_mq,ig_W_mq,i_kmq_s_m1,&
 &                                 BS_n_g_W,O1,O2,O_times_W)
+ !
+ ! Standard implementation. This is the default algorithm.
+ !
+ ! Alternative implementation to K_correlation_kernel_dir
+ ! Numerically more efficient,
+ ! although more complex than the direct implementation
  !
  use pars,         ONLY:SP,cZERO,cONE,pi
  use BS,           ONLY:BS_blk,BS_W,BS_W_is_diagonal,WF_phase

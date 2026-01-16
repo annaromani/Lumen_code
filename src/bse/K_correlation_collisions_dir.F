@@ -12,6 +12,8 @@
 ! 
 subroutine K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
+ ! Direct implementation. Can be activated in input with the flag ImposeDirAlg
+ !
  ! This routine evaluates the correlation collisions:
  !
  !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>

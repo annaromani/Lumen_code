@@ -12,21 +12,44 @@
 !
 subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
+ ! Standard implementation. This is the default algorithm.
+ !
  ! This routine evaluates the correlation collisions:
+ !   <n k1_bz | exp iG.r | m k2_bz> 
+ !     = <n S1_l x k1_ibz | exp iG.r |m S2_l x k2_ibz >
+ !     = <n k1_ibz | exp iG.r | m S' x k2_ibz >
+ !     = <n k1_ibz | exp iG.r | m k3_bz >                             (1)
  !
- !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>  =
- !                                <n k1_ibz |exp iG.r|m k2_ibz s1^{-1} x s2 > 
+ ! with:
+ !   S' =  S1_l^{-1} x S2_l
  !
- ! now, in general, s1^{-1} x s2 is not a symmetry in the star of k2_ibz, so we
- ! define and use the table Xk%s_table:
+ ! In general, S' is not a symmetry in the star of k2_ibz, 
+ ! i.e. is not the simmetry used by lumen to reach k3_bz from k2_ibz.
+ ! Accordingly we define and use the table Xk%s_table:
+ !   S3_l = Xk%s_table(k2_ibz, S' )
  !
- ! is_in_the_star_of_k2=Xk%s_table(k2,s1^{-1} x s2 )
+ ! to get:
+ !   <n k1_bz | exp iG.r | m k2_bz> =
+ !     <n k1_ibz | exp iG.r| m S3_l x k2_ibz >
+ !        * PHASE_{m}(k2_ibz,S3_l,S')                                 (2)
  !
- ! to get
+ ! where:
+ !   PHASE_{m}(k2_ibz,S1,S2) = <m S1 x k2_ibz | m S2 x k2_ibz >       (3)
+ ! with the condition:
+ !   S1 x k2_ibz = S2 x k2_ibz
  !
- !  <n k1_bz |exp iG.r|m k2_bz> =  <n k1_ibz |exp iG.r|m k2_ibz  is_in_the_star_of_k2>*PHASE
+ ! Equation (2) is not correct in degenerate sub-spaces.
+ ! This is why the code have to check if relation (3) holds.
+ ! The check is done in subroutine K_WF_phased.F
+ ! The more general form is:
+ !   <n k1_bz | exp iG.r | m k2_bz> =  sum_{m' in deg(m)}
+ !       <n k1_ibz | exp iG.r |m' S3_l k2_ibz >
+ !          * PHASE_{m',m}(k2_ibz,S3_l,S')                            (2b)
  !
- ! where |k2 ib s1^{-1} x s2 > = PHASE * |k2 ib is_in_the_star_of_k2>
+ ! with:
+ !   PHASE_{n,m}(k2_ibz,S1,S2) = <n S1 x k2_ibz | m S2 x k2_ibz >     (3b)
+ !
+ ! See also WF_phase_matrices.
  !
  use pars,          ONLY:SP
  use electrons,     ONLY:n_spinor

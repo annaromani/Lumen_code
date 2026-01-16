@@ -67,12 +67,6 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  !
  if (nsym==1) return
  !
- ! 2025/09/23
- ! At present option 2 is buggy with n_spinor=2.
- ! It produces exc-ph couplings which are not
- ! fully symmetric. If fixed, this would be more elegant than option 1
- ! An even better fix would be to correctly detect the double point group in the code
- !
  nsz=0
  call io_control(ACTION=OP_RD_CL,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID)
  io_err=io_WF_phases(blim,0,0,0,ID,nsz)
