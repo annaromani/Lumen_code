@@ -21,7 +21,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  use electrons,     ONLY:levels,spin_occ,spin,n_spin,n_spinor,n_sp_pol
  use FFT_m,         ONLY:fft_size
  use interfaces,    ONLY:WF_load,WF_free,eval_G_minus_G,TDDFT_ALDA_eh_space_R_kernel
- use D_lattice,     ONLY:nsym,DL_vol,i_time_rev,i_space_inv,sop_inv,sop_tab
+ use D_lattice,     ONLY:nsym,DL_vol,S_contains_TR,i_space_inv,sop_inv,sop_tab
  use R_lattice,     ONLY:qindx_X,bz_samp,&
 &                        qindx_B,qindx_B_max,RIM_W,RIM_W_d,&
 &                        RIM_ng,RIM_W_is_diagonal,RIM_W_ng
@@ -219,16 +219,10 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  !
  if (l_bs_corr) then
    O_ng_shift=qindx_B_max
-   if (iq/=1 .and. n_spinor==2 .and. nsym>1) then
-     ! Default is direct algorithm, unless imposed from input
-     call parser('ImposeStdAlg',l_std_alg)
-     l_dir_alg=.not.l_std_alg
-   else
-     ! Default is standard algorithm, unless imposed from input
-     call parser('ImposeDirAlg',l_dir_alg)
-     l_std_alg=.not.l_dir_alg
-   endif
-   call parser('SkipPhases',l_skip_phases)
+   ! Default is standard algorithm, unless imposed from input
+   call parser('ImposeDirAlg',l_dir_alg)
+   l_std_alg=.not.l_dir_alg
+   if (l_std_alg) call parser('SkipPhases',l_skip_phases)
    call msg('r','[BSE] Correlation components ',(/BS_n_g_W,O_ng/))
  endif
  !
@@ -805,7 +799,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
          !
          !if ( G_m_G(ig_W,ig_W_mq) /= G_m_G(ig_kmq,ig_pmq) )             call error("Wrong gvector shifts")
          !
-         if ( (.not.BS_W_is_diagonal) .and. iq_W_s>nsym/(i_time_rev+1) .and. i_space_inv == 0 ) iq_W=q%nibz+iq_W
+         if ( (.not.BS_W_is_diagonal) .and. S_contains_TR(iq_W_s) .and. i_space_inv == 0 ) iq_W=q%nibz+iq_W
          !
        endif
        !

@@ -43,6 +43,7 @@ module D_lattice
                         ! on the value of i_time_rev and i_space_inv
  integer :: idt_index   ! Indentity I  index
  logical :: mag_syms
+ logical, allocatable :: S_contains_TR(:)
  real(SP),allocatable    :: dl_sop(:,:,:)   ! Symmetry operation in real-space
  complex(SP),allocatable :: spin_sop(:,:,:)
  integer, allocatable    :: sop_tab(:,:)
@@ -53,6 +54,7 @@ module D_lattice
  ! Full symmetries after removing them with ypp -y
  integer  :: old_nsym
  real(SP), allocatable :: old_dl_sop(:,:,:)
+ complex(SP), allocatable :: old_spin_sop(:,:,:)
  integer,  allocatable :: kpoints_map(:,:)
  integer(LP),  allocatable :: old_S_contains_TR(:)
  !                       
@@ -105,6 +107,8 @@ module D_lattice
      !
      use pars,           ONLY:SP,IP
      use com,            ONLY:msg
+     use electrons,      ONLY:n_spinor
+     !
      implicit none
      !
      character(*) :: msg_where
@@ -113,28 +117,49 @@ module D_lattice
      !
      integer  :: i1,i2,i3
      real(SP) :: m(3,3)
+     complex(SP) :: s(2,2)
      !
      YAMBO_FREE_GPU(DEV_VAR(sop_inv))
      YAMBO_FREE(sop_inv)
      YAMBO_FREE(sop_tab)
      !
-     YAMBO_ALLOC(sop_tab,(nsym,nsym))
-     YAMBO_ALLOC(sop_inv,(nsym))
+     YAMBO_ALLOC(sop_tab,(nsym*n_spinor,nsym*n_spinor))
+     YAMBO_ALLOC(sop_inv,(nsym*n_spinor))
      sop_tab=0
      sop_inv=0
-     do i1=1,nsym
-       do i2=1,nsym
-         m=matmul(dl_sop(:,:,i1),dl_sop(:,:,i2))
-         do i3=1,nsym
-           if (all(abs(m-dl_sop(:,:,i3))<=1.E-5)) then
-             if (sop_tab(i1,i2)/=0) call error('[SYMs] Two sym pairs lead to the same symmetry') 
-             sop_tab(i1,i2)=i3
-             if (sop_tab(i1,i2)==1) sop_inv(i1)=i2                
-           endif
+     if (n_spinor==1) then
+       do i1=1,nsym
+         do i2=1,nsym
+           m=matmul(dl_sop(:,:,i1),dl_sop(:,:,i2))
+           do i3=1,nsym
+             if (all(abs(m-dl_sop(:,:,i3))<=1.E-5)) then
+               if (sop_tab(i1,i2)/=0) call error('[SYMs] Two sym pairs lead to the same symmetry') 
+               sop_tab(i1,i2)=i3
+               if (sop_tab(i1,i2)==1) sop_inv(i1)=i2
+	       exit
+             endif
+           enddo
+           if (sop_tab(i1,i2)==0) call error('[SYMs] Sop tab is not complete')
          enddo
-         if (sop_tab(i1,i2)==0) call error('[SYMs] Sop tab is not complete')
        enddo
-     enddo
+     else
+       do i1=1,nsym*n_spinor
+         do i2=1,nsym*n_spinor
+           m=matmul(dl_sop(:,:,i1),dl_sop(:,:,i2))
+	   if (.not.S_contains_TR(i2)) s=matmul(      spin_sop(:,:,i1) ,spin_sop(:,:,i2))
+	   if (     S_contains_TR(i2)) s=matmul(conjg(spin_sop(:,:,i1)),spin_sop(:,:,i2))
+           do i3=1,nsym*n_spinor
+             if (all(abs(m-dl_sop(:,:,i3))<=1.E-5).and.all(abs(s-spin_sop(:,:,i3))<=1.E-5)) then
+               if (sop_tab(i1,i2)/=0) call error('[SYMs] Two sym pairs lead to the same symmetry') 
+               sop_tab(i1,i2)=i3
+               if (sop_tab(i1,i2)==1) sop_inv(i1)=i2
+	       exit
+             endif
+           enddo
+           if (sop_tab(i1,i2)==0) call error('[SYMs] Sop tab is not complete')
+         enddo
+       enddo
+     endif
      if (any(sop_inv==0)) call error('[SYMs] Sop inv missing for some symmetries')
      call msg(msg_where,'Group table correct   ',.true.)
      !

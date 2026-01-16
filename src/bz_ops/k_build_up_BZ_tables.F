@@ -20,6 +20,7 @@ subroutine k_build_up_BZ_tables(k)
  !
  use pars,           ONLY:SP
  use vec_operate,    ONLY:c2a,rlu_v_is_zero
+ use electrons,      ONLY:n_spinor
  use D_lattice,      ONLY:nsym
  use R_lattice,      ONLY:rl_sop,bz_samp
  use zeros,          ONLY:k_rlu_zero
@@ -41,25 +42,25 @@ subroutine k_build_up_BZ_tables(k)
  k_table_is_ok=.FALSE.
  g_table_is_ok=.FALSE.
  if (allocated(k%s_table)) then
-   if (size(k%s_table)==k%nibz*nsym) s_table_is_ok=.TRUE.
+   if (size(k%s_table)==k%nibz*nsym*n_spinor) s_table_is_ok=.TRUE.
  endif
  if (allocated(k%k_table)) then
-   if (size(k%k_table)==k%nibz*nsym) k_table_is_ok=.TRUE.
+   if (size(k%k_table)==k%nibz*nsym*n_spinor) k_table_is_ok=.TRUE.
  endif
  if (allocated(k%g_table)) then
-   if (size(k%g_table)==k%nibz*nsym) g_table_is_ok=.TRUE.
+   if (size(k%g_table)==k%nibz*nsym*n_spinor) g_table_is_ok=.TRUE.
  endif
  if (.not.k_table_is_ok) then
    YAMBO_FREE(k%k_table)
-   YAMBO_ALLOC(k%k_table,(k%nibz,nsym))
+   YAMBO_ALLOC(k%k_table,(k%nibz,nsym*n_spinor))
  endif
  if (.not.s_table_is_ok) then
    YAMBO_FREE(k%s_table)
-   YAMBO_ALLOC(k%s_table,(k%nibz,nsym))
+   YAMBO_ALLOC(k%s_table,(k%nibz,nsym*n_spinor))
  endif
  if (.not.g_table_is_ok) then
    YAMBO_FREE(k%g_table)
-   YAMBO_ALLOC(k%g_table,(k%nibz,nsym))
+   YAMBO_ALLOC(k%g_table,(k%nibz,nsym*n_spinor))
    k%g_table=1
  endif
  !
@@ -79,6 +80,12 @@ subroutine k_build_up_BZ_tables(k)
      enddo
    enddo
  enddo
+ !
+ if (n_spinor==2) then
+   k%k_table(:,nsym+1:)=k%k_table(:,:nsym)
+   k%s_table(:,nsym+1:)=k%s_table(:,:nsym)
+   k%g_table(:,nsym+1:)=k%g_table(:,:nsym)
+ endif
  !
  ! CLEAN
  !

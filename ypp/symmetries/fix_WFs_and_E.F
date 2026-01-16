@@ -11,7 +11,7 @@
 #include<y_memory.h>
 !
 !
-subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
+subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,spin_sop,S_contains_TR)
  !
  use pars,                ONLY:LP,SP,lchlen,cZERO
  use com,                 ONLY:msg,core_io_path,more_io_path
@@ -23,7 +23,6 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  use electrons,           ONLY:levels,E_reset,n_sp_pol,n_spinor
  use LIVE_t,              ONLY:live_timing
  use R_lattice,           ONLY:bz_samp,g_rot,ng_closed,nkibz
- use D_lattice,           ONLY:spin_sop
  use interfaces,          ONLY:WF_load,WF_free
  use YPP_symm,            ONLY:wf_nc_k_save,wf_igk_save,wf_nc_k_reduced,wf_igk_reduced,&
 &                              wf_nc_k_new,wf_igk_new,&
@@ -39,7 +38,8 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,S_contains_TR)
  integer,intent(in)          :: kpoints_map(2,k%nibz)
  !
  integer,intent(in)       :: old_nsym
- integer(LP),intent(in)       :: S_contains_TR(old_nsym)
+ complex(SP),intent(in)       :: spin_sop(n_spinor,n_spinor,old_nsym*n_spinor)
+ integer(LP),intent(in)       :: S_contains_TR(old_nsym*n_spinor)
  !
  ! Work space
  !

@@ -20,7 +20,7 @@ subroutine fix_ATOMPROJs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,
  use LIVE_t,              ONLY:live_timing
  use stderr,              ONLY:intc
  use R_lattice,           ONLY:bz_samp
- use electrons,           ONLY:levels
+ use electrons,           ONLY:levels,n_spinor
  use atom_proj
  use y_memory_alloc
  !
@@ -33,9 +33,9 @@ subroutine fix_ATOMPROJs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,
  integer,intent(in)       :: kpoints_map(2,k%nibz)
  !
  integer,intent(in)       :: old_nsym
- real(SP),intent(in)      :: old_dl_sop(3,3,old_nsym)
- integer,intent(in)       :: old_sop_inv(old_nsym)
- integer(LP),intent(in)   :: S_contains_TR(old_nsym)
+ real(SP),intent(in)      :: old_dl_sop(3,3,old_nsym*n_spinor)
+ integer,intent(in)       :: old_sop_inv(old_nsym*n_spinor)
+ integer(LP),intent(in)   :: S_contains_TR(old_nsym*n_spinor)
  !
  ! Work space
  !

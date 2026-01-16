@@ -10,25 +10,21 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
-!************************* WARNING **************************
-!* In this subroutine there is a bug for finite q (iq/=1)   *
-!* plus spin-orbit that we were not able to solve yet.      * 
-!* An alternative subroutine that applies symmetries in a   *
-!* different way is proposed K_correlation_kernel_dir.F     *
-!* This second subroutine is automatically called when      *
-!* iq/=1 and spin_orbit is present.                         *
-!************************************************************
-!
-!
 function K_correlation_kernel_std(i_block,i_p,i_pmq,                               &
 &                                 i_k_s,i_kp_s,i_n_k,i_n_p,i_kmq_s,i_kp_mq_s,i_m_k,i_m_p,  &
 &                                 i_kmq_t,i_pmq_t,i_k_sp_pol_n,i_p_sp_pol_n,i_k_sp_pol_m,i_p_sp_pol_m, &
 &                                 iq_W,iq_W_s,ig_W,i_k_s_m1,iq_W_s_mq,ig_W_mq,i_kmq_s_m1,&
 &                                 BS_n_g_W,O1,O2,O_times_W)
  !
+ ! Standard implementation. This is the default algorithm.
+ !
+ ! Alternative implementation to K_correlation_kernel_dir
+ ! Numerically more efficient,
+ ! although more complex than the direct implementation
+ !
  use pars,         ONLY:SP,cZERO,cONE,pi
  use BS,           ONLY:BS_blk,BS_W,BS_W_is_diagonal,WF_phase
- use D_lattice,    ONLY:nsym,i_time_rev
+ use D_lattice,    ONLY:nsym,S_contains_TR
  use R_lattice,    ONLY:DEV_VAR(G_m_G),DEV_VAR(g_rot)
  use wrapper,      ONLY:V_by_V_pwise_gpu,Vstar_dot_V_gpu
  use devxlib,      ONLY:devxlib_conjg_d,devxlib_xgemv_gpu
@@ -85,8 +81,8 @@ function K_correlation_kernel_std(i_block,i_p,i_pmq,                            
  !DEV_ACC_DEBUG end data
  !
  !
- if (i_k_s  >nsym/(i_time_rev+1)) call devxlib_conjg_d(O1,range1=(/1,BS_n_g_W/))
- if (i_kmq_s>nsym/(i_time_rev+1)) call devxlib_conjg_d(O2,range1=(/1,BS_n_g_W/))
+ if (S_contains_TR(i_k_s)  ) call devxlib_conjg_d(O1,range1=(/1,BS_n_g_W/))
+ if (S_contains_TR(i_kmq_s)) call devxlib_conjg_d(O2,range1=(/1,BS_n_g_W/))
  !
  if (     BS_W_is_diagonal) call V_by_V_pwise_gpu(BS_n_g_W,O_times_W,O1,BS_W(:,1,iq_W))
  if (.not.BS_W_is_diagonal) call devxlib_xgemv_gpu('T',BS_n_g_W,BS_n_g_W,cONE, &
