@@ -59,7 +59,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  use wave_func,     ONLY:WF
  use R_lattice,     ONLY:qindx_S,bz_samp,DEV_VAR(G_m_G),G_m_G_maxval,nqibz,RIM_W_E,&
 &                        RIM_W_is_diagonal,RIM_W_ng,DEV_VAR(RIM_W)
- use D_lattice,     ONLY:nsym,i_time_rev,i_space_inv,mag_syms
+ use D_lattice,     ONLY:nsym,S_contains_TR,i_space_inv,mag_syms
  use wrapper,       ONLY:V_dot_V_gpu,devxlib_xGEMV_gpu
  use interfaces,    ONLY:QP_state_print,WF_load,WF_free,MATRIX_transpose
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
@@ -423,7 +423,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
    ! While the -1 is introduced in the collisions the reflection of the
    ! matrix must be done here.
    !
-   if (iqs>nsym/(i_time_rev+1) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
+   if ( S_contains_TR(iqs) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
      !
      call MATRIX_transpose("T",M_out=X_par(iq_mem))
      X_is_TR_rotated=.true.

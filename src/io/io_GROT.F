@@ -16,6 +16,7 @@ integer function io_GROT(io_db)
  use D_lattice,      ONLY:nsym,inv_index
  use R_lattice,      ONLY:n_g_shells,ng_closed,ng_in_shell,E_of_shell,g_rot,minus_G
  use R_lattice,      ONLY:DEV_VAR(g_rot),DEV_VAR(minus_G)
+ use electrons,      ONLY:n_spinor
  use IO_m,           ONLY:io_status,io_sec,read_is_on
  use IO_int,         ONLY:io_connect,io_disconnect,io_elemental,&
 &                         io_bulk,io_header,ver_is_gt_or_eq
@@ -53,7 +54,7 @@ integer function io_GROT(io_db)
  !
  if (read_is_on(io_db)) then
    YAMBO_ALLOC(ng_in_shell,(n_g_shells))
-   YAMBO_ALLOC(g_rot,(ng_closed,nsym_db))
+   YAMBO_ALLOC(g_rot,(ng_closed,nsym_db*n_spinor))
    YAMBO_ALLOC(E_of_shell,(n_g_shells))
    YAMBO_ALLOC(minus_G,(ng_closed))
  endif
@@ -65,7 +66,11 @@ integer function io_GROT(io_db)
  call io_bulk(io_db,R1=E_of_shell(:n_g_shells))
  !
  call io_bulk(io_db,VAR="GROT",VAR_SZ=(/ng_closed,nsym_db/))
- call io_bulk(io_db,I2=g_rot(:ng_closed,:))
+ call io_bulk(io_db,I2=g_rot(:ng_closed,:nsym_db))
+ !
+ if (read_is_on(io_db).and.n_spinor==2) then
+   g_rot(:ng_closed,nsym_db+1:)=g_rot(:ng_closed,:nsym_db)
+ endif
  !
  if (ver_is_gt_or_eq(io_db,revision=955).and.inv_index<0) then
    call io_bulk(io_db,VAR="minusG",VAR_SZ=(/ng_closed/))

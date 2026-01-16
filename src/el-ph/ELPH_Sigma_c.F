@@ -34,7 +34,7 @@ subroutine ELPH_Sigma_c(en,k,q,qp)
  use QP_m,          ONLY:QP_t,QP_G_damp,QP_Sc,QP_n_states,QP_table,&
 &                        QP_dSc_steps,QP_dSc_delta,QP_solver,QP_Sc_steps,&
 &                        On_Mass_Shell_approx,QP_time_order_sign
- use D_lattice,     ONLY:sop_inv,nsym,i_time_rev,sop_tab
+ use D_lattice,     ONLY:sop_inv,nsym,S_contains_TR,sop_tab
  use R_lattice,     ONLY:qindx_S,bz_samp,RL_vol,nqibz
  use ELPH,          ONLY:elph_bands,PH_freqs_sq,GKKP,ph_modes,PH_freqs,FineGd_E_kpq_components_reset,&
 &                        QP_PH_n_G_bands,PH_W_debye,use_PH_DbGd,EkplusQ_mode,gkkp_db,elph_grids_are_expanded, &
@@ -366,7 +366,7 @@ subroutine ELPH_Sigma_c(en,k,q,qp)
          ! 
          ! with k + IRq = Sp 
          !
-         if (iq_s>nsym/(i_time_rev+1)) then
+         if (S_contains_TR(iq_s)) then
            ib_gkkp   =ob
            ob_gkkp   =ib
            !                                 R^-1                 S

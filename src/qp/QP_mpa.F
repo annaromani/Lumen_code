@@ -40,7 +40,7 @@ subroutine QP_mpa(X,Xk,E,k,q,qp,Xw,GW_iter)
  use X_m,           ONLY:X_par,X_t
  use wave_func,     ONLY:WF
  use R_lattice,     ONLY:qindx_S,bz_samp,RIM_W_ng,RIM_W
- use D_lattice,     ONLY:nsym,i_time_rev,i_space_inv,mag_syms
+ use D_lattice,     ONLY:nsym,S_contains_TR,i_space_inv,mag_syms
  use interfaces,    ONLY:QP_state_print,WF_load,WF_free,MATRIX_transpose
  use timing_m,      ONLY:timing
  use mpa_m,         ONLY:mpa_RE_solver,err_func_X,MPA_freqs,MPA_alloc,MPA_free,&
@@ -467,7 +467,7 @@ subroutine QP_mpa(X,Xk,E,k,q,qp,Xw,GW_iter)
    ! While the -1 is introduced in the collisions the reflection of the
    ! matrix must be done here.
    !
-   if (iqs>nsym/(i_time_rev+1) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
+   if ( S_contains_TR(iqs) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
      !
      ! AF: note that X_par is not transposed, so, when
      !     the ig1,ig2 indexes are distributed, only MPA_E_par/MPA_R_par

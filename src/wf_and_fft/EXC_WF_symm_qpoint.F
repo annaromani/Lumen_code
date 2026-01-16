@@ -13,8 +13,8 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
 &                                        ID,S_index,EXC_WFs,l_min_mem)
  !
  use pars,          ONLY:SP,cZERO,cONE
- use electrons,     ONLY:n_sp_pol,n_max_deg
- use D_lattice,     ONLY:idt_index,i_time_rev,nsym,sop_inv,sop_tab
+ use electrons,     ONLY:n_sp_pol,n_max_deg,n_spinor
+ use D_lattice,     ONLY:idt_index,S_contains_TR,nsym,sop_inv,sop_tab
  use R_lattice,     ONLY:bz_samp,qindx_X,qindx_C
  use BS_solvers,    ONLY:BS_mat,BSS_n_eig,BSS_eh_table_m1
  use BS,            ONLY:BS_bands,BS_H_dim
@@ -52,7 +52,7 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
    return
  endif
  !
- t_rev= (isq>nsym/(i_time_rev+1))
+ t_rev= S_contains_TR(isq)
  !
  iqbz=qpt%k_table(iq,isq)
  !
@@ -79,7 +79,7 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
        !
        nsz(1:2)=maxval(WF_phases_b_map(:,ik,i_sp_pol,1))
        nsz(3)  =maxval(WF_phases_b_map(:,ik,i_sp_pol,2))
-       nsz(4)  =nsym
+       nsz(4)  =nsym*n_spinor
        nsz(5)  =Xk%nstar(ik)
        !
        YAMBO_ALLOC(WF_phases_cc,(nsz(1),nsz(2),nsz(3),nsz(4),nsz(5)))
@@ -121,7 +121,7 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
          !
          nsz(1:2)=maxval(WF_phases_b_map(:,ipmq,i_sp_pol,1))
          nsz(3)  =maxval(WF_phases_b_map(:,ipmq,i_sp_pol,2))
-         nsz(4)  =nsym
+         nsz(4)  =nsym*n_spinor
          nsz(5)  =Xk%nstar(ipmq)
          !
          YAMBO_ALLOC(WF_phases_vv,(nsz(1),nsz(2),nsz(3),nsz(4),nsz(5)))

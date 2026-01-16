@@ -25,7 +25,7 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  !  where W(G) is the Hole/Slater part of the potential multiplied by the density
  !
  use pars,            ONLY:SP,DP,schlen,cZERO
- use D_lattice,       ONLY:i_time_rev,nsym
+ use D_lattice,       ONLY:S_contains_TR,nsym
  use electrons,       ONLY:levels,n_met_bands
  use R_lattice,       ONLY:bz_samp,nkibz,nkbz
  use FFT_m,           ONLY:fft_size,fft_g_table,fft_dim,fftw_plan,fft_rot_r
@@ -125,7 +125,7 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
        SigmaXC = dot_product(WF%r(:,1,i_wf),U(ik,iv2,:)) 
        do i1 = 1,k%nstar(ik)
          is  = k%star(ik,i1)
-         l_is_TR = is>nsym/(i_time_rev+1)
+         l_is_TR = S_contains_TR(is)
          isc%is = (/iv1,ik,is,1/)
          isc%os = (/iv2,ik,is,1/)
          isc%qs = (/1,1,1/)

@@ -17,7 +17,7 @@ subroutine el_magnetization_matrix(G_lesser,en,Xk,magn,lowest_band)
  use pars,           ONLY:SP,cI,cZERO
  use R_lattice,      ONLY:bz_samp
  use electrons,      ONLY:levels,n_spin,n_spinor,n_sp_pol
- use D_lattice,      ONLY:nsym,dl_sop,i_time_rev
+ use D_lattice,      ONLY:nsym,dl_sop,S_contains_TR
  use FFT_m,          ONLY:fft_size,fft_rot_r
  use interfaces,     ONLY:WF_load,WF_free
  use hamiltonian,    ONLY:WF_G_max,WF_Go_indx
@@ -187,7 +187,7 @@ subroutine el_magnetization_matrix(G_lesser,en,Xk,magn,lowest_band)
    ! i.e. is invariant under spatial invertion but changes under T-rev
    if (n_spinor==2) then
      tmp_sop(:,:)=dl_sop(:,:,isym)*m3det(dl_sop(:,:,isym))
-     if( isym> nsym/(1+i_time_rev) ) tmp_sop(:,:)=-tmp_sop(:,:)
+     if( S_contains_TR(isym) ) tmp_sop(:,:)=-tmp_sop(:,:)
      forall (ifft=1:fft_size) magn(ifft,:)=magn(ifft,:)+ &
        & matmul(tmp_sop, cv(fft_rot_r(ifft,isym),:)/real(nsym,SP) )
    else

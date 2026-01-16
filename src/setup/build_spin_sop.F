@@ -27,14 +27,14 @@ subroutine build_spin_sop()
  complex(SP)    ::t_rev(2,2)
  complex(SP)    ::spin_RX_delta(2,2),spin_RY_beta(2,2),spin_RZ_alpha(2,2)
  real(SP)       ::alpha,beta,delta,tmp_sop(3,3)
- integer        ::is,i1,i2
+ integer        ::is,isp,i1,i2
  !DEBUG <
  !real(SP)       ::angles(3,nsym)
  !DEBUG >
  !
  YAMBO_FREE(spin_sop)
  !
- YAMBO_ALLOC(spin_sop,(n_spinor,n_spinor,nsym))
+ YAMBO_ALLOC(spin_sop,(n_spinor,n_spinor,nsym*n_spinor))
  !
  if(n_spinor==1) then
    spin_sop(1,1,:)=cONE
@@ -92,6 +92,8 @@ subroutine build_spin_sop()
        if(abs(real(spin_sop(i1,i2,is))) <1.E-5_SP) spin_sop(i1,i2,is)=cmplx(0._SP,aimag(spin_sop(i1,i2,is)))
      enddo
    enddo
+   !
+   spin_sop(:,:,is+nsym)=-spin_sop(:,:,is)
    !
  enddo
  !
