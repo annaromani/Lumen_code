@@ -9,7 +9,7 @@ subroutine DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol,what,kpt,dipole)
  !
  use pars,           ONLY:cZERO,SP
  use DIPOLES,        ONLY:DIP_P,DIP_v,DIP_iR,DIP_spin,DIP_orbital
- use D_lattice,      ONLY:i_time_rev,dl_sop,nsym
+ use D_lattice,      ONLY:S_contains_TR,dl_sop,nsym
  use electrons,      ONLY:n_spinor
  use parallel_m,     ONLY:PAR_K_scheme
  use R_lattice,      ONLY:bz_samp
@@ -34,8 +34,7 @@ subroutine DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol,what,kpt,dipole)
  !
  ik_mem    = PAR_K_scheme%ibz_index(ik)
  !
- if ( is<= nsym/(i_time_rev+1) ) t_rev=.false.
- if ( is > nsym/(i_time_rev+1) ) t_rev=.true.
+ t_rev=S_contains_TR(is)
  !
  tmp_sop=dl_sop(:,:,is)
  !

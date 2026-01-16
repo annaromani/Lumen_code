@@ -27,7 +27,7 @@ subroutine symmetries_driver(E,Xk)
  use IO_int,              ONLY:io_control
  use IO_m,                ONLY:REP,OP_WR_CL,VERIFY
  use parser_m,            ONLY:parser
- use D_lattice,           ONLY:kpoints_map,old_nsym,old_dl_sop,old_S_contains_TR
+ use D_lattice,           ONLY:kpoints_map,old_nsym,old_dl_sop,old_S_contains_TR,old_spin_sop
  use y_memory_alloc
  !
  implicit none
@@ -39,7 +39,7 @@ subroutine symmetries_driver(E,Xk)
  !
  type(bz_samp)         :: Xk_save
  ! 
- integer               :: old_sop_inv(nsym)
+ integer               :: old_sop_inv(nsym*n_spinor)
  logical               :: l_keep_k_grid
  !
  integer               :: old_nkpt,ID,io_old_SYMMs
@@ -52,8 +52,9 @@ subroutine symmetries_driver(E,Xk)
  integer            :: iq,ID_gkkp,io_err
 #endif
  !
- YAMBO_ALLOC(old_dl_sop,(3,3,nsym))
- YAMBO_ALLOC(old_S_contains_TR,(nsym))
+ YAMBO_ALLOC(old_dl_sop,(3,3,nsym*n_spinor))
+ YAMBO_ALLOC(old_spin_sop,(n_spinor,n_spinor,nsym*n_spinor))
+ YAMBO_ALLOC(old_S_contains_TR,(nsym*n_spinor))
  !     
  if (core_io_path==more_io_path) more_io_path=trim(core_io_path)//"/FixSymm"
  !
@@ -85,7 +86,7 @@ subroutine symmetries_driver(E,Xk)
  ! Expansion of default k-points
  call k_ibz2bz(Xk,'i',.false.)
  !
- call fix_symmetries(old_nsym,old_dl_sop,old_sop_inv,old_S_contains_TR)
+ call fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,old_S_contains_TR)
  !
  if(old_nsym==nsym) then
    call msg('s','Symmetries did not change. Program terminaned.')
@@ -129,7 +130,7 @@ subroutine symmetries_driver(E,Xk)
  endif
  !
  ! Energies and Wave-functions
- call fix_WFs_and_E(E,Xk,Xk_save,kpoints_map,old_nsym,old_S_contains_TR)
+ call fix_WFs_and_E(E,Xk,Xk_save,kpoints_map,old_nsym,old_spin_sop,old_S_contains_TR)
  !
  ! Rotate KB or Vnl
  call fix_PPs(E,Xk,Xk_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,old_S_contains_TR)

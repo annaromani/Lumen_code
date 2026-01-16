@@ -26,7 +26,8 @@ subroutine PP_rotate_becp(isc,ibec,obec)
  use pseudo,        ONLY:pp_is_uspp,qe_atoms_map
  use electrons,     ONLY:l_spin_orbit,n_spinor
  use D_lattice,     ONLY:nsym,i_time_rev,idt_index,dl_sop,sop_inv,a,&
-&                        irt,atom_pos,n_atoms_species,n_atomic_species
+&                        irt,atom_pos,n_atoms_species,n_atomic_species,&
+&                        S_contains_TR
  use R_lattice,     ONLY:k_pt,b
  use qe_pseudo_m,   ONLY:bec_type,beccopy,d1,d2,d3,nh,upf,indv_ijkb0
  use y_memory_alloc
@@ -63,14 +64,14 @@ subroutine PP_rotate_becp(isc,ibec,obec)
  isym_ = isym
  use_trev = .FALSE.
  !
- if ( isym_ > nsym/(1+i_time_rev) ) then
+ if ( S_contains_TR(isym_) ) then
    isym_=isym_-nsym/(1+i_time_rev)
    use_trev = .TRUE.
  endif
  !
  if (isym>1) call error("[PPs] Currently, USPP does not support symmetrization")
  !
- if ( isym_ <= 0 .or. isym_ > nsym/(1+i_time_rev) ) &
+ if ( isym_ <= 0 .or. S_contains_TR(isym_) ) &
 &  call error("[PPs] invalid isym index in becp rotate")
  !
  if (isym_==idt_index) then

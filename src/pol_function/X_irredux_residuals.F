@@ -26,7 +26,7 @@ subroutine X_irredux_residuals(Xen,Xk,X,Dip,i_cg,iq,Xo_res,Xo_scatt,&
  use electrons,     ONLY:levels,spin_occ
  use frequency,     ONLY:bare_grid_N,coarse_grid_Pt
  use collision_el,  ONLY:elemental_collision
- use D_lattice,     ONLY:nsym,DL_vol,i_time_rev,sop_inv
+ use D_lattice,     ONLY:nsym,DL_vol,S_contains_TR,sop_inv
  use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(G_m_G)
  use R_lattice,     ONLY:qindx_X,bz_samp,q0_def_norm
  use vec_operate,   ONLY:v_norm
@@ -147,7 +147,7 @@ subroutine X_irredux_residuals(Xen,Xk,X,Dip,i_cg,iq,Xo_res,Xo_scatt,&
        !
        sop_inv_l=sop_inv(is)
        !
-       if (is>nsym/(i_time_rev+1)) then
+       if (S_contains_TR(is)) then
          !DEV_ACC_DEBUG data present(g_rot,rhotw_save,Xo_scatt_rhotw_p)
          !DEV_ACC parallel loop private(ig2)
          !DEV_CUF kernel do(1) <<<*,*>>>
@@ -278,7 +278,7 @@ subroutine X_irredux_residuals(Xen,Xk,X,Dip,i_cg,iq,Xo_res,Xo_scatt,&
      !
      sop_inv_l=sop_inv(is)
      !
-     if (is>nsym/(i_time_rev+1)) then
+     if (S_contains_TR(is)) then
        !DEV_ACC_DEBUG data present(g_rot,rhotw_save,Xo_scatt_rhotw_p)
        !DEV_ACC parallel loop private(ig1,ig2)
        !DEV_CUF kernel do(1) <<<*,*>>>
