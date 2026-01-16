@@ -11,34 +11,57 @@
 #include<y_memory.h>
 !
 !************************* WARNING **************************
-!* This subroutine is not correct in 2 cases:               *
-!* a) finite q-bse plus spin-orbit coupling                 * 
-!* b) non symmorphyc symmetri operations                    * 
+!* This subroutine is not correct in presene of             *
+!* non symmorphyc symmetri operations                       * 
 !* An alternative subroutine that applies symmetries in a   *
 !* different way exist: K_correlation_collisions_dir.F      *
 !* This second subroutine is automatically called in the    *
-!* two above mentioned cases                                *
+!* such case                                                *
 !************************************************************
 !
 subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
+ ! Standard implementation. This is the default algorithm.
+ !
  ! This routine evaluates the correlation collisions:
+ !   <n k1_bz | exp iG.r | m k2_bz> 
+ !     = <n S1_l x k1_ibz | exp iG.r |m S2_l x k2_ibz >
+ !     = <n k1_ibz | exp iG.r | m S' x k2_ibz >
+ !     = <n k1_ibz | exp iG.r | m k3_bz >                             (1)
  !
- !  <n k1_bz |exp iG.r|m k2_bz> = <n k1_ibz s1 |exp iG.r|m k2_ibz s2>  =
- !                                <n k1_ibz |exp iG.r|m k2_ibz s1^{-1} x s2 > 
+ ! with:
+ !   S' =  S1_l^{-1} x S2_l
  !
- ! now, in general, s1^{-1} x s2 is not a symmetry in the star of k2_ibz, so we
- ! define and use the table Xk%s_table:
+ ! In general, S' is not a symmetry in the star of k2_ibz, 
+ ! i.e. is not the simmetry used by lumen to reach k3_bz from k2_ibz.
+ ! Accordingly we define and use the table Xk%s_table:
+ !   S3_l = Xk%s_table(k2_ibz, S' )
  !
- ! is_in_the_star_of_k2=Xk%s_table(k2,s1^{-1} x s2 )
+ ! to get:
+ !   <n k1_bz | exp iG.r | m k2_bz> =
+ !     <n k1_ibz | exp iG.r| m S3_l x k2_ibz >
+ !        * PHASE_{m}(k2_ibz,S3_l,S')                                 (2)
  !
- ! to get
+ ! where:
+ !   PHASE_{m}(k2_ibz,S1,S2) = <m S1 x k2_ibz | m S2 x k2_ibz >       (3)
+ ! with the condition:
+ !   S1 x k2_ibz = S2 x k2_ibz
  !
- !  <n k1_bz |exp iG.r|m k2_bz> =  <n k1_ibz |exp iG.r|m k2_ibz  is_in_the_star_of_k2>*PHASE
+ ! Equation (2) is not correct in degenerate sub-spaces.
+ ! This is why the code have to check if relation (3) holds.
+ ! The check is done in subroutine K_WF_phased.F
+ ! The more general form is:
+ !   <n k1_bz | exp iG.r | m k2_bz> =  sum_{m' in deg(m)}
+ !       <n k1_ibz | exp iG.r |m' S3_l k2_ibz >
+ !          * PHASE_{m',m}(k2_ibz,S3_l,S')                            (2b)
  !
- ! where |k2 ib s1^{-1} x s2 > = PHASE * |k2 ib is_in_the_star_of_k2>
+ ! with:
+ !   PHASE_{n,m}(k2_ibz,S1,S2) = <n S1 x k2_ibz | m S2 x k2_ibz >     (3b)
+ !
+ ! See also WF_phase_matrices.
  !
  use pars,          ONLY:SP
+ use electrons,     ONLY:n_spinor
  use D_lattice,     ONLY:nsym
  use R_lattice,     ONLY:qindx_X,bz_samp
  use BS,            ONLY:O_ng,BS_bands,BS_res_K_corr,BS_blk,&
@@ -69,7 +92,7 @@ subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  ! OMP LAST DEF
  integer ::     i_k_bz_last,i_p_bz_last,iq_W_bz_last,ig_W_last
  !
- integer     :: i_s_star,i_s_mq_star,i_s_collision,N_kmq,N_pmq
+ integer     :: i_s_star,i_s_mq_star,i_s_collision,N_kmq,N_pmq,sz(7)
  character(1):: mode_now
  !
  logical, allocatable :: O_todo_table(:,:,:,:,:,:)
@@ -125,8 +148,12 @@ subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
    enddo
  enddo
  !
- YAMBO_ALLOC(BS_blk(i_block)%O_table,(2,nsym,N_kmq,N_pmq,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol))
- YAMBO_ALLOC(O_todo_table,(nsym,N_kmq,N_pmq,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol))
+ sz(1:2)=(/2,nsym*n_spinor/)
+ sz(3:4)=(/N_kmq,N_pmq/)
+ sz(5:6)=(/BS_bands(1),BS_bands(2)/)
+ sz(7)  = n_sp_pol
+ YAMBO_ALLOC(BS_blk(i_block)%O_table,(sz(1),sz(2),sz(3),sz(4),sz(5):sz(6),sz(5):sz(6),sz(7)))
+ YAMBO_ALLOC(O_todo_table,(sz(2),sz(3),sz(4),sz(5):sz(6),sz(5):sz(6),sz(7)))
  !
  BS_blk(i_block)%N_oscillators=0
  BS_blk(i_block)%O_table=0

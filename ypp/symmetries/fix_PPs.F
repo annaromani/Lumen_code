@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine fix_PPs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
+subroutine fix_PPs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv)
  !
  use pars,                ONLY:LP,SP,lchlen
  use com,                 ONLY:msg,core_io_path,more_io_path
@@ -42,7 +42,6 @@ subroutine fix_PPs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,S_cont
  integer,intent(in)       :: old_nsym
  real(SP),intent(in)      :: old_dl_sop(3,3,old_nsym)
  integer,intent(in)       :: old_sop_inv(old_nsym)
- integer(LP),intent(in)   :: S_contains_TR(old_nsym)
  !
  ! Work space
  !

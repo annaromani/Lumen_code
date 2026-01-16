@@ -10,7 +10,7 @@
 #include<dev_defs.h>                                                    
 !
 !
-subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
+subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !
  use pars,          ONLY:SP,cZERO
  use electrons,     ONLY:n_spinor
@@ -20,21 +20,19 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(g_phs),DEV_VAR(G_m_G),&
  &                       k_pt,rl_sop,g_vec
  use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv,dl_tra, &
- &                       dl_sop,i_time_rev,nsym
+ &                       dl_sop,S_contains_TR,nsym
  !
  implicit none
  !
  integer,       intent(in) :: b_to_load(2)
  integer,       intent(in) :: ik,i_sp_pol,isymm,ig0
  type (WAVEs), target, intent(inout) :: WF
- complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
- integer,              optional, intent(in) :: isref,igref
  !
  ! Work space
  !
  complex(SP)              DEV_ATTR :: WF_k_tmp(wf_ng_overlaps,n_spinor)
  complex(SP), pointer     DEV_ATTR :: WF_p(:,:)
- complex(SP)              DEV_ATTR :: ssop_loc(2,2)
+ complex(SP)              DEV_ATTR :: ssop_loc(n_spinor,n_spinor)
  integer                  DEV_ATTR :: wf_tab_loc(wf_ng,3)
  !
  real(SP)    :: krot(3),G_cc(3)
@@ -71,13 +69,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
  !  write(*,*) isymm,isymm_m1,ig0,kphase,gphase,dot_product(dl_tra(:,isymm),G_cc),G_cc,krot
  !endif
  !
- if (n_spinor==2) then
-   if(present(ssop)) then
-     ssop_loc=ssop
-   else
-     ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
-   endif
- endif
+ if (n_spinor==2) ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
  !
  ic_max=wf_nc_k(ik)
  do ic=1,wf_nc_k(ik)
@@ -87,27 +79,13 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
    exit
  enddo
  !
- if (present(igref).or.present(isref)) then
-   if (.not.present(isref)) call error("WF_symm_kpoint_g: igref provided, but not isref")
-   if (.not.present(igref)) call error("WF_symm_kpoint_g: isref provided, but not igref")
-   do ic=1,ic_max
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igp=DEV_VAR(g_rot)(ig,isref)
-     igs=DEV_VAR(G_m_G)(igp,igref)
-     igr=DEV_VAR(g_rot)(igs,isymm)
-     wf_tab_loc(ic,1)=igs
-     wf_tab_loc(ic,2)=igr
-     wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- else
-   do ic=1,ic_max
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igr=DEV_VAR(g_rot)(ig,isymm)
-     wf_tab_loc(ic,1)=ig
-     wf_tab_loc(ic,2)=igr
-     wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- endif
+ do ic=1,ic_max
+   ig=DEV_VAR(wf_igk)(ic,ik)
+   igr=DEV_VAR(g_rot)(ig,isymm)
+   wf_tab_loc(ic,1)=ig
+   wf_tab_loc(ic,2)=igr
+   wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
+ enddo
  !
  do ib=b_to_load(1),b_to_load(2)
    !
@@ -157,8 +135,8 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
    WF_k_tmp=WF_k_tmp*conjg(kphase)
    !
    ! take care of time reversal if needed
-   !if(isymm>nsym/(1+i_time_rev)) call dev_conjg(WF_k_tmp)
-   if(isymm>nsym/(1+i_time_rev)) WF_k_tmp=conjg(WF_k_tmp)
+   !if((isymm)) call dev_conjg(WF_k_tmp)
+   if(S_contains_TR(isymm)) WF_k_tmp=conjg(WF_k_tmp)
    !
    !!call dev_memcpy(WF_p,WF_k_tmp)
    WF_p=WF_k_tmp
@@ -170,7 +148,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
 end subroutine WF_symm_kpoint_g
 !
 !
-subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,isref,igref)
+subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
  !
  use pars,          ONLY:SP,cZERO
  use electrons,     ONLY:n_spinor
@@ -188,14 +166,12 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,is
  integer,       intent(in) :: ik,i_sp_pol,isymm,ig0
  type (WAVEs), target, intent(inout) :: WF
  complex(SP) DEV_ATTR, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
- complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
- integer,              optional, intent(in) :: isref,igref
  !
  ! Work space
  !
  complex(SP)              DEV_ATTR :: WF_k_tmp(wf_ng_overlaps,n_spinor)
  complex(SP), pointer     DEV_ATTR :: WF_p(:,:)
- complex(SP)              DEV_ATTR :: ssop_loc(2,2)
+ complex(SP)              DEV_ATTR :: ssop_loc(n_spinor,n_spinor)
  integer                  DEV_ATTR :: wf_tab_loc(wf_ng,3)
  !
  real(SP)    :: krot(3),G_cc(3)
@@ -239,13 +215,7 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,is
  !  write(*,*) isymm,isymm_m1,ig0,kphase,gphase,dot_product(dl_tra(:,isymm),G_cc),G_cc,krot
  !endif
  !
- if (n_spinor==2) then
-   if(present(ssop)) then
-     ssop_loc=ssop
-   else
-     ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
-   endif
- endif
+ if (n_spinor==2) ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
  !
  ic_max=wf_nc_k(ik)
  do ic=1,wf_nc_k(ik)
@@ -255,27 +225,13 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,is
    exit
  enddo
  !
- if (present(igref).or.present(isref)) then
-   if (.not.present(isref)) call error("WF_symm_kpoint_g: igref provided, but not isref")
-   if (.not.present(igref)) call error("WF_symm_kpoint_g: isref provided, but not igref")
-   do ic=1,ic_max
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igp=DEV_VAR(g_rot)(ig,isref)
-     igs=DEV_VAR(G_m_G)(igp,igref)
-     igr=DEV_VAR(g_rot)(igs,isymm)
-     wf_tab_loc(ic,1)=igs
-     wf_tab_loc(ic,2)=igr
-     wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- else
-   do ic=1,ic_max
-     ig=DEV_VAR(wf_igk)(ic,ik)
-     igr=DEV_VAR(g_rot)(ig,isymm)
-     wf_tab_loc(ic,1)=ig
-     wf_tab_loc(ic,2)=igr
-     wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
-   enddo
- endif
+ do ic=1,ic_max
+   ig=DEV_VAR(wf_igk)(ic,ik)
+   igr=DEV_VAR(g_rot)(ig,isymm)
+   wf_tab_loc(ic,1)=ig
+   wf_tab_loc(ic,2)=igr
+   wf_tab_loc(ic,3)=DEV_VAR(G_m_G)(igr,ig0)
+ enddo
  !
  do ib=b_to_load(1),b_to_load(2)
    !

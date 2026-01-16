@@ -36,7 +36,7 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
  character(schlen) :: character(blim(2)-blim(1)+1)
  !
  integer  :: iclass,irap,jrap,i_sp_pol,ikbz,ipbz,ik,isk,ibk,istark,ib1,iel,blim_n(2),ich,       &
- &           ielem,isp,k_count,s_count,n_deg_grp,i_grp,nb,nrotk,max_deg,nsz(5),ncmplx,list(48)
+ &           ielem,isp,k_count,s_count,n_deg_grp,i_grp,nb,nsymk,nrotk,max_deg,nsz(5),ncmplx,list(48)
  !
  integer  :: io_err,ID_WF_phases
  !
@@ -82,7 +82,8 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
        isk =Xk%star(ik,istark)
        ikbz=Xk%k_table(ik,isk)
        !
-       nrotk=Xk%grp_nsym(ikbz)
+       nsymk=Xk%grp_nsym(ikbz)
+       nrotk=nsymk
        if ( any( Xk%grp_table(:nrotk,ikbz)>nrot ) ) nrotk=nrotk/(1+i_time_rev)
        !
        filename="elec_k"//trim(intc(ik))//"_sp"//trim(intc(i_sp_pol))//"_syms"
@@ -107,7 +108,7 @@ subroutine electrons_symmetries(Xk,Xen,blim,klim)
        !
        call detect_point_group(nrotk,real(dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),DP))
        !
-       call print_point_group("o "//trim(filename),nrotk,nsym,dl_sop(:,:,Xk%grp_table(:nrotk,ikbz)),&
+       call print_point_group("o "//trim(filename),nrotk,nsymk,dl_sop(:,:,Xk%grp_table(:nsymk,ikbz)),&
        &                                                 dl_tra(:,Xk%grp_table(:nrotk,ikbz)),.false.)
        !
        call get_character_el(nb,n_deg_grp,n_of_el,first_el, &

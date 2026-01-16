@@ -15,6 +15,7 @@ subroutine build_symmetries()
  use stderr,         ONLY:intc
  use com,            ONLY:msg
  use matrix_operate, ONLY:m3det
+ use electrons,      ONLY:n_spinor
  use D_lattice,      ONLY:alat,sp_nsym,nsym,nrot,i_time_rev,dl_sop,&
 &                         atoms_spatial_inversion,i_space_inv,inv_index,&
 &                         symmetry_group_table,mag_syms,idt_index,      &
@@ -32,9 +33,9 @@ subroutine build_symmetries()
  !
  call build_spin_sop()
  !
- YAMBO_ALLOC(rl_sop,(3,3,nsym))
+ YAMBO_ALLOC(rl_sop,(3,3,nsym*n_spinor))
  !
- do is=1,nsym
+ do is=1,nsym*n_spinor
    forall (i2=1:3,i3=1:3) rl_sop(i2,i3,is)=dl_sop(i2,i3,is)*alat(i2)/alat(i3)
  enddo
  !
@@ -94,7 +95,6 @@ end subroutine build_symmetries
 subroutine detect_point_group(sp_nsym,dl_sop)
  !
  use pars,           ONLY:DP
- use electrons,      ONLY:n_spinor
  use D_lattice,      ONLY:group_code,group_name,nclass,nelem,elem,which_irr,&
 &                         nclass_ref,char_mat,name_rap,name_class,ir_ram,&
 &                         which_class,nirrep
@@ -105,9 +105,7 @@ subroutine detect_point_group(sp_nsym,dl_sop)
  real(DP), intent(in)  :: dl_sop(3,3,sp_nsym)
  !
  integer :: iclass, irap, is
- !
- ! Double point group detection not coded
- if (n_spinor==2) call warning("Detecting no SOC point group")
+
  !
  ! Symmetries and point groups
  !
@@ -143,7 +141,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  !
  character(*), intent(in) :: fname
  integer,  intent(in)  :: sp_nsym,nsym
- real(SP), intent(in)  :: dl_sop(3,3,sp_nsym)
+ real(SP), intent(in)  :: dl_sop(3,3,nsym)
  real(SP), intent(in)  :: dl_tra(3,sp_nsym)
  logical,  intent(in)  :: prt_syms_only
  !
@@ -172,7 +170,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
    call msg(fname,trim(dumb_ch),reshape(dl_sop(:,:,is),(/9/)),INDENT=0)  
  enddo
  !
- if (fname(1:1)=="r") then
+ if (fname(1:1)=="r" .and. nsym>sp_nsym) then
    do is=sp_nsym+1,nsym
      dumb_ch=trim(intc(is))//'] '
      i1=9
@@ -209,6 +207,9 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
  !  write(*,*) "class name ",name_class(iclass),nelem(iclass),nelem(irap)
  !  write(*,*) "list of elements in class ",elem(:nelem(iclass),iclass)
  !enddo
+ !
+ ! Double point group detection not coded
+ if (n_spinor==2) call warning("Detecting no SOC point group")
  !
  call msg(fname,tmp_ch//'')
  call msg(fname,tmp_ch//'Point group is        ',group_name,INDENT=0)

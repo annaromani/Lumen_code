@@ -14,7 +14,8 @@
 subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  use pars,           ONLY:SP,pi
- use D_lattice,      ONLY:a,nsym,dl_sop,dl_tra,sop_inv,i_time_rev,alat
+ use electrons,      ONLY:n_spinor
+ use D_lattice,      ONLY:a,nsym,dl_sop,dl_tra,sop_inv,S_contains_TR,alat
  use R_lattice,      ONLY:b,g_vec,ng_closed
  use matrix_operate, ONLY:m3inv
  use FFT_m,          ONLY:fft_dim,fft_size,fft_rot_r,fft_rot_r_inv,&
@@ -236,10 +237,10 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
    YAMBO_FREE_GPU(DEV_VAR(fft_rot_r_inv))
    YAMBO_FREE(fft_rot_r_inv)
    !
-   YAMBO_ALLOC(fft_rot_r,(fft_size,nsym))
+   YAMBO_ALLOC(fft_rot_r,(fft_size,nsym*n_spinor))
    YAMBO_ALLOC(fft_rot_r_inv,(fft_size))
    if (have_gpu) then
-     YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r),(fft_size,nsym))
+     YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r),(fft_size,nsym*n_spinor))
      YAMBO_ALLOC_GPU(DEV_VAR(fft_rot_r_inv),(fft_size))
    endif
 
@@ -262,9 +263,13 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
    !
    do is=1,nsym+1
      !
-     if( is<=nsym/(1+i_time_rev) )                M1=matmul( dl_sop(:,:,sop_inv(is)),transpose(a))
-     if( is> nsym/(1+i_time_rev) .and. is<=nsym ) M1=matmul(-dl_sop(:,:,sop_inv(is)),transpose(a))
-     if( is==nsym+1 )                             M1=matmul( space_inv,transpose(a))
+     if( is==nsym+1 )  then
+       M1=matmul( space_inv,transpose(a))
+     else
+       M1=matmul( dl_sop(:,:,sop_inv(is)),transpose(a))
+       if(S_contains_TR(is)) M1=-M1
+     endif
+     !
      M2=matmul(b,M1)/2.0_SP/pi
      forall (i1=1:3,i2=1:3) M2(i1,i2)=M2(i1,i2)*fft_dim(i1)/fft_dim(i2)
      !
@@ -299,6 +304,8 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
      enddo
    enddo
    i4=1
+   !
+   if (n_spinor==2) fft_rot_r(:,nsym+1:)=fft_rot_r(:,:nsym)
    !
    if (have_gpu) then
      call devxlib_memcpy_h2d(DEV_VAR(fft_rot_r),fft_rot_r)

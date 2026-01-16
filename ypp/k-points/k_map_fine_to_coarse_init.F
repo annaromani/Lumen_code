@@ -20,9 +20,10 @@ subroutine k_map_fine_to_coarse_init(Xk,Xen,FineGd_k,FineGd_is_expanded,PH_grid)
  use R_lattice,           ONLY:bz_samp,nkibz,bz_samp_reset,BZ_FineGd_mode
  use D_lattice,           ONLY:alat,nsym,input_GS_Tel,a,dl_sop,i_time_rev,n_atoms
  use com,                 ONLY:msg
- use YPPm,                ONLY:BZ_FineGd_nkpts_to_use,FineGd_DB1_paths,MAX_FineGd_DBs,&
-&                              n_FineGd_DBs
- use electrons,           ONLY:levels,default_nel,n_bands,n_sp_pol,E_reset,FineGd_E_components_alloc
+ use YPPm,                ONLY:BZ_FineGd_nkpts_to_use,FineGd_DB1_paths,         &
+&                              MAX_FineGd_DBs,n_FineGd_DBs
+ use electrons,           ONLY:levels,default_nel,n_bands,n_sp_pol,n_spinor,    &
+&                              E_reset,FineGd_E_components_alloc
  use IO_m,                ONLY:REP
 #if defined _YPP_ELPH
  use YPP_ELPH,            ONLY:ph_modes_file,ph_freqs_file,ELPH_databases_IO_freqs,ELPH_databases_IO_modes
@@ -57,7 +58,7 @@ subroutine k_map_fine_to_coarse_init(Xk,Xen,FineGd_k,FineGd_is_expanded,PH_grid)
  type(levels)              :: FineGd_io_E(MAX_FineGd_DBs)
  type(bz_samp)             :: FineGd_io_k(MAX_FineGd_DBs)
  integer                   :: i_err(MAX_FineGd_DBs),nsym_save,i_time_rev_save,i_db
- real(SP)                  :: dl_sop_save(3,3,48)
+ real(SP)                  :: dl_sop_save(3,3,48*n_spinor)
  complex(SP), allocatable  :: ph_pol(:,:,:,:)
  !
  ! Functions
@@ -70,7 +71,7 @@ subroutine k_map_fine_to_coarse_init(Xk,Xen,FineGd_k,FineGd_is_expanded,PH_grid)
  a_save=a
  alat_save=alat
  nsym_save=nsym
- dl_sop_save(:,:,:nsym)=dl_sop
+ dl_sop_save(:,:,:nsym*n_spinor)=dl_sop
  i_time_rev_save=i_time_rev
  FineGd_is_expanded=.FALSE.
  !
@@ -303,8 +304,8 @@ subroutine k_map_fine_to_coarse_init(Xk,Xen,FineGd_k,FineGd_is_expanded,PH_grid)
    deallocate(dl_sop)
    nsym          =nsym_save
    i_time_rev    =i_time_rev_save
-   allocate(dl_sop(3,3,nsym))
-   dl_sop=dl_sop_SAVE(:,:,:nsym)
+   allocate(dl_sop(3,3,nsym*n_spinor))
+   dl_sop=dl_sop_SAVE(:,:,:nsym*n_spinor)
  endif
  !
 end subroutine

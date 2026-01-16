@@ -20,7 +20,8 @@ integer function io_DB1(E,k,ID)
  use electrons,        ONLY:levels,default_nel,n_spin,n_bands,nel,n_sp_pol,n_spinor
  use D_lattice,        ONLY:a, alat, nsym, i_time_rev, input_GS_Tel, dl_tra, dl_sop, &
 &                           Tel, n_atoms_species_max,n_atomic_species,n_atoms_species,atom_pos, &
-&                           Z_species, n_atoms, non_symmorphic_syms, mag_syms, atom_mass, atoms_map
+&                           Z_species, n_atoms, non_symmorphic_syms, mag_syms, &
+&                           atom_mass, atoms_map, S_contains_TR
  use R_lattice,        ONLY:ng_vec,g_vec,bz_samp,nkibz,QP_states_k,nXkibz,ng_closed
  use wave_func,        ONLY:wf_ncx,wf_nc_k,wf_igk,wf_igk_d,wf_ng,wf_nb_io
  use LIVE_t,           ONLY:live_timing_is_on
@@ -58,6 +59,7 @@ integer function io_DB1(E,k,ID)
  !
  ! Work Space
  !
+ integer :: is
  integer :: code_version_local(3),code_revision_local
  !
  io_DB1 =io_connect(desc="db1",type=0,ID=ID)
@@ -275,8 +277,9 @@ integer function io_DB1(E,k,ID)
    E%f=0._SP
    !
    YAMBO_ALLOC(g_vec,(ng_vec,3))
-   YAMBO_ALLOC(dl_sop,(3,3,nsym))
-   YAMBO_ALLOC(dl_tra,(3,nsym))
+   YAMBO_ALLOC(dl_sop,(3,3,nsym*n_spinor))
+   YAMBO_ALLOC(dl_tra,(3,nsym*n_spinor))
+   YAMBO_ALLOC(S_contains_TR,(nsym*n_spinor))
    YAMBO_ALLOC(k%pt,(k%nibz,3))
    YAMBO_ALLOC(wf_nc_k,(k%nibz))
    YAMBO_ALLOC(wf_igk,(wf_ncx,k%nibz))
@@ -328,8 +331,8 @@ integer function io_DB1(E,k,ID)
  !
  ! Symmetry
  !
- call io_bulk(ID, VAR="SYMMETRY", VAR_SZ=shape(dl_sop) )
- call io_bulk(ID, R3=dl_sop)
+ call io_bulk(ID, VAR="SYMMETRY", VAR_SZ=shape(dl_sop(:,:,:nsym)) )
+ call io_bulk(ID, R3=dl_sop(:,:,:nsym))
  !
  if (variable_exist(ID,"TRANSLATIONS") .or. write_is_on(ID)) then
    call io_bulk(ID, VAR="TRANSLATIONS", VAR_SZ=shape(dl_tra) )
@@ -337,6 +340,20 @@ integer function io_DB1(E,k,ID)
    non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
  else
    dl_tra=0._SP
+ endif
+ !
+ if (read_is_on(ID)) then
+   do is=1,nsym
+     S_contains_TR(is)=is>nsym/(1+i_time_rev)
+   enddo
+   !
+   ! Double point group
+   !
+   if (n_spinor==2) then
+     dl_sop(:,:,nsym+1:)=dl_sop(:,:,:nsym)
+     dl_tra(:,nsym+1:)=dl_tra(:,:nsym)
+     S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
+   endif
  endif
  !
  ! G-vectors

@@ -194,7 +194,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    call msg('nr','Full symmetries list') 
    old_sp_nsym=old_nsym/(1+old_i_time_rev)
    call detect_point_group(old_sp_nsym,real(old_dl_sop(:,:,:old_sp_nsym),DP))
-   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_sp_nsym),old_dl_tra(:,:old_sp_nsym),.false.)
+   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_nsym),old_dl_tra(:,:old_sp_nsym),.false.)
    YAMBO_FREE(old_dl_sop)
    YAMBO_FREE(old_dl_tra)
    YAMBO_FREE(kpoints_map)
@@ -207,7 +207,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    !
  endif
  !
- call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:sp_nsym),dl_tra(:,:sp_nsym),io_old_SYMMs==0)
+ call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:nsym),dl_tra(:,sp_nsym),io_old_SYMMs==0)
  !
  call section('=','Reciprocal space')
  !====================================

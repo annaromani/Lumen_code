@@ -21,7 +21,7 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
  use electrons,     ONLY:n_spinor
  use vec_operate,   ONLY:c2a
  use R_lattice,     ONLY:k_pt,rl_sop
- use D_lattice,     ONLY:nsym,dl_tra,DEV_VAR(spin_sop),i_time_rev,&
+ use D_lattice,     ONLY:nsym,dl_tra,DEV_VAR(spin_sop),S_contains_TR,&
  &                       idt_index,non_symmorphic_syms
  use devxlib,       ONLY:devxlib_conjg_d !,devxlib_memcpy_d2d
  !
@@ -153,9 +153,9 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
  ! take care of time reversal if needed
  !
 #ifdef _GPU_LOC
- if(isc(3)>nsym/(i_time_rev+1)) call devxlib_conjg_d(WF_symm)
+ if(S_contains_TR(isc(3))) call devxlib_conjg_d(WF_symm)
 #else
- if(isc(3)>nsym/(i_time_rev+1)) WF_symm=conjg(WF_symm)
+ if(S_contains_TR(isc(3))) WF_symm=conjg(WF_symm)
 #endif
  !
 end subroutine DEV_SUB(WF_apply_symm)

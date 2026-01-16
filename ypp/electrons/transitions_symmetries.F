@@ -38,7 +38,7 @@ subroutine transitions_symmetries(iq,Xk,Xen,qpt,blim,klim)
  !
  integer  :: iclass,irap,jrap,i_sp_pol,ikbz,ik,isk,ibk,istark,ib1,iel,blim_n(2),ich,i_tr1,i_trk,&
  &           ielem,isp,k_count,s_count,n_deg_grp,i_grp,nb,nrotk,max_deg,nsz(5),ncmplx,list(48), &
- &           iv,ic,ikmq,ikmqbz,ikmqg0,istarkmq,iqbz,n_trans_k,nrotq
+ &           iv,ic,ikmq,ikmqbz,ikmqg0,istarkmq,iqbz,n_trans_k,nsymq,nrotq
  !
  integer  :: io_err,ID_WF_phases
  !
@@ -76,7 +76,8 @@ subroutine transitions_symmetries(iq,Xk,Xen,qpt,blim,klim)
  iqbz=qpt%k_table(iq,1)
  !iGq =qpt%g_table(iq,isq)
  !
- nrotq=qpt%grp_nsym(iqbz)
+ nsymq=qpt%grp_nsym(iqbz)
+ nrotq=nsymq
  if ( any( qpt%grp_table(:nrotq,iqbz)>nrot ) ) nrotq=nrotq/(1+i_time_rev)
  !
  ! Detect the point group
@@ -134,7 +135,7 @@ subroutine transitions_symmetries(iq,Xk,Xen,qpt,blim,klim)
        call msg("o "//trim(filename),"# Symmetries at k ",Xk%pt(ik,:),INDENT=0)
        call msg("o "//trim(filename),"#")
        !
-       !call print_point_group("o "//trim(filename),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
+       !call print_point_group("o "//trim(filename),nrotq,nsymq,dl_sop(:,:,qpt%grp_table(:nsymq,iqbz)),&
        !&                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
        !
        allocate(trace(12,n_deg_grp))

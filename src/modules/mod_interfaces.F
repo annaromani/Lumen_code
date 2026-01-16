@@ -352,17 +352,15 @@ module interfaces
      type(tddft_wf_t), target, intent(inout) :: tddft_wf
    end function TDDFT_ALDA_eh_space_R_kernel
    !
-   subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF,ssop,isref,igref)
+   subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
      use pars,          ONLY:SP
      use wave_func,     ONLY:WAVEs
      integer,              intent(in)    :: b_to_load(2)
      integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
      type (WAVEs), target, intent(inout) :: WF
-     complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
-     integer,              optional, intent(in) :: isref,igref
    end subroutine WF_symm_kpoint_g
    !
-   subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out,ssop,isref,igref)
+   subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
      use pars,          ONLY:SP
      use electrons,     ONLY:n_spinor
      use wave_func,     ONLY:WAVEs,wf_ng_overlaps
@@ -370,29 +368,7 @@ module interfaces
      integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
      type (WAVEs), target, intent(inout) :: WF
      complex(SP) DEV_ATTR, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
-     complex(SP) DEV_ATTR, optional, intent(in) :: ssop(2,2)
-     integer,              optional, intent(in) :: isref,igref
    end subroutine WF_symm_kpoint_g2
-   !
-   subroutine WF_symm_kpoint(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
-     use pars,          ONLY:SP 
-     use R_lattice,     ONLY:bz_samp
-     use wave_func,     ONLY:wf_ng_1st_BZ
-     use electrons,     ONLY:n_spinor
-     integer,       intent(in)  :: ikbz,i_sp_pol,b_to_load(2)
-     type(bz_samp), intent(in)  :: Xk
-     complex(SP),   intent(out) :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
-   end subroutine WF_symm_kpoint
-   !
-   subroutine WF_symm_kpoint_gpu(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
-     use pars,          ONLY:SP 
-     use R_lattice,     ONLY:bz_samp
-     use wave_func,     ONLY:wf_ng_1st_BZ
-     use electrons,     ONLY:n_spinor
-     integer,       intent(in)  :: ikbz,i_sp_pol,b_to_load(2)
-     type(bz_samp), intent(in)  :: Xk
-     complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
-   end subroutine WF_symm_kpoint_gpu
    !
    subroutine WF_apply_symm(isc,WF_symm)
      use pars,          ONLY:SP

@@ -41,7 +41,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  logical  :: l_min_mem
  integer  :: S_index(EXCITONS_n_user_states)
  integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max
- integer  :: ik,i_sp_pol,iqbz,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID
+ integer  :: ik,i_sp_pol,iqbz,nsymq,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID
  !
  complex(SP), allocatable :: exc_trace(:,:,:)
  complex(SP), allocatable :: exc_reps(:,:,:,:)
@@ -130,7 +130,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  !
  call msg('s',"Scan of eneriges gave number of reps ",n_deg_grp)
  !
- nrotq=qpt%grp_nsym(iqbz)
+ nsymq=qpt%grp_nsym(iqbz)
+ nrotq=nsymq
  if ( any( qpt%grp_table(:nrotq,iqbz)>nrot ) ) nrotq=nrotq/(1+i_time_rev)
  !
  !write(*,*) qpt%grp_table(:nrotq,iqbz)
@@ -145,13 +146,16 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  call msg("o "//trim(filebse),"# Symmetries at qpt ",qpt%pt(iq,:),INDENT=0)
  call msg("o "//trim(filebse),"#")
  !
- call print_point_group("o "//trim(filebse),nrotq,nsym,dl_sop(:,:,qpt%grp_table(:nrotq,iqbz)),&
+ call print_point_group("o "//trim(filebse),nrotq,nsymq,dl_sop(:,:,qpt%grp_table(:nsymq,iqbz)),&
  &                                                  dl_tra(:,qpt%grp_table(:nrotq,iqbz)),.true.)
  !
  ! Compute the reps
  YAMBO_ALLOC(exc_reps,(12,n_of_exc_max,n_of_exc_max,n_deg_grp))
  YAMBO_ALLOC(exc_trace,(12,n_of_exc_max,n_deg_grp))
  allocate(exc_character(n_of_exc_max,n_deg_grp))
+ exc_reps=0._SP
+ exc_trace=0._SP
+ exc_character=""
  !
  YAMBO_ALLOC(exc_sbgr,(n_of_exc_max,n_deg_grp))
  YAMBO_ALLOC(n_sub_grps,(n_deg_grp))
@@ -334,6 +338,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
      do il2=il1+1,n_of_exc(i_grp)
        ref_exc_grp(il2,i_grp)=il1
        jexc=first_exc(i_grp)+il2-1
+       !write(*,*) i_grp,il1,il2,loc_reps(:,il2,il1,i_grp)
        call msg('s',"Rep "//trim(intc(i_grp))//" ,Exc. mix "//trim(intc(iexc))//","&
        &                  //trim(intc(jexc)),sum(abs(loc_reps(:,il2,il1,i_grp))))
        if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*symm_thresh) cycle

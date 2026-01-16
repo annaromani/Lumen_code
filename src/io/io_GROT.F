@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2015 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM
+! Authors (see AUTHORS file for details): AM, DS
 !
 ! headers
 !
@@ -19,6 +19,7 @@ integer function io_GROT(io_db)
  use R_lattice,      ONLY:DEV_VAR(minus_G),DEV_VAR(g_rot)
  use IO_m,           ONLY:io_status,io_sec,read_is_on,variable_exist,&
 &                         write_is_on
+ use electrons,      ONLY:n_spinor
  use IO_int,         ONLY:io_connect,io_disconnect,io_elemental,&
 &                         io_bulk,io_header,ver_is_gt_or_eq
  use timing_m,       ONLY:timing
@@ -55,8 +56,8 @@ integer function io_GROT(io_db)
  !
  if (read_is_on(io_db)) then
    YAMBO_ALLOC(ng_in_shell,(n_g_shells))
-   YAMBO_ALLOC(g_rot,(ng_closed,nsym_db))
-   YAMBO_ALLOC(g_phs,(ng_closed,nsym_db))
+   YAMBO_ALLOC(g_rot,(ng_closed,nsym_db*n_spinor))
+   YAMBO_ALLOC(g_phs,(ng_closed,nsym_db*n_spinor))
    YAMBO_ALLOC(E_of_shell,(n_g_shells))
    YAMBO_ALLOC(minus_G,(ng_closed))
    YAMBO_ALLOC(G_mod_indx,(ng_closed))
@@ -69,11 +70,16 @@ integer function io_GROT(io_db)
  call io_bulk(io_db,R1=E_of_shell(:n_g_shells))
  !
  call io_bulk(io_db,VAR="GROT",VAR_SZ=(/ng_closed,nsym_db/))
- call io_bulk(io_db,I2=g_rot(:ng_closed,:))
+ call io_bulk(io_db,I2=g_rot(:ng_closed,:nsym_db))
  !
  if (write_is_on(io_db).or.variable_exist(io_db,"GPHASE")) then
    call io_bulk(io_db,VAR="GPHASE",VAR_SZ=(/ng_closed,nsym_db/))
-   call io_bulk(io_db,R2=g_phs(:ng_closed,:))
+   call io_bulk(io_db,R2=g_phs(:ng_closed,:nsym_db))
+ endif
+ !
+ if (read_is_on(io_db).and.n_spinor==2) then
+   g_rot(:ng_closed,nsym_db+1:)=g_rot(:ng_closed,:nsym_db)
+   g_phs(:ng_closed,nsym_db+1:)=g_phs(:ng_closed,:nsym_db)
  endif
  !
  if (ver_is_gt_or_eq(io_db,revision=955).and.inv_index<0) then
