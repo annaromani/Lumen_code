@@ -19,7 +19,7 @@ subroutine ELPH_Hamiltonian(en,k,q)
  use IO_m,          ONLY:manage_action,OP_RD,REP,RD_CL_IF_END,mk_dir
  use com,           ONLY:msg,of_open_close,jobstr,jobdir,core_io_path
  use R_lattice,     ONLY:nqbz,nqibz,bz_samp,qindx_S
- use D_lattice,     ONLY:sop_inv,nsym,sop_tab,i_time_rev,n_atoms
+ use D_lattice,     ONLY:sop_inv,nsym,sop_tab,S_contains_TR,n_atoms
  use electrons,     ONLY:levels
  use LIVE_t,        ONLY:live_timing
  use interfaces,    ONLY:LINEAR_ALGEBRA_driver
@@ -176,7 +176,7 @@ subroutine ELPH_Hamiltonian(en,k,q)
      ib_gkkp =ib
      ibp_gkkp=ibp
      ik_bz_gkkp=k%k_table(elph_Ham_ik,sop_inv(iq_s))
-     if (iq_s>nsym/(i_time_rev+1)) then
+     if (S_contains_TR(iq_s)) then
        ib_gkkp   =ib
        ibp_gkkp  =ibp
        ik_bz_gkkp=k%k_table(ok_ibz,sop_tab(sop_inv(iq_s-nsym/2),ok_s))

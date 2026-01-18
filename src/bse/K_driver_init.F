@@ -18,7 +18,7 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  use electrons,    ONLY:levels,n_sp_pol,n_spin
  use parser_m,     ONLY:parser
  use parallel_m,   ONLY:PARALLEL_default_mode
- use stderr,       ONLY:STRING_match,STRING_split
+ use stderr,       ONLY:STRING_match,STRING_split,STRING_remove
  use BS_solvers,   ONLY:BSS_mode,BSS_slepc_matrix_format,BSS_uses_DbGd,BSS_uses_FKE,BSS_ldiago_solver,&
 &                       BSS_slepc_pseudo_herm,BSS_slepc_double_grp,run_Slepc,BSS_mode,BSS_first_eig,&
 &                       l_abs_prop_chi_bse,l_eels_can_be_computed,l_eels_from_inversion,&
@@ -299,6 +299,14 @@ subroutine K_driver_init(what,iq,Ken,Xk)
    BSS_slepc_pseudo_herm=.false.
  endif 
 #endif
+ !
+#else
+ !
+ if (index(BSS_mode,'s')/=0) then
+   call warning("Slepc solver selected, but code compiled without slepc support")
+   call warning("Switching to diagonalization solver")
+   BSS_mode=STRING_remove(BSS_mode,"s","d")
+ endif
  !
 #endif
  !

@@ -32,7 +32,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  !
  ! Plasmon Pole & COHSEX Correlation Self-Energy
  !
- use pars,          ONLY:DP,SP,pi,schlen,cZERO,cI,cONE
+ use pars,          ONLY:DP,SP,pi,pi_DP,schlen,cZERO,cI,cONE
  use units,         ONLY:HA2EV
  use stderr,        ONLY:intc
  use frequency,     ONLY:w_samp,W_reset
@@ -59,7 +59,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  use wave_func,     ONLY:WF
  use R_lattice,     ONLY:qindx_S,bz_samp,DEV_VAR(G_m_G),G_m_G_maxval,nqibz,RIM_W_E,&
 &                        RIM_W_is_diagonal,RIM_W_ng,DEV_VAR(RIM_W)
- use D_lattice,     ONLY:nsym,i_time_rev,i_space_inv,mag_syms
+ use D_lattice,     ONLY:nsym,S_contains_TR,i_space_inv,mag_syms
  use wrapper,       ONLY:V_dot_V_gpu,devxlib_xGEMV_gpu
  use interfaces,    ONLY:QP_state_print,WF_load,WF_free,MATRIX_transpose
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
@@ -423,7 +423,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
    ! While the -1 is introduced in the collisions the reflection of the
    ! matrix must be done here.
    !
-   if (iqs>nsym/(i_time_rev+1) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
+   if ( S_contains_TR(iqs) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
      !
      call MATRIX_transpose("T",M_out=X_par(iq_mem))
      X_is_TR_rotated=.true.
@@ -747,20 +747,26 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
              endif
              !
              ! inline bose_f function
-             bose_PPA_E=0.
-             if (PPA_E<0.) bose_PPA_E=-spin_occ
              if (Finite_Tel) then
-               if (abs(PPA_E)>epsilon(1.)) then
-                 if (abs(PPA_E)<=bose_E_cut*Bose_Temp) bose_PPA_E=spin_occ*Bose_Temp/PPA_E
-                 if (abs(PPA_E)> bose_E_cut*Bose_Temp) bose_PPA_E=spin_occ/(exp(PPA_E/Bose_Temp)-1.)
-               else
+               if (abs(PPA_E)<=epsilon(1.)) then
                  bose_PPA_E=spin_occ*Bose_Temp/epsilon(1.)
+               else if (abs(PPA_E)<=bose_E_cut*Bose_Temp) then
+                 bose_PPA_E=spin_occ*Bose_Temp/PPA_E
+               else
+                 bose_PPA_E=real(real(spin_occ,DP)/(exp(real(PPA_E/Bose_Temp,DP))-1._DP),SP)
+               endif
+             else
+               if (PPA_E<0._SP) then
+                 bose_PPA_E=-spin_occ
+               else
+                 bose_PPA_E=0._SP
                endif
              endif
              !
-             ctmp = -4._SP/spin_occ*pi*isc_rhotw_p(ig1)*conjg_iscp_rhotw(ig2)*(-PPA_R)*&
-&                   ( (spin_occ-f_kmq+bose_PPA_E)/(W_i-E_kmq-PPA_E)+&
-&                     (f_kmq+bose_PPA_E)/(conjg(W_i)-E_kmq+PPA_E))
+             ctmp = 4._DP*pi_DP/real(spin_occ,DP)*cmplx(PPA_R,kind=DP)*        &
+             &   cmplx(isc_rhotw_p(ig1)*conjg_iscp_rhotw(ig2),kind=DP)*        &
+             & ( cmplx((spin_occ-f_kmq+bose_PPA_E)/(W_i-E_kmq-PPA_E),kind=DP)+ &
+             &   cmplx((f_kmq+bose_PPA_E)/(conjg(W_i)-E_kmq+PPA_E)  ,kind=DP)  )
              !
 #ifdef _GPU
              dp_dummy_r=dp_dummy_r+real(ctmp,DP)

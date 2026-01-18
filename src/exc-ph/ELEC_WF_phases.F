@@ -33,7 +33,7 @@ subroutine ELEC_WF_phases(E,k,l_min_mem,ID_phases)
  use D_lattice,      ONLY:nsym
  use R_lattice,      ONLY:bz_samp
  use wave_func,      ONLY:io_WF_phases,WF_phases_b_map,WF_phases
- use electrons,      ONLY:levels,n_sp_pol 
+ use electrons,      ONLY:levels,n_sp_pol,n_spinor
  use BS,             ONLY:BS_bands
  use IO_m,           ONLY:RD,OP_RD,DUMP,REP
  use IO_int,         ONLY:io_control
@@ -70,7 +70,7 @@ subroutine ELEC_WF_phases(E,k,l_min_mem,ID_phases)
  !
  nsz(1:2)=maxval(WF_phases_b_map(:,:,:,1))
  nsz(3)  =maxval(WF_phases_b_map(:,:,:,2))
- nsz(4)  =nsym
+ nsz(4)  =nsym*n_spinor
  nsz(5)  =k%nbz
  YAMBO_ALLOC(WF_phases,(nsz(1),nsz(2),nsz(3),nsz(4),nsz(5)))
  !
@@ -78,7 +78,7 @@ subroutine ELEC_WF_phases(E,k,l_min_mem,ID_phases)
    do ik=1,k%nibz
      nsz(1:2)=maxval(WF_phases_b_map(:,ik,i_sp_pol,1))
      nsz(3)  =maxval(WF_phases_b_map(:,ik,i_sp_pol,2))
-     nsz(4)  =nsym
+     nsz(4)  =nsym*n_spinor
      nsz(5)  =k%nstar(ik)
      il1=1
      if(ik>0) il1= sum(k%nstar(:ik-1))+1

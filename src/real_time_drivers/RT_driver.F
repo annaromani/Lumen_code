@@ -10,6 +10,25 @@
 #include<y_memory.h>
 !
 subroutine RT_driver(E,X,k,q,Dip)
+ !! **RT_driver - Real-Time Propagation Master Loop**
+ !!
+ !! Orchestrates real-time propagation of non-equilibrium Green's functions.
+ !! Main entry point for yambo_rt calculations. Drives the time evolution
+ !! of the electron density matrix under external fields and scattering.
+ !!
+ !! **Physical System**: Solves Kadanoff-Baym equations with time-diagonal approximation:
+ !! \(i\hbar\partial_t G(t) - [H(t), G(t)] = S_{xc}(t)\)
+ !! where G is the lesser Green's function, H is the single-particle Hamiltonian,
+ !! and \(S_{xc}\) is the collision self-energy.
+ !!
+ !! **Main Algorithm**:
+ !!   1. RT_initialize: Setup initial G and Hamiltonian
+ !!   2. Time loop: Propagate G(t) → G(t+dt)
+ !!      - RT_Hamiltonian: Compute H(t) from charge density
+ !!      - Propagator: Advance Green's function
+ !!      - RT_occupations_eval: Extract occupations
+ !!      - RT_observables: Compute j(t), P(t), E(t)
+ !!   3. Save results and observables
  !
  use pars,           ONLY:SP,lchlen
  use drivers,        ONLY:l_use_collisions,l_use_Hxc_collisions,l_elph_scatt,&
@@ -55,9 +74,15 @@ subroutine RT_driver(E,X,k,q,Dip)
  ! Notice that E is never changed!
  !
  type(levels)      :: E
- type(bz_samp)     :: k,q
+ !! Electronic structure (bands, energies, occupations)
+ type(bz_samp)     :: k
+ !! K-point grid
+ type(bz_samp)     :: q
+ !! Q-point grid
  type(X_t)         :: X(2)
+ !! Response functions (polarization, screening)
  type(DIPOLE_t)    :: Dip
+ !! Dipole matrix elements (transition amplitudes)
  !
  ! Work Space
  !
@@ -332,6 +357,9 @@ if (l_phel_scatt)                   sec_title=trim(sec_title)//'+ph-el'
  !
  contains
    !
+!> CLOSE_and_clean
+!>
+!>
    subroutine CLOSE_and_clean( )
      call RT_free( )
      call RT_control_free("all")
@@ -344,6 +372,10 @@ if (l_phel_scatt)                   sec_title=trim(sec_title)//'+ph-el'
      if (allocated(HXC_COLL_element))    call COLLISIONS_alloc_and_free("SEX","v1 table","clean",0)
    end subroutine
    !
+!> RT_timing
+!>
+!> @param steps
+!>
    subroutine RT_timing(steps)
      !
      integer, intent(in) :: steps

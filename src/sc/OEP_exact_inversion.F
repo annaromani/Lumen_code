@@ -22,7 +22,7 @@ subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
  !                            (E_{vk} - E_{ck})
  !
  use pars,            ONLY:SP,DP
- use D_lattice,       ONLY:DL_vol,i_time_rev,sop_inv,nsym,i_space_inv
+ use D_lattice,       ONLY:DL_vol,i_time_rev,sop_inv,nsym,i_space_inv,S_contains_TR
  use ALLOC,           ONLY:X_ALLOC_elemental
  use X_m,             ONLY:X_t,X_mat,X_poles_tab,current_iq 
  use electrons,       ONLY:levels,n_met_bands
@@ -129,7 +129,7 @@ subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
        do i1 = 1,k%nstar(ik)
          !
          is      = sop_inv(k%star(ik,i1))
-         l_is_TR = is>nsym/(i_time_rev+1)
+         l_is_TR = S_contains_TR(is)
          !
          rho_tw_rs(fft_g_table(g_rot(1,1),1)) = (0.,0.)
          if (l_is_TR) then

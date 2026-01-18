@@ -28,7 +28,7 @@ subroutine OEP_ApplySigmaCSX(X,Xw,E,k,q,U_csx)
  !      NO SPIN/PARALLEL EXECUTION NOT TESTED  
  ! 
  use pars,            ONLY:SP,DP,pi,schlen
- use D_lattice,       ONLY:i_time_rev,i_space_inv,sop_inv,nsym
+ use D_lattice,       ONLY:S_contains_TR,i_space_inv,sop_inv,nsym
  use electrons,       ONLY:levels,n_met_bands,spin_occ
  use R_lattice,       ONLY:bz_samp,g_rot,qindx_S,nkibz,G_m_G
  use frequency,       ONLY:w_samp
@@ -115,7 +115,7 @@ subroutine OEP_ApplySigmaCSX(X,Xw,E,k,q,U_csx)
      !
    end if
    !
-   if (iqs>nsym/(i_time_rev+1) .and. i_space_inv == 0 .and..not.PPaR_is_TR_rotated) then
+   if (S_contains_TR(iqs) .and. i_space_inv == 0 .and..not.PPaR_is_TR_rotated) then
      PPaR_is_TR_rotated=.true.
      forall (i1=1:X%ng,i2=1:X%ng) PPaR_ws(i2,i1)=PPaR(i1,i2)
      PPaR(:,:)=PPaR_ws(:,:)
@@ -145,7 +145,7 @@ subroutine OEP_ApplySigmaCSX(X,Xw,E,k,q,U_csx)
          isc%os=(/iv2,k%sstar(qindx_S(ik,iq,1),:),1/)
          isc%qs(1)=qindx_S(ik,iq,2)
          os=isc%os(3)
-         lostr = os>nsym/(i_time_rev+1)
+         lostr = S_contains_TR(os)
          call scatter_Bamp(isc)
 #if defined _DOUBLE
          call zgemv('N', X%ng, X%ng, (1._SP,0._SP), PPaR, X%ng, conjg(isc%rhotw),1,(0._SP,0_SP), u,1)

@@ -47,7 +47,7 @@ subroutine QP_real_axis(X,Xen,Xk,en,k,q,qp,Xw,Dip,GW_iter)
  use ALLOC,         ONLY:X_ALLOC_elemental
  use functions,     ONLY:bose_decay
  use R_lattice,     ONLY:qindx_S,bz_samp
- use D_lattice,     ONLY:nsym,i_space_inv,i_time_rev,mag_syms
+ use D_lattice,     ONLY:nsym,i_space_inv,S_contains_TR,mag_syms
  use stderr,        ONLY:intc
  use wrapper,       ONLY:Vstar_dot_V,V_dot_V
  use wrapper_omp,   ONLY:Vstar_dot_V_omp,V_dot_V_omp
@@ -367,7 +367,7 @@ subroutine QP_real_axis(X,Xen,Xk,en,k,q,qp,Xw,Dip,GW_iter)
      !
    endif
    !
-   if (iqs>nsym/(i_time_rev+1) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
+   if (S_contains_TR(iqs) .and. (i_space_inv==0.or.mag_syms) .and..not.X_is_TR_rotated) then
      !
      do i3=X_range(1),X_range(2)
        call mat_transpose(X_mat(:,:,i3))
