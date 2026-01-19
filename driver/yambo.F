@@ -310,9 +310,6 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  !
 #endif
  !
- !aim137:this is to tell make to compile FL subroutines 
- !aim137:see actions in make files.
- !
 #if defined _FL
  !
  ! FL
