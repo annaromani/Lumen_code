@@ -46,13 +46,17 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  use YPP_real_time,  ONLY:l_RealTime,l_RT_dos,l_RT_abs,l_RT_bands,l_RT_DBs,l_RT_density,l_RT_G_two_times,&
 &                         l_RT_energy,l_RT_lifetimes,l_RT_occupations,l_RT_time,l_RT_X,l_RTpump_Fermi,&
 &                         l_RTpump_energy,Eh_pumped_pair_n_BZ_regions,Eh_pumped_pair_BZ_regions,&
-&                         l_NL_X,l_NL_exc,RT_conf,l_RT_pol,l_RT_fields
+&                         RT_conf,l_RT_pol,l_RT_fields
  use fields,         ONLY:n_ext_fields
  use real_time,      ONLY:RT_bands
 #endif
 #if defined _YPP_NL 
+ use YPP_real_time,  ONLY:l_NL_X,l_NL_exc
  use nl_optics,      ONLY:NL_damping,DephMult
  use pars,           ONLY:SP
+#endif
+#if defined _YPP_FL 
+ use YPP_real_time,  ONLY:l_FL_bands
 #endif
 #if defined _YPP_ELPH
  use YPP_ELPH,       ONLY:l_phonons,l_atomic_amplitude,l_eliashberg,l_gkkp,l_gkkp_db,l_gkkp_dg,l_gkkp_plot,&
@@ -93,6 +97,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_NL
  integer, external::io_NL
  integer          ::io_Nonlinear
+#endif
+#if defined _YPP_FL
+ integer, external::io_FL
+ integer          ::io_Floquet
 #endif
  !
  if (FINALIZE) then
@@ -150,6 +158,13 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if(io_Nonlinear==0) then
    if(NL_damping/=0._SP) RT_conf%T_range(:)  =(/2._SP/NL_damping*DephMult,-real(FS2AUT,SP)/)
  endif
+ !
+#endif
+ !
+#if defined _YPP_FL
+ !
+ call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1/),MODE=DUMP,ID=ID)
+ io_Floquet=io_FL(ID)
  !
 #endif
  !
@@ -353,6 +368,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_NL
      l_NL_X   =  trim(rstr_piece(i1)) == 'nonlinear'
 #endif   
+     !
+#if defined _YPP_FL
+     l_FL_Bands =  trim(rstr_piece(i1)) == 'floquet'
+#endif   
      !    
    enddo
  enddo
@@ -418,6 +437,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_NL_X)         call initactivate(1,'nonlinear')
 #endif
  !
+#if defined _YPP_FL
+ if (l_FL_bands)     call initactivate(1,'floquet')
+#endif
+ !
  l_flag=.not.l_sort
 #if defined _YPP_ELPH
  l_flag=.not.l_sort.and..not.l_atomic_amplitude
@@ -477,6 +500,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #endif
 #if defined _YPP_NL
  l_NL_X   =runlevel_is_on('nonlinear')
+#endif
+#if defined _YPP_FL
+ l_FL_Bands=runlevel_is_on('floquet')
 #endif
 #if defined _YPP_SC
  l_angular_momentum = runlevel_is_on('angular_m').and.runlevel_is_on('electrons')
@@ -568,6 +594,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_RT
  l_flag=l_flag.or.(l_RealTime.and.(l_RT_bands.or.l_RT_dos.or.l_RT_G_two_times))
 #endif
+#if defined _YPP_FL
+ l_flag=l_flag.or.l_FL_bands
+#endif
  if (l_flag) call initactivate(1,"INTERP_mode INTERP_Shell_Fac INTERP_NofNN")
  !
  l_flag=l_electrons.and.l_dos
@@ -580,6 +609,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_flag=l_bands
 #if defined _YPP_RT
  l_flag=l_bands.or.l_RT_bands.or.l_RT_G_two_times
+#endif
+#if defined _YPP_FL
+ l_flag=l_bands.or.l_FL_bands
 #endif
  if (l_flag) then
    call initactivate(1,"OutputAlat cooIn cooOut NormN NelFac")
@@ -677,6 +709,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if(l_NL_exc) call initactivate(1,"Xorder PrintExc")
 #endif
  !
+#if defined _YPP_FL
+ if(l_FL_bands)   call initactivate(1,"FreqIndx")
+#endif
+ !
 #if defined _YPP_SC
  if (l_angular_momentum.or.l_position) call initactivate(1,"FFTGvecs")
  if (l_current) call initactivate(1,'PhaseTrick')
@@ -772,6 +808,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  !
 #if defined _YPP_RT
  l_flag=l_flag.or.l_RT_bands.or.l_RT_G_two_times
+#endif
+#if defined _YPP_FL
+ l_flag=l_flag.or.l_FL_bands
 #endif
  !
  if (l_flag) call USER_vector_handle("BANDS_kpts",3)

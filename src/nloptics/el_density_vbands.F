@@ -35,6 +35,7 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
  use FFT_m,         ONLY:fft_size,fft_rot_r
  use parallel_m,    ONLY:PAR_IND_Xk_ibz,PAR_COM_Xk_ibz_INDEX,PAR_Xk_ibz_index,PAR_Xk_nibz
  use parallel_int,  ONLY:PP_redux_wait
+ use timing_m,       ONLY:timing
  !
  implicit none
  type(bz_samp),intent(in)  :: Xk
@@ -46,6 +47,8 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
  !
  integer     :: i1,ik,is,rho_syms,ir,ik_mem
  real(SP)    :: rho_no_sym(fft_size)
+ !
+ call timing('FL Density',OPR='start')
  !
 !$OMP PARALLEL WORKSHARE  
  rho_no_sym=rZERO
@@ -87,6 +90,8 @@ subroutine el_density_vbands(en,Xk,rho,VAL_BANDS)
    rho(ir)=real(1._SP+i_time_rev,SP)*rho(ir)
  enddo
 !$omp end parallel do
+ !
+ call timing('FL Density',OPR='stop')
  !
 end subroutine
 
