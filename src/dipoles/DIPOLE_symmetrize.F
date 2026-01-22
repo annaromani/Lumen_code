@@ -44,6 +44,9 @@ subroutine DIPOLE_symmetrize(k,Dip)
  !
  if(io_old_SYMMs/=0) return
  !
+ YAMBO_ALLOC(kpoints_map,(2,k%nibz))
+ call k_build_map(k,k_old,kpoints_map)
+ !
  YAMBO_ALLOC(DIP_tmp,(3,Dip%ib_lim(2):Dip%ib(2),Dip%ib(1):Dip%ib_lim(1),k%nibz,n_sp_pol))
  !
  ! I need dipoles in all cores

@@ -186,7 +186,7 @@ subroutine fix_WFs_and_E(E,k,k_save,kpoints_map,old_nsym,spin_sop,S_contains_TR)
        do ic=1,wf_nc_k_reduced(ik_save)
          ig=wf_igk_reduced(ic,ik_save)
          ig_rot=g_rot(ig,is)
-	 gphase(ic)=cmplx(cos(g_phs(ig,is)),sin(g_phs(ig,is)))
+         gphase(ic)=cmplx(cos(g_phs(ig,is)),sin(g_phs(ig,is)))
          l_found=.false.
          do ic_rot=1,wf_nc_k_new(ik)
            ig=wf_igk_new(ic_rot,ik)

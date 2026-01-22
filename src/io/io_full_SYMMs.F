@@ -105,8 +105,8 @@ integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
    endif
  endif
  !
- call def_variable_bulk(ID,VAR="kpoints_map",VAR_ID=5,VAR_SZ=shape(kpoints_map),VAR_KIND=IP_YIO)
- call io_variable_bulk(ID,5,I2=kpoints_map)
+ !call def_variable_bulk(ID,VAR="kpoints_map",VAR_ID=5,VAR_SZ=shape(kpoints_map),VAR_KIND=IP_YIO)
+ !call io_variable_bulk(ID,5,I2=kpoints_map)
  !
 1  call io_disconnect(ID=ID)
  !

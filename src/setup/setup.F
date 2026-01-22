@@ -24,7 +24,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
 &                         n_atomic_species,PT_elements,non_periodic_directions,lattice,&
 &                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms,&
-&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra,kpoints_map
+&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra
  use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,g_rot,&
 &                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
  use com,            ONLY:msg,fat_log
@@ -197,7 +197,6 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_nsym),old_dl_tra(:,:old_sp_nsym),.false.)
    YAMBO_FREE(old_dl_sop)
    YAMBO_FREE(old_dl_tra)
-   YAMBO_FREE(kpoints_map)
    call msg('r','Reduced symmetries list') 
    !
  else
