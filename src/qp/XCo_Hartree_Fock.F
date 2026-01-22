@@ -157,7 +157,7 @@ subroutine XCo_Hartree_Fock(E,k,Xk,q,mode)
    !
    !  !!! num_threads(n_outthr)
    !DEV_OMP parallel default(shared), &
-   !DEV_OMP          private(isc,iscp,gamp_p,isc_rhotw_p,iscp_rhotw_p,&
+   !DEV_OMP          private(isc,iscp,gamp_p,isc_rhotw_p,iscp_rhotw_p,ikp, &
    !DEV_OMP &                iq,iq_ibz,is_ibz,ikp_Go,ikp_s,ikp_bz,jb,DP_Sx_l), reduction(+:DP_sx)
    !
    call OPENMP_update(master_thread)
