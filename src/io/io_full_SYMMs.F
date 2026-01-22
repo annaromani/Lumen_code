@@ -12,7 +12,7 @@
 integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
  !
  use pars,          ONLY:schlen,SP,IP,IP_YIO,LP_YIO
- use D_lattice,     ONLY:kpoints_map,old_nsym,old_dl_sop,old_dl_tra,&
+ use D_lattice,     ONLY:old_nsym,old_dl_sop,old_dl_tra,&
  &                       old_S_contains_TR,old_i_time_rev
  use R_lattice,     ONLY:bz_samp
  use electrons,     ONLY:levels,n_sp_pol,n_spinor
@@ -72,7 +72,6 @@ integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
    YAMBO_ALLOC(old_dl_sop,(3,3,old_nsym*n_spinor))
    YAMBO_ALLOC(old_dl_tra,(3,old_nsym*n_spinor))
    YAMBO_ALLOC(old_S_contains_TR,(old_nsym*n_spinor))
-   YAMBO_ALLOC(kpoints_map,(2,nkibz))
  endif
  !
  ! K-point grid
@@ -104,9 +103,6 @@ integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
      old_S_contains_TR(old_nsym+1:)=old_S_contains_TR(:old_nsym)
    endif
  endif
- !
- !call def_variable_bulk(ID,VAR="kpoints_map",VAR_ID=5,VAR_SZ=shape(kpoints_map),VAR_KIND=IP_YIO)
- !call io_variable_bulk(ID,5,I2=kpoints_map)
  !
 1  call io_disconnect(ID=ID)
  !
