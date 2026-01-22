@@ -37,6 +37,9 @@ subroutine INIT_ypp_load(defs)
  use real_time,     ONLY:RT_bands
  use fields,        ONLY:n_ext_fields
 #endif
+#if defined _YPP_FL
+ use YPP_real_time, ONLY:FL_freq_indx
+#endif
 #if defined _YPP_SC
  use YPPm,          ONLY:V_value
  use SC,            ONLY:SC_neq_kind
@@ -422,6 +425,14 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'ChirpFac','Prefactor for linear chirping in frequency space',ypp_chirp,unit=Time_unit(1))
  call Afield(defs,1)
  !
+#endif
+ !
+#if defined _YPP_FL
+ !
+ ! FL Post-Processing
+ !
+ call it(defs,'FreqIndx','Index for the frequency',FL_freq_indx)
+ ! 
 #endif
  !
 end subroutine
