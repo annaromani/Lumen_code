@@ -63,12 +63,8 @@ subroutine X_OUTPUT(iq,Xen,Xk,wv,X,spectra)
  if (.not.l_rpa_IP) call X_OUTPUT_driver("keys ALL",IQ=iq,keys="inv "//trim(FXC_type)//" dyson",IG=i_G_shift)
  if (     l_rpa_IP) call X_OUTPUT_driver("keys ALL",IQ=iq,keys="ip",IG=i_G_shift)
  !
- ! ... permissions ...
- if (iq==1) call IO_and_Messaging_switch("+output SAVE",CONDITION=master_cpu)
- !
  ! ... open ...
  call X_OUTPUT_driver("open ALL")
- if (iq==1) call IO_and_Messaging_switch("+output RESTORE")
  !
  ! Initial Messages
  call X_OUTPUT_messages(iq,Q_plus_G=Q_plus_G_pt,ig=i_G_shift,MORE="X_size")
