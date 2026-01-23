@@ -64,7 +64,9 @@ subroutine X_OUTPUT(iq,Xen,Xk,wv,X,spectra)
  if (     l_rpa_IP) call X_OUTPUT_driver("keys ALL",IQ=iq,keys="ip",IG=i_G_shift)
  !
  ! ... open ...
- call X_OUTPUT_driver("open ALL")
+ ! For some reasons all CPUs go thorugh q=1, even if they should not
+ ! See OPTICS_driver. This should be probably changed
+ if(iq/=1.or.master_cpu) call X_OUTPUT_driver("open ALL")
  !
  ! Initial Messages
  call X_OUTPUT_messages(iq,Q_plus_G=Q_plus_G_pt,ig=i_G_shift,MORE="X_size")
