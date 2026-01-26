@@ -19,6 +19,7 @@ subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
  use R_lattice,      ONLY:bz_samp,k_map
  use D_lattice,      ONLY:a
  use wrapper,        ONLY:M_by_M
+ use vec_operate,    ONLY:k_periodic_idx
  use matrix_operate, ONLY:hermitian
  !
  implicit none
@@ -32,8 +33,8 @@ subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
  !
  ! Work Space
  !
- integer :: i1,i2,im,id,id_red
- integer :: ikbz,istep,max_step
+ integer :: i1,i2,im,id,id_red,idx(3),ikm,ikp
+ integer :: ikbz,istep,itest,max_step
  !
  complex(SP) :: Wop(H_ref_bands(1):H_ref_bands(2),H_ref_bands(1):H_ref_bands(2),2)
  complex(SP) :: V_tilde(en%nbf(i_sp),H_ref_bands(1):H_ref_bands(2),2)
@@ -58,9 +59,27 @@ subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
      !
      if(k_map%max_kdir(id_red)>=6.and..not.l_force_SndOrd) max_step=2
      !
-     do istep=1,max_step
+     istep=0
+     do itest=1,2*max_step
        !
-       call Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id_red)=idx(id_red)-itest
+       idx=k_periodic_idx(idx,k_map)
+       ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       !
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id_red)=idx(id_red)+itest
+       idx=k_periodic_idx(idx,k_map)
+       ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       !
+       if (ikp==0 .and. ikm==0) cycle
+       if (ikp==0 .and. ikm/=0) call error("kp does not exist, while km does")
+       if (ikp/=0 .and. ikm==0) call error("km does not exist, while kp does")
+       !
+       istep=istep+1
+       if (istep>max_step) cycle
+       !
+       call Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,ikm,ikp,id_red,V_bands,V_tilde)
        !
        ! Build the W operator as
        !
@@ -70,7 +89,7 @@ subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
        !
        delta_V_tilde=V_tilde(:,:,1)-V_tilde(:,:,2)
        !
-       alpha=cI*real(k_map%max_kdir(id_red),SP)/(4._SP*pi*real(istep,SP))
+       alpha=cI*real(k_map%max_kdir(id_red),SP)/(4._SP*pi*real(itest,SP))
        ! 
        V_tmp=conjg(V_bands(H_ref_bands(1):,:,ik))
        !

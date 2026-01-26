@@ -61,21 +61,22 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  ! Check if it is a shifted grid
  !
+ k_shift=0._SP
  dshift=10.E10_SP
  do ik=1,Xk%nbz
    if(sqrt(sum(Xk%ptbz(ik,:)**2))<dshift) then
       dshift=sqrt(sum(Xk%ptbz(ik,:)**2))
-      k_shift =Xk%ptbz(ik,:) 
+      !k_shift =Xk%ptbz(ik,:) 
    endif
  enddo
  !
  if(dshift>zero_dfl) then
- k_shift=0._SP
-   write(dump_ch,'(a,3f12.6)') " Shifted grid: ",k_shift
-   call msg("sr",dump_ch)
-   call warning('Yambo_nl works only with a single-shift k-point grid! ')
- else
-   k_shift=0._SP
+   !write(dump_ch,'(a,3f12.6)') " Shifted grid: ",k_shift
+   !call msg("sr",dump_ch)
+   !call warning('Yambo_nl works only with a single-shift k-point grid! ')
+   call msg("sr",'Shifted grid detected ')
+ !else
+ !  k_shift=0._SP
  endif
  !
  do id=1,3

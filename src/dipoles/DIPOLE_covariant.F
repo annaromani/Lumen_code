@@ -128,7 +128,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
            enddo
          enddo
          !
-         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(istep,SP))
+         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(itest,SP))
          !
        enddo ! istep
        !

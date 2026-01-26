@@ -33,7 +33,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  ! Work Space
  !
  integer     :: idx(3),id,ikp,ikm,i1,i2
- integer     :: ikm_ibz,ikp_ibz,ik_ibz,max_step,istep
+ integer     :: ikm_ibz,ikp_ibz,ik_ibz,max_step,istep,itest
  !complex(SP) :: V_tmp(H_ref_bands(2),en%nbf(i_sp)) ! used in full construction of overlaps
  complex(SP) :: tmp_det,vtmp(H_ref_bands(2))
  !
@@ -74,14 +74,19 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
      max_step=1
      if(k_map%max_kdir(id)>=6.and..not.l_force_SndOrd) max_step=2
      !
-     do istep=1,max_step
+     istep=0
+     do itest=1,2*max_step
        !
        ! Overlap S(k, k-dk)
        !
        idx=k_map%k_map_inv(ikbz,:)
-       idx(id)=idx(id)-istep
+       idx(id)=idx(id)-itest
        idx=k_periodic_idx(idx,k_map)
        ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       if (ikm==0) cycle
+       !
+       istep=istep+1
+       if(istep>max_step) cycle
        !
        ! Sm1_minus(l,m; k, k - delta) = \sum_{i,j} V*(l,i; k) S*(i,j; k-delta, k) V(m,j ;k - delta)
        !
@@ -102,7 +107,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
        ! Matrix head
        !
        if (H_ref_bands(1)>1) then
-	 !
+         !
          !$omp parallel do default(shared), private(i1,i2), collapse(2) 
          do i2=1,H_ref_bands(1)-1
            do i1=1,H_ref_bands(1)-1
@@ -121,7 +126,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
             enddo
          enddo
          !$omp end parallel do
-	 !
+         !
        endif
        !
        ! Matrix core
@@ -137,13 +142,24 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
        enddo
        !$omp end parallel do
        !
+     !enddo
+     !
+     !istep=0
+     !do itest=1,2*max_step
+       !
+       ! Overlap S(k, k+dk)
+       !
        !DEBUG>
        !call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
        !DEBUG<
        idx=k_map%k_map_inv(ikbz,:)
-       idx(id)=idx(id)+istep
+       idx(id)=idx(id)+itest
        idx=k_periodic_idx(idx,k_map)
-       ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))  
+       ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
+     !  if (ikp==0) cycle
+       !
+     !  istep=istep+1
+     !  if(istep>max_step) cycle
        !
        ! Sm1_plus(l,m; k, k + delta) = \sum_{i,j} V*(l,i; k) S(i,j; k-delta, k) V(m,j ;k + delta)
        !
@@ -164,7 +180,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
        ! Matrix head
        !
        if (H_ref_bands(1)>1) then
-	 !
+         !
          !$omp parallel do default(shared), private(i1,i2), collapse(2)
          do i2=1,H_ref_bands(1)-1
            do i1=1,H_ref_bands(1)-1
@@ -183,7 +199,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
            enddo
          enddo
          !$omp end parallel do
-	 !
+         !
        endif
        !
        ! Matrix Core
@@ -207,18 +223,18 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  !
  ! Invert matrices
  !
-! $omp parallel do default(shared), private(id,max_step)
+ !$omp parallel do default(shared), private(id,max_step)
  do id=1,3
    if(k_map%max_kdir(id)==1) cycle ! non-periodic directions
      max_step=1
      if(k_map%max_kdir(id)>=6.and..not.l_force_SndOrd) max_step=2
-! $omp parallel do default(shared), private(istep)
+     !$omp parallel do default(shared), private(istep)
      do istep=1,max_step
        call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
        call SERIAL_inversion(en%nbf(i_sp), Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
      enddo
-! $omp end parallel do
+     !$omp end parallel do
   enddo
-! $omp end parallel do
+  !$omp end parallel do
   !
 end subroutine Build_overlaps_det_NEQ

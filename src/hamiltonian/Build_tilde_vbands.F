@@ -8,7 +8,7 @@
 ! V_tilde(:,:,1) is calculated at  q+delta
 ! V_tilde(:,:,2) is calculated at  q-delta
 !      
-subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
+subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,ikm,ikp,id_red,V_bands,V_tilde)
  !
  ! Build the \tilde Valence bands as defined in Eq. 53 of
  ! PRB 69, 085106 (2004), in terms of Kohn-Sham orbitals
@@ -19,7 +19,6 @@ subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
  use QP_m,           ONLY:QP_nk
  use hamiltonian,    ONLY:H_ref_bands,H_ref_nbands
  use R_lattice,      ONLY:bz_samp,k_map
- use vec_operate,    ONLY:k_periodic_idx
  use DIPOLES,        ONLY:DIP_S
  use wrapper_omp,    ONLY:M_by_M_omp
  !
@@ -29,14 +28,14 @@ subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
  type(bz_samp),intent(in)      :: Xk
  integer,      intent(in)      :: ikbz
  integer,      intent(in)      :: i_sp
- integer,      intent(in)      :: istep
+ integer,      intent(in)      :: istep,ikm,ikp
  integer,      intent(in)      :: id_red
  complex(SP),  intent(in)      :: V_bands(H_ref_bands(2),en%nbf(i_sp),QP_nk)
  complex(SP),  intent(out)     :: V_tilde(en%nbf(i_sp),H_ref_bands(1):H_ref_bands(2),2)
  !
  ! Work Space
  !
- integer :: i2,iv1,im,idx(3),id,ikp,ikm,ikm_ibz,ikp_ibz,nbf
+ integer :: i2,iv1,im,id,ikm_ibz,ikp_ibz,nbf
  complex(SP) :: tmp_Vp(H_ref_bands(1):H_ref_bands(2),en%nbf(i_sp)),tmp_Vm(H_ref_bands(1):H_ref_bands(2),en%nbf(i_sp))
  !
  V_tilde=cZERO
@@ -45,16 +44,6 @@ subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
  nbf=en%nbf(i_sp)
  !
  if(k_map%max_kdir(id_red)==1) return
- !
- idx=k_map%k_map_inv(ikbz,:)
- idx(id_red)=idx(id_red)-istep
- idx=k_periodic_idx(idx,k_map)
- ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
- !
- idx=k_map%k_map_inv(ikbz,:)
- idx(id_red)=idx(id_red)+istep
- idx=k_periodic_idx(idx,k_map)
- ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
  !
  ! Indexes in the IBZ
  ! 
