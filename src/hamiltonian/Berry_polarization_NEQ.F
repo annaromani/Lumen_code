@@ -9,7 +9,7 @@ subroutine Berry_polarization_NEQ(Xen,Xk,i_sp_pol,V_bands,Polarization)
  !
  use pars,           ONLY:SP,cZERO
  use electrons,      ONLY:levels
- use D_lattice,      ONLY:a,DL_vol,nsym,i_time_rev,dl_sop
+ use D_lattice,      ONLY:a,DL_vol
  use R_lattice,      ONLY:bz_samp,k_map,nXkbz
  use hamiltonian,    ONLY:H_ref_bands
  use QP_m,           ONLY:QP_nk
@@ -31,7 +31,6 @@ subroutine Berry_polarization_NEQ(Xen,Xk,i_sp_pol,V_bands,Polarization)
  !
  integer       :: id,ik_bz,nb,is
  complex(SP)   :: Polarization_red(3)
- complex(SP)   :: Pol_symm(3)
  !
 #if defined _TIMING
  call timing('NL Berry Pol NEQ',OPR='start')
@@ -74,13 +73,7 @@ subroutine Berry_polarization_NEQ(Xen,Xk,i_sp_pol,V_bands,Polarization)
  !
  ! Apply residual symmetries
  !
- if(nsym/=1.and..not.l_no_res_symms) then
-   Pol_symm=cZERO
-   do is=1,nsym/(i_time_rev+1) ! Time reversal is not present 
-     Pol_symm(:)=Pol_symm(:)+matmul(dl_sop(:,:,is),Polarization)
-   enddo
-   Polarization=Pol_symm/dble(nsym/(i_time_rev+1))
- endif
+ if(.not.l_no_res_symms) call Apply_symm_vec(Polarization)
  !
 #if defined _TIMING
  call timing('NL Berry Pol NEQ',OPR='stop')

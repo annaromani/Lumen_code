@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for file in */*/*.F; do
+for file in */io/io_FL.F; do
 
  if [ "$file" == "interfaces/p2y/num_interpolation_module.F" ]; then continue; fi
  if [ "$file" == "interfaces/p2y/pw_pseudo_module.F" ]; then continue; fi
