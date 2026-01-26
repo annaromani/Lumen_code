@@ -7,7 +7,7 @@
 !
 subroutine DIPOLE_setup(Dip)
  !
- use drivers,        ONLY:l_real_time,l_sc_run,l_nl_optics
+ use drivers,        ONLY:l_real_time,l_sc_run,l_nl_optics,l_fl_optics
  use DIPOLES,        ONLY:DIPOLE_t,x_space_obs,g_space_obs,covariant_obs,shifted_grids_obs,&
 &                         der_k_obs,specific_obs,eval_OVERLAPS
  use IO_m,           ONLY:io_DIP
@@ -68,8 +68,8 @@ endif
  !
  ! Force covariant in NL
  !-----------------------
-#if defined _NL
- if (l_nl_optics) then
+#if defined _NL || defined _FL
+ if (l_nl_optics.or.l_fl_optics) then
    !      
    ! In NL I always force the use of covariant dipoles
    ! because they have a coerent phase, while normal dipole don't
