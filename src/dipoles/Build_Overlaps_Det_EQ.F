@@ -28,7 +28,7 @@ subroutine Build_Overlaps_Det_EQ(Xen,i_sp_pol,ikbz,Sm1_plus,Sm1_minus,S_det)
  !
  ! Work Space
  !
- integer     :: idx(3),id,ikm,istep,max_step,nb
+ integer     :: idx(3),id,ikm,istep,itest,max_step,nb
  complex(SP) :: S_val(1:Xen%nbf(i_sp_pol),1:Xen%nbf(i_sp_pol)),det
  !
  S_det    =cZERO
@@ -42,11 +42,16 @@ subroutine Build_Overlaps_Det_EQ(Xen,i_sp_pol,ikbz,Sm1_plus,Sm1_minus,S_det)
      max_step=1
      if(k_map%max_kdir(id)>=6) max_step=2
      !
-     do istep=1,max_step
+     istep=0
+     do itest=1,2*max_step
        idx=k_map%k_map_inv(ikbz,:)
-       idx(id)=idx(id)-istep
+       idx(id)=idx(id)-itest
        idx=k_periodic_idx(idx,k_map)
        ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       if (ikm==0) cycle
+       !
+       istep=istep+1
+       if(istep>max_step) cycle
        !
        nb=Xen%nbm(i_sp_pol)
        !

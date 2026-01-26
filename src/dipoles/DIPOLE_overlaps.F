@@ -45,7 +45,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !
  ! Work Space
  !
- integer           :: ikbz,ikbzp,is,isp,ib,ibp,i_sp_pol,ik,ikp,istep,max_step
+ integer           :: ikbz,ikbzp,is,isp,ib,ibp,i_sp_pol,ik,ikp,itest,istep,max_step
  integer           :: iG0,ng_tmp,wf_ng_save,wf_ng_1st_BZ_save
  integer           :: id,idx_kp(3),idx_k(3),shift(3),g0_idx(3,2)
  real(SP)          :: g0_length(3)
@@ -145,16 +145,21 @@ subroutine DIPOLE_overlaps(Xk,Dip)
        max_step=1 ! Only the first neighbor
        if(k_map%max_kdir(id)>=6) max_step=2  ! First and second neighbors
        !
-       do istep=1,max_step
+       istep=0
+       do itest=1,2*max_step
          !
          idx_kp=idx_k
-         idx_kp(id)=idx_kp(id)+istep   ! Neighbor on the right
+         idx_kp(id)=idx_kp(id)+itest   ! Neighbor on the right
          !
          USE_shifted_wf=.false.
          if(idx_kp(id)>k_map%max_kdir(id)) USE_shifted_wf=.true. ! Check if the neighbor is out of the BZ
          !
          idx_kp=k_periodic_idx(idx_kp,k_map)  ! Bring it back by periodicity
          ikbzp=k_map%k_map_dir(idx_kp(1),idx_kp(2),idx_kp(3))  ! Find the corresponding index in the BZ
+         if (ikbzp==0) cycle
+         !
+         istep=istep+1
+         if(istep>max_step) cycle
          !
          ! Find the index in the IBZ and the symmetry
          ikp = Xk%sstar(ikbzp,1)

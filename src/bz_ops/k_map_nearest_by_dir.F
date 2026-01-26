@@ -70,6 +70,7 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  enddo
  !
  if(dshift>zero_dfl) then
+ k_shift=0._SP
    write(dump_ch,'(a,3f12.6)') " Shifted grid: ",k_shift
    call msg("sr",dump_ch)
    call warning('Yambo_nl works only with a single-shift k-point grid! ')
@@ -99,6 +100,8 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  YAMBO_ALLOC(k_map%k_map_dir,(k_map%max_kdir(1),k_map%max_kdir(2),k_map%max_kdir(3)))
  YAMBO_ALLOC(k_map%k_map_inv,(Xk%nbz,3))
+ k_map%k_map_dir=0
+ k_map%k_map_inv=0
  ! 
  !Find index	     
  ! 
@@ -110,9 +113,12 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
        idx(id)=1
      endif
    enddo
+   !write(*,*) idx
    k_map%k_map_dir(idx(1),idx(2),idx(3))=ik
    k_map%k_map_inv(ik,:)=idx
  enddo
+ !
+ !write(*,*)  "k_map_the_nearest_done",count(k_map%k_map_dir==0),count(k_map%k_map_dir/=0)
  !
 end subroutine k_map_nearest_by_dir
  
