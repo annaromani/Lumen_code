@@ -41,7 +41,7 @@ subroutine Berry_polarization_EQ(P_Berry_Red,All_S_det,en,Xk,k_map)
  !
  ! Work Space
  !
- integer       :: id_in,id2,id3,Nperpend,i1,i2,i3,idx(3),ikbz,id,n_step
+ integer       :: id_in,id2,id3,Nperpend,i1,i2,i3,idx(3),ikbz,id
  complex(DP)   :: zeta
  real(DP)      :: imag_zeta
  !
@@ -50,17 +50,14 @@ subroutine Berry_polarization_EQ(P_Berry_Red,All_S_det,en,Xk,k_map)
  !
  P_Berry_RED  =cZERO
  !
- n_step=1
- if (any(k_map%k_map_dir==0)) n_step=2
- !
  do id_in=1,3
    !
    call get_id_perpendicular(id_in,id2,id3)
    !
    Nperpend=k_map%max_kdir(id2)*k_map%max_kdir(id3)
    !
-   do i2=1,k_map%max_kdir(id2)*n_step
-     do i3=1,k_map%max_kdir(id3)*n_step
+   do i2=1,k_map%max_kdir(id2)
+     do i3=1,k_map%max_kdir(id3)
        !
        zeta=cONE
        !
@@ -69,7 +66,7 @@ subroutine Berry_polarization_EQ(P_Berry_Red,All_S_det,en,Xk,k_map)
        !
        ! Loop on the string
        !
-       do i1=1,k_map%max_kdir(id_in)*n_step
+       do i1=1,k_map%max_kdir(id_in)
          !
          idx(id_in)=i1
          ikbz=k_map%k_map_dir(idx(1),idx(2),idx(3))
