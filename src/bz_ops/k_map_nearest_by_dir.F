@@ -26,7 +26,7 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  ! Work Space
  !
- integer  :: id,ik,idx(3)
+ integer  :: id,ik,idx(3),n_mapped,n_not_mapped
  real(SP) :: k_shift(3),dshift
  character(schlen) :: dump_ch
  !
@@ -84,8 +84,8 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
    if(k_map%q_step(id)==0._SP) k_map%max_kdir(id)=1
  enddo
  !
- write(dump_ch,'(a,3i4)') "Number of k-point in each direction: ",k_map%max_kdir
- call msg("s",dump_ch)
+ !write(dump_ch,'(a,3i4)') "Number of k-point in each direction: ",k_map%max_kdir
+ call msg("s","Number of k-point in each direction",k_map%max_kdir)
  !
  if(allocated(k_map%k_map_dir)) then
    YAMBO_FREE(k_map%k_map_dir)
@@ -118,6 +118,10 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
    k_map%k_map_dir(idx(1),idx(2),idx(3))=ik
    k_map%k_map_inv(ik,:)=idx
  enddo
+ !
+ n_not_mapped=count(k_map%k_map_dir==0)
+ n_mapped=count(k_map%k_map_dir/=0)
+ call msg("sr","k-points (mappend, not mapped)",(/n_mapped,n_not_mapped/))
  !
  !write(*,*)  "k_map_the_nearest_done",count(k_map%k_map_dir==0),count(k_map%k_map_dir/=0)
  !
