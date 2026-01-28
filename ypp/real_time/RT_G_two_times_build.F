@@ -114,7 +114,7 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  if(include_eq_occ) then
    YAMBO_ALLOC(G_lesser_reference,(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),RT_nk,n_sp_pol))
    call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1,2/),ID=ID) 
-   io_err=io_RT_components('REF',ID)
+   io_err=io_RT_components('REFERENCE',ID)
  endif
  !
  YAMBO_ALLOC(G_ret,(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),RT_nk,n_sp_pol))
