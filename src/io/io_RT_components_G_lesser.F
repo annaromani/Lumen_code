@@ -65,7 +65,8 @@ subroutine io_RT_components_G_lesser(ID,T_size)
  ! H_sig/H_rot...
  !----------------
  l_H_sig= variable_exist(ID,trim(Sigma_var_name)) .and. allocated(Ho_plus_sigma)
- if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= G_IO_steps==1 .and. RT_do_IO("G_lesser_K_section")
+ !if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= G_IO_steps==1 .and. RT_do_IO("G_lesser_K_section")
+ if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= RT_do_IO("G_lesser_K_section")
  !
  l_H_EQ= variable_exist(ID,trim(H_var_name)) .and. allocated(H_EQ)
  if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_EQ=  l_H_sig
