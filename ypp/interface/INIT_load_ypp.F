@@ -196,14 +196,15 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'RTtempEh', '[RT] Effective temperature hole | electron',Eh_temp,unit=E_unit)
  call it(defs,'RTautotuneThr', '[RT] Threshold to match no. of pumped holes and electrons.',h_mu_autotune_thr)
  !
- call it('f',defs,'LoadGhistory','[NEGF] Build the NEQ density from G<(t,t)')
- call it('f',defs,'OCCgroup',    '[NEGF] Double grid states occupations are grouped')
+ call it('f',defs,'LoadGhistory','[NEGF] Build the NEQ density from rho(t) history')
+ call it('f',defs,'OCCgroup',    '[NEGF] Double grid states occupations are grouped',verb_level=V_real_time)
  call it('f',defs,'IncludeEQocc','[NEGF] Include also equilibrium occupations')
  call it('f',defs,'BuildGles',   '[NEGF] Build G<(t,tp) with GKBA')
- call it('f',defs,'KeepCC',      '[NEGF] Use only the cc channel when reconstructuing G<(t,tp)')
- call it('f',defs,'NoOcc',       '[NEGF] Consider only the changes in the energy')
- call it('f',defs,'SkipFermiFIT','[NEGF] Do a Fermi Fit of occupations (and lifetimes ratio)')
- call it('f',defs,'SeparateEH',  '[NEGF] Separate electrons from holes in the data file') 
+ call it('f',defs,'KeepCC',      '[NEGF] Include the cc channel when reconstructuing G<(t,tp)',verb_level=V_real_time)
+ call it('f',defs,'KeepVV',      '[NEGF] Include the vv channel when reconstructuing G<(t,tp)',verb_level=V_real_time)
+ call it('f',defs,'NoOcc',       '[NEGF] Consider only the changes in the energy',verb_level=V_real_time)
+ call it('f',defs,'SkipFermiFIT','[NEGF] Do a Fermi Fit of occupations (and lifetimes ratio)',verb_level=V_real_time)
+ call it('f',defs,'SeparateEH',  '[NEGF] Separate electrons from holes in the data file',verb_level=V_real_time) 
  !
  ! TRANSIENT ABSORPTION and ARPES
  !
