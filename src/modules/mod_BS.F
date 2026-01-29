@@ -44,6 +44,7 @@ module BS
  character(schlen) :: BSE_dipole_geometry="none"
  character(schlen) :: BSK_mode
  character(schlen) :: BSK_IO_mode
+ character(schlen) :: BSK_IO_shape
  character(schlen) :: BS_bands_frozen_ch=""
  !
  ! Dipoles tracing 

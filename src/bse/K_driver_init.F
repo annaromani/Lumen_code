@@ -26,7 +26,7 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  use BS,           ONLY:BSE_L_kind,BSE_mode,BS_K_is_ALDA,BS_dip_size,l_BSE_minimize_memory,BS_perturbative_SOC,&
 &                       BS_perturbative_SOC,l_BS_magnons,l_BS_photolum,BSK_IO_mode,l_BSE_kernel_full,&
 &                       BS_cpl_K_exchange,BS_n_g_exch,BS_res_K_exchange,BS_K_coupling,BS_res_ares_n_mat,&
-&                       BS_cpl_K_corr,BS_res_K_corr,BSE_disk_IO,&
+&                       BS_cpl_K_corr,BS_res_K_corr,BSE_disk_IO,BSK_IO_shape,&
 &                       BS_n_eh_spaces,l_BS_ares_from_res,BS_bands,BS_K_anti_resonant,l_BS_res_from_E
  use TDDFT,        ONLY:FXC_is_retarded,FXC_n_g_corr,l_Fxc_from_Vxc
  use drivers,      ONLY:l_col_cut,l_rpa_IP,l_alda_fxc,l_bs_fxc
