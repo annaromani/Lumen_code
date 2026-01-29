@@ -31,7 +31,7 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  use TDDFT,        ONLY:FXC_is_retarded,FXC_n_g_corr,l_Fxc_from_Vxc
  use drivers,      ONLY:l_col_cut,l_rpa_IP,l_alda_fxc,l_bs_fxc
  use D_lattice,    ONLY:i_time_rev,i_space_inv,l_3D
- use IO_m,         ONLY:DBs_IO_control_string
+ use IO_m,         ONLY:DBs_IO_control_string,io_BS_K
 #if defined _RT
  use drivers,      ONLY:l_rt_carriers_in_use
  use RT_control,   ONLY:NEQ_Kernel,EQ_Transitions,EQ_NoOcc,ALL_NoOcc,NEQ_Residuals,RT_BSE_Occ_Mode
@@ -320,13 +320,13 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  !
  ! I/O bse
  ! ==============
- !
  if(index(BSE_disk_IO,"high")>0) then
    BSK_IO_mode="2D_standard"
  else if(index(BSE_disk_IO,"low")>0) then
    BSK_IO_mode="2D_standard norestart"	 
  else if(index(BSE_disk_IO,"none")>0) then
-   DBs_IO_control_string="BS"
+   DBs_IO_control_string=DBs_IO_control_string//" BS"
+   io_BS_K=.FALSE.
  else
    call error("Unknon BSE disk mode! ")
  endif
