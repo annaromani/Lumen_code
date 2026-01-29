@@ -330,7 +330,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  !
  call it(defs,'BSEmod',  '[BSE] resonant/retarded/coupling',BSE_mode,case="a")
  call it(defs,'Lkind',   '[BSE,X] bar(default)/full/tilde',BSE_L_kind,verb_level=V_resp)
- call it(defs,'BSEdiskIO','[BSE] full(restart possible)|low (writes at the end)|none',BSE_disk_IO)
+ call it(defs,'BSEdiskIO','[BSE] high (restart possible)|low (writes at the end)|none',BSE_disk_IO)
  call it(defs,'BSEBands','[BSK] Bands range',BS_bands)
  call it(defs,'BSEFrozenBands','[BSK] Bands expluded from BSE construction',BS_bands_frozen_ch,verb_level=V_resp)
  call it(defs,'BSENGBlk','[BSK] Screened interaction block size [if -1 uses all the G-vectors of W(q,G,Gp)]',BS_n_g_W,G_unit)
