@@ -448,7 +448,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  BS_q=1
  BS_eh_win=100._SP
  BSE_L_kind='BAR'
- BSE_disk_IO='high'
+ BSE_disk_IO='medium'
  BSE_mode='resonant'
  BSE_prop='abs'
  BSK_mode=' '

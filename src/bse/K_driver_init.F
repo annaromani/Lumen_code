@@ -321,10 +321,13 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  ! I/O bse
  ! ==============
  if(index(BSE_disk_IO,"high")>0) then
-   BSK_IO_mode="2D_standard"
+   BSK_IO_mode=BSK_IO_shape//" write_all_steps"
+ else if(index(BSE_disk_IO,"medium")>0) then
+   BSK_IO_mode=BSK_IO_shape
  else if(index(BSE_disk_IO,"low")>0) then
-   BSK_IO_mode="2D_standard norestart"	 
+   BSK_IO_mode=BSK_IO_shape//" norestart"
  else if(index(BSE_disk_IO,"none")>0) then
+   BSK_IO_mode="off"
    DBs_IO_control_string=DBs_IO_control_string//" BS"
    io_BS_K=.FALSE.
  else
