@@ -106,11 +106,11 @@ subroutine io_RT_components_G_lesser(ID,T_size)
    enddo
  else
    IPOS(6)=Gless_RT_IO_t%N
-   IPOS_H(6)=IPOS(6)
    call io_variable_bulk(ID,4,C5=dG_lesser(:,:,k_range(1):k_range(2),:,1:1),IPOS=IPOS)
  endif
  !
  if (l_H_sig) then
+   IPOS_H(6)=Gless_RT_IO_t%N
    allocate(Delta_Sigma(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range_ibz(1):PAR_G_k_range_ibz(2),n_sp_pol,1))
    if(write_is_on(ID)) then
      do ikibz=PAR_G_k_range_ibz(1),PAR_G_k_range_ibz(2)
