@@ -137,7 +137,8 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  !
  T_c=(RT_conf%T_range(1)+RT_conf%T_range(2))/2._SP
  i_Tc=(RT_conf%T_n_steps+1)/2
- if(mod(RT_conf%T_n_steps,2)==0) call error("Number of time steps must be odd")
+ if(mod(RT_conf%T_n_steps,2)==0) &
+ & call warning("Even number of time steps. Using an odd number is reccomented")
  !
  call msg('s',function_name//"(k,w) at time "//trim(real2ch(real(T_c/FS2AUT,SP)))//" fs")
  !
