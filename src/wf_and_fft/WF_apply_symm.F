@@ -23,7 +23,9 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
  use R_lattice,     ONLY:k_pt,rl_sop
  use D_lattice,     ONLY:nsym,dl_tra,DEV_VAR(spin_sop),S_contains_TR,&
  &                       idt_index,non_symmorphic_syms
+#ifdef _GPU_LOC
  use devxlib,       ONLY:devxlib_conjg_d !,devxlib_memcpy_d2d
+#endif
  !
  implicit none
  !
@@ -147,7 +149,36 @@ subroutine DEV_SUB(WF_apply_symm)(isc,WF_symm)
    krot=matmul(rl_sop(:,:,isymm),k_pt(isc(2),:))
    call c2a(v_in=krot,mode='ki2c')
    kphase=cmplx(cos(dot_product(dl_tra(:,isymm),krot)),sin(dot_product(dl_tra(:,isymm),krot)))
+#ifdef _GPU_LOC
+   if (n_spinor==1) then
+     !DEV_ACC_DEBUG data present(WF_symm)
+     !DEV_ACC parallel loop
+     !DEV_CUF kernel do(1) <<<*,*>>>
+     !DEV_OMPGPU target map(present,alloc:WF_symm)
+     !DEV_OMPGPU teams loop
+     !DEV_OMP parallel do default(shared), private(ifft)
+     do ifft = 1, fft_size
+       WF_symm(ifft,1)=WF_symm(ifft,1)*conjg(kphase)
+     enddo
+     !DEV_OMPGPU end target
+     !DEV_ACC_DEBUG end data
+   else
+     !DEV_ACC_DEBUG data present(WF_symm)
+     !DEV_ACC parallel loop
+     !DEV_CUF kernel do(1) <<<*,*>>>
+     !DEV_OMPGPU target map(present,alloc:WF_symm)
+     !DEV_OMPGPU teams loop
+     !DEV_OMP parallel do default(shared), private(ifft)
+     do ifft = 1, fft_size
+       WF_symm(ifft,1)=WF_symm(ifft,1)*conjg(kphase)
+       WF_symm(ifft,2)=WF_symm(ifft,2)*conjg(kphase)
+     enddo
+     !DEV_OMPGPU end target
+     !DEV_ACC_DEBUG end data
+   endif
+#else
    WF_symm=WF_symm*conjg(kphase)
+#endif
  endif
  !
  ! take care of time reversal if needed

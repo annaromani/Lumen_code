@@ -106,7 +106,7 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
        igr=wf_tab_loc(ic,2)
        igs=wf_tab_loc(ic,3)
        gphase=cmplx(cos(DEV_VAR(g_phs)(igr,isymm)),sin(DEV_VAR(g_phs)(igr,isymm)))
-       WF_k_tmp(igs,1)=WF_p(ig,1)*conjg(gphase)
+       WF_k_tmp(igs,1)=WF_p(ig,1)*conjg(gphase)*conjg(kphase)
      enddo
      !DEV_OMPGPU end target
      !DEV_ACC_DEBUG end data
@@ -125,14 +125,11 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
        gphase=cmplx(cos(DEV_VAR(g_phs)(igr,isymm)),sin(DEV_VAR(g_phs)(igr,isymm)))
        WF_k_tmp(igs,1)=ssop_loc(1,1)*WF_p(ig,1)+ssop_loc(1,2)*WF_p(ig,2)
        WF_k_tmp(igs,2)=ssop_loc(2,1)*WF_p(ig,1)+ssop_loc(2,2)*WF_p(ig,2)
-       WF_k_tmp(igs,:)=WF_k_tmp(igs,:)*conjg(gphase)
+       WF_k_tmp(igs,:)=WF_k_tmp(igs,:)*conjg(gphase)*conjg(kphase)
      enddo
      !DEV_OMPGPU end target
      !DEV_ACC_DEBUG end data
    endif
-   !
-   ! Take care of translations
-   WF_k_tmp=WF_k_tmp*conjg(kphase)
    !
    ! take care of time reversal if needed
    !if((isymm)) call dev_conjg(WF_k_tmp)
@@ -252,7 +249,7 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
        igr=wf_tab_loc(ic,2)
        igs=wf_tab_loc(ic,3)
        gphase=cmplx(cos(DEV_VAR(g_phs)(igr,isymm)),sin(DEV_VAR(g_phs)(igr,isymm)))
-       WF_k_tmp(igs,1)=WF_p(ig,1)*conjg(gphase)
+       WF_k_tmp(igs,1)=WF_p(ig,1)*conjg(gphase)*conjg(kphase)
      enddo
      !
    else
@@ -269,12 +266,9 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
        gphase=cmplx(cos(DEV_VAR(g_phs)(igr,isymm)),sin(DEV_VAR(g_phs)(igr,isymm)))
        WF_k_tmp(igs,1)=ssop_loc(1,1)*WF_p(ig,1)+ssop_loc(1,2)*WF_p(ig,2)
        WF_k_tmp(igs,2)=ssop_loc(2,1)*WF_p(ig,1)+ssop_loc(2,2)*WF_p(ig,2)
-       WF_k_tmp(igs,:)=WF_k_tmp(igs,:)*conjg(gphase)
+       WF_k_tmp(igs,:)=WF_k_tmp(igs,:)*conjg(gphase)*conjg(kphase)
      enddo
    endif
-   !
-   ! Take care of translations
-   WF_k_tmp=WF_k_tmp*conjg(kphase)
    !
    ! take care of time reversal if needed
    !if(isymm>nsym/(1+i_time_rev)) call dev_conjg(WF_k_tmp)

@@ -22,7 +22,7 @@ subroutine G_shells_finder()
  use LIVE_t,       ONLY:live_timing
  use D_lattice,    ONLY:nsym,inv_index,dl_tra
  use R_lattice,    ONLY:b,n_g_shells,ng_in_shell,ng_closed,&
-&                       g_vec,g_rot,E_of_shell,rl_sop,minus_G,G_mod_indx
+&                       g_vec,g_phs,g_rot,E_of_shell,rl_sop,minus_G,G_mod_indx
  use R_lattice,    ONLY:DEV_VAR(g_rot),DEV_VAR(g_phs),DEV_VAR(minus_G)
  use vec_operate,  ONLY:c2a,iku_v_norm,v_is_zero,sort,degeneration_finder
  use wave_func,    ONLY:wf_nc_k,E_of_WFs
