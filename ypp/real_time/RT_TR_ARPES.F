@@ -384,22 +384,26 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  !
  call of_open_close(trim(file_name))
  !
- ! Print G(w,k) for specific k  (only gamma for now)
- !
- file_name="G_k1_w"
- call of_open_close(trim(file_name),'ot')
- headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
- call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
- call msg('o '//trim(file_name),"#")
- !
- do i_w=1,RT_conf%W_n_steps
-   odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,      &
-   &      INTERP_obj(ID_ARPES)%INTERP(i_w,i_karpes,2), &
-   &      INTERP_obj(ID_ARPES)%INTERP(i_w,i_karpes,1) /)
-   call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
- enddo
- !
- call of_open_close(trim(file_name))
+ ! DEBUG <
+ !!
+ !! Print G(w,k) for specific k  (only gamma for now)
+ !!
+ !file_name="G_k1_w"
+ !call of_open_close(trim(file_name),'ot')
+ !headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
+ !call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
+ !call msg('o '//trim(file_name),"#")
+ !!
+ !do i_w=1,RT_conf%W_n_steps
+ !  odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,      &
+ !  &      INTERP_obj(ID_ARPES)%INTERP(i_w,i_karpes,2), &
+ !  &      INTERP_obj(ID_ARPES)%INTERP(i_w,i_karpes,1) /)
+ !  call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
+ !enddo
+ !!
+ !call of_open_close(trim(file_name))
+ !!
+ ! DEBUG >
  !
  call section('=','Plotting')
  !============================================================================= 
