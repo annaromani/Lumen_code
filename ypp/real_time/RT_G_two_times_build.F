@@ -436,28 +436,29 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  !
  YAMBO_FREE(G_w)
  !
+ ! DEBUG <
+ !
  ! Print G(w,k) for specific k  (only gamma for now)
  !
- do i_sp=1,n_sp_pol
-  !
-   file_name="G_k1_w"
-   if (n_sp_pol>1) file_name="G_k1_sp"//trim(intc(i_sp))//"_w"
-   call of_open_close(trim(file_name),'ot')
-   headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
-   call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
-   !
-   do i_w=1,RT_conf%W_n_steps
-     odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,    &
-     &      -real(cI*GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP),   &
-     &       real(   GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP)     /)
-     call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
-   enddo
-   !
-   call of_open_close(trim(file_name))
-   !
- enddo
+ !do i_sp=1,n_sp_pol
+ ! !
+ !  file_name="G_k1_w"
+ !  if (n_sp_pol>1) file_name="G_k1_sp"//trim(intc(i_sp))//"_w"
+ !  call of_open_close(trim(file_name),'ot')
+ !  headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
+ !  call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
+ !  !
+ !  do i_w=1,RT_conf%W_n_steps
+ !    odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,    &
+ !    &      -real(cI*GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP),   &
+ !    &       real(   GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP)     /)
+ !    call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
+ !  enddo
+ !  !
+ !  call of_open_close(trim(file_name))
+ !  !
+ !enddo
  !
- ! DEBUG <
  !do i_sp=1,n_sp_pol
  !do ik=1,RT_nk
  !  !
