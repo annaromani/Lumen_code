@@ -110,6 +110,10 @@ subroutine G_shells_finder()
    enddo
  enddo
  !
+#ifdef _GPU
+ YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_phs),g_phs)
+#endif
+ !
  ! Shells build-up by finding equal module G_vectors
  ! ==================================================
  !

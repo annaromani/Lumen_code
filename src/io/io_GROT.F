@@ -16,7 +16,7 @@ integer function io_GROT(io_db)
  use D_lattice,      ONLY:nsym,inv_index
  use R_lattice,      ONLY:n_g_shells,ng_closed,ng_in_shell,E_of_shell,&
 &                         g_rot,g_phs,minus_G,G_mod_indx
- use R_lattice,      ONLY:DEV_VAR(minus_G),DEV_VAR(g_rot)
+ use R_lattice,      ONLY:DEV_VAR(minus_G),DEV_VAR(g_rot),DEV_VAR(g_phs)
  use IO_m,           ONLY:io_status,io_sec,read_is_on,variable_exist,&
 &                         write_is_on
  use electrons,      ONLY:n_spinor
@@ -90,6 +90,7 @@ integer function io_GROT(io_db)
 #ifdef _GPU
  if (read_is_on(io_db)) then
    YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_rot),g_rot)
+   YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_phs),g_phs)
    if (inv_index<0) then
      YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(minus_G),minus_G)
    endif
