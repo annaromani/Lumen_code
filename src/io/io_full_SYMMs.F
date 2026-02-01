@@ -84,7 +84,7 @@ integer function io_full_SYMMs(En_old,k_old,nkibz,ID)
  call def_variable_bulk(ID, VAR="EIGENVALUES", VAR_ID=2, VAR_SZ=shape(En_old%E), VAR_KIND=SP )
  call io_variable_bulk(ID,2, R3=En_old%E )
  !
- call def_variable_bulk(ID,VAR="old_DL_dop",VAR_ID=3,VAR_SZ=(/3,3,old_nsym/),VAR_KIND=SP)
+ call def_variable_bulk(ID,VAR="old_DL_sop",VAR_ID=3,VAR_SZ=(/3,3,old_nsym/),VAR_KIND=SP)
  call io_variable_bulk(ID,3,R3=old_dl_sop(:,:,:old_nsym))
  !
  call def_variable_bulk(ID,VAR="old_DL_tra",VAR_ID=4,VAR_SZ=(/3,old_nsym/),VAR_KIND=SP)

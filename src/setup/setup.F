@@ -24,9 +24,10 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
 &                         n_atomic_species,PT_elements,non_periodic_directions,lattice,&
 &                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms,&
-&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra
+&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra,old_i_time_rev
  use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,g_rot,&
-&                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
+&                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,&
+&                         MAX_kpts_to_report
  use com,            ONLY:msg,fat_log
  use stderr,         ONLY:intc
  use units,          ONLY:HA2EV
@@ -64,7 +65,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  real(SP)          :: Tel_SAVE,tmp_V(3)
  integer           :: i1,i2,ik,is,ia,i_err,nbf_SAVE(2),nbm_SAVE(2),&
-                      n_to_print,old_sp_nsym,old_i_time_rev
+                      n_to_print,old_sp_nsym
  type(bz_samp)     :: k_old
  type(levels)      :: Xen_COPY,En_old
  integer           :: io_old_SYMMs,ID
@@ -201,7 +202,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    !
  else
    !
-   call msg('nr','Symmetries list') 
+   call msg('nr','Symmetries list')
    call detect_point_group(sp_nsym,real(dl_sop(:,:,:sp_nsym),DP))
    !
  endif
