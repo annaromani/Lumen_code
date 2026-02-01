@@ -21,6 +21,9 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  &                       k_pt,rl_sop,g_vec
  use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv,dl_tra, &
  &                       dl_sop,S_contains_TR,nsym
+#if defined _GPU
+ use devxlib,       ONLY:devxlib_memcpy_d2d,devxlib_conjg_d
+#endif
  !
  implicit none
  !
@@ -40,10 +43,6 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !
  integer :: ib,i_wf,isymm_m1
  integer :: ic,ic_max,ig,igp,igr,igs,i_spinor
- !
-#if defined _GPU
- call error("subroutine WF_symm_kpoint_g is not gpu ported")
-#endif
  !
  !if(isymm==idt_index) write(*,*) k_pt(ik,:)
  if(isymm==idt_index.and.ig0==1) return
@@ -132,11 +131,13 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
    endif
    !
    ! take care of time reversal if needed
-   !if((isymm)) call dev_conjg(WF_k_tmp)
+#if defined _GPU
+   if(S_contains_TR(isymm)) call devxlib_conjg_d(WF_k_tmp)
+   call devxlib_memcpy_d2d(WF_p,WF_k_tmp)
+#else
    if(S_contains_TR(isymm)) WF_k_tmp=conjg(WF_k_tmp)
-   !
-   !!call dev_memcpy(WF_p,WF_k_tmp)
    WF_p=WF_k_tmp
+#endif
    !
    nullify(WF_p)
    !
@@ -155,19 +156,23 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
  use R_lattice,     ONLY:DEV_VAR(g_rot),DEV_VAR(g_phs),DEV_VAR(G_m_G),&
  &                       k_pt,rl_sop,g_vec
  use D_lattice,     ONLY:idt_index,DEV_VAR(spin_sop),sop_inv,dl_tra, &
- &                       dl_sop,i_time_rev,nsym
+ &                       dl_sop,S_contains_TR,nsym
+#if defined _GPU
+ use devxlib,       ONLY:devxlib_memcpy_d2d,devxlib_conjg_d
+#endif
  !
  implicit none
  !
  integer,       intent(in) :: b_to_load(2)
  integer,       intent(in) :: ik,i_sp_pol,isymm,ig0
  type (WAVEs), target, intent(inout) :: WF
- complex(SP) DEV_ATTR, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
+ complex(SP) DEV_ATTR, target, intent(out) :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
  !
  ! Work space
  !
  complex(SP)              DEV_ATTR :: WF_k_tmp(wf_ng_overlaps,n_spinor)
  complex(SP), pointer     DEV_ATTR :: WF_p(:,:)
+ complex(SP), pointer     DEV_ATTR :: WF_p_out(:,:)
  complex(SP)              DEV_ATTR :: ssop_loc(n_spinor,n_spinor)
  integer                  DEV_ATTR :: wf_tab_loc(wf_ng,3)
  !
@@ -177,16 +182,50 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
  integer :: ib,i_wf,isymm_m1
  integer :: ic,ic_max,ig,igp,igr,igs,i_spinor
  !
-#if defined _GPU
- call error("subroutine WF_symm_kpoint_g is not gpu ported")
-#endif
+ ic_max=wf_nc_k(ik)
+ do ic=1,wf_nc_k(ik)
+   ig=DEV_VAR(wf_igk)(ic,ik)
+   if(ig<=wf_ng) cycle
+   ic_max=ic-1
+   exit
+ enddo
  !
  if(isymm==idt_index.and.ig0==1) then
    WF_k_out=cZERO
    do ib=b_to_load(1),b_to_load(2)
      i_wf=WF%index(ib,ik,i_sp_pol)
-     !!call dev_memcpy(WF_p,WF_k_tmp)
-     WF_k_out(:wf_ng,:,ib)=WF%c(:wf_ng,:,i_wf)
+     WF_p => DEV_VAR(WF%c)(:,:,i_wf)
+     WF_p_out => WF_k_out(:,:,ib)
+     !
+     if (n_spinor==1) then
+       !
+       !DEV_ACC_DEBUG data present(WF_p_out,WF_p)
+       !DEV_ACC parallel loop private(ig)
+       !DEV_CUF kernel do(1) <<<*,*>>>
+       !DEV_OMPGPU target map(present,alloc:WF_p_out,WF_p)
+       !DEV_OMPGPU teams loop
+       do ic=1,ic_max
+         ig=DEV_VAR(wf_igk)(ic,ik)
+         WF_p_out(ig,1)=WF_p(ig,1)
+       enddo
+       !
+     else
+       !
+       !DEV_ACC_DEBUG data present(WF_p_out,WF_p)
+       !DEV_ACC parallel loop private(ig)
+       !DEV_CUF kernel do(1) <<<*,*>>>
+       !DEV_OMPGPU target map(present,alloc:WF_p_out,WF_p)
+       !DEV_OMPGPU teams loop
+       do ic=1,ic_max
+         ig=DEV_VAR(wf_igk)(ic,ik)
+         WF_p_out(ig,1)=WF_p(ig,1)
+         WF_p_out(ig,2)=WF_p(ig,2)
+       enddo
+       !
+     endif
+     !
+     nullify(WF_p)
+     nullify(WF_p_out)
    enddo
    return
  endif
@@ -214,14 +253,6 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
  !
  if (n_spinor==2) ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
  !
- ic_max=wf_nc_k(ik)
- do ic=1,wf_nc_k(ik)
-   ig=DEV_VAR(wf_igk)(ic,ik)
-   if(ig<=wf_ng) cycle
-   ic_max=ic-1
-   exit
- enddo
- !
  do ic=1,ic_max
    ig=DEV_VAR(wf_igk)(ic,ik)
    igr=DEV_VAR(g_rot)(ig,isymm)
@@ -236,6 +267,7 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
    !
    i_wf=WF%index(ib,ik,i_sp_pol)
    WF_p => DEV_VAR(WF%c)(:,:,i_wf)
+   WF_p_out => WF_k_out(:,:,ib)
    !
    if (n_spinor==1) then
      !
@@ -271,13 +303,16 @@ subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
    endif
    !
    ! take care of time reversal if needed
-   !if(isymm>nsym/(1+i_time_rev)) call dev_conjg(WF_k_tmp)
-   if(isymm>nsym/(1+i_time_rev)) WF_k_tmp=conjg(WF_k_tmp)
-   !
-   !!call dev_memcpy(WF_p,WF_k_tmp)
-   WF_k_out(:,:,ib)=WF_k_tmp
+#if defined _GPU
+   if(S_contains_TR(isymm)) call devxlib_conjg_d(WF_k_tmp)
+   call devxlib_memcpy_d2d(WF_p_out,WF_k_tmp)
+#else
+   if(S_contains_TR(isymm)) WF_k_tmp=conjg(WF_k_tmp)
+   WF_p_out=WF_k_tmp
+#endif
    !
    nullify(WF_p)
+   nullify(WF_p_out)
    !
  enddo
  !

@@ -367,7 +367,7 @@ module interfaces
      integer,              intent(in)    :: b_to_load(2)
      integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
      type (WAVEs), target, intent(inout) :: WF
-     complex(SP) DEV_ATTR, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
+     complex(SP) DEV_ATTR, target, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
    end subroutine WF_symm_kpoint_g2
    !
    subroutine WF_apply_symm(isc,WF_symm)

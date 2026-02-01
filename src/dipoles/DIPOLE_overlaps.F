@@ -50,9 +50,14 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  integer           :: id,idp,idx_kp(3),idx_k(3),shift(3),g0_idx(3,2),i_wf,i_wfp
  real(SP)          :: g0_length(3)
  !
- !WF_skg1
+ !WF_skg1: implementation using WF_ik and WF_ikp as type WAVES
+ !         This uses the interface WF_symm_kpoint_g
+ !         It would be better, but needs to be finalized for the case WF_load_mode="all"
  !type (WAVEs) :: WF_ik,WF_ikp
- !WF_skg2
+ !
+ !WF_skg2: implementation using WF_ik and WF_ikp as complext allocatables
+ !         This uses the interface WF_symm_kpoint_g2
+ !
  complex(SP), allocatable DEV_ATTR :: WF_ik(:,:,:)
  complex(SP), allocatable DEV_ATTR :: WF_ikp(:,:,:)
  !
@@ -106,6 +111,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
    &            space='G',title='-Overlaps')
  endif
  !
+ !WF_skg2
  YAMBO_ALLOC_GPU(WF_ikp,(wf_ng_overlaps,n_spinor,Dip%ib(2)))
  YAMBO_ALLOC_GPU(WF_ik, (wf_ng_overlaps,n_spinor,Dip%ib(2)))
  !
