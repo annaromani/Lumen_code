@@ -188,7 +188,7 @@ subroutine print_point_group(fname,sp_nsym,nsym,dl_sop,dl_tra,prt_syms_only)
    do is=1,sp_nsym
      dumb_ch=trim(intc(is))//'] '
      i1=9
-     do while (i1<nsym)
+     do while (i1<sp_nsym)
        if(is<=i1) dumb_ch=' '//trim(dumb_ch)
        i1=i1*10+9
      enddo

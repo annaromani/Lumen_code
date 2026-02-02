@@ -207,7 +207,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    !
  endif
  !
- call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:nsym),dl_tra(:,sp_nsym),io_old_SYMMs==0)
+ call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:nsym),dl_tra(:,:sp_nsym),io_old_SYMMs==0)
  !
  call section('=','Reciprocal space')
  !====================================
