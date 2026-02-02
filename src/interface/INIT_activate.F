@@ -173,7 +173,7 @@ subroutine INIT_activate()
  !
  if (l_em1s.or.l_em1d.or.l_X.or.l_mpa)      call initactivate(1,'Chimod ChiLinAlgMod')
  if (l_optics.and.l_chi)           call initactivate(1,'Chimod ChiLinAlgMod')
- if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind')
+ if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind BSKIOshape BSEdiskIO')
  if (l_optics.and.l_bse.and.l_bss) call initactivate(1,'BSSmod')
  !
  if (l_dipoles) then
