@@ -3408,8 +3408,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="26670"
-SHASH="5b6ca81394"
+SREVISION="26671"
+SHASH="ca57b31048"
 
 
 
@@ -7400,7 +7400,7 @@ i?86*linux*)
        CPU_FLAG="-xHost"
        #CPU_FLAG=" "
        ;;
-      *2025* )
+      *2025* | *2026* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
@@ -7659,13 +7659,13 @@ aarch*linux* | arm*linux* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
-       CFLAGS="-O2 -std=c11"
+       CFLAGS="-O2 -std=gnu99"
        ;;
       *2020* | *2021* | *2022* | *2023* | *2024* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp -parallel"
        FCMFLAG="-nofor-main"
-       CFLAGS="-O2 -std=c11"
+       CFLAGS="-O2 -std=gnu99"
        ;;
       *19* )
        CPU_FLAG=" "
@@ -7693,7 +7693,7 @@ aarch*linux* | arm*linux* )
     OMPFLAGS="-qopenmp"
     CPU_FLAG=""
     FCMFLAG="-nofor-main"
-    CFLAGS="-O2 -std=c11"
+    CFLAGS="-O2 -std=gnu99"
     SYSFLAGS="-O3 -g"
     FUFLAGS="-O0 -g"
     DEBUG_FLAGS="-CB -traceback -debug full"
