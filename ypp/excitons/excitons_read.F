@@ -109,9 +109,9 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
              bsL_magn=BS_R_left_magn,bsR_magn=BS_R_right_magn,bsR_pl=BS_R_PL)
      if (io_err/=0) then
        if(i_sec==1) then
-         call warning('Error reading SEC1 in ndb.BSS_diago, this can be due to the missing ndb.dipoles or ndb.ems1')
+         call warning('Error reading SEC1 in ndb.BS_diago_Qx, this can be due to the missing ndb.dipoles or ndb.ems1')
        else
-         call warning('ndb.BSS_diago, SEC '//trim(intc(i_sec))//', not compatible with ypp input')
+         call warning('ndb.BS_diago_Qx, SEC '//trim(intc(i_sec))//', not compatible with ypp input')
        endif
        return
      endif
