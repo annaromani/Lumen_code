@@ -3438,8 +3438,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="26664"
-SHASH="3339cb06e9"
+SREVISION="26671"
+SHASH="ca57b31048"
 
 
 
@@ -7524,7 +7524,7 @@ i?86*linux*)
        CPU_FLAG="-xHost"
        #CPU_FLAG=" "
        ;;
-      *2025* )
+      *2025* | *2026* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
@@ -7779,7 +7779,7 @@ aarch*linux* | arm*linux* )
        #CPU_FLAG="-xHost"
        CPU_FLAG=" "
        ;;
-      *2025* )
+      *2025* | *2026* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
@@ -14901,11 +14901,11 @@ printf "%s\n" "to be compiled" >&6; } ;
       #
     fi
     #
-    if test "$use_libz"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lz"   ; fi
-    if test "$use_libsz"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -lsz"  ; fi
     if test "$use_libm"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lm"   ; fi
     if test "$use_libdl"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -ldl"  ; fi
     if test "$use_libcurl" = "yes"; then HDF5_LIBS="$HDF5_LIBS -lcurl"; fi
+    if test "$use_libsz"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -lsz"  ; fi
+    if test "$use_libz"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lz"   ; fi
     #
   fi
 fi
