@@ -38,11 +38,13 @@ module BS
  logical :: BS_K_has_been_calculated_loaded=.FALSE.
  logical :: BSK_IO_sum_value
  character(schlen) :: BSE_L_kind
+ character(schlen) :: BSE_disk_IO
  character(schlen) :: BSE_mode
  character(schlen) :: BSE_prop
  character(schlen) :: BSE_dipole_geometry="none"
  character(schlen) :: BSK_mode
  character(schlen) :: BSK_IO_mode
+ character(schlen) :: BSK_IO_shape
  character(schlen) :: BS_bands_frozen_ch=""
  !
  ! Dipoles tracing 
