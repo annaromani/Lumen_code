@@ -52,9 +52,9 @@ subroutine NL_initialize(E,k)
  ! Working space
  !
  real(SP) :: Time,W_0,T_0,sigma,E_dot_rot_axis 
- integer  :: i1,n_active_fields,Integr_steps
+ integer  :: i1,i2,ik,i_sp_pol,n_active_fields,Integr_steps
  logical  :: l_velocity_gauge_tmp
- real(SP) :: Sampling_Time
+ real(SP) :: Sampling_Time,Gamma_ij,min_Gamma_ij,max_Gamma_ij
  logical  :: l_no_compress_COLL
  character(schlen)  :: field_defs(n_fields_defs_max)
  !
@@ -323,7 +323,7 @@ subroutine NL_initialize(E,k)
    !
    if(Efield(1)%ef_name=='SOFTSIN'.or.Efield(1)%ef_name=='SIN') then
      !  
-     ! Run length is 6*Phase_lifeTime + 4 fs for response analysis
+     ! Run length is 6*Phase_LifeTime + 4 fs for response analysis
      !
      if(NL_damping<zero_dfl) call error(" Error damping=0 and NLtime<0 ") 
      !
@@ -367,6 +367,27 @@ subroutine NL_initialize(E,k)
    ! 
  else
    call msg('s','Total simulation time read from input')
+ endif
+ !
+ if(allocated(E%W)) then
+   call msg('rs','Dephasing read from ndb.QP database')
+   min_Gamma_ij=1e10
+   max_Gamma_ij=0._SP
+   do ik=1,E%nk
+   do i_sp_pol=1,n_sp_pol
+   do i1=NL_bands(1),E%nbf(i_sp_pol)
+     do i2=E%nbf(i_sp_pol)+1,NL_bands(2)
+        Gamma_ij=0.5_SP*(abs(E%W(i1,ik,i_sp_pol))+abs(E%W(i2,ik,i_sp_pol)))
+        if(Gamma_ij<min_Gamma_ij) min_Gamma_ij=Gamma_ij
+        if(Gamma_ij>max_Gamma_ij) max_Gamma_ij=Gamma_ij
+     enddo
+   enddo
+   enddo
+   enddo
+   call msg('rs','Minimum damping detected: ',2._SP*min_Gamma_ij*HA2EV,'[eV]')
+   call msg('rs','Maximum damping detected: ',2._SP*max_Gamma_ij*HA2EV,'[eV]')
+   call msg('s','Suggest simulation length: ', &
+&          2._SP*AUT2FS/maxval((/min_Gamma_ij,NL_damping/)),'[fs]')
  endif
  !
  call msg('sr','Total simulation time       ',NE_tot_time*AUT2FS,"[fs]")

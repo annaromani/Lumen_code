@@ -48,7 +48,7 @@ subroutine electrons_bands(Xk,Xen)
  ! Work Space
  !
  type(levels)          :: GRID_E,CIRCUIT_E,CIRCUIT_dE,E_QF
- integer               :: ID_spin,ID_magn,ID_bands(3),IDs(5),nfiles(5),nqnt,ib,ID_occ,ik,prt_occ
+ integer               :: ID_spin,ID_magn,ID_bands(3),IDs(5),nfiles(5),QP_apply_bands(2),nqnt,ib,ID_occ,ik,prt_occ
  real(SP)              :: dEf,E_fermi_e,E_fermi_h,E_h,E_e
  logical               :: BANDS_built_in,BANDS_interpolated,GRID_interpolate
 #if defined _YPP_SC
@@ -65,7 +65,9 @@ subroutine electrons_bands(Xk,Xen)
  INTERP_mode_save        =INTERP_mode
  INTERP_shell_factor_save=INTERP_shell_factor
  !
- call QP_apply(BANDS_bands,Xen,Xk,'G',msg_fmt='rs')
+ QP_apply_bands(1)=minval((/Xen%nbf(:),  BANDS_bands(1)/))
+ QP_apply_bands(2)=maxval((/Xen%nbm(:)+1,BANDS_bands(2)/))
+ call QP_apply(QP_apply_bands,Xen,Xk,'G',msg_fmt='rs')
  !
  INTERP_mode        =INTERP_mode_save
  INTERP_shell_factor=INTERP_shell_factor_save
