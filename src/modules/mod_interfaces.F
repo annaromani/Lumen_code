@@ -360,7 +360,7 @@ module interfaces
      type (WAVEs), target, intent(inout) :: WF
    end subroutine WF_symm_kpoint_g
    !
-   subroutine WF_symm_kpoint_g2(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
+   subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
      use pars,          ONLY:SP
      use electrons,     ONLY:n_spinor
      use wave_func,     ONLY:WAVEs,wf_ng_overlaps
@@ -368,7 +368,7 @@ module interfaces
      integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
      type (WAVEs), target, intent(inout) :: WF
      complex(SP) DEV_ATTR, target, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
-   end subroutine WF_symm_kpoint_g2
+   end subroutine WF_symm_kpoint_g_tmp
    !
    subroutine WF_apply_symm(isc,WF_symm)
      use pars,          ONLY:SP

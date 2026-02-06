@@ -33,7 +33,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
 &                            PAR_IND_CON_BANDS_OVLP,PAR_IND_VAL_BANDS_OVLP,           &
 &                            PAR_IND_OVLPk_ibz,PAR_COM_DIPk_ibz_INDEX
  use parallel_int,      ONLY:PP_redux_wait,PARALLEL_WF_index,PARALLEL_WF_distribute
- use interfaces,        ONLY:WF_symm_kpoint_g2,eval_G_minus_G,WF_load,WF_free
+ use interfaces,        ONLY:WF_symm_kpoint_g_tmp,eval_G_minus_G,WF_load,WF_free
  use gpu_m,             ONLY:have_gpu
  use timing_m,          ONLY:timing
  use y_memory_alloc
@@ -154,7 +154,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
      !WF_skg1
      !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ik,i_sp_pol,is,ig_shift,WF_ik)
      !WF_skg2
-     call WF_symm_kpoint_g2((/1,Dip%ib(2)/),ik,i_sp_pol,is,ig_shift,WF,WF_ik)
+     call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ik,i_sp_pol,is,ig_shift,WF,WF_ik)
      !
      if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
      !
@@ -230,7 +230,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
 	 !WF_skg1
 	 !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
          !WF_skg2
-	 call WF_symm_kpoint_g2((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
+	 call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
          !
          if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
          !
