@@ -109,7 +109,7 @@ subroutine INIT_barriers()
  endif
  !
  if (gw0_raxis) then
-   on_runlevels='dyson gw0 em1d el_el_corr el_ph_corr ph_el_corr el_photon_corr HF_and_locXC'
+   on_runlevels='dyson gw0 em1d el_el_corr el_ph_corr ph_el_corr el_photon_corr HF_and_locXC rim_w'
    call switch_off_runlevel('all',except=trim(on_runlevels)//' '//trim(always_on_runlevels))
    goto 1
  endif
