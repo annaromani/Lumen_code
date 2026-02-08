@@ -334,12 +334,13 @@ integer function io_DB1(E,k,ID)
  call io_bulk(ID, VAR="SYMMETRY", VAR_SZ=shape(dl_sop(:,:,:nsym)) )
  call io_bulk(ID, R3=dl_sop(:,:,:nsym))
  !
- dl_tra=0._SP
  if (variable_exist(ID,"TRANSLATIONS") .or. write_is_on(ID)) then
    call io_bulk(ID, VAR="TRANSLATIONS", VAR_SZ=shape(dl_tra(:,:nsym)) )
    call io_bulk(ID, R2=dl_tra(:,:nsym))
-   non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
+ else
+   dl_tra=0._SP
  endif
+ non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
  !
  if (read_is_on(ID)) then
    do is=1,nsym
