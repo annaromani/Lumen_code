@@ -101,7 +101,7 @@ module IO_m
 #endif
  !
 #if defined _DOUBLE
- complex(DP), parameter :: YAMBO_CMPLX_NO_FILL = cmplx(nf90_fill_double,nf90_fill_double)
+ complex(DP), parameter :: YAMBO_CMPLX_NO_FILL = cmplx(nf90_fill_double,nf90_fill_double,kind=DP)
 #else
  complex(SP), parameter :: YAMBO_CMPLX_NO_FILL = cmplx(nf90_fill_real,  nf90_fill_real)
 #endif

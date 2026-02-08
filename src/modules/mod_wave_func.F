@@ -38,7 +38,7 @@ module wave_func
 #if defined _GAMMA_ONLY
  real(SP), parameter    :: wfZERO=0._SP
 #else
- complex(SP), parameter :: wfZERO=cmplx(0._SP,0._SP)
+ complex(SP), parameter :: wfZERO=cmplx(0._SP,0._SP,kind=SP)
 #endif
  !
  ! Buffered WFs
