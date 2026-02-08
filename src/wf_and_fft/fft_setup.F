@@ -281,9 +281,7 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
          do i3=0,fft_dim(3)-1
            !
            ! r
-           iv(1)=i1
-           iv(2)=i2
-           iv(3)=i3
+           iv=(/i1,i2,i3/)
            ! r-T
            iv=iv+T1
            ! R^-1(r-T)
