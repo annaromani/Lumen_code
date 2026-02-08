@@ -16,6 +16,16 @@ else
  include config/mk/global/no_configure_help.mk
 endif
 #
+# Check if source is clean
+#
+ifneq ($(srcdir),$(compdir))
+ ifneq ($(srcdir),.)
+  ifeq ($(wildcard $(srcdir)/config/report),$(srcdir)/config/report)
+   $(error $(srcdir) is not clean. Please run make distclean in source.)
+  endif
+ endif
+endif
+#
 MAKEFLAGS = --no-print-directory
 #
 # Targets
