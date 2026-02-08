@@ -329,6 +329,7 @@ subroutine INIT_activate()
    call X_activate('Xs',(/'QpntsR','BndsRn','NGsBlk','GrFnTp','DmRnge','CGrdSp','EhEngy','LongDr','DrudeW'/))
    call initactivate(1,'XTermKind')
    call initactivate(1,'XTermEn')
+   call initactivate(1,'OptDipAverage')
  endif
  !
  ! GW (PPA, MPA, & COHSEX) 
