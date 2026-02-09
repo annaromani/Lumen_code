@@ -11,7 +11,7 @@
 #include<y_memory.h>
 !
 !************************* WARNING **************************
-!* This subroutine is not correct in presene of             *
+!* This subroutine is not correct in presence of            *
 !* non symmorphyc symmetri operations                       * 
 !* An alternative subroutine that applies symmetries in a   *
 !* different way exist: K_correlation_collisions_dir.F      *
