@@ -75,4 +75,40 @@ subroutine SERIAL_inversion(n,M,det,eval_det)
  !
  if(.not.(l_nl_optics.or.l_real_time)) call timing('SERIAL_inversion',OPR='stop')
  !
-end subroutine
+end subroutine SERIAL_inversion
+!
+!
+subroutine SERIAL_inversion_rt(n,M)
+ !
+ use pars,           ONLY:SP
+ use stderr,         ONLY:intc
+ use linear_algebra, ONLY:la_xgetrf,la_xgetri
+ !
+ implicit none
+ !
+ integer,      intent(in)     :: n
+ complex(SP),  intent(inout)  :: M(n,n)
+ !
+ !ws
+ integer           :: i_loop,i_fail,optimal_dim,v_int(n)
+ complex(SP)       :: v_cmplx_size(1)
+ complex(SP), allocatable :: v_cmplx(:)
+ !
+ ! Perform LU factorization
+ call la_xgetrf(n,n,M,n,v_int,i_fail)
+ if(i_fail/=0) call error('xgetfr: matrix is singula, cannot compute inverson')
+ !
+ ! Estimate optimal size for work array for the inversion
+ call la_xgetri(n,M,n,v_int,v_cmplx_size,-1,i_fail)
+ if(i_fail/=0) call error('xgetri: failed on workspace query')
+ !
+ optimal_dim=int(real(v_cmplx_size(1)))
+ allocate(v_cmplx(optimal_dim))
+ !
+ ! Perform inversion
+ call la_xgetri(n,M,n,v_int,v_cmplx,optimal_dim,i_fail)
+ if(i_fail/=0) call error('xgetri failed with error code '//trim(intc(i_fail)))
+ !
+ deallocate(v_cmplx)
+ !
+end subroutine SERIAL_inversion_rt

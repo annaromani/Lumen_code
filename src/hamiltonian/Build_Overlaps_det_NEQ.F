@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2016 The Yambo Team
 !
-! Authors (see AUTHORS file for details): MG CA
+! Authors (see AUTHORS file for details): MG CA DS
 !
 subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_det)
  !
@@ -15,7 +15,7 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  use R_lattice,      ONLY:k_map,bz_samp
  use vec_operate,    ONLY:k_periodic_idx
  use DIPOLES,        ONLY:DIP_S
- use wrapper,        ONLY:Vstar_dot_V,M_by_V,mv_cgemv
+ use wrapper,        ONLY:Vstar_dot_V,M_by_V,M_by_M,mv_cgemv
  use QP_m,           ONLY:QP_nk
  use electric,       ONLY:l_force_SndOrd
  !
@@ -32,9 +32,212 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  !
  ! Work Space
  !
- integer     :: idx(3),id,ikp,ikm,i1,i2
+ integer     :: idx(3),id,ikp,ikm,i1,i2,Nl,Ml,Kl
  integer     :: ikm_ibz,ikp_ibz,ik_ibz,max_step,istep,itest
- !complex(SP) :: V_tmp(H_ref_bands(2),en%nbf(i_sp)) ! used in full construction of overlaps
+ complex(SP) :: V_tmp(H_ref_bands(2),H_ref_bands(1):en%nbf(i_sp)) ! used with M_by_M
+ complex(SP) :: tmp_det,vtmp(H_ref_bands(2))
+ !
+!$omp parallel do default(shared), private(id)
+ do id=1,6
+   S_det    (id)    =cZERO
+   Sm1_plus (:,:,id)=cZERO
+   Sm1_minus(:,:,id)=cZERO
+ enddo
+!$omp end parallel do
+ !
+ ! I split the construction of the Sm1_minus(Sm1_plus) matrix in four parts
+ !
+ !   1:H_ref_bands(1)-1   H_ref_bands(1):H_ref_bands(2)
+ !  _____________________________________
+ !  |                 |                  |
+ !  |     head        |      right       |     1:H_ref_bands(1)-1
+ !  |                 |      wing        |
+ !  |                 |                  |
+ !  |------------------------------------|
+ !  |                 |                  | 
+ !  |    left         |      body        |   H_ref_bands(1):H_ref_bands(2)
+ !  |    wing         |                  |
+ !  |                 |                  |
+ !  ------------------------------------- 
+ !
+ ! 
+ !  The head part is time-independent, the wings depends only from
+ !  one of the time-dependent valence bands, while the core part depends from
+ !  both the wave-functions at k and k-delta
+ !
+ ik_ibz=Xk%sstar(ikbz,1)
+ !
+ Nl=H_ref_bands(1)-1
+ Ml=en%nbf(i_sp)-Nl
+ Kl=H_ref_bands(2)
+ !
+ do id=1,3
+   !
+   if(k_map%max_kdir(id)/=1) then ! periodic directions
+     !
+     max_step=1
+     if(k_map%max_kdir(id)>=6.and..not.l_force_SndOrd) max_step=2
+     !
+     istep=0
+     do itest=1,2*max_step
+       !
+       !====================
+       ! Overlap S(k, k-dk)
+       !====================
+       !
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id)=idx(id)-itest
+       idx=k_periodic_idx(idx,k_map)
+       ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       if (ikm==0) cycle
+       !
+       istep=istep+1
+       if(istep>max_step) cycle
+       !
+       ! Sm1_minus(l,m; k, k - delta) = \sum_{i,j} V*(l,i; k) S*(i,j; k-delta, k) V(m,j ;k - delta)
+       !
+       ikm_ibz=Xk%sstar(ikm,1)
+       !
+       if (H_ref_bands(1)>1) then
+         !
+         ! Head
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2) 
+         do i2=1,Nl
+           do i1=1,Nl
+             Sm1_minus(i1,i2,id+(istep-1)*3)=conjg(DIP_S(i2,i1,id+(istep-1)*3,ikm,i_sp))
+           enddo
+         enddo
+         !$omp end parallel do
+         !
+         ! Left wing
+         !
+         call M_by_M('C', 'C', Ml, Nl, Kl, cONE, &
+               V_bands(1:Kl,Nl+1:Nl+Ml,ik_ibz), Kl, DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikm,i_sp), Kl, &
+               cZERO, Sm1_minus(Nl+1:Nl+Ml,1:Nl,id+(istep-1)*3), Ml)
+         !
+         ! Right wing
+         !
+         call M_by_M('C', 'N', Nl, Ml, Kl, cONE, &
+               DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikm,i_sp), Kl, V_bands(1:Kl,Nl+1:Nl+Ml,ikm_ibz), Kl, &
+               cZERO, Sm1_minus(1:en%nbf(i_sp),Nl+1:Nl+Ml,id+(istep-1)*3),en%nbf(i_sp))
+               !cZERO, Sm1_minus(1:Nl,Nl+1:Nl+Ml,id+(istep-1)*3),Nl)
+       !
+       endif
+       !
+       ! Body
+       !
+       ! Sm1(k,k-dk)_{n,m} =sum_{i,j} V^\dag(k)_(n,i) S^\dag(k-dk,k)_{i,j} V(k-dk)_(j,n)
+       !
+       call M_by_M('C','N',Kl,Ml,Kl,cONE,&
+       &     DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikm,i_sp),Kl,V_bands(1:Kl,Nl+1:Nl+Ml,ikm_ibz),Kl,&
+       &     cZERO,V_tmp(1:Kl,Nl+1:Nl+Ml),Kl)
+       !
+       call M_by_M('C','N',Ml,Ml,Kl,cONE,&
+       &     V_bands(1:Kl,Nl+1:Nl+Ml,ik_ibz),Kl,V_tmp(1:Kl,Nl+1:Nl+Ml),Kl,&
+       &     cZERO,Sm1_minus(Nl+1:Nl+Ml,Nl+1:Nl+Ml,id+(istep-1)*3),Ml)
+       !
+       ! Final inversion
+       !
+       call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
+       !
+       !====================
+       ! Overlap S(k, k+dk)
+       !====================
+       !
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id)=idx(id)+itest
+       idx=k_periodic_idx(idx,k_map)
+       ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       !
+       !  if (ikp==0) cycle
+       !
+       !  istep=istep+1
+       !  if(istep>max_step) cycle
+       !
+       ! Sm1_plus(l,m; k, k + delta) = \sum_{i,j} V*(l,i; k) S(i,j; k-delta, k) V(m,j ;k + delta)
+       !
+       ikp_ibz=Xk%sstar(ikp,1)
+       !
+       if (H_ref_bands(1)>1) then
+         !
+         ! Head
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2)
+         do i2=1,Nl
+           do i1=1,Nl
+             Sm1_plus(i1,i2,id+(istep-1)*3)=DIP_S(i1,i2,id+(istep-1)*3,ikbz,i_sp)
+           enddo
+         enddo
+         !$omp end parallel do
+         !
+         ! Left wing
+         !
+         call M_by_M('C', 'N', Ml, Nl, Kl, cONE, &
+               V_bands(1:Kl,Nl+1:Nl+Ml,ik_ibz), Kl, DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikbz,i_sp), Kl, &
+               cZERO, Sm1_plus(Nl+1:Nl+Ml,1:Nl,id+(istep-1)*3), Ml )
+         !
+         ! Right wing
+         !
+         call M_by_M('N', 'N', Nl, Ml, Kl, cONE, &
+               DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikbz,i_sp), Kl,V_bands(1:Kl,Nl+1:Nl+Ml,ikp_ibz), Kl, &
+               cZERO, Sm1_plus(1:en%nbf(i_sp),Nl+1:Nl+Ml,id+(istep-1)*3),en%nbf(i_sp))
+               !cZERO, Sm1_plus(1:Nl,Nl+1:Nl+Ml,id+(istep-1)*3),Nl)
+         !
+       endif
+       !
+       ! Body
+       !
+       call M_by_M('N','N',Kl,Ml,Kl,cONE,&
+       &     DIP_S(1:Kl,1:Kl,id+(istep-1)*3,ikbz,i_sp),Kl,V_bands(1:Kl,Nl+1:Nl+Ml,ikp_ibz),Kl,&
+       &     cZERO,V_tmp(1:Kl,Nl+1:Nl+Ml),Kl)
+       !
+       call M_by_M('C','N',Ml,Ml,Kl,cONE,&
+       &     V_bands(1:Kl,Nl+1:Nl+Ml,ik_ibz),Kl,V_tmp(1:Kl,Nl+1:Nl+Ml),Kl,&
+       &     cZERO,Sm1_plus(Nl+1:Nl+Ml,Nl+1:Nl+Ml,id+(istep-1)*3),Ml)
+       !
+       ! Final inversion
+       !
+       call SERIAL_inversion(en%nbf(i_sp), Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
+       !
+     enddo  
+     !
+   endif
+   !
+ enddo
+ !
+end subroutine Build_overlaps_det_NEQ
+!
+!
+subroutine Build_overlaps_det_NEQ_OMP(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_det)
+ !
+ ! Build overlaps determinants between valence bands
+ !
+ use pars,           ONLY:SP,cZERO,cONE
+ use electrons,      ONLY:levels
+ use hamiltonian,    ONLY:H_ref_bands
+ use R_lattice,      ONLY:k_map,bz_samp
+ use vec_operate,    ONLY:k_periodic_idx
+ use DIPOLES,        ONLY:DIP_S
+ use wrapper,        ONLY:Vstar_dot_V,M_by_V,M_by_M,mv_cgemv
+ use QP_m,           ONLY:QP_nk
+ use electric,       ONLY:l_force_SndOrd
+ !
+ implicit none
+ !
+ integer,      intent(in) :: ikbz
+ integer,      intent(in) :: i_sp
+ type(levels), intent(in) :: en
+ type(bz_samp),intent(in) :: Xk
+ complex(SP),  intent(in) :: V_bands(H_ref_bands(2),en%nbf(i_sp),QP_nk)
+ complex(SP), intent(out) :: S_det(6)
+ complex(SP), intent(out) :: Sm1_plus (en%nbf(i_sp),en%nbf(i_sp),6)
+ complex(SP), intent(out) :: Sm1_minus(en%nbf(i_sp),en%nbf(i_sp),6)
+ !
+ ! Work Space
+ !
+ integer     :: idx(3),id,ikp,ikm,i1,i2,Nl,Ml,Kl
+ integer     :: ikm_ibz,ikp_ibz,ik_ibz,max_step,istep,itest
  complex(SP) :: tmp_det,vtmp(H_ref_bands(2))
  !
 !$omp parallel do default(shared), private(id)
@@ -61,7 +264,185 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
  !  ------------------------------------- 
  !
  ! 
- !  The haed part is time-independent, the wings depends only from
+ !  The head part is time-independent, the wings depends only from
+ !  one of the time-dependent valence bands, while the core part depends from
+ !  both the wave-functions at k and k-delta
+ !
+ ik_ibz=Xk%sstar(ikbz,1)
+ !
+ do id=1,3
+   !
+   if(k_map%max_kdir(id)/=1) then ! periodic directions
+     !
+     max_step=1
+     if(k_map%max_kdir(id)>=6.and..not.l_force_SndOrd) max_step=2
+     !
+     istep=0
+     do itest=1,2*max_step
+       !
+       ! Overlap S(k, k-dk)
+       !
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id)=idx(id)-itest
+       idx=k_periodic_idx(idx,k_map)
+       ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       if (ikm==0) cycle
+       !
+       istep=istep+1
+       if(istep>max_step) cycle
+       !
+       ! Sm1_minus(l,m; k, k - delta) = \sum_{i,j} V*(l,i; k) S*(i,j; k-delta, k) V(m,j ;k - delta)
+       !
+       ikm_ibz=Xk%sstar(ikm,1)
+       !
+       ! Matrix head
+       !
+       if (H_ref_bands(1)>1) then
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2) 
+         do i2=1,H_ref_bands(1)-1
+           do i1=1,H_ref_bands(1)-1
+             Sm1_minus(i1,i2,id+(istep-1)*3)=conjg(DIP_S(i2,i1,id+(istep-1)*3,ikm,i_sp))
+           enddo
+         enddo
+         !$omp end parallel do
+         !
+         ! Matrix left wing
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2)
+         do i2=1,H_ref_bands(1)-1
+           do i1=H_ref_bands(1),en%nbf(i_sp)
+             Sm1_minus(i1,i2,id+(istep-1)*3)=Vstar_dot_V(H_ref_bands(2),V_bands(:,i1,ik_ibz), &
+&                  conjg(DIP_S(i2,:,id+(istep-1)*3,ikm,i_sp)))
+            enddo
+         enddo
+         !$omp end parallel do
+         !
+       endif
+       !
+       ! Matrix core
+       !
+       ! Sm1(k,k-dk)_{n,m} =sum_{i,j} V^\dag(k)_(n,i) S^\dag(k-dk,k)_{i,j} V(k-dk)_(j,n)
+       !
+       !$omp parallel do default(shared), private(i2,vtmp)
+       do i2=H_ref_bands(1),en%nbf(i_sp)
+         call M_by_V('C',H_ref_bands(2),DIP_S(:,:,id+(istep-1)*3,ikm,i_sp),V_bands(:,i2,ikm_ibz),vtmp)
+         !
+         call mv_cgemv('C',H_ref_bands(2),en%nbf(i_sp),cONE,V_bands(:,:,ik_ibz),&
+         &                 H_ref_bands(2),vtmp,1,cZERO,Sm1_minus(:,i2,id+(istep-1)*3),1)
+       enddo
+       !$omp end parallel do
+       !
+       ! Final matrix inversion
+       !
+       call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
+       !
+       ! Overlap S(k, k+dk)
+       !
+       idx=k_map%k_map_inv(ikbz,:)
+       idx(id)=idx(id)+itest
+       idx=k_periodic_idx(idx,k_map)
+       ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
+       !
+       !  if (ikp==0) cycle
+       !
+       !  istep=istep+1
+       !  if(istep>max_step) cycle
+       !
+       ! Sm1_plus(l,m; k, k + delta) = \sum_{i,j} V*(l,i; k) S(i,j; k-delta, k) V(m,j ;k + delta)
+       !
+       ikp_ibz=Xk%sstar(ikp,1)
+       !
+       ! Matrix head
+       !
+       if (H_ref_bands(1)>1) then
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2)
+         do i2=1,H_ref_bands(1)-1
+           do i1=1,H_ref_bands(1)-1
+             Sm1_plus(i1,i2,id+(istep-1)*3)=DIP_S(i1,i2,id+(istep-1)*3,ikbz,i_sp)
+           enddo
+         enddo
+         !$omp end parallel do
+         !
+         ! Matrix left wing
+         !
+         !$omp parallel do default(shared), private(i1,i2), collapse(2)
+         do i2=1,H_ref_bands(1)-1
+           do i1=H_ref_bands(1),en%nbf(i_sp)
+              Sm1_plus(i1,i2,id+(istep-1)*3)=&
+              &  Vstar_dot_V(H_ref_bands(2),V_bands(:,i1,ik_ibz),DIP_S(:,i2,id+(istep-1)*3,ikbz,i_sp))
+           enddo
+         enddo
+         !$omp end parallel do
+         !
+       endif
+       !
+       ! Matrix Core
+       !
+       !$omp parallel do default(shared), private(i2,vtmp)
+       do i2=H_ref_bands(1),en%nbf(i_sp)
+         call M_by_V('N',H_ref_bands(2),DIP_S(:,:,id+(istep-1)*3,ikbz,i_sp),V_bands(:,i2,ikp_ibz),vtmp)
+         !
+         call mv_cgemv('C',H_ref_bands(2),en%nbf(i_sp),cONE,V_bands(:,:,ik_ibz),&
+&                      H_ref_bands(2),vtmp,1,cZERO,Sm1_plus(:,i2,id+(istep-1)*3),1)
+       enddo
+       !$omp end parallel do
+       !
+       ! Final matrix inversion
+       !
+       call SERIAL_inversion(en%nbf(i_sp), Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
+       !
+     enddo  
+     !
+   endif
+   !
+ enddo
+ !
+end subroutine Build_overlaps_det_NEQ_OMP
+!
+!
+subroutine Build_overlaps_det_NEQ_full(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_det)
+ !
+ ! Build overlaps determinants between valence bands
+ !
+ use pars,           ONLY:SP,cZERO,cONE
+ use electrons,      ONLY:levels
+ use hamiltonian,    ONLY:H_ref_bands
+ use R_lattice,      ONLY:k_map,bz_samp
+ use vec_operate,    ONLY:k_periodic_idx
+ use DIPOLES,        ONLY:DIP_S
+ use wrapper,        ONLY:Vstar_dot_V,M_by_V,M_by_M,mv_cgemv
+ use QP_m,           ONLY:QP_nk
+ use electric,       ONLY:l_force_SndOrd
+ !
+ implicit none
+ !
+ integer,      intent(in) :: ikbz
+ integer,      intent(in) :: i_sp
+ type(levels), intent(in) :: en
+ type(bz_samp),intent(in) :: Xk
+ complex(SP),  intent(in) :: V_bands(H_ref_bands(2),en%nbf(i_sp),QP_nk)
+ complex(SP), intent(out) :: S_det(6)
+ complex(SP), intent(out) :: Sm1_plus (en%nbf(i_sp),en%nbf(i_sp),6)
+ complex(SP), intent(out) :: Sm1_minus(en%nbf(i_sp),en%nbf(i_sp),6)
+ !
+ ! Work Space
+ !
+ integer     :: idx(3),id,ikp,ikm,i1,i2,Nl,Ml,Kl
+ integer     :: ikm_ibz,ikp_ibz,ik_ibz,max_step,istep,itest
+ complex(SP) :: V_tmp(H_ref_bands(2),en%nbf(i_sp))
+ complex(SP) :: tmp_det,vtmp(H_ref_bands(2))
+ !
+!$omp parallel do default(shared), private(id)
+ do id=1,6
+   S_det    (id)    =cZERO
+   Sm1_plus (:,:,id)=cZERO
+   Sm1_minus(:,:,id)=cZERO
+ enddo
+!$omp end parallel do
+ !
+ !  The head part is time-independent, the wings depends only from
  !  one of the time-dependent valence bands, while the core part depends from
  !  both the wave-functions at k and k-delta
  !
@@ -94,72 +475,25 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
        !
        ! Full construction of the Sm1_minus matrix
        !
-       !DEBUG>
+       call M_by_M('C','N',H_ref_bands(2),en%nbf(i_sp),H_ref_bands(2),cONE,DIP_S(:,:,id+(istep-1)*3,ikm,i_sp),&
+       &                       H_ref_bands(2),V_bands(:,:,ikm_ibz),H_ref_bands(2),cZERO,V_tmp,H_ref_bands(2))
        !
-!       call M_by_M_omp('C','N',H_ref_bands(2),en%nbf(i_sp),H_ref_bands(2),cONE,DIP_S(:,:,id+(istep-1)*3,ikm,i_sp),&
-!&                          H_ref_bands(2),V_bands(:,:,ikm_ibz),H_ref_bands(2),cZERO,V_tmp,H_ref_bands(2))
-       !
-!       call M_by_M_omp('C','N',en%nbf(i_sp),en%nbf(i_sp),H_ref_bands(2),cONE,V_bands(:,:,ik_ibz),&
-!&                      H_ref_bands(2),V_tmp,H_ref_bands(2),cZERO,Sm1_minus(:,:,id+(istep-1)*3),en%nbf(i_sp))
-       !
-       !DEBUG<
-       !
-       ! Matrix head
-       !
-       if (H_ref_bands(1)>1) then
-         !
-         !$omp parallel do default(shared), private(i1,i2), collapse(2) 
-         do i2=1,H_ref_bands(1)-1
-           do i1=1,H_ref_bands(1)-1
-             Sm1_minus(i1,i2,id+(istep-1)*3)=conjg(DIP_S(i2,i1,id+(istep-1)*3,ikm,i_sp))
-           enddo
-         enddo
-         !$omp end parallel do
-         !
-         ! Matrix wings
-         !
-         !$omp parallel do default(shared), private(i1,i2), collapse(2)
-         do i2=1,H_ref_bands(1)-1
-           do i1=H_ref_bands(1),en%nbf(i_sp)
-             Sm1_minus(i1,i2,id+(istep-1)*3)=Vstar_dot_V(H_ref_bands(2),V_bands(:,i1,ik_ibz), &
-&                  conjg(DIP_S(i2,:,id+(istep-1)*3,ikm,i_sp)))
-            enddo
-         enddo
-         !$omp end parallel do
-         !
-       endif
-       !
-       ! Matrix core
-       !
-       ! Sm1(k,k-dk)_{n,m} =sum_{i,j} V^\dag(k)_(n,i) S^\dag(k-dk,k)_{i,j} V(k-dk)_(j,n)
-       !
-       !$omp parallel do default(shared), private(i2,vtmp)
-       do i2=H_ref_bands(1),en%nbf(i_sp)
-         call M_by_V('C',H_ref_bands(2),DIP_S(:,:,id+(istep-1)*3,ikm,i_sp),V_bands(:,i2,ikm_ibz),vtmp)
-         !
-         call mv_cgemv('C',H_ref_bands(2),en%nbf(i_sp),cONE,V_bands(:,:,ik_ibz),&
-&                      H_ref_bands(2),vtmp,1,cZERO,Sm1_minus(:,i2,id+(istep-1)*3),1)
-       enddo
-       !$omp end parallel do
-       !
-     !enddo
-     !
-     !istep=0
-     !do itest=1,2*max_step
+       call M_by_M('C','N',en%nbf(i_sp),en%nbf(i_sp),H_ref_bands(2),cONE,V_bands(:,:,ik_ibz),&
+       &                      H_ref_bands(2),V_tmp,H_ref_bands(2),cZERO,Sm1_minus(:,:,id+(istep-1)*3),en%nbf(i_sp))
        !
        ! Overlap S(k, k+dk)
        !
-       !DEBUG>
-       !call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
-       !DEBUG<
+       call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.false.)
+       !
        idx=k_map%k_map_inv(ikbz,:)
        idx(id)=idx(id)+itest
        idx=k_periodic_idx(idx,k_map)
        ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
-     !  if (ikp==0) cycle
        !
-     !  istep=istep+1
-     !  if(istep>max_step) cycle
+       !  if (ikp==0) cycle
+       !
+       !  istep=istep+1
+       !  if(istep>max_step) cycle
        !
        ! Sm1_plus(l,m; k, k + delta) = \sum_{i,j} V*(l,i; k) S(i,j; k-delta, k) V(m,j ;k + delta)
        !
@@ -167,74 +501,17 @@ subroutine Build_overlaps_det_NEQ(en,Xk,i_sp,ikbz,V_bands,Sm1_plus,Sm1_minus,S_d
        !
        ! Full construction of the Sm1_plus matrix
        !
-       !DEBUG>
+       call M_by_M('N','N',H_ref_bands(2),en%nbf(i_sp),H_ref_bands(2),cONE,DIP_S(:,:,id+(istep-1)*3,ikbz,i_sp),&
+       &                  H_ref_bands(2),V_bands(:,:,ikp_ibz),H_ref_bands(2),cZERO,V_tmp(:,:),H_ref_bands(2))
        !
-!       call M_by_M_omp('N','N',H_ref_bands(2),en%nbf(i_sp),H_ref_bands(2),cONE,DIP_S(:,:,id+(istep-1)*3,ikbz,i_sp),&
-!&                  H_ref_bands(2),V_bands(:,:,ikp_ibz),H_ref_bands(2),cZERO,V_tmp(:,:),H_ref_bands(2))
-!       !
-!       call M_by_M_omp('C','N',en%nbf(i_sp),en%nbf(i_sp),H_ref_bands(2),cONE,V_bands(:,:,ik_ibz),&
-!&                      H_ref_bands(2),V_tmp,H_ref_bands(2),cZERO,Sm1_plus(:,:,id+(istep-1)*3),en%nbf(i_sp))
+       call M_by_M('C','N',en%nbf(i_sp),en%nbf(i_sp),H_ref_bands(2),cONE,V_bands(:,:,ik_ibz),&
+       &                  H_ref_bands(2),V_tmp,H_ref_bands(2),cZERO,Sm1_plus(:,:,id+(istep-1)*3),en%nbf(i_sp))
        !
-       !DEBUG<
-       !
-       ! Matrix head
-       !
-       if (H_ref_bands(1)>1) then
-         !
-         !$omp parallel do default(shared), private(i1,i2), collapse(2)
-         do i2=1,H_ref_bands(1)-1
-           do i1=1,H_ref_bands(1)-1
-             Sm1_plus(i1,i2,id+(istep-1)*3)=DIP_S(i1,i2,id+(istep-1)*3,ikbz,i_sp)
-           enddo
-         enddo
-         !$omp end parallel do
-         !
-         ! Matrix wings
-         !
-         !$omp parallel do default(shared), private(i1,i2), collapse(2)
-         do i2=1,H_ref_bands(1)-1
-           do i1=H_ref_bands(1),en%nbf(i_sp)
-              Sm1_plus(i1,i2,id+(istep-1)*3)=&
-              &  Vstar_dot_V(H_ref_bands(2),V_bands(:,i1,ik_ibz),DIP_S(:,i2,id+(istep-1)*3,ikbz,i_sp))
-           enddo
-         enddo
-         !$omp end parallel do
-         !
-       endif
-       !
-       ! Matrix Core
-       !
-       !$omp parallel do default(shared), private(i2,vtmp)
-       do i2=H_ref_bands(1),en%nbf(i_sp)
-         call M_by_V('N',H_ref_bands(2),DIP_S(:,:,id+(istep-1)*3,ikbz,i_sp),V_bands(:,i2,ikp_ibz),vtmp)
-         !
-         call mv_cgemv('C',H_ref_bands(2),en%nbf(i_sp),cONE,V_bands(:,:,ik_ibz),&
-&                      H_ref_bands(2),vtmp,1,cZERO,Sm1_plus(:,i2,id+(istep-1)*3),1)
-       enddo
-       !$omp end parallel do
-       !DEBUG>
-       !call SERIAL_inversion(en%nbf(i_sp),Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
-       !DEBUG>
+       call SERIAL_inversion(en%nbf(i_sp),Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
      enddo  
      !
    endif
    !
  enddo
  !
- ! Invert matrices
- !
- !$omp parallel do default(shared), private(id,max_step)
- do id=1,3
-   if(k_map%max_kdir(id)==1) cycle ! non-periodic directions
-     max_step=1
-     if(k_map%max_kdir(id)>=6.and..not.l_force_SndOrd) max_step=2
-     !$omp parallel do default(shared), private(istep)
-     do istep=1,max_step
-       call SERIAL_inversion(en%nbf(i_sp),Sm1_minus(:,:,id+(istep-1)*3),tmp_det,.FALSE.)
-       call SERIAL_inversion(en%nbf(i_sp), Sm1_plus(:,:,id+(istep-1)*3),S_det(id+(istep-1)*3),.TRUE.)
-     enddo
-     !$omp end parallel do
-  enddo
-  !$omp end parallel do
-  !
-end subroutine Build_overlaps_det_NEQ
+end subroutine Build_overlaps_det_NEQ_full
