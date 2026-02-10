@@ -8,9 +8,11 @@
 subroutine INIT_barriers()
  !
  use drivers,    ONLY:l_acfdt,l_bse,l_bss,l_cohsex,l_elph_corr,l_gw0,l_phel_corr,l_eval_collisions, &
-&                     l_life,l_ppa,l_mpa,l_real_time,l_sc_run,l_tddft,l_nl_optics,l_screen,l_fl_optics
+&                     l_life,l_ppa,l_mpa,l_real_time,l_sc_run,l_tddft,l_nl_optics,l_screen,l_fl_optics,&
+&                     l_setup
+ use D_lattice,  ONLY:i_time_rev,i_space_inv,non_symmorphic_syms
  use pars,       ONLY:lchlen
- use D_lattice,  ONLY:i_time_rev,i_space_inv
+ use com,        ONLY:exp_user
  use R_lattice,  ONLY:Xk_grid_is_uniform
  use BS,         ONLY:BSK_mode
  use BS_solvers, ONLY:BSS_mode
@@ -174,5 +176,10 @@ subroutine INIT_barriers()
 #if defined  _PHEL 
  if ( l_phel_corr.and.trim(QP_solver)=='s' ) QP_solver='n'
 #endif
+ !
+ if (non_symmorphic_syms .and. .not.exp_user .and. .not.l_setup) then
+   call warning("All runlevels are off with non-symmorphic symmetries")
+   call switch_off_runlevel('all',except=trim(always_on_runlevels))
+ endif 
  !
 end subroutine
