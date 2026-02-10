@@ -209,6 +209,8 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:nsym),dl_tra(:,:sp_nsym),io_old_SYMMs==0)
  !
+ if (non_symmorphic_syms) call exp_user_warning("Non symmorfic syms detected. Remove them with ypp.")
+ !
  call section('=','Reciprocal space')
  !====================================
  !
