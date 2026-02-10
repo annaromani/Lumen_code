@@ -12,20 +12,22 @@
 !
 subroutine setup(en,q,Xen,Ken,k,Xk)
  !
- use pars,           ONLY:SP,pi,schlen
+ use pars,           ONLY:DP,SP,pi
  use units,          ONLY:Da2AU
  use drivers,        ONLY:l_setup
  use C_driver,       ONLY:code_bin
  use parser_m,       ONLY:parser
  use wave_func,      ONLY:wf_ng,wf_ncx,wf_igk,wf_nc_k,E_of_WFs
- use electrons,      ONLY:levels,n_spinor,n_met_bands,n_full_bands,E_duplicate,E_reset
- use D_lattice,      ONLY:a,alat,nsym,i_time_rev,DL_vol,Tel,dl_sop,atom_mass,atom_pos,atoms_map,&
-&                         atoms_spatial_inversion,i_space_inv,input_Tel_is_negative,&
+ use electrons,      ONLY:levels,n_met_bands,n_full_bands,E_duplicate,E_reset
+ use D_lattice,      ONLY:a,alat,DL_vol,Tel,atom_mass,atom_pos,atoms_map,&
+&                         input_Tel_is_negative,dl_sop,dl_tra,sp_nsym,nsym,i_time_rev,&
 &                         inv_index,atoms_string,load_PT_elements,n_atoms_species,Z_species,&
 &                         n_atomic_species,PT_elements,non_periodic_directions,lattice,&
-&                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms
+&                         symmetry_group_table,mag_syms,idt_index,symmetry_equiv_atoms,&
+&                         non_symmorphic_syms,old_nsym,old_dl_sop,old_dl_tra,old_i_time_rev
  use R_lattice,      ONLY:RL_vol,b,n_g_shells,ng_in_shell,Xk_grid_new_mapping,FineGd_desc,g_rot,&
-&                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,MAX_kpts_to_report
+&                         rl_sop,bz_samp,g_vec,E_of_shell,ng_closed,bz_samp_duplicate_Fg,&
+&                         MAX_kpts_to_report
  use com,            ONLY:msg,fat_log
  use stderr,         ONLY:intc
  use units,          ONLY:HA2EV
@@ -62,9 +64,13 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  ! Work Space
  !
  real(SP)          :: Tel_SAVE,tmp_V(3)
- integer           :: i1,i2,i3,ik,is,ia,i_err,nbf_SAVE(2),nbm_SAVE(2),ID,n_to_print
- type(levels)      :: Xen_COPY
- character(schlen) :: dumb_ch
+ integer           :: i1,i2,ik,is,ia,i_err,nbf_SAVE(2),nbm_SAVE(2),&
+                      n_to_print,old_sp_nsym
+ type(bz_samp)     :: k_old
+ type(levels)      :: Xen_COPY,En_old
+ integer           :: io_old_SYMMs,ID
+ !
+ integer, external :: io_full_SYMMs
  integer, external :: k_lattice,io_Double_Grid
  !
 #if defined _HDF5_IO
@@ -78,6 +84,9 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  call section('+','Unit cells') 
  !=============================
+ !
+ sp_nsym=nsym/(1+i_time_rev)
+ !
  call crystal_lattice()
  !
  call msg('r','Cell kind             ',' '//trim(lattice))
@@ -171,75 +180,39 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    !
  endif
  !
- ! Symmetries and moltiplication table:
- !
- !  R_i*R_j=R_stab(i,j)
- !
  call section('=','Symmetries') 
  !=============================
  !
- ! Spin symmetries & xc spin for libxc
+ ! Symmetries and point group
  !
- call build_spin_sop()
+ call build_symmetries()
  !
- call build_xc_spin_map()
+ call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
+ io_old_SYMMs=io_full_SYMMs(En_old,k_old,k%nibz,ID)
  !
- YAMBO_ALLOC(rl_sop,(3,3,nsym*n_spinor))
- !
- do is=1,nsym*n_spinor
-   forall (i2=1:3,i3=1:3) rl_sop(i2,i3,is)=dl_sop(i2,i3,is)*alat(i2)/alat(i3)
- enddo
- !
- ! Indentity index
- !
- idt_index=-1
- do is=1,nsym
-   if (all(nint(reshape(dl_sop(:,:,is),(/9/)))==(/1,0,0,0,1,0,0,0,1/)) ) idt_index=is
- enddo
- !
- if (idt_index==-1) then
-   call warning('Identity not found among the given symmetry list')
+ if (io_old_SYMMs==0) then
+   !
+   call msg('nr','Full symmetries list') 
+   old_sp_nsym=old_nsym/(1+old_i_time_rev)
+   call detect_point_group(old_sp_nsym,real(old_dl_sop(:,:,:old_sp_nsym),DP))
+   call print_point_group('r',old_sp_nsym,old_nsym,old_dl_sop(:,:,:old_nsym),old_dl_tra(:,:old_sp_nsym),.false.)
+   YAMBO_FREE(old_dl_sop)
+   YAMBO_FREE(old_dl_tra)
+   call msg('r','Reduced symmetries list') 
+   !
+ else
+   !
+   call msg('nr','Symmetries list')
+   call detect_point_group(sp_nsym,real(dl_sop(:,:,:sp_nsym),DP))
+   !
  endif
  !
- ! Inversion index
+ call print_point_group('r',sp_nsym,nsym,dl_sop(:,:,:nsym),dl_tra(:,:sp_nsym),io_old_SYMMs==0)
  !
- inv_index=-1
- do is=1,nsym
-   if ( all(nint(reshape(dl_sop(:,:,is),(/9/)))==(/-1,0,0,0,-1,0,0,0,-1/)) ) inv_index=is
- enddo
- !
- ! Defines i_space_inv value
- call atoms_spatial_inversion()
- !
- call msg('r','Inversion symmetry    ',inv_index>0)
- call msg('r','Spatial inversion     ',i_space_inv==1)
- if (inv_index>0) call msg('r','Inversion index       ',inv_index)
- !
- ! Time reversal
- !
- call msg('r','K-space Time-reversal ',(i_time_rev==1))
- call msg('r','Magnetic symmetries   ',mag_syms)
- if (i_time_rev==1) call msg('r','Time-reversal derived K-space symmetries',(/nsym/2+1,nsym/))
- !
- ! Symmetries Multiplication Table
- !
- call symmetry_group_table('r')
- call symmetry_equiv_atoms()
- !
- ! Symmetries list
- !
- call msg('rn','Symmetries units      ',' [cc]')
- do is=1,nsym
-   dumb_ch=trim(intc(is))//'] '
-   i1=9
-   do while (i1<nsym)
-     if(is<=i1) dumb_ch=' '//trim(dumb_ch)
-     i1=i1*10+9
-   enddo
-   if (is<=nsym/(1+i_time_rev)) dumb_ch=' [S '//trim(dumb_ch)
-   if (is> nsym/(1+i_time_rev)) dumb_ch=' [S*'//trim(dumb_ch)
-   call msg('r',trim(dumb_ch),reshape(dl_sop(:,:,is),(/9/)))  
- enddo
+ if (non_symmorphic_syms) then
+   call warning("Non symmorphic syms detected. Only setup allowed.")
+   call warning("Before running simulations, remove non symmorphic operations with ypp -fixsym")
+ endif
  !
  call section('=','Reciprocal space')
  !====================================
@@ -249,6 +222,12 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  if ( wf_ng > maxval(wf_igk) ) then
    call msg("r","wf_ng > maxval(wf_igk), likely because FFTGvecs was set in input.")
    call msg("rn","Reducing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(maxval(wf_igk))))
+   wf_ng=maxval(wf_igk)
+ endif
+ !
+ if (non_symmorphic_syms .and. wf_ng<maxval(wf_igk)) then
+   call msg("r","wf_ng < maxval(wf_igk), likely due to the use of non symmorphic symmetries.")
+   call msg("rn","Increasing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(maxval(wf_igk))))
    wf_ng=maxval(wf_igk)
  endif
  !
@@ -292,6 +271,11 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  endif
  !
  wf_ng_1st_BZ=maxval(g_rot(:min(wf_ng,ng_closed),:))
+ !
+ if (wf_ng_1st_BZ/=wf_ng) then
+   call warning( 'Increasing wf_ng from '//trim(intc(wf_ng))//' to '//trim(intc(wf_ng_1st_BZ)) )
+   wf_ng=wf_ng_1st_bz
+ endif
  !
  call section('=','K-grid lattice')
  !=================================
@@ -349,6 +333,8 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  Xen%nk=Xk%nibz
  ! 
  call E_duplicate(en,Xen)
+ !
+ call build_xc_spin_map()
  !
  ! SC Energies 
  !-------------

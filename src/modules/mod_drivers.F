@@ -122,6 +122,7 @@ module drivers
  ! TESTING
  !
  logical :: l_slk_test           =.FALSE.
+ logical :: l_exc_rad_life       =.FALSE.
  logical :: l_gpu_test           =.FALSE.
  !
 end module drivers

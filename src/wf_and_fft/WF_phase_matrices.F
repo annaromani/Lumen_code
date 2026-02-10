@@ -75,14 +75,14 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
  !
  call timing("WF_phases",OPR="start")
  !
- !call k_find_smallest_g0(g0_idx,g0_length)
- !iGp=max(maxval(g0_idx(:,1)),maxval(g0_idx(:,2)))
- iGp=2*maxval(Xk%g_table)
+ iGp=maxval(Xk%g_table)
+ ng_tmp=eval_G_minus_G(iGp,iGp,opr_in="+")
+ !
+ iGp=maxval(G_m_G)
+ YAMBO_FREE(G_m_G)
  ng_tmp=eval_G_minus_G(wf_ng_1st_BZ,iGp)
  !
- ! Here I need to set wf_ng to a larger value, to allocate WFs
- ! Of a size large enough to accomodate all possibile g-vectors
- wf_ng=maxval(G_m_G)
+ wf_ng_overlaps=maxval(G_m_G)
  !
  nb=blim(2)-blim(1)+1
  !
@@ -115,7 +115,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
      !
      ifrag=ifrag+1
      !
-     call WF_load(WF_k,0,1,blim,(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
+     call WF_load(WF_k,0,1,blim,(/ik,ik/),(/i_sp_pol,i_sp_pol/),wf_ng_in=wf_ng_overlaps,&
      & space='G',title='-WF_phases',quiet=ifrag>1,keep_states_to_load=.true.)
      !
      call degeneration_finder(nb,first_el,n_of_el,n_deg_grp,Er=En%E(blim(1):blim(2),ik,i_sp_pol),&
@@ -184,7 +184,7 @@ subroutine WF_phase_matrices(En,Xk,blim,klim)
                i_wf_c=WF_k%index(ibc,ik,i_sp_pol)
                !
                WF_phases(iby_phase,ibc_phase,i_grp,isloop,istark)= &
-               & Vstar_dot_V(wf_ng*n_spinor,WF_Rk_y%c(:,:,i_wf_y),WF_Rk_c%c(:,:,i_wf_c))
+               & Vstar_dot_V(wf_ng_overlaps*n_spinor,WF_Rk_y%c(:,:,i_wf_y),WF_Rk_c%c(:,:,i_wf_c))
                !
              enddo
              charac(i_grp,isloop)=charac(i_grp,isloop)+WF_phases(iby_phase,iby_phase,i_grp,isloop,istark)

@@ -3472,6 +3472,12 @@ if test "$exec_prefix" = "NONE" ; then exec_prefix="$prefix" ; fi
 #
 # Folders
 #
+if [ "$compdir" != "$srcdir" ] && [ "$srcdir" != "." ] ; then
+  if test -f "$srcdir/config/report" ; then
+    as_fn_error $? "Compiling from external folder, but source is not clean. Please run make distclean in source." "$LINENO" 5
+  fi
+fi
+#
 if ! test -d log      ; then mkdir log      ; fi
 if ! test -d bin      ; then mkdir bin      ; fi
 if ! test -d include  ; then mkdir include  ; fi

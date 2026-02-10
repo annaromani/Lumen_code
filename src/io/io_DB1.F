@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2014 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM
+! Authors (see AUTHORS file for details): AM, DS
 !
 ! headers
 !
@@ -13,19 +13,20 @@
 !
 integer function io_DB1(E,k,ID)
  !
- use pars,             ONLY:SP
+ use pars,             ONLY:SP,LP_YIO
  use units,            ONLY:HA2EV
  use com,              ONLY:msg
  use C_driver,         ONLY:code_version,code_revision,code_GPL_revision
  use electrons,        ONLY:levels,default_nel,n_spin,n_bands,nel,n_sp_pol,n_spinor
- use D_lattice,        ONLY:a, alat, nsym, i_time_rev, input_GS_Tel, dl_sop, &
+ use D_lattice,        ONLY:a, alat, nsym, i_time_rev, input_GS_Tel, dl_tra, dl_sop, &
 &                           Tel, n_atoms_species_max,n_atomic_species,n_atoms_species,atom_pos, &
-&                           Z_species, n_atoms, mag_syms, atom_mass, atoms_map, &
-&                           S_contains_TR
+&                           Z_species, n_atoms, non_symmorphic_syms, mag_syms, &
+&                           atom_mass, atoms_map, S_contains_TR
  use R_lattice,        ONLY:ng_vec,g_vec,bz_samp,nkibz,QP_states_k,nXkibz,ng_closed
  use wave_func,        ONLY:wf_ncx,wf_nc_k,wf_igk,wf_igk_d,wf_ng,wf_nb_io
  use LIVE_t,           ONLY:live_timing_is_on
- use IO_int,           ONLY:io_connect,io_disconnect,io_elemental,io_bulk,ver_is_gt_or_eq
+ use IO_int,           ONLY:io_connect,io_disconnect,def_variable_elemental,io_variable_elemental,&
+&                           io_elemental,io_bulk,ver_is_gt_or_eq
  use IO_m,             ONLY:io_sec,variable_exist,io_status,read_is_on,&
 &                           serial_number,io_serial_number,io_code_revision,&
 &                           DUMP,io_mode,write_is_on,io_code_version
@@ -206,6 +207,11 @@ integer function io_DB1(E,k,ID)
      call io_elemental(ID, L0=mag_syms,VAR=' Magnetic symmetries             ')
    endif
    !
+   if (variable_exist(ID,"non_symmorphic_syms").or.write_is_on(ID)) then
+     call def_variable_elemental(ID, VAR="non_symmorphic_syms",VAR_SZ=1,VAR_KIND=LP_YIO,MENU=0)
+     call  io_variable_elemental(ID, L0=non_symmorphic_syms,VAR=' Non symmorphic symmetries')
+   endif
+   !
    if (ver_is_gt_or_eq(ID,revision=4351)) then
      call io_elemental(ID, VAR="GPL_REVISION",VAR_SZ=1,MENU=0)
      if (write_is_on(ID)) code_revision_local=code_GPL_revision
@@ -272,6 +278,7 @@ integer function io_DB1(E,k,ID)
    !
    YAMBO_ALLOC(g_vec,(ng_vec,3))
    YAMBO_ALLOC(dl_sop,(3,3,nsym*n_spinor))
+   YAMBO_ALLOC(dl_tra,(3,nsym*n_spinor))
    YAMBO_ALLOC(S_contains_TR,(nsym*n_spinor))
    YAMBO_ALLOC(k%pt,(k%nibz,3))
    YAMBO_ALLOC(wf_nc_k,(k%nibz))
@@ -327,6 +334,14 @@ integer function io_DB1(E,k,ID)
  call io_bulk(ID, VAR="SYMMETRY", VAR_SZ=shape(dl_sop(:,:,:nsym)) )
  call io_bulk(ID, R3=dl_sop(:,:,:nsym))
  !
+ if (variable_exist(ID,"TRANSLATIONS") .or. write_is_on(ID)) then
+   call io_bulk(ID, VAR="TRANSLATIONS", VAR_SZ=shape(dl_tra(:,:nsym)) )
+   call io_bulk(ID, R2=dl_tra(:,:nsym))
+ else
+   dl_tra=0._SP
+ endif
+ non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
+ !
  if (read_is_on(ID)) then
    do is=1,nsym
      S_contains_TR(is)=is>nsym/(1+i_time_rev)
@@ -336,14 +351,12 @@ integer function io_DB1(E,k,ID)
    !
    if (n_spinor==2) then
      dl_sop(:,:,nsym+1:)=dl_sop(:,:,:nsym)
+     dl_tra(:,nsym+1:)=dl_tra(:,:nsym)
      S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
    endif
  endif
  !
  ! G-vectors
- !
- ! Andrea (May 2010): Note here that in p2y g_vec may be allocated bigger then
- ! ng_vec*3 due to the larger charge RL vectors.
  !
  call io_bulk(ID, VAR="G-VECTORS", VAR_SZ=(/ng_vec,3/) )
  call io_bulk(ID, R2=g_vec(:ng_vec,:))

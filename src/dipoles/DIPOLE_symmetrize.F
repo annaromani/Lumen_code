@@ -1,0 +1,92 @@
+!
+! License-Identifier: GPL
+!
+! Copyright (C) 2025 The Yambo Team
+!
+! Authors (see AUTHORS file for details): CA
+!
+! headers
+!
+#include<y_memory.h>
+!                  
+subroutine DIPOLE_symmetrize(k,Dip)
+ !
+ use pars,           ONLY:SP,cI,cZERO
+ use R_lattice,      ONLY:bz_samp
+ use electrons,      ONLY:levels,n_sp_pol
+ use D_lattice,      ONLY:kpoints_map,old_dl_sop,old_dl_tra,old_i_time_rev,old_nsym
+ use DIPOLES,        ONLY:DIPOLE_t,DIP_iR
+ use IO_int,         ONLY:io_control
+ use IO_m,           ONLY:REP,OP_RD_CL,DUMP
+ use com,            ONLY:msg
+ use parallel_m,     ONLY:PAR_IND_Xk_ibz,PAR_Xk_ibz_index,PAR_COM_Xk_ibz_INDEX
+ use parallel_int,   ONLY:PP_redux_wait
+ use y_memory_alloc
+ !
+ implicit none
+ !    
+ type(bz_samp), intent(in)    :: k
+ type(DIPOLE_t),intent(inout) :: Dip
+ !
+ ! Work space
+ !
+ integer, external :: io_full_SYMMs
+ integer           :: io_old_SYMMs,ID
+ integer           :: ik,ib1,ib2,i_sp,ik_old,is,ik_mem
+ type(bz_samp)     :: k_old
+ type(levels)      :: En_old
+ complex(SP),allocatable :: DIP_tmp(:,:,:,:,:)
+ !     
+ ! Load old full symmetries if present
+ !
+ call io_control(ACTION=OP_RD_CL,COM=REP,MODE=DUMP,SEC=(/1/),ID=ID)
+ io_old_SYMMs=io_full_SYMMs(En_old,k_old,k%nibz,ID)
+ !
+ if(io_old_SYMMs/=0) return
+ !
+ YAMBO_ALLOC(kpoints_map,(2,k%nibz))
+ call k_build_map(k,k_old,kpoints_map)
+ !
+ YAMBO_ALLOC(DIP_tmp,(3,Dip%ib_lim(2):Dip%ib(2),Dip%ib(1):Dip%ib_lim(1),k%nibz,n_sp_pol))
+ !
+ ! I need dipoles in all cores
+ !
+ DIP_tmp=cZERO
+ do ik=1,k%nibz
+   if (.not.PAR_IND_Xk_ibz%element_1D(ik)) cycle
+   ik_mem=PAR_Xk_ibz_index(ik)
+   DIP_tmp(:,:,:,ik,:)=DIP_iR(:,:,:,ik_mem,:) 
+ enddo
+ call PP_redux_wait(DIP_tmp,COMM=PAR_COM_Xk_ibz_INDEX%COMM)
+ !
+ ! Loop on k-points and application of symmetries to the dipole
+ !
+ call msg('rs','Dipoles symmetrized with full symmetries of the system') 
+ !
+ do ik=1,k%nibz
+   ! 
+   if (.not.PAR_IND_Xk_ibz%element_1D(ik)) cycle
+   ik_mem=PAR_Xk_ibz_index(ik)
+   ik_old=kpoints_map(1,ik)
+   is=kpoints_map(2,ik)
+   ! 
+   if(is==1) continue
+   !
+   do i_sp=1,n_sp_pol
+   do ib2=Dip%ib(1),Dip%ib_lim(1)
+   do ib1=Dip%ib_lim(2),Dip%ib(2)
+     DIP_iR(:,ib1,ib2,ik_mem,i_sp)=matmul(old_dl_sop(:,:,is),DIP_tmp(:,ib1,ib2,ik_old,i_sp))
+     ! To code: impact of dl_tra on dipoles
+   enddo
+   enddo
+   if(is>old_nsym/(1+old_i_time_rev)) DIP_iR(:,:,:,ik_mem,i_sp)=conjg(DIP_iR(:,:,:,ik_mem,i_sp))
+   enddo
+   !     
+ enddo 
+ !
+ YAMBO_FREE(kpoints_map)
+ YAMBO_FREE(old_dl_sop)
+ YAMBO_FREE(old_dl_tra)
+ YAMBO_FREE(DIP_tmp)
+ !  
+end subroutine DIPOLE_symmetrize

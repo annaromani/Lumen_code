@@ -105,6 +105,7 @@ module pars
  real(SP),    parameter :: pi=3.141592653589793238462643383279502884197_SP
  real(DP),    parameter :: pi_DP=3.141592653589793238462643383279502884197_DP
  real(SP),    parameter :: zero_dfl=1.E-5_SP
+ real(DP),    parameter :: zero_dfl_DP=1.E-5_DP
  !
  real(SP),    parameter :: infinity_dfl=HUGE(1._SP)
  real(SP),    parameter :: tiny_dfl    =TINY(1._SP)

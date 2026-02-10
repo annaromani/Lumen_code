@@ -12,7 +12,7 @@
 !
 module D_lattice
  !
- use pars,        ONLY:LP,SP,lchlen,cONE,cZERO,cI,schlen
+ use pars,        ONLY:LP,DP,SP,lchlen,cONE,cZERO,cI,schlen
  use devxlib
  use y_memory_alloc
  !
@@ -36,15 +36,20 @@ module D_lattice
  !
  ! SYMs
  !
- integer :: nsym
+ integer :: nsym        ! total symmetries
+ integer :: sp_nsym     ! spatial symmetries
+ integer :: nrot        ! pure rotations
  integer :: i_time_rev  ! =1 yes TR , =0 no TR
  integer :: i_space_inv ! =1 yes SI,  =0 no SI
  integer :: inv_index   ! Index of the symmetry corresponding to -I (independently 
                         ! on the value of i_time_rev and i_space_inv
  integer :: idt_index   ! Indentity I  index
  logical :: mag_syms
- logical, allocatable :: S_contains_TR(:)
+ logical :: non_symmorphic_syms
+ logical, allocatable    :: pure_rotation(:)
+ logical, allocatable    :: S_contains_TR(:)
  real(SP),allocatable    :: dl_sop(:,:,:)   ! Symmetry operation in real-space
+ real(SP),allocatable    :: dl_tra(:,:)     ! Symmetry translations in real-space
  complex(SP),allocatable :: spin_sop(:,:,:)
  integer, allocatable    :: sop_tab(:,:)
  integer, allocatable    :: sop_inv(:)
@@ -53,10 +58,12 @@ module D_lattice
  !
  ! Full symmetries after removing them with ypp -y
  integer  :: old_nsym
+ integer  :: old_i_time_rev
  real(SP), allocatable :: old_dl_sop(:,:,:)
+ real(SP), allocatable :: old_dl_tra(:,:)
  complex(SP), allocatable :: old_spin_sop(:,:,:)
+ logical, allocatable :: old_S_contains_TR(:)
  integer,  allocatable :: kpoints_map(:,:)
- integer(LP),  allocatable :: old_S_contains_TR(:)
  !                       
  ! device memory
  complex(SP),allocatable DEV_ATTR :: spin_sop_d(:,:,:)
@@ -95,11 +102,32 @@ module D_lattice
  ! Gradients
  !
  integer, allocatable  :: R_m_R(:,:)
+ !
+ ! EXC lifetimes: Non Periodic  directions
+ !
  complex, allocatable  :: Grad_R(:,:,:)
  !
  ! Periodic Table
  !
  character(len=2)      :: PT_elements(0:103)
+ !
+ ! Group theory
+ !
+ integer               :: group_code
+ character(len=11)     :: group_name
+ !
+ integer :: nirrep         ! The number of irreps
+ integer :: nclass         ! The number of classes
+ integer :: nelem(12)      ! The elements of each class
+ integer :: elem(8,12)     ! Which elements in the smat list for each class
+ integer :: which_irr(12)  ! See the subroutine description
+ integer :: which_class(12)! Inverse of which_irr
+ !
+ integer :: nclass_ref                 ! The number of classes
+ character(len=15) :: name_rap(12)     ! name of the representations
+ character(len=5)  :: name_class(12)   ! name of the classes
+ character(len=3)  :: ir_ram(12)       ! Representation labels
+ complex(DP)       :: char_mat(12,12)  ! Output: character matrix
  !
  contains
    !
@@ -136,7 +164,7 @@ module D_lattice
                if (sop_tab(i1,i2)/=0) call error('[SYMs] Two sym pairs lead to the same symmetry') 
                sop_tab(i1,i2)=i3
                if (sop_tab(i1,i2)==1) sop_inv(i1)=i2
-	       exit
+               exit
              endif
            enddo
            if (sop_tab(i1,i2)==0) call error('[SYMs] Sop tab is not complete')
@@ -146,14 +174,14 @@ module D_lattice
        do i1=1,nsym*n_spinor
          do i2=1,nsym*n_spinor
            m=matmul(dl_sop(:,:,i1),dl_sop(:,:,i2))
-	   if (.not.S_contains_TR(i2)) s=matmul(      spin_sop(:,:,i1) ,spin_sop(:,:,i2))
-	   if (     S_contains_TR(i2)) s=matmul(conjg(spin_sop(:,:,i1)),spin_sop(:,:,i2))
+           if (.not.S_contains_TR(i2)) s=matmul(      spin_sop(:,:,i1) ,spin_sop(:,:,i2))
+           if (     S_contains_TR(i2)) s=matmul(conjg(spin_sop(:,:,i1)),spin_sop(:,:,i2))
            do i3=1,nsym*n_spinor
              if (all(abs(m-dl_sop(:,:,i3))<=1.E-5).and.all(abs(s-spin_sop(:,:,i3))<=1.E-5)) then
                if (sop_tab(i1,i2)/=0) call error('[SYMs] Two sym pairs lead to the same symmetry') 
                sop_tab(i1,i2)=i3
                if (sop_tab(i1,i2)==1) sop_inv(i1)=i2
-	       exit
+               exit
              endif
            enddo
            if (sop_tab(i1,i2)==0) call error('[SYMs] Sop tab is not complete')
@@ -169,31 +197,38 @@ module D_lattice
      !
    end subroutine symmetry_group_table
    !
-   subroutine atoms_spatial_inversion()
+   subroutine atoms_spatial_inversion(sop_tra)
+     ! Here the logic should be checked.
+     ! Am I looking if the atoms respect the pure spatial inversion,
+     ! or the spatial inversion plus a translation?
      use pars,           ONLY:zero_dfl
      use matrix_operate, ONLY:m3inv
      implicit none
+     real(SP), optional :: sop_tra(3)
      !
      ! Work Space
      !
      integer  :: ia,iap,is
-     real(SP) :: at_diff(3),a_m1(3,3)
+     real(SP) :: at_diff(3),a_m1(3,3),tra(3)
      !
      if (n_atoms_species_max==0) return
      !
      i_space_inv=1
+     tra=0._SP
      !
      call m3inv(transpose(a),a_m1)
+     if (.not.present(sop_tra).and.inv_index>1) tra=dl_tra(:,inv_index)
+     if (     present(sop_tra))                 tra=sop_tra
      !
      do is=1,n_atomic_species
        atoms_loop: do ia=1,n_atoms_species(is)
          do iap=1,n_atoms_species(is) 
            !
-           at_diff=matmul(a_m1,atom_pos(:,ia,is)+atom_pos(:,iap,is))
+           at_diff=matmul(a_m1,atom_pos(:,ia,is)+atom_pos(:,iap,is)+tra)
            !
-           at_diff(1)=abs(at_diff(1)-nint(at_diff(1)))     
-           at_diff(2)=abs(at_diff(2)-nint(at_diff(2)))     
-           at_diff(3)=abs(at_diff(3)-nint(at_diff(3)))     
+           at_diff(1)=abs(at_diff(1)-nint(at_diff(1)))
+           at_diff(2)=abs(at_diff(2)-nint(at_diff(2)))
+           at_diff(3)=abs(at_diff(3)-nint(at_diff(3)))
            !
            if (all(at_diff<=zero_dfl)) cycle atoms_loop
            !
@@ -241,7 +276,7 @@ module D_lattice
          do is=1,n_atomic_species
          do ia=1,n_atoms_species(is)
            !
-           v1=matmul(dl_sop(:,:,isym),atom_pos(:,ia,is))
+           v1=matmul(dl_sop(:,:,isym),atom_pos(:,ia,is))-dl_tra(:,isym)
            !
            lfound=.false.
            !

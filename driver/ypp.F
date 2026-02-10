@@ -37,7 +37,7 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
 &                              alat_used_for_output,l_QP_DB_expand,coo_out,coo_in,l_dipoles,&
 &                              DIPs_kind,l_sp_wf,l_mean_potential,l_magnons
 #if defined _YPP_RT
- use YPP_real_time,       ONLY:l_RealTime,l_RT_DBs,l_RT_abs
+ use YPP_real_time,       ONLY:l_RealTime,l_RT_DBs,l_RT_abs,l_RT_ARPES
 #endif
 #if defined _YPP_ELPH
  use YPP_ELPH,            ONLY:l_atomic_amplitude,l_eliashberg,l_phonons,l_gkkp,ELPH_general_gFsq, &
@@ -284,6 +284,11 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  l_flag=l_flag.or.l_RT_abs
 #endif
  if (l_flag)    call excitons_driver(k,Xk,en,Xen,q)
+ !
+#if defined _YPP_RT
+ l_flag=l_RT_ARPES
+ if (l_flag)    call RT_transient_ARPES(Xen,Xk,q)
+#endif
  !
  l_flag=l_electrons
 #if defined _YPP_ELPH && !defined _YPP_RT
