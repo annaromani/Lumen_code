@@ -81,7 +81,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
 #endif
  endif
  !
- call excitons_read(k,Xk,en,Xen,1,"clean",io_err)
+ call excitons_read(k,Xk,en,Xen,1,"clean",.true.,io_err)
  if(io_err/=0) call error("Error reading exciton at q = "//intc(1))
  !
  ! Read all eigenvalues and eigenvectors
@@ -89,16 +89,16 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  n_eig=BSS_n_eig
  do iq=2,q%nibz
    call msg('s','Reading '//exc_kind//'s at @ Q-index #',iq)
-   call excitons_read(k,Xk,en,Xen,iq,"check",io_err)
+   call excitons_read(k,Xk,en,Xen,iq,"check",.false.,io_err)
    if(io_err/=0) call error("Error reading exciton at q = "//intc(iq))
    !
    if(l_exc_occ_interp) then
-     call excitons_read(k,Xk,en,Xen,iq,"eigenvectors eigenvalues",io_err)
+     call excitons_read(k,Xk,en,Xen,iq,"eigenvectors eigenvalues",.false.,io_err)
 #if defined _YPP_ELPH
      call EXC_occupations(E_QF,Xk,q,iq,EXC_n_states_ref,EXCITONS_user_indexes,EXC_occ(:,iq))
 #endif
    else
-     call excitons_read(k,Xk,en,Xen,iq,"eigenvalues",io_err)
+     call excitons_read(k,Xk,en,Xen,iq,"eigenvalues",.false.,io_err)
    endif
    !
    n_eig=min(n_eig,BSS_n_eig)
@@ -113,7 +113,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
      BS_all_E(i_c,iq)=BS_E(i_l)
    enddo
    !
-   call excitons_read(k,Xk,en,Xen,iq,"clean",io_err)
+   call excitons_read(k,Xk,en,Xen,iq,"clean",.false.,io_err)
    !
  enddo
  !

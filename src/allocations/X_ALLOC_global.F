@@ -78,7 +78,7 @@ subroutine X_ALLOC_global(WHAT,W)
      Joint_DOS(:,1)=W%p(:)
    endif
    !
-   if (X_do_obs("Esort")) call X_ALLOC_elemental("BS_E_SORTED",(/1000,9,2/))
+   if (X_do_obs("Esort")) call X_ALLOC_elemental("BS_E_SORTED",(/10000,9,2/))
    if (X_do_obs("fxc")) call X_ALLOC_elemental("FXC",(/W%n_freqs/))
    !
    if (X_do_obs("MEspin")) then

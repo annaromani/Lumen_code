@@ -11,10 +11,10 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
-subroutine WF_alloc(WF,k_extrema_only)
+subroutine WF_alloc(WF,wf_ng,k_extrema_only)
  !
  use pars,          ONLY:cZERO,SP
- use wave_func,     ONLY:WAVEs,wfZERO,states_to_load,wf_ng,wf_ncx,rho_map_size
+ use wave_func,     ONLY:WAVEs,wfZERO,states_to_load,wf_ncx,rho_map_size
  use electrons,     ONLY:n_spinor
  use parallel_int,  ONLY:PARALLEL_live_message
  use gpu_m,         ONLY:have_gpu
@@ -24,6 +24,7 @@ subroutine WF_alloc(WF,k_extrema_only)
  implicit none
  !
  type(WAVEs)           :: WF
+ integer, intent(in)   :: wf_ng
  logical, intent(in)   :: k_extrema_only
  !
  ! Work Space

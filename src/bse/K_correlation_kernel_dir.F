@@ -22,8 +22,9 @@ function K_correlation_kernel_dir(i_block,i_p,i_pmq,                            
  ! Useful for shifted grids BSE
  !
  use pars,         ONLY:SP,cZERO,pi
+ use D_lattice,    ONLY:sop_inv
  use BS,           ONLY:BS_blk,BS_W,BS_W_is_diagonal
- use R_lattice,    ONLY:DEV_VAR(G_m_G),DEV_VAR(g_rot)
+ use R_lattice,    ONLY:DEV_VAR(G_m_G),DEV_VAR(g_rot),DEV_VAR(g_phs)
  use wrapper,      ONLY:V_by_V_pwise_gpu,Vstar_dot_V_gpu,M_by_V_gpu
  !
  implicit none
@@ -37,7 +38,8 @@ function K_correlation_kernel_dir(i_block,i_p,i_pmq,                            
  !
  complex(SP)  :: K_correlation_kernel_dir
  !
- integer      :: iO1,iO2,i_g1,i_g2,i_g3
+ integer      :: iO1,iO2,i_g1,i_g2,i_g3,i_g4,iq_W_s_m1,iq_W_s_mq_m1
+ complex(SP)  :: gphase
  complex(SP), pointer DEV_ATTR :: O_c_d_iO1(:)
  complex(SP), pointer DEV_ATTR :: O_c_d_iO2(:)
  !
@@ -46,21 +48,39 @@ function K_correlation_kernel_dir(i_block,i_p,i_pmq,                            
    return
  endif
  !
+ iq_W_s_m1   =sop_inv(iq_W_s)
+ iq_W_s_mq_m1=sop_inv(iq_W_s_mq)
+ !
  iO1 = BS_blk(i_block)%O_table(i_k_s,i_p_s,1,1,i_n_k,i_n_p,i_k_sp_pol_n)
  iO2 = BS_blk(i_block)%O_table(i_kmq_s,i_pmq_s,i_kmq_t,i_pmq_t,i_m_k,i_m_p,i_k_sp_pol_m)
  !
  O_c_d_iO1 => DEV_VAR(BS_blk(i_block)%O_c)(:,iO1)
  O_c_d_iO2 => DEV_VAR(BS_blk(i_block)%O_c)(:,iO2)
  !
- !DEV_ACC_DEBUG data present(O_c_d_iO1,O_c_d_iO2,G_m_G,g_rot,O1,O2)
- !DEV_ACC parallel loop
+ !DEV_ACC_DEBUG data present(O_c_d_iO1,G_m_G,g_rot,O1,O2)
+ !DEV_ACC parallel loop private(i_g2,i_g3,i_g4,gphase)
  !DEV_CUF kernel do(1) <<<*,*>>>
- !DEV_OMP parallel do default(shared), private(i_g1,i_g2,i_g3)
+ !DEV_OMP parallel do default(shared), private(i_g1,i_g2,i_g3,i_g4,gphase)
  do i_g1=1,BS_n_g_W
-   i_g2=DEV_VAR(G_m_G)(DEV_VAR(g_rot)(i_g1,iq_W_s)   ,ig_W   )
-   i_g3=DEV_VAR(G_m_G)(DEV_VAR(g_rot)(i_g1,iq_W_s_mq),ig_W_mq)
-   O1(i_g1)=O_c_d_iO1(i_g2)
-   O2(i_g1)=O_c_d_iO2(i_g3)
+   i_g2=DEV_VAR(G_m_G)(i_g1,ig_W  )
+   i_g3=DEV_VAR(g_rot)(i_g1,iq_W_s)
+   i_g4=DEV_VAR(G_m_G)(i_g3,ig_W  )
+   gphase=cmplx(cos(DEV_VAR(g_phs)(i_g2,iq_W_s_m1)   ),sin(DEV_VAR(g_phs)(i_g2,iq_W_s_m1)   ))
+   O1(i_g1)=O_c_d_iO1(i_g4)*conjg(gphase)
+ enddo
+ !DEV_OMP end parallel do
+ !DEV_ACC_DEBUG end data
+ !
+ !DEV_ACC_DEBUG data present(O_c_d_iO2,G_m_G,g_rot,O1,O2)
+ !DEV_ACC parallel loop private(i_g2,i_g3,i_g4,gphase)
+ !DEV_CUF kernel do(1) <<<*,*>>>
+ !DEV_OMP parallel do default(shared), private(i_g1,i_g2,i_g3,i_g4,gphase)
+ do i_g1=1,BS_n_g_W
+   i_g2=DEV_VAR(G_m_G)(i_g1,ig_W_mq  )
+   i_g3=DEV_VAR(g_rot)(i_g1,iq_W_s_mq)
+   i_g4=DEV_VAR(G_m_G)(i_g3,ig_W_mq  )
+   gphase=cmplx(cos(DEV_VAR(g_phs)(i_g2,iq_W_s_mq_m1)),sin(DEV_VAR(g_phs)(i_g2,iq_W_s_mq_m1)))
+   O2(i_g1)=O_c_d_iO2(i_g4)*conjg(gphase)
  enddo
  !DEV_OMP end parallel do
  !DEV_ACC_DEBUG end data

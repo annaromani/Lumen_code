@@ -11,7 +11,7 @@
 !
 subroutine symmetries_driver(E,Xk)
  !
- use pars,                ONLY:SP,lchlen
+ use pars,                ONLY:SP,LP,lchlen
  use xc_functionals,      ONLY:magn
  use electrons,           ONLY:levels,Spin_magn,n_spinor
  use FFT_m,               ONLY:fft_size
@@ -27,7 +27,8 @@ subroutine symmetries_driver(E,Xk)
  use IO_int,              ONLY:io_control
  use IO_m,                ONLY:REP,OP_WR_CL,VERIFY
  use parser_m,            ONLY:parser
- use D_lattice,           ONLY:kpoints_map,old_nsym,old_dl_sop,old_S_contains_TR,old_spin_sop
+ use D_lattice,           ONLY:kpoints_map,old_nsym,old_dl_sop,old_dl_tra,&
+ &                             old_S_contains_TR,old_spin_sop
  use y_memory_alloc
  !
  implicit none
@@ -40,21 +41,18 @@ subroutine symmetries_driver(E,Xk)
  type(bz_samp)         :: Xk_save
  ! 
  integer               :: old_sop_inv(nsym*n_spinor)
- logical               :: l_keep_k_grid
+ logical               :: l_keep_k_grid,l_file_full_syms
  !
  integer               :: old_nkpt,ID,io_old_SYMMs
- character(lchlen)     :: core_io_path_save
+ character(lchlen)     :: core_io_path_save,file_full_syms
  integer, external     :: io_full_SYMMs
+ logical, external     :: file_exists
  !
 #if defined _YPP_ELPH
  character(lchlen)  :: filename,infile,outfile,in_path
  integer, external  :: io_ELPH
  integer            :: iq,ID_gkkp,io_err
 #endif
- !
- YAMBO_ALLOC(old_dl_sop,(3,3,nsym*n_spinor))
- YAMBO_ALLOC(old_spin_sop,(n_spinor,n_spinor,nsym*n_spinor))
- YAMBO_ALLOC(old_S_contains_TR,(nsym*n_spinor))
  !     
  if (core_io_path==more_io_path) more_io_path=trim(core_io_path)//"/FixSymm"
  !
@@ -65,6 +63,12 @@ subroutine symmetries_driver(E,Xk)
  call IO_make_directories("SAVE")
  call rm_file((trim(more_io_path))//"/SAVE/ndb.gops")
  call rm_file((trim(more_io_path))//"/SAVE/ndb.kindx")
+ !
+ file_full_syms=trim(core_io_path)//"/SAVE/ndb.full_SYMMs"
+ l_file_full_syms=file_exists(trim(file_full_syms))
+ if (l_file_full_syms) then
+   call cp_file(trim(file_full_syms),trim(more_io_path)//"/SAVE",io_old_SYMMs)
+ endif
  !
  ! This is needed to construct grot for all wf_ngs.
  if (wf_ng>ng_closed) then
@@ -86,7 +90,19 @@ subroutine symmetries_driver(E,Xk)
  ! Expansion of default k-points
  call k_ibz2bz(Xk,'i',.false.)
  !
- call fix_symmetries(old_nsym,old_dl_sop,old_spin_sop,old_sop_inv,old_S_contains_TR)
+ if (l_file_full_syms) then
+   YAMBO_FREE(old_dl_sop)
+   YAMBO_FREE(old_dl_tra)
+   YAMBO_FREE(old_spin_sop)
+   YAMBO_FREE(old_S_contains_TR)
+ endif
+ !
+ YAMBO_ALLOC(old_dl_sop,(3,3,nsym*n_spinor))
+ YAMBO_ALLOC(old_dl_tra,(3,nsym*n_spinor))
+ YAMBO_ALLOC(old_spin_sop,(n_spinor,n_spinor,nsym*n_spinor))
+ YAMBO_ALLOC(old_S_contains_TR,(nsym*n_spinor))
+ !
+ call fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_inv,old_S_contains_TR)
  !
  if(old_nsym==nsym) then
    call msg('s','Symmetries did not change. Program terminaned.')
@@ -133,18 +149,20 @@ subroutine symmetries_driver(E,Xk)
  call fix_WFs_and_E(E,Xk,Xk_save,kpoints_map,old_nsym,old_spin_sop,old_S_contains_TR)
  !
  ! Rotate KB or Vnl
- call fix_PPs(E,Xk,Xk_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,old_S_contains_TR)
+ call fix_PPs(E,Xk,Xk_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv)
  !
  ! Rotate atomic projections
- call fix_ATOMPROJs(E,Xk,Xk_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,old_S_contains_TR)
+ call fix_ATOMPROJs(E,Xk,Xk_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv)
  !
- ! Savel old symmetries on file
- ! ============================
- core_io_path_save=core_io_path
- core_io_path=more_io_path
- call io_control(ACTION=OP_WR_CL,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID)
- io_old_SYMMs=io_full_SYMMs(Xk,ID)
- core_io_path=core_io_path_save
+ ! Savel old symmetries on file if it does not exist yet
+ ! =====================================================
+ if (.not.l_file_full_syms) then
+   core_io_path_save=core_io_path
+   core_io_path=more_io_path
+   call io_control(ACTION=OP_WR_CL,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID)
+   io_old_SYMMs=io_full_SYMMs(E,Xk_save,Xk%nibz,ID)
+   core_io_path=core_io_path_save
+ endif
  !
 #if defined _YPP_ELPH
  !

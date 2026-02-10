@@ -329,6 +329,7 @@ subroutine INIT_activate()
    call X_activate('Xs',(/'QpntsR','BndsRn','NGsBlk','GrFnTp','DmRnge','CGrdSp','EhEngy','LongDr','DrudeW'/))
    call initactivate(1,'XTermKind')
    call initactivate(1,'XTermEn')
+   call initactivate(1,'OptDipAverage')
  endif
  !
  ! GW (PPA, MPA, & COHSEX) 
@@ -635,22 +636,6 @@ subroutine INIT_activate()
  contains
    !
    !
-   subroutine CPU_activate(what)
-     character(*) :: what 
-#if defined _MPI
-     call initactivate(1,"PAR_def_mode")
-     call initactivate(1,what//"_CPU")
-     call initactivate(1,what//"_ROLEs")
-     if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
-     if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-     if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-#endif
-#if defined _SCALAPACK &&  defined _MPI
-     if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
-#endif
-     !
-   end subroutine
-   !
    subroutine X_activate(mode,what)
      character(2)::mode
      character(6)::what(:)
@@ -661,4 +646,23 @@ subroutine INIT_activate()
      enddo
    end subroutine
    !
+end subroutine
+!
+!
+subroutine CPU_activate(what)
+ use drivers,     ONLY:l_sc_run 
+ implicit none
+ character(*) :: what 
+#if defined _MPI
+ call initactivate(1,"PAR_def_mode")
+ call initactivate(1,what//"_CPU")
+ call initactivate(1,what//"_ROLEs")
+ if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
+ if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+ if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+#endif
+#if defined _SCALAPACK &&  defined _MPI
+ if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
+#endif
+ !
 end subroutine

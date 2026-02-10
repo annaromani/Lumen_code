@@ -162,10 +162,6 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
      call section('=','Bethe Salpeter Equation @q'//trim(intc(iq)))
    endif
    !
-   ! BSS output arrays
-   !===================
-   call X_ALLOC_global("ALLOC",W_bss)
-   !
    if (any((/BS_res_K_corr,BS_cpl_K_corr/)).and..not.l_bs_fxc) then
      !
      ! W/X RL size setup looking at the max index of G-G' 
@@ -202,6 +198,10 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
    !
    !... Blocks build-up
    if (.not.l_rpa_IP) call K_blocks(iq)
+   !
+   ! BSS output arrays
+   !===================
+   call X_ALLOC_global("ALLOC",W_bss)
    !
    ! Wave Functions distribution 
    !=============================
