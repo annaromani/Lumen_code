@@ -159,6 +159,7 @@ subroutine INIT_barriers()
    on_runlevels='optics chi bse bss negf'
    if (l_elph_corr) on_runlevels='optics chi bse bss el_ph_corr ph_el_corr dyson gw0'
    if (tddft_r_space.or.bse_sex.or.bse_bsfxc) BSK_mode='hartree'    
+   call warning("Non uniform k-grid detected. Full BSE and other runlevels not possible")
    call switch_off_runlevel('all',except=trim(on_runlevels)//' '//trim(always_on_runlevels))
  endif 
  !
