@@ -122,8 +122,8 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
    k_map%step=2
    n_shifts=2**grid_dim/((n_mapped+n_not_mapped)/n_mapped)
    call msg("sr","Shifted grid") 
-   call msg("s","Number of k-point in each direction",k_map%max_kdir/2)
-   call msg("s","Number of shifts",n_shifts)
+   call msg("sr","Number of k-point in each direction",k_map%max_kdir/2)
+   call msg("sr","Number of shifts",n_shifts)
    do ishift=1,n_shifts
      write(dump_ch,'(a,i1,a,3f12.6)') "Shift ",ishift,": ",k_shift(:,ishift)
      call msg("sr",trim(dump_ch)) 
@@ -131,8 +131,8 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
    if (n_shifts>1) call warning("Using one grid at time for k-derivatives ")
  else
    if (n_not_mapped>0) call error("Gamma centered grid, but not all points are mapped")
-   call msg("s","Gamma centered grid")
-   call msg("s","Number of k-point in each direction",k_map%max_kdir)
+   call msg("sr","Gamma centered grid")
+   call msg("sr","Number of k-point in each direction",k_map%max_kdir)
  endif
  !
 end subroutine k_map_nearest_by_dir
