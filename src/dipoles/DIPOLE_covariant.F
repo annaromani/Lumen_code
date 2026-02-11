@@ -42,7 +42,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
  ! Work Space
  !
  logical     ::l_eval_polarization
- integer     ::ik,iv,ic,ic_min,iv_max,i_sp_pol,ikm1,id_red,idir,idx(3),ikbz,ik_mem,istep,itest,max_step
+ integer     ::ik,iv,ic,ic_min,iv_max,i_sp_pol,ikm1,id_red,idir,idx(3),ikbz,ik_mem,istep,max_step
  real(SP)    ::Ev_m_Ec_KS
  complex(SP), allocatable :: Sm1_plus (:,:,:),Sm1_minus(:,:,:)
  complex(SP) ::S_det(6),Wop(Dip%ib(2),Dip%ib(2),2),DIP_tmp(6,Dip%ib(2),Dip%ib(2)),S_tmp(Dip%ib(2),Dip%ib(2),2)
@@ -99,18 +99,12 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
        !
        if(k_map%max_kdir(id_red)>=6.and..not.l_force_SndOrd) max_step=2
        !
-       istep=0
-       do itest=1,2*max_step 
+       do istep=1,max_step 
          !
          idx=k_map%k_map_inv(ikbz,:)
-         idx(id_red)=idx(id_red)-itest
+         idx(id_red)=idx(id_red)-istep*k_map%step
          idx=k_periodic_idx(idx,k_map)
          ikm1=k_map%k_map_dir(idx(1),idx(2),idx(3))
-         !write(*,*) idx,ikm1
-         if (ikm1==0) cycle
-         !
-         istep=istep+1
-         if(istep>max_step) cycle
          !
          S_tmp(:,:,1)=          DIP_S(:,:,id_red+(istep-1)*3,ikbz,i_sp_pol)
          S_tmp(:,:,2)=hermitian(DIP_S(:,:,id_red+(istep-1)*3,ikm1,i_sp_pol))
@@ -128,7 +122,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
            enddo
          enddo
          !
-         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(itest,SP))
+         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(istep*k_map%step,SP))
          !
        enddo ! istep
        !

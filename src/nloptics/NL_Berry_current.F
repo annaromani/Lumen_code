@@ -28,7 +28,6 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
  use parallel_int,   ONLY:PP_redux_wait
  use QP_m,           ONLY:QP_nk
  use nl_optics,      ONLY:NL_bands
- use vec_operate,    ONLY:k_periodic_idx
  use electric,       ONLY:l_no_res_symms,l_force_SndOrd
  !
  implicit none           
@@ -41,8 +40,8 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
  !
  ! Work Space
  !
- integer       :: ik,i1,iv,isp,ikbz,Nperpend,id,id2,id3,is,idx(3),ikm,ikp
- integer       :: id_red,itest,istep,max_step
+ integer       :: ik,i1,iv,isp,ikbz,Nperpend,id,id2,id3,is
+ integer       :: id_red,istep,max_step
  complex(SP)   :: NL_J_red(3)
  complex(SP)   :: VH_bands(NL_bands(1):NL_bands(2),maxval(en%nbf),Xk%nibz,n_sp_pol)
  complex(SP)   :: V_tilde(maxval(en%nbf),NL_bands(1):NL_bands(2),2)
@@ -92,29 +91,10 @@ subroutine NL_Berry_current(en,Xk,k_map,V_bands,NL_J)
        !
        if(.not.PAR_IND_Xk_bz%element_1D(ikbz)) cycle
        !
-       istep=0
-       do itest=1,2*max_step
-         !
-         idx=k_map%k_map_inv(ikbz,:)
-         idx(id_red)=idx(id_red)-itest
-         idx=k_periodic_idx(idx,k_map)
-         ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
-         !
-         idx=k_map%k_map_inv(ikbz,:)
-         idx(id_red)=idx(id_red)+itest
-         idx=k_periodic_idx(idx,k_map)
-         ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
-         !
-         if (ikp==0 .and. ikm==0) cycle
-         if (ikp==0 .and. ikm/=0) call error("kp does not exist, while km does")
-         if (ikp/=0 .and. ikm==0) call error("km does not exist, while kp does")
-         !
-         istep=istep+1
-         if (istep>max_step) cycle
-         !
-         call Build_tilde_vbands(en,Xk,ikbz,isp,istep,ikm,ikp,id_red,V_bands(:,:en%nbf(isp),:,isp),V_tilde)
+       do istep=1,max_step
+         call Build_tilde_vbands(en,Xk,ikbz,isp,istep,id_red,V_bands(:,:en%nbf(isp),:,isp),V_tilde)
 !$OMP PARALLEL WORKSHARE  
-         delta_V_tilde(:,:,istep)=(V_tilde(:,:,1)-V_tilde(:,:,2))/dble(itest)
+         delta_V_tilde(:,:,istep)=(V_tilde(:,:,1)-V_tilde(:,:,2))/dble(istep*k_map%step)
 !$OMP END PARALLEL WORKSHARE  
        enddo
        !

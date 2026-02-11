@@ -28,7 +28,7 @@ subroutine PARALLEL_add_Q_to_K_list(ZONE,IND_in,IND_in_ID,IND_k_out,IND_k_out_ID
  type(bz_samp)          ::k,q
  !
  integer :: iq,ikp,ikbz,ik,ikpbz,iqp,iqbz
- integer :: id,istep,itest,idx_kp(3),idx_k(3),max_step,ikbzp
+ integer :: id,istep,idx_kp(3),idx_k(3),max_step,ikbzp
  !
  IND_k_out_ID=IND_in_ID
  !
@@ -163,18 +163,13 @@ subroutine PARALLEL_add_Q_to_K_list(ZONE,IND_in,IND_in_ID,IND_k_out,IND_k_out_ID
        !
        if(k_map%max_kdir(id)>=6) max_step=2
        !
-       istep=0
-       do itest=1,2*max_step
+       do istep=1,max_step
          !
          idx_kp=idx_k
-         idx_kp(id)=idx_kp(id)+itest
+         idx_kp(id)=idx_kp(id)+istep*k_map%step
          idx_kp=k_periodic_idx(idx_kp,k_map)
          !
          ikbzp=k_map%k_map_dir(idx_kp(1),idx_kp(2),idx_kp(3))
-         if (ikbzp==0) cycle
-         !
-         istep=istep+1
-         if (istep>max_step) cycle
          !
          ikp = k%sstar(ikbzp,1)
          !

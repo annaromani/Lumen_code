@@ -45,7 +45,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !
  ! Work Space
  !
- integer           :: ikbz,ikbzp,is,isp,ib,ibp,i_sp_pol,ik,ikp,itest,istep,max_step
+ integer           :: ikbz,ikbzp,is,isp,ib,ibp,i_sp_pol,ik,ikp,istep,max_step
  integer           :: iG0,ig,igp,ig_shift,ng_tmp,wf_ng_save,wf_ng_1st_BZ_save
  integer           :: id,idp,idx_kp(3),idx_k(3),shift(3),g0_idx(3,2),i_wf,i_wfp
  real(SP)          :: g0_length(3)
@@ -165,21 +165,16 @@ subroutine DIPOLE_overlaps(Xk,Dip)
        max_step=1 ! Only the first neighbor
        if(k_map%max_kdir(id)>=6) max_step=2  ! First and second neighbors
        !
-       istep=0
-       do itest=1,2*max_step
+       do istep=1,max_step
          !
          idx_kp=idx_k
-         idx_kp(id)=idx_kp(id)+itest   ! Neighbor on the right
+         idx_kp(id)=idx_kp(id)+istep*k_map%step   ! Neighbor on the right
          !
          USE_shifted_wf=.false.
          if(idx_kp(id)>k_map%max_kdir(id)) USE_shifted_wf=.true. ! Check if the neighbor is out of the BZ
          !
          idx_kp=k_periodic_idx(idx_kp,k_map)  ! Bring it back by periodicity
          ikbzp=k_map%k_map_dir(idx_kp(1),idx_kp(2),idx_kp(3))  ! Find the corresponding index in the BZ
-         if (ikbzp==0) cycle
-         !
-         istep=istep+1
-         if(istep>max_step) cycle
          !
          ! Find the index in the IBZ and the symmetry
          ikp = Xk%sstar(ikbzp,1)
@@ -231,31 +226,31 @@ subroutine DIPOLE_overlaps(Xk,Dip)
            igp=minus_G(ig_shift)
            ig_shift=G_m_G(ig,igp)
          enddo 
-	 !
-	 !WF_skg1
-	 !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
+         !
+         !WF_skg1
+         !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
          !WF_skg2
-	 call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
+         call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
          !
          if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
          !
          do ibp=1,Dip%ib(2)
            if(.not.PAR_IND_CON_BANDS_OVLP%element_1D(ibp)) cycle
-	   !WF_skg1
-	   !i_wfp=WF_ik%index(ibp,ikp,i_sp_pol)
+           !WF_skg1
+           !i_wfp=WF_ik%index(ibp,ikp,i_sp_pol)
            do ib=1,Dip%ib(2)
              if(.not.PAR_IND_VAL_BANDS_OVLP%element_1D(ib)) cycle
-	     !WF_skg1
-	     !i_wf=WF_ik%index(ib,ik,i_sp_pol)
+             !WF_skg1
+             !i_wf=WF_ik%index(ib,ik,i_sp_pol)
              !DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
              !& Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik%c(:,:,i_wf),WF_ikp%c(:,:,i_wfp))
-	     !WF_skg2
+             !WF_skg2
              DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
              & Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik(:,:,ib),WF_ikp(:,:,ibp))
            enddo ! ibp
          enddo ! ib
          !
-	 !WF_skg1
+         !WF_skg1
          !call WF_free(WF_ikp)
          !
        enddo ! istep
