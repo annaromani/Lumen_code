@@ -63,7 +63,10 @@ integer function io_COLLISIONS_header(ID,COLL)
  if (COLL%kind==QP_SE_GW_NEQ) SIZE_=SIZE_+3
  if (COLL%kind==QP_SE_GW_QED) SIZE_=SIZE_+2
  if (ver_is_gt_or_eq(ID,revision=21128)) then
-   SIZE_ = SIZE_+2
+   SIZE_ = SIZE_+1
+ endif
+ if (ver_is_gt_or_eq(ID,revision=24190)) then
+   SIZE_ = SIZE_+1
  endif
  call io_elemental(ID,VAR="PARAMETERS",VAR_SZ=SIZE_,MENU=0)
  !
@@ -109,13 +112,13 @@ integer function io_COLLISIONS_header(ID,COLL)
    if (V_kind_disk>=H_SE_HARTREE) SIZE_=SIZE_+1
    if (V_kind_disk==             H_SE_FOCK.or.V_kind_disk==             H_SE_SEX.or.&
 &        V_kind_disk==H_SE_HARTREE+H_SE_FOCK.or.V_kind_disk==H_SE_HARTREE+H_SE_SEX     ) SIZE_=SIZE_+1
-   if (ver_is_gt_or_eq(ID,revision=24115)) then
+   if (ver_is_gt_or_eq(ID,revision=24190)) then
      SIZE_ = SIZE_-1
      ! COLLISIONS_cutoff is always zero in io_parallel
    endif
 
    call io_elemental(ID,VAR="HXC_PARAMETERS",VAR_SZ=SIZE_,MENU=0)
-   if (.not.ver_is_gt_or_eq(ID,revision=24115)) then
+   if (.not.ver_is_gt_or_eq(ID,revision=24190)) then
      call io_elemental(ID,R0=COLLISIONS_cutoff,&
 &         VAR='Collisions Cutoff                 ',WARN=.true.,OP=(/"=="/))
    endif
@@ -152,7 +155,7 @@ integer function io_COLLISIONS_header(ID,COLL)
    call def_variable_bulk(ID,"COLL_bands_frozen",1,shape(COLL_bands_frozen),LP_YIO)
    call  io_variable_bulk(ID,1,L1=COLL_bands_frozen)
  else
-   COLL_bands_frozen=.false.
+   if (allocated(COLL_bands_frozen)) COLL_bands_frozen=0
  endif
  !
  ! States
