@@ -197,7 +197,7 @@ module functions
      bose_decay=1.
      !
      if (.not.Finite_Tel) return
-     if (abs(E)<=bose_E_cut*Tel) bose_decay=E**2./(Tel*bose_E_cut)**2.
+     if (abs(E)<=bose_E_cut*Tel) bose_decay=E**2/(Tel*bose_E_cut)**2
      !
    end function
    !

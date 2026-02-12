@@ -252,14 +252,14 @@ if (l_phel_scatt)                   sec_title=trim(sec_title)//'+ph-el'
    !
    call RT_carriers_object(RT_carriers,WHAT='fill_ref')
    !
-   call io_control(ACTION=OP_WR_CL,COM=NONE,SEC=(/1,2/),ID=ID)
-   io_err=io_RT_components('REFERENCE',ID)
-   !
    call msg('l','done')
    !
  endif
  !
 #endif
+ !
+ call io_control(ACTION=OP_WR_CL,COM=NONE,SEC=(/1,2/),ID=ID)
+ io_err=io_RT_components('REFERENCE',ID)
  !
  l_initial_equilibrium=.FALSE.
  !

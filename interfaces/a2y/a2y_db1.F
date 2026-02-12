@@ -13,13 +13,13 @@ subroutine a2y_db1(en,k,ncid)
  !
  use netcdf
  use netcdf_data
- use pars,                 only : SP,pi
+ use pars,                 only : DP,SP,pi
  use com,                  only : msg
  use electrons,            only : levels, n_bands, n_spin,n_sp_pol,n_spinor, l_spin_orbit
  use pseudo,               only : pp_n_l_times_proj_max
  use wave_func,            only : wf_ncx
  use R_lattice,            only : ng_vec, bz_samp, nkibz
- use D_lattice,            only : nsym, n_atoms, n_atomic_species, atom_mass
+ use D_lattice,            only : lattice, n_atoms, n_atomic_species, atom_mass
  use mod_com2y,            only : print_interface_dimensions,  artificial_spin_pol
  use y_memory_alloc
  !
@@ -58,6 +58,7 @@ subroutine a2y_db1(en,k,ncid)
  !
  call msg('s','Cell data...')
  call import_geometry_group
+ call msg("l","...["//trim(lattice)//" latt]")
  call msg("l","...done")
  !
  ! Electrons
@@ -106,8 +107,9 @@ contains
     use matrix_operate,       only : m3det_i
     use units,                only : Da2AU
     use R_lattice,            only : b
+    use vec_operate,          only : define_b_and_DL_vol
     use D_lattice,            only : nsym, i_time_rev, i_space_inv, dl_sop, &
-&                                    DL_vol, a, alat, &
+&                                    a, alat, &
 &                                    n_atomic_species,n_atoms_species,atoms_map, &
 &                                    n_atoms_species_max,atom_pos, n_atoms, Z_species
     use mod_com2y,            only : symmetries_check_and_load, alat_mult_factor,force_noSYMM
@@ -115,9 +117,10 @@ contains
     implicit none
     !
     logical                       :: l_identity, l_inversion
-    real(SP)                      :: lsop(3,3), cp(3)
+    real(SP)                      :: lsop(3,3)
     integer                       :: a_nsym, a_species, kptopt, det_s
     integer, allocatable          :: asop(:,:,:),symafm(:),trev(:)
+    real(DP),allocatable          :: trasl(:,:)
     character(3), allocatable     :: atom_species_names(:)
     integer,  allocatable, target :: atom_species_(:)
     real(SP), allocatable, target :: reduced_atom_positions_(:,:)
@@ -135,13 +138,7 @@ contains
     alat(1) = alat_mult_factor*maxval( abs( a(1,:) ))
     alat(2) = alat_mult_factor*maxval( abs( a(2,:) ))
     alat(3) = alat_mult_factor*maxval( abs( a(3,:) ))
-    cp = cross_product(a(2,:),a(3,:))
-    do i1 = 1,3
-      DL_vol = DL_vol+a(1,i1)*cp(i1)
-    enddo
-    b(1,:) = cross_product(a(2,:),a(3,:))*2.0_SP*pi/DL_vol
-    b(2,:) = cross_product(a(3,:),a(1,:))*2.0_SP*pi/DL_vol
-    b(3,:) = cross_product(a(1,:),a(2,:))*2.0_SP*pi/DL_vol
+    call define_b_and_DL_vol()
     !
     ! Atomic position data
     !
@@ -219,6 +216,12 @@ contains
     netcdf_error = nf90_get_var(ncid, varid, asop)
     call netcdf_check(ncid,netcdf_error,varid)
 
+    YAMBO_ALLOC( trasl, (3,a_nsym) )
+    varid = netcdf_inquire_varid(ncid, "reduced_symmetry_translations")
+    netcdf_error = nf90_get_var(ncid, varid, trasl)
+    call netcdf_check(ncid,netcdf_error,varid)
+
+
     YAMBO_ALLOC( symafm, (a_nsym) )
     varid = netcdf_inquire_varid(ncid, "symafm")
     netcdf_error = nf90_get_var(ncid, varid, symafm)
@@ -229,7 +232,6 @@ contains
     if (any(symafm==-1)) then
       trev=-99
       do is=1,a_nsym
-        !write(*,*) symafm(is)
         det_s=m3det_i(asop(:,:,is))
         if (symafm(is)*det_s==-1)  trev(is)=1
         if (symafm(is)*det_s== 1)  trev(is)=0
@@ -237,7 +239,9 @@ contains
       if (any(trev==-99)) call error(" some symmetry has determinant different from 1 or -1")
     endif
 
-    call symmetries_check_and_load(asop,a_nsym,t_rev=trev)
+    call symmetries_check_and_load(asop,trasl,a_nsym,t_rev=trev)
+
+    call crystal_lattice()
 
     return
   end subroutine import_geometry_group

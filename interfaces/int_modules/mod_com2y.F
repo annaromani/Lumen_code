@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2006 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM
+! Authors (see AUTHORS file for details): AM DS
 !
 module mod_com2y
  ! 
@@ -57,25 +57,27 @@ module mod_com2y
      !
    end subroutine
    !
-   subroutine symmetries_check_and_load(int_sop,nsym_,trevsym,t_rev)
+   subroutine symmetries_check_and_load(int_sop,trasl,nsym_,trevsym,t_rev)
      !
      use com,       ONLY:msg
      use electrons, ONLY:l_spin_orbit,n_spin_den
-     use D_lattice, ONLY:nsym,dl_sop,i_time_rev,a,mag_syms,inv_index,&
-&                        atoms_spatial_inversion,i_space_inv,alat
+     use D_lattice, ONLY:sp_nsym,nsym,dl_sop,i_time_rev,a,mag_syms,inv_index,&
+&                        atoms_spatial_inversion,i_space_inv,alat,dl_tra,    &
+&                        non_symmorphic_syms
      use R_lattice, ONLY:b,rl_sop
      !
      implicit none
      !
      integer :: nsym_
      integer :: int_sop(3,3,nsym_) ! Symmetries in RLU
+     real(DP):: trasl(3,nsym_)     ! Translations
      logical, optional :: trevsym
      integer, optional :: t_rev(nsym_)
      !
      integer :: is,is_inv,is_spatial,is_trev,is_yambo,i2,i3
      logical :: l_identity,l_inversion
      logical :: double_symmetries
-     real(SP):: sop_mat(3,3)
+     real(SP):: sop_mat(3,3),sop_tra(3)
      !
      mag_syms=.false.
      inv_index=-1
@@ -87,15 +89,10 @@ module mod_com2y
      endif
      if(any(t_rev(:)==1)) mag_syms=.true.
      !
+     non_symmorphic_syms=any(trasl>1.E-5_SP)
+     !
      double_symmetries=.not.mag_syms
      if (mag_syms) i_time_rev=1
-     !
-     ! Space Invertion (possible only for v >= 3.0.4)
-     !
-     call atoms_spatial_inversion()
-     !
-     if (i_space_inv==0) call msg("l","[SI no]...")
-     if (i_space_inv==1) call msg("l","[SI yes]...")
      !
      ! Search for identity and inversion symmetries.
      !
@@ -128,6 +125,15 @@ module mod_com2y
      !
      if (.not.l_identity) call msg("l","[I no]...")
      if (l_identity)      call msg("l","[I yes]...")
+     !
+     ! Space Invertion (possible only for v >= 3.0.4)
+     !
+     sop_tra=0._SP
+     if(l_inversion) sop_tra=matmul(transpose(a),real(trasl(:,is_inv),SP))
+     call atoms_spatial_inversion(sop_tra)
+     !
+     if (i_space_inv==0) call msg("l","[SI no]...")
+     if (i_space_inv==1) call msg("l","[SI yes]...")
      !
      ! Special case where I,-I present: no TR used.
      !
@@ -171,6 +177,7 @@ module mod_com2y
      !
      nsym=nsym_
      if (double_symmetries) nsym=2*nsym_
+     sp_nsym=nsym/(1+i_time_rev)
      !
      !From abinit help ...
      !
@@ -188,6 +195,7 @@ module mod_com2y
      !but inverse[transpose(a)]= b/2./pi
      !
      allocate(dl_sop(3,3,nsym))
+     allocate(dl_tra(3,nsym))
      is_spatial=0
      is_trev=0
      do is=1,nsym_
@@ -205,8 +213,16 @@ module mod_com2y
        endif
        sop_mat=matmul(transpose(a),int_sop(:,:,is))
        dl_sop(:,:,is_yambo)=matmul(sop_mat,b)/2._SP/pi
-       if (double_symmetries) dl_sop(:,:,is_yambo+nsym_)=-dl_sop(:,:,is_yambo)
-       if (mag_syms.and.(is_yambo>nsym/(1+i_time_rev))) dl_sop(:,:,is_yambo)=-dl_sop(:,:,is_yambo)
+       sop_tra=matmul(transpose(a),real(trasl(:,is),SP))
+       dl_tra(:,is_yambo)=sop_tra
+       if (double_symmetries) then
+         dl_sop(:,:,is_yambo+nsym_)=-dl_sop(:,:,is_yambo)
+         dl_tra(:,is_yambo+nsym_)  = dl_tra(:,is_yambo)
+       endif
+       if (mag_syms.and.(is_yambo>nsym/(1+i_time_rev))) then
+         dl_sop(:,:,is_yambo)=-dl_sop(:,:,is_yambo)
+         dl_tra(:,is_yambo)  = dl_tra(:,is_yambo)
+       endif
      enddo
      !
      allocate(rl_sop(3,3,nsym))
