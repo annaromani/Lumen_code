@@ -36,7 +36,7 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
 &                        RIM_n_rand_pts,RIM_sphe_n_rand_pts,cyl_ph_radius,box_length,cut_geometry,ws_cutoff
  use BS,            ONLY:BSE_mode,BSE_prop,BSK_mode,BS_eh_en,BS_eh_win,BS_q,BS_bands,BS_bands_frozen_ch,&
 &                        BS_n_g_W,BS_n_g_exch,BS_n_g_fxc,BSE_L_kind,BS_K_cutoff,BSK_IO_mode,BSE_dipole_geometry,&
-&			             BSE_disk_IO,BSK_IO_shape
+&                        BSE_disk_IO,BSK_IO_shape
  use BS_solvers,    ONLY:BSS_mode,Haydock_threshold,Haydock_iterIO,BSS_n_freqs,BSS_target_E,BSS_trange_E,&
 &                        BSS_dr,BSS_er,BSS_E_dir,BSS_Q_dir,BSS_damp_reference,BSS_inversion_mode,&
 &                        BSS_Wd,K_INV_EPS,K_INV_PL,BSS_n_eig_Input,BSS_first_eig,Haydock_iterMAX,BSS_ldiago_solver
@@ -342,7 +342,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'FxcMode', '[TDDFT] ("G-XXX" or "R-XXX" with XXX=def/full/cut_Gmax/cut_GmGp") ',FXC_mode,verb_level=V_resp)
  call it(defs,'BSEEhEny','[BSK] Electron-hole energy range',BS_eh_en,E_unit,verb_level=V_resp)
  call it(defs,'BSKCut',  '[BSK] Cutoff on the BSE Kernel, 0=full 1=none',BS_K_cutoff,verb_level=V_resp)
- call it(defs,'BSKIOmode','[BSK] ("1D_linear"/"2D_standard" + "norestart" + "write_all_steps")',BSK_IO_mode,verb_level=V_resp)
  call it(defs,'BSKmod',  '[BSE] IP/Hartree/HF/ALDA/SEX/BSfxc',BSK_mode,protect=.FALSE.,case="A")
  call it(defs,'Gauge' ,  '[BSE/X] Gauge (length|velocity)',global_gauge,verb_level=V_resp)
  call it('f',defs,'NoCondSumRule' ,'[BSE/X] Do not impose the conductivity sum rule in velocity gauge',verb_level=V_resp)
