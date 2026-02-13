@@ -16,4 +16,5 @@
  electrons_spin_and_magn_interpolate.o
  electrons_spin_factors.o
  electrons_symmetries.o
+ transitions_symmetries.o
 
