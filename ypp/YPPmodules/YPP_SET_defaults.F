@@ -16,7 +16,8 @@ subroutine YPP_SET_defaults()
 &                         WF_ref,what_to_write,SP,HA2EV,E_field,Nel_fac,DOS_bands,AVE_exc,l_interp,  &
 &                         BSiq,l_PROJECT_atom,PDOS_atoms,PDOS_kinds,PDOS_wfcs,PDOS_l,PDOS_j,PDOS_m,&
 &                         EXCITON_Res_treshold,EXCITON_E_treshold,l_PROJECT_line,l_PROJECT_plane,K_grid,&
-&                         MAGNON_Res_threshold,DIPs_C_bands,DIPs_V_bands,DIPs_E_range
+&                         MAGNON_Res_threshold,DIPs_C_bands,DIPs_V_bands,DIPs_E_range,&
+&                         symm_thresh,l_sp_symm,l_exc_symm
  use YPP_symm,       ONLY:wf_ng_cut
  use units,          ONLY:FS2AUT
  use interpolate,    ONLY:INTERP_shell_factor,interpls,max_interpls
@@ -33,7 +34,7 @@ subroutine YPP_SET_defaults()
 &                         Eh_pumped_pair_deltaE,Eh_pumped_pair_energy,Eh_pumped_pair_width,l_RealTime,l_RT_dos,&
 &                         l_RT_abs,l_RT_bands,l_RT_DBs,l_RT_density,l_RT_energy,l_RT_lifetimes,l_RT_occupations,&
 &                         l_RT_time,l_RT_X,Eh_pumped_pair_n_BZ_regions,Probe_Keyword ,Pump_Keyword,X_order,&
-&                         Eh_mu,Eh_temp,h_mu_autotune_thr,RT_p_format,l_RT_G_two_times,X_kind,Pump_path
+&                         Eh_mu,Eh_temp,h_mu_autotune_thr,RT_p_format,l_RT_G_two_times,X_kind,Pump_path,l_RT_ARPES
  use fields,         ONLY:n_ext_fields
 #endif
 #if defined _YPP_ELPH
@@ -90,6 +91,7 @@ subroutine YPP_SET_defaults()
  !
  l_RT_X           =.FALSE.
  l_RT_abs         =.FALSE.
+ l_RT_ARPES       =.FALSE.
  l_RT_occupations =.FALSE.
  l_RT_lifetimes   =.FALSE.
  l_RT_density     =.FALSE.
@@ -125,11 +127,13 @@ subroutine YPP_SET_defaults()
  mag_dir    ='X'
  p_format   ='g'
  l_exc_wf   =.false.
+ l_exc_symm =.false.
  l_density  =.false.
  l_current  =.false.
  V_value    ='RE'
  l_mag=.false.
  l_sp_wf=.false.
+ l_sp_symm  =.false.
 #if defined _YPP_SC
  l_mean_potential=.false.
 #endif
@@ -163,6 +167,10 @@ subroutine YPP_SET_defaults()
  WF_multiplier=1._SP
  BSiq=1
  AVE_exc='h'
+ !
+ ! EXC Symm analysis
+ !
+ symm_thresh=0.01_SP
  !
 #if defined _YPP_ELPH
  !

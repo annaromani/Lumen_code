@@ -62,6 +62,7 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  use IO_m,           ONLY:NONE,OP_APP_CL,OP_RD_CL,DUMP,OP_RD,RD_CL_IF_END,OP_WR_CL,deliver_IO_error_message, &
 &                         REP,VERIFY,WR_CL,OP_WR,WR_CL_IF_END,manage_action
  use IO_int,         ONLY:io_control
+ use interfaces,     ONLY:EXC_WF_symm_qpoint
  use EXCPH,          ONLY:BS_mat_in,BS_mat_out,BSS_eh_table_in,EXCPH_gkkp,EXCPH_gkkp_sq,BS_E_in,BS_E,BSS_eh_table_m1_in,&
 &                         EXCPH_states,EXCPH_sum,k_plus_q_table,build_Q_map,EXCPH_q, &
 &                         EXCPH_gkkp_alloc,EXCPH_gkkp_free,l_const_elph,l_abs_elph,l_abs_exc,l_elec_only,l_hole_only, &
@@ -235,7 +236,7 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
      !
      BS_mat_out=cZERO
      ! Here we obtain the rotated BS_mat_out at iq_bz
-     call EXC_WF_symm_qpoint(k,q,EXCPH_states(1),n_exc_out,iq,iq_s,1,ID_phases,S_index,BS_mat_out,l_min_mem)
+     call EXC_WF_symm_qpoint(k,q,EXCPH_states(1),n_exc_out,iq,iq_s,1,ID_phases,S_index,BS_mat_out,l_min_mem_in=l_min_mem)
      !
      EXCPH_gkkp          =cZERO
      EXCPH_gkkp_sq       =rZERO

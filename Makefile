@@ -16,6 +16,16 @@ else
  include config/mk/global/no_configure_help.mk
 endif
 #
+# Check if source is clean
+#
+ifneq ($(srcdir),$(compdir))
+ ifneq ($(srcdir),.)
+  ifeq ($(wildcard $(srcdir)/config/report),$(srcdir)/config/report)
+   $(error $(srcdir) is not clean. Please run make distclean in source.)
+  endif
+ endif
+endif
+#
 MAKEFLAGS = --no-print-directory
 #
 # Targets
@@ -46,6 +56,8 @@ rt-project:
 	@for target in $(RT_PROJ)  ; do $(MAKE) $(MAKEFLAGS) $$target; if test ! -f "$(bindir)/$$target"; then echo "$$target build failed"; exit 1;fi ; done
 nl-project: 
 	@for target in $(NL_PROJ)  ; do $(MAKE) $(MAKEFLAGS) $$target; if test ! -f "$(bindir)/$$target"; then echo "$$target build failed"; exit 1;fi ; done
+fl-project: 
+	@for target in $(FL_PROJ)  ; do $(MAKE) $(MAKEFLAGS) $$target; if test ! -f "$(bindir)/$$target"; then echo "$$target build failed"; exit 1;fi ; done
 main:
 	@for target in $(MAIN)     ; do $(MAKE) $(MAKEFLAGS) $$target; if test ! -f "$(bindir)/$$target"; then echo "$$target build failed"; exit 1;fi ; done
 all:
@@ -71,7 +83,11 @@ ifneq (,$(wildcard $(compdir)/config/stamps_and_lists/compilation_objects_in_DOU
  STAMP_DBLE=-D_DOUBLE
 else ifneq (,$(wildcard $(compdir)/config/stamps_and_lists/compiling_yambo_nl.stamp))
  STAMP_DBLE=-D_DOUBLE
+else ifneq (,$(wildcard $(compdir)/config/stamps_and_lists/compiling_yambo_fl.stamp))
+ STAMP_DBLE=-D_DOUBLE
 else ifneq (,$(wildcard $(compdir)/config/stamps_and_lists/compiling_ypp_nl.stamp))
+ STAMP_DBLE=-D_DOUBLE
+else ifneq (,$(wildcard $(compdir)/config/stamps_and_lists/compiling_ypp_fl.stamp))
  STAMP_DBLE=-D_DOUBLE
 endif
 #

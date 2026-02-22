@@ -64,7 +64,7 @@ subroutine bz_samp_indexes(en,k,Xk,q)
  !
  ! Work Space
  !
- integer :: io_db,io_err
+ integer :: io_db,io_err,n_mapped,n_not_mapped
  integer :: i1,i2,i3,i4,iv1(3),iqibz,iqbz,ikibz,ikbz,ikbz_p,ikbz_mem,iqs,iks,id
  real(SP):: v1(3),k_b_m1(3,3),local_zero(3),q_step(3)
  real(SP):: E_empty(1,q%nibz,n_sp_pol)
@@ -188,7 +188,12 @@ subroutine bz_samp_indexes(en,k,Xk,q)
    !
    ! THE GRID IS UNIFORM IF ALL THE Q_MAP IS FILLED
    !
-   Xk_grid_is_uniform=all(q_map/=0)
+   n_mapped=count(q_map/=0)
+   n_not_mapped=count(q_map==0)
+   !
+   call msg("sr","[BZ sampling] q_map (mappend, not mapped)",(/n_mapped,n_not_mapped/))
+   !
+   Xk_grid_is_uniform=(n_not_mapped==0)
    !
  else
    Xk_grid_is_uniform=.false.

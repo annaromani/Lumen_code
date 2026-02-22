@@ -99,11 +99,11 @@ subroutine X_OUTPUT_driver(WHAT,keys,solver,IQ,IG,DESC,data,indexes)
      if (STRING_match(solver,"Slepc")) then
        if( l_abs_prop_chi_bse      .and. X_do_obs("eel") ) then
          call X_obs_onoff("- eel")
-	 call warning("eels evaluation switched off for slepc")
+         call warning("eels evaluation switched off for slepc")
        endif
        if((.not.l_abs_prop_chi_bse).and.(X_do_obs("eps").or.X_do_obs("alpha"))) then
          call X_obs_onoff("- eps alpha")
-	 call warning("eps & alpha evaluation switched off for slepc")
+         call warning("eps & alpha evaluation switched off for slepc")
        endif
      endif
      if (STRING_match(solver,"Inversion")) call X_obs_onoff("- Esort E_IP E_INDX_IP kerr magnons jdos")

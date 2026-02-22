@@ -114,7 +114,8 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  if(include_eq_occ) then
    YAMBO_ALLOC(G_lesser_reference,(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),RT_nk,n_sp_pol))
    call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1,2/),ID=ID) 
-   io_err=io_RT_components('REF',ID)
+   io_err=io_RT_components('REFERENCE',ID)
+   if (io_err/=0) call error("G_lesser_reference not found")
  endif
  !
  YAMBO_ALLOC(G_ret,(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),RT_nk,n_sp_pol))
@@ -136,7 +137,8 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  !
  T_c=(RT_conf%T_range(1)+RT_conf%T_range(2))/2._SP
  i_Tc=(RT_conf%T_n_steps+1)/2
- if(mod(RT_conf%T_n_steps,2)==0) call error("Number of time steps must be odd")
+ if(mod(RT_conf%T_n_steps,2)==0) &
+ & call warning("Even number of time steps. Using an odd number is reccomented")
  !
  call msg('s',function_name//"(k,w) at time "//trim(real2ch(real(T_c/FS2AUT,SP)))//" fs")
  !
@@ -435,28 +437,29 @@ subroutine RT_G_two_times_build(en,kpt,qpt)
  !
  YAMBO_FREE(G_w)
  !
+ ! DEBUG <
+ !
  ! Print G(w,k) for specific k  (only gamma for now)
  !
- do i_sp=1,n_sp_pol
-  !
-   file_name="G_k1_w"
-   if (n_sp_pol>1) file_name="G_k1_sp"//trim(intc(i_sp))//"_w"
-   call of_open_close(trim(file_name),'ot')
-   headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
-   call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
-   !
-   do i_w=1,RT_conf%W_n_steps
-     odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,    &
-     &      -real(cI*GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP),   &
-     &       real(   GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP)     /)
-     call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
-   enddo
-   !
-   call of_open_close(trim(file_name))
-   !
- enddo
+ !do i_sp=1,n_sp_pol
+ ! !
+ !  file_name="G_k1_w"
+ !  if (n_sp_pol>1) file_name="G_k1_sp"//trim(intc(i_sp))//"_w"
+ !  call of_open_close(trim(file_name),'ot')
+ !  headings=(/" E[eV]  ","Im[G(w)]","Re[G(w)]"/)
+ !  call msg('o '//trim(file_name),"#",headings,INDENT=0,USE_TABS=.true.)
+ !  !
+ !  do i_w=1,RT_conf%W_n_steps
+ !    odata=(/real(GreenF_T_and_W%W(i_w),SP)*HA2EV,    &
+ !    &      -real(cI*GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP),   &
+ !    &       real(   GreenF_T_and_W%F_W(i_w,1+RT_nk*(i_sp-1)),SP)     /)
+ !    call msg('o '//trim(file_name),'',odata,INDENT=-2,USE_TABS=.true.)
+ !  enddo
+ !  !
+ !  call of_open_close(trim(file_name))
+ !  !
+ !enddo
  !
- ! DEBUG <
  !do i_sp=1,n_sp_pol
  !do ik=1,RT_nk
  !  !

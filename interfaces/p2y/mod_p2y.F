@@ -420,7 +420,7 @@ contains
  subroutine get_cell
    use pars,                  only : pi
    use R_lattice,             ONLY : bz_samp, ng_vec
-   use D_lattice,             ONLY : DL_vol, a, alat,lattice
+   use D_lattice,             ONLY : a, alat,lattice
    use mod_com2y,             ONLY : alat_mult_factor
    use vec_operate,           ONLY :  define_b_and_DL_vol
     
@@ -452,7 +452,6 @@ contains
    alat(1) = maxval(abs(a(1,:)))*alat_mult_factor
    alat(2) = maxval(abs(a(2,:)))*alat_mult_factor
    alat(3) = maxval(abs(a(3,:)))*alat_mult_factor
-   call crystal_lattice()
    call define_b_and_DL_vol()
    !
    return
@@ -471,7 +470,6 @@ contains
 
    real(DP) :: trasl_(3,48)
    real     :: rmat1(3,3),rmat2(3,3)
-   logical  :: warn=.FALSE.
 
    trasl_=0._SP
 
@@ -523,24 +521,13 @@ contains
      call errore("get_symmetries"," Invalid dftdata fmt "//trim(dftdata_fmt),1)
    end select
    !
-   ! postporoc
-   !
-   do i1=1,nsym_
-     if (.not.v_is_zero(real(trasl_(:,i1),SP)) ) then 
-       warn=.TRUE.
-       if (.not.force_noWFs) then
-         call error(' Non-symmorphic symmetry operations are not supported! Use force_symmorphic=.true. in PWSCF')
-       endif
-     endif
-   enddo
-   !
    ! Note that invsym_ is well defined here, could be used for checks.
    do i1 = 1,nsym_
      isym_(:,:,i1) = transpose(isym_(:,:,i1))
    enddo
-   call symmetries_check_and_load(isym_(:,:,1:nsym_),nsym_,trevsym=trevsym_, t_rev=t_rev_)
+   call symmetries_check_and_load(isym_(:,:,1:nsym_),trasl_(:,1:nsym_),nsym_,trevsym=trevsym_, t_rev=t_rev_)
    !
-   if (warn) call warning(' Non-symmorphic symmetry operations are not supported!')
+   call crystal_lattice()
    !
  end subroutine get_symmetries
  !

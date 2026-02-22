@@ -16,7 +16,7 @@ subroutine INIT_activate()
 &                         l_real_time,l_ppa,l_mpa,l_lrc_fxc,l_gw0,l_elel_corr,l_elel_scatt,l_elph_corr,l_td_sex,&
 &                         l_elph_Hamiltonian,l_elph_scatt,l_elphoton_corr,l_elphoton_scatt,l_em1d,l_eval_collisions,&
 &                         l_sc_magnetic,l_sc_electric,l_dipoles,l_pf_fxc,l_nl_optics,l_phel_corr,l_nl_p_and_p, &
-&                         l_EXCPH_gkkp,l_EXCPH_optics,l_EXCPH_lifetime,l_X
+&                         l_EXCPH_gkkp,l_EXCPH_optics,l_EXCPH_lifetime,l_X,l_fl_optics
 #if defined _SC || defined _RT
  use hamiltonian,    ONLY:H_potential
 #endif
@@ -115,12 +115,19 @@ subroutine INIT_activate()
  endif
 #endif
  !
-#if defined _NL
- if (l_nl_optics) then
+#if defined _NL 
+ if (l_nl_optics .or. l_fl_optics) then
    call CPU_activate("NL")
    call CPU_activate("DIP")
    call CPU_activate("OSCLL")
    call initactivate(1,'DIP_Threads NL_Threads OSCLL_Threads')
+ endif
+#endif
+!
+#if defined _FL
+ if (l_fl_optics) then
+   call CPU_activate("FL")
+   call initactivate(1,'DIP_Threads NL_Threads')
  endif
 #endif
  !
@@ -166,7 +173,7 @@ subroutine INIT_activate()
  !
  if (l_em1s.or.l_em1d.or.l_X.or.l_mpa)      call initactivate(1,'Chimod ChiLinAlgMod')
  if (l_optics.and.l_chi)           call initactivate(1,'Chimod ChiLinAlgMod')
- if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind')
+ if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind BSKIOshape BSEdiskIO')
  if (l_optics.and.l_bse.and.l_bss) call initactivate(1,'BSSmod')
  !
  if (l_dipoles) then
@@ -322,6 +329,7 @@ subroutine INIT_activate()
    call X_activate('Xs',(/'QpntsR','BndsRn','NGsBlk','GrFnTp','DmRnge','CGrdSp','EhEngy','LongDr','DrudeW'/))
    call initactivate(1,'XTermKind')
    call initactivate(1,'XTermEn')
+   call initactivate(1,'OptDipAverage')
  endif
  !
  ! GW (PPA, MPA, & COHSEX) 
@@ -595,7 +603,17 @@ subroutine INIT_activate()
    enddo
    !
  endif
+#endif
  !
+#if defined _FL
+ if (l_fl_optics) then
+   call initactivate(1,'NLBands NLEnRange NLEnSteps NLDamping NLCorrelation NoUseSymm')
+   call initactivate(1,'FFTGvecs HARRLvcs EXXRLvcs Dephase FL_2D_ild')
+   call initactivate(1,'Field1_Dir Field1_Int Field1_Phase')
+   call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver')
+   call initactivate(1,'FL_deg_thresh FL_deg_lift S_inv_mode FL_beta FL_max_it')
+   call initactivate(1,'Field1_Phase,FL_2D_ild, FL_Pade')
+ endif
 #endif
  !
 #if defined _SC
@@ -618,22 +636,6 @@ subroutine INIT_activate()
  contains
    !
    !
-   subroutine CPU_activate(what)
-     character(*) :: what 
-#if defined _MPI
-     call initactivate(1,"PAR_def_mode")
-     call initactivate(1,what//"_CPU")
-     call initactivate(1,what//"_ROLEs")
-     if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
-     if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-     if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-#endif
-#if defined _SCALAPACK &&  defined _MPI
-     if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
-#endif
-     !
-   end subroutine
-   !
    subroutine X_activate(mode,what)
      character(2)::mode
      character(6)::what(:)
@@ -644,4 +646,23 @@ subroutine INIT_activate()
      enddo
    end subroutine
    !
+end subroutine
+!
+!
+subroutine CPU_activate(what)
+ use drivers,     ONLY:l_sc_run 
+ implicit none
+ character(*) :: what 
+#if defined _MPI
+ call initactivate(1,"PAR_def_mode")
+ call initactivate(1,what//"_CPU")
+ call initactivate(1,what//"_ROLEs")
+ if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
+ if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+ if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+#endif
+#if defined _SCALAPACK &&  defined _MPI
+ if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
+#endif
+ !
 end subroutine
