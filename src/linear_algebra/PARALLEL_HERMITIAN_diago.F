@@ -10,7 +10,7 @@
 !
 #include<y_memory.h>
 !
-subroutine PARALLEL_HERMITIAN_diagonalization(M, V, N, E)
+subroutine PARALLEL_HERMITIAN_diago(M, V, N, E)
  !
  ! perform the diagonalization by using scalapack
  !
@@ -28,7 +28,7 @@ subroutine PARALLEL_HERMITIAN_diagonalization(M, V, N, E)
  type(PAR_matrix)  :: M,V
  real(SP)          :: E(N)
  !
- character(64)     :: subname="PARALLEL_HERMITIAN_diagonalization"
+ character(64)     :: subname="PARALLEL_HERMITIAN_diago"
  integer           :: lwork,lrwork
  real(SP)          :: rvar(1)
  complex(SP)       :: cvar(1)
@@ -73,5 +73,5 @@ subroutine PARALLEL_HERMITIAN_diagonalization(M, V, N, E)
  !
  call timing('PAR_HERM_diago',OPR='stop')
  !
-end subroutine PARALLEL_HERMITIAN_diagonalization
+end subroutine PARALLEL_HERMITIAN_diago
 

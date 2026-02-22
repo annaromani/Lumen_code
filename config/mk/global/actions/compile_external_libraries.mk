@@ -47,5 +47,7 @@ petsc:
 	@if test "$(do_petsc)" = yes ; then LIBS="petsc" ; BASE="lib"; $(MAKE) $(MAKEFLAGS) petsc-dl; $(mk_external_lib); fi
 slepc: petsc
 	@if test "$(do_slepc)" = yes ; then LIBS="slepc" ; BASE="lib"; $(MAKE) $(MAKEFLAGS) slepc-dl; $(mk_external_lib); fi
+chase: scalapack
+	@if test "$(do_chase)" = yes ; then LIBS="chase" ; BASE="lib"; $(MAKE) $(MAKEFLAGS) chase-dl; $(mk_external_lib); fi
 ldiago: scalapack blacs elpa
 	@if test "$(do_ldiago)" = yes ; then LIBS="ldiago" ; BASE="lib"; $(MAKE) $(MAKEFLAGS) ldiago-dl; $(mk_external_lib); fi

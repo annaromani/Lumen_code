@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
+subroutine SERIAL_diago(n,M,E,V_left,V_right)
  !
  !  The right eigenvector V_right(j) of M satisfies
  !                   M * V_right(j) = E(j) * V_right(j)
@@ -46,7 +46,7 @@ subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
 #  define magmaf_xgeev_m magmaf_cgeev_m
 #endif
 
- call timing('SERIAL_diagonalization',OPR='start')
+ call timing('SERIAL_diago',OPR='start')
  !
  ! Thread safety
 #if defined _OPENMP
@@ -109,6 +109,6 @@ subroutine SERIAL_diagonalization(n,M,E,V_left,V_right)
 #endif
  !   
  !
- call timing('SERIAL_diagonalization',OPR='stop')
+ call timing('SERIAL_diago',OPR='stop')
  !
 end subroutine

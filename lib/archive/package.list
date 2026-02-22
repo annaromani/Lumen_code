@@ -1,7 +1,7 @@
 #
 # Libs list
 #
-EXT_LIBS= yaml futile iotk hdf5 netcdf netcdff etsf_io libxc lapack scalapack elpa magma petsc slepc fftw fftqe ldiago devxlib
+EXT_LIBS= yaml futile iotk hdf5 netcdf netcdff etsf_io libxc lapack scalapack chase elpa magma petsc slepc fftw fftqe ldiago devxlib
 #
 # storing options
 #
@@ -13,6 +13,7 @@ keep_etsf_io=no
 keep_libxc=no
 keep_lapack=no
 keep_scalapack=no
+keep_chase=no
 keep_elpa=no
 keep_magma=no
 keep_petsc=no
@@ -35,6 +36,7 @@ version_etsf_io=1.0.4
 version_libxc=5.2.3
 version_lapack=3.12.0
 version_scalapack=2.2.2
+version_chase=1.7.0
 #version_elpa=release_2024_05_001   # This was neeeded for gitlab
 version_elpa=2025.06.002
 version_magma=2.8.0
@@ -46,7 +48,7 @@ version_fftw=3.3.10
 version_fftqe=missing
 version_yaml=0.2.2
 version_futile=missing
-version_devxlib=0.8.5
+version_devxlib=0.9.0
 #
 # package names
 #
@@ -59,6 +61,7 @@ pkgname_etsf_io=etsf_io-$(version_etsf_io)
 pkgname_libxc=libxc-$(version_libxc)
 pkgname_lapack=lapack-$(version_lapack)
 pkgname_scalapack=scalapack-$(version_scalapack)
+pkgname_chase=chase-$(version_chase)
 pkgname_elpa=elpa-$(version_elpa)
 pkgname_magma=magma-$(version_magma)
 pkgname_slepc=slepc-$(version_slepc)
@@ -80,6 +83,7 @@ tarball_etsf_io=$(pkgname_etsf_io).tar.gz
 tarball_libxc=$(pkgname_libxc).tar.gz
 tarball_lapack=v$(version_lapack).tar.gz
 tarball_scalapack=v$(version_scalapack).tar.gz
+tarball_chase=v$(version_chase).tar.gz
 tarball_elpa=$(pkgname_elpa).tar.gz
 tarball_magma=$(pkgname_magma).tar.gz
 tarball_slepc=slepc-v$(version_slepc).tar.gz
@@ -94,6 +98,7 @@ tarball_devxlib=$(pkgname_devxlib).tar.gz
 #
 url_lapack=https://github.com/Reference-LAPACK/lapack/archive/refs/tags/$(tarball_lapack)
 url_scalapack=https://github.com/Reference-ScaLAPACK/scalapack/archive/refs/tags/$(tarball_scalapack)
+url_chase=https://github.com/ChASE-library/ChASE
 url_hdf5=https://github.com/HDFGroup/hdf5/archive/refs/tags/$(tarball_hdf5)
 url_netcdf=https://github.com/Unidata/netcdf-c/archive/refs/tags/$(tarball_netcdf)
 url_netcdff=https://github.com/Unidata/netcdf-fortran/archive/refs/tags/$(tarball_netcdff)
