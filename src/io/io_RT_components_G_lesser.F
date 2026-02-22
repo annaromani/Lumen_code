@@ -29,31 +29,36 @@ subroutine io_RT_components_G_lesser(ID,T_size)
  integer, intent(in)  :: ID,T_size
  !
  logical           :: l_H_rot,l_H_sig,l_H_EQ
- integer           :: ib,ik,ikibz,i_sp_pol,i_mem,i_mem_sorted,G_IO_steps,VAR_SZ(6),IPOS(6),&
+ integer           :: ib,ik,ikibz,i_sp_pol,i_mem,i_mem_sorted,G_IO_steps,VAR_SZ(6),IPOS(6),IPOS_H(6),&
 &                     PAR_G_k_range_ibz(2),k_range(2),ip,TMP_VAR_SZ
- character(schlen) :: dim_names(6),dim_name_ibz,G_var_name,Sigma_var_name,H_var_name,ROT_var_name
+ character(schlen) :: dim_names(6),dim_names_H(6),G_var_name,Sigma_var_name,H_var_name,ROT_var_name
  complex(SP), allocatable ::Delta_Sigma(:,:,:,:,:)
  !
  ! Setup
  !=======
+ ! 
+ ! Sizes...
+ !----------
+ k_range      =PAR_G_k_range
+ PAR_G_k_range_ibz(1)=RTibz%k_map(k_range(1))
+ PAR_G_k_range_ibz(2)=RTibz%k_map(k_range(2))
+ G_IO_steps   =Gless_RT_IO_t%INTERVAL_steps/nint(RT_dyn_step/RT_step)
  !
  ! Variables SIZE and strings...
  !-------------------------------
  VAR_SZ    =(/2,RT_nbands,RT_nbands,RT_nk,n_sp_pol,G_MEM_steps/)
- dim_names =[character(schlen) :: 'complex', 'RT_nbands','RT_nbands','RT_nk','n_sp_pol','G_MEM_steps']
  IPOS      =(/1,1,1,PAR_G_k_range(1),1,1/)
+ IPOS_H    =(/1,1,1,PAR_G_k_range_ibz(1),1,1/)
  !
- dim_name_ibz ='nkibz'
+ dim_names =[character(schlen) :: 'complex', 'RT_nbands','RT_nbands','RT_nk','n_sp_pol','G_MEM_steps']
  !
  if (RT_do_IO("G_lesser_K_section")) then
    VAR_SZ(6)    = NF90_UNLIMITED
    dim_names(6) ='G_IO_time_step'
  endif
- ! 
- ! Sizes...
- !----------
- k_range      =PAR_G_k_range
- G_IO_steps   =Gless_RT_IO_t%INTERVAL_steps/nint(RT_dyn_step/RT_step)
+ !
+ dim_names_H    = dim_names 
+ dim_names_H(4) = 'nkibz'
  !
  ! Variables...
  !--------------
@@ -65,7 +70,8 @@ subroutine io_RT_components_G_lesser(ID,T_size)
  ! H_sig/H_rot...
  !----------------
  l_H_sig= variable_exist(ID,trim(Sigma_var_name)) .and. allocated(Ho_plus_sigma)
- if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= G_IO_steps==1 .and. RT_do_IO("G_lesser_K_section")
+ !if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= G_IO_steps==1 .and. RT_do_IO("G_lesser_K_section")
+ if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_sig= RT_do_IO("G_lesser_K_section")
  !
  l_H_EQ= variable_exist(ID,trim(H_var_name)) .and. allocated(H_EQ)
  if ( NE_i_time==NE_i_start_time .and. write_is_on(ID)) l_H_EQ=  l_H_sig
@@ -79,7 +85,7 @@ subroutine io_RT_components_G_lesser(ID,T_size)
    if (l_H_sig) then
      TMP_VAR_SZ=nkibz
      call def_variable_bulk(ID,trim(Sigma_var_name),5,(/VAR_SZ(:3),TMP_VAR_SZ,VAR_SZ(5:6)/),SP,&
-&                           dim_names=(/dim_names(:3),dim_name_ibz,dim_names(5:6)/),par_io_kind='collective',silent=.true.)   
+&                                       dim_names=dim_names_H,par_io_kind='collective',silent=.true.)   
    endif
    if (l_H_rot) call def_variable_bulk(ID,trim(ROT_var_name),6,VAR_SZ(1:5),SP,&
 &                                      dim_names=dim_names(1:5),par_io_kind='collective',silent=.true.)
@@ -104,8 +110,7 @@ subroutine io_RT_components_G_lesser(ID,T_size)
  endif
  !
  if (l_H_sig) then
-   PAR_G_k_range_ibz(1)=RTibz%k_map(k_range(1))
-   PAR_G_k_range_ibz(2)=RTibz%k_map(k_range(2))
+   IPOS_H(6)=Gless_RT_IO_t%N
    allocate(Delta_Sigma(RT_bands(1):RT_bands(2),RT_bands(1):RT_bands(2),PAR_G_k_range_ibz(1):PAR_G_k_range_ibz(2),n_sp_pol,1))
    if(write_is_on(ID)) then
      do ikibz=PAR_G_k_range_ibz(1),PAR_G_k_range_ibz(2)
@@ -114,9 +119,7 @@ subroutine io_RT_components_G_lesser(ID,T_size)
        if(.not.l_RT_RWA) Delta_Sigma(:,:,ikibz,:,1)=Ho_plus_sigma(:,:,ik,:)-H_EQ(:,:,ik,:)
      enddo
    endif
-   IPOS(4)=PAR_G_k_range_ibz(1)
-   call io_variable_bulk(ID,5,C5=Delta_Sigma,IPOS=IPOS)
-   IPOS(4)=PAR_G_k_range(1)
+   call io_variable_bulk(ID,5,C5=Delta_Sigma,IPOS=IPOS_H)
    if(read_is_on(ID)) then
      do ip=PAR_G_k_range_ibz(1),PAR_G_k_range_ibz(2)
        ikibz=RTibz%k_map(ip)

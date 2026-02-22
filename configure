@@ -3457,8 +3457,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="26468"
-SHASH="afa5fce787"
+SREVISION="26671"
+SHASH="ca57b31048"
 
 
 
@@ -3490,6 +3490,12 @@ if test "$exec_prefix" = "NONE" ; then exec_prefix="$prefix" ; fi
 # Authors (see AUTHORS file for details): DS AM
 #
 # Folders
+#
+if [ "$compdir" != "$srcdir" ] && [ "$srcdir" != "." ] ; then
+  if test -f "$srcdir/config/report" ; then
+    as_fn_error $? "Compiling from external folder, but source is not clean. Please run make distclean in source." "$LINENO" 5
+  fi
+fi
 #
 if ! test -d log      ; then mkdir log      ; fi
 if ! test -d bin      ; then mkdir bin      ; fi
@@ -7543,7 +7549,7 @@ i?86*linux*)
        CPU_FLAG="-xHost"
        #CPU_FLAG=" "
        ;;
-      *2025* )
+      *2025* | *2026* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
@@ -7798,7 +7804,7 @@ aarch*linux* | arm*linux* )
        #CPU_FLAG="-xHost"
        CPU_FLAG=" "
        ;;
-      *2025* )
+      *2025* | *2026* )
        CPU_FLAG=" "
        OMPFLAGS="-qopenmp"
        FCMFLAG="-nofor-main"
@@ -15108,11 +15114,11 @@ printf "%s\n" "to be compiled" >&6; } ;
       #
     fi
     #
-    if test "$use_libz"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lz"   ; fi
-    if test "$use_libsz"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -lsz"  ; fi
     if test "$use_libm"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lm"   ; fi
     if test "$use_libdl"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -ldl"  ; fi
     if test "$use_libcurl" = "yes"; then HDF5_LIBS="$HDF5_LIBS -lcurl"; fi
+    if test "$use_libsz"   = "yes"; then HDF5_LIBS="$HDF5_LIBS -lsz"  ; fi
+    if test "$use_libz"    = "yes"; then HDF5_LIBS="$HDF5_LIBS -lz"   ; fi
     #
   fi
 fi
