@@ -43,7 +43,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  real(SP), allocatable  :: dl_tra_tmp(:,:)
  real(SP)               :: B_cart(3)
  logical                :: Reduce_syms
- logical                :: Rm_all_syms,Rm_TR,Rm_INV,Rm_no_symmo
+ logical                :: Rm_all_syms,Rm_TR,Rm_INV,Rm_no_symmo,Add_TR_if_possible
  logical                :: use_E_field,use_B_field,has_magnetization,l_spin_and_space_linked
  !
  ! Dummies
@@ -65,6 +65,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  call parser('RmNoSymmo',Rm_no_symmo)
  !
  call parser('RmTimeRev',Rm_TR)
+ Add_TR_if_possible=.not.Rm_TR .and. i_time_rev==0 .and. .not.Rm_all_syms
  if (i_time_rev==0) Rm_TR=.false.
  !
  call parser('RmSpaceInv',Rm_INV)
@@ -75,6 +76,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  ! Check if we are using mag symmetries
  !
  l_spin_and_space_linked = ( use_B_field .or. (n_spinor==2.and.has_magnetization))
+ if (l_spin_and_space_linked) Add_TR_if_possible=.false.
  !
  mag_syms= l_spin_and_space_linked .and. (i_time_rev==1) .and. (.not.Rm_TR)
  !
@@ -240,7 +242,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  enddo
  if (inv_index<0) i_space_inv=0
  !
- if (old_i_time_rev==0 .and. inv_index<0 .and. .not.Rm_TR .and. .not.l_spin_and_space_linked) then
+ if (Add_TR_if_possible .and. inv_index<0 ) then
    call msg('s','[SYMs] Replacing mmissing inversion with time-reversal')
    call warning("If you do not want to Trev, set flag RmTrev to input")
    i_time_rev=1
