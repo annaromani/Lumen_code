@@ -7,6 +7,10 @@
 !
 ! #CHASE STAMP      
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine SERIAL_PSEUDOHERM_chase(n,M,E,V_left,V_right,neig)
  !
  use pars,           ONLY:SP
@@ -14,8 +18,9 @@ subroutine SERIAL_PSEUDOHERM_chase(n,M,E,V_left,V_right,neig)
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
 &                         LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use timing_m,       ONLY:timing
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  integer     :: n,neig
  complex(SP) :: M(n,n)

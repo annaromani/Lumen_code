@@ -7,15 +7,25 @@
 !
 ! #CHASE STAMP      
 !
+! headers
+!
+#include<y_memory.h>
+!
 subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  !
- use pars,           ONLY:SP
+ use pars,           ONLY:SP,cZERO,cONE
  use drivers,        ONLY:l_nl_optics,l_real_time
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
 &                         LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use timing_m,       ONLY:timing
+#if defined _DOUBLE
+ use chase_diag,     ONLY:zchase_init,zchase,zchase_finalize
+#else
+ use chase_diag,     ONLY:cchase_init,cchase,cchase_finalize
+#endif
+ use y_memory_alloc
  !
-#include<y_memory.h>
+ implicit none
  !
  integer     :: n,neig
  complex(SP) :: M(n,n)
@@ -32,33 +42,34 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  if(.not.(l_nl_optics.or.l_real_time)) then
    call timing('SERIAL_HERMITIAN_chase',OPR='start')
  endif
- ! 
  !
- E=0.0
+ E=0._SP
  !
  nev = min(neig,n)
  nex = min(n-nev,nev)
  !
  deg = 20
- tol = 1e-8
+ tol = 1e-5_SP
  mode = 'R'
  opt = 'S'
  qr = 'C'
  !
  allocate(Vtemp(n,nev+nex))
  allocate(Etemp(nev+nex))
- Vtemp = 0.0
- Etemp = 0.0
- ! 
+ Vtemp = cZERO
+ Etemp = 0._SP
+ !
  call timing('ChASE_INIT',OPR='start')
  !
 #if defined _DOUBLE
  call zchase_init(n, nev, nex, M, n, Vtemp, Etemp, ierr)
 #else
- call cchase_init(n, nev, nex, M, n, Vtemp, Etemp, ierr)
+ call cchase_init(n=n, nev=nev, nex=nex, h=M, ldh=n, v=Vtemp, ritzv=Etemp, init=ierr)
 #endif
  !
  call timing('ChASE_INIT',OPR='stop')
+ !
+ if (ierr/=0) call error("ChASE did not init properly")
  !
 #if defined _DOUBLE
  call zchase(deg,tol,mode,opt,qr)
@@ -72,11 +83,11 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  call cchase_finalize(ierr)
 #endif
  !
- if (ierr/=0) call warning("[WARNING] ChASE did not finalize properly")
+ if (ierr/=0) call error("ChASE did not finalize properly")
  !
- E(1:nev) = Etemp(1:nev)
+ E(1:nev) = real(Etemp(1:nev),SP)
  M(:,1:nev) = Vtemp(:,1:nev)
- M(:,nev+1:) = 0.0_SP
+ if (nev<n) M(:,nev+1:) = cZERO
  !
  deallocate(Etemp)
  deallocate(Vtemp)
