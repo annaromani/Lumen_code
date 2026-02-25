@@ -14,7 +14,6 @@
 subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  !
  use pars,           ONLY:SP,cZERO,cONE
- use drivers,        ONLY:l_nl_optics,l_real_time
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
 &                         LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use timing_m,       ONLY:timing
@@ -39,9 +38,7 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  complex(SP), allocatable :: Vtemp(:,:)
  real(SP),    allocatable :: Etemp(:)
 
- if(.not.(l_nl_optics.or.l_real_time)) then
-   call timing('SERIAL_HERMITIAN_chase',OPR='start')
- endif
+ call timing('SERIAL_HERMITIAN_chase',OPR='start')
  !
  E=0._SP
  !
@@ -54,8 +51,8 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  opt = 'S'
  qr = 'C'
  !
- allocate(Vtemp(n,nev+nex))
- allocate(Etemp(nev+nex))
+ YAMBO_ALLOC(Vtemp,(n,nev+nex))
+ YAMBO_ALLOC(Etemp,(nev+nex))
  Vtemp = cZERO
  Etemp = 0._SP
  !
@@ -89,11 +86,9 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  M(:,1:nev) = Vtemp(:,1:nev)
  if (nev<n) M(:,nev+1:) = cZERO
  !
- deallocate(Etemp)
- deallocate(Vtemp)
+ YAMBO_FREE(Etemp)
+ YAMBO_FREE(Vtemp)
  !
- if(.not.(l_nl_optics.or.l_real_time)) then
-   call timing('SERIAL_HERMITIAN_chase',OPR='stop')
- endif
+ call timing('SERIAL_HERMITIAN_chase',OPR='stop')
  !
 end subroutine
