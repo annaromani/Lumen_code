@@ -43,6 +43,7 @@ subroutine Afield_activate(i1)
      call initactivate(1,field//'_Dir')
      call initactivate(1,field//'_Dir_circ')
      call initactivate(1,field//'_Tstart')
+     call initactivate(1,field//'_peak')
 end subroutine
 !
 !
@@ -99,6 +100,8 @@ subroutine Afield(defs,i_field)
 #if defined _NL
    call it(defs,trim(name)//'_Tstart',          '[RT '//trim(name)//'] Initial Time',&
 &          Efield(i_field)%t_initial,unit=Time_unit(1),verb_level=V_real_time)
+   call it(defs,trim(name)//'_peak',            '[RT '//trim(name)//'] n*sigma defines the position of the enveloped field peak',&
+&            Efield(i_field)%peak,verb_level=V_real_time)
 #else
    call it(defs,trim(name)//'_Tstart',          '[RT '//trim(name)//'] Initial Time',&
 &          Efield(i_field)%t_initial,unit=Time_unit(1),verb_level=V_field)

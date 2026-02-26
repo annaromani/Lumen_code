@@ -48,6 +48,7 @@ module fields
    real(SP) :: amplitude
    real(SP) :: versor(3)
    real(SP) :: versor_circ(3)
+   real(SP) :: peak=10._SP
  end type ext_field
  !
  integer               :: n_ext_fields    =0
@@ -134,6 +135,7 @@ module fields
      E2%versor_circ=E1%versor_circ
      E2%ef_name=E1%ef_name
      E2%ef_pol=E1%ef_pol
+     E2%peak=E1%peak
    end subroutine
    !
    subroutine Efield_reset(E)
@@ -153,6 +155,7 @@ module fields
      E%ef_pol       ='none'
      E%versor       =(/1._SP,0._SP,0._SP/)
      E%versor_circ  =(/0._SP,1._SP,0._SP/)
+     E%peak         =3._SP
    end subroutine
    !
    subroutine A_vecpot_reset(A)
@@ -199,7 +202,7 @@ module fields
        case('QSSIN') !Approximate relations/does not work yet
          sigma=Field%width
          W_0=Field%frequency
-         T_0=pi/W_0*(real(nint(W_0/pi*3._SP*sigma),SP))
+         T_0=pi/W_0*(real(nint(W_0/pi*Field%peak*sigma),SP))
          T = 2._SP*pi/W_0
          E_w= sqrt(pi/2._SP)*Field%amplitude*sigma*exp(-cI*W_0*T_0)*&
               &(erf((T-T_0)/sqrt(2._SP)/sigma)+erf(T_0/sqrt(2._SP)/sigma))
