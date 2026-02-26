@@ -28,8 +28,8 @@ then
 		with_chase_includedir="${ChASEROOT}/build/include"
 	fi
 
-	AC_SUBST([CHASE_LIBS_R],["$with_chase_libdir"])
-	AC_SUBST([CHASE_INCS_R],["$with_chase_includedir"])
+	#AC_SUBST([CHASE_LIBS_R],["$with_chase_libdir"])
+	#AC_SUBST([CHASE_INCS_R],["$with_chase_includedir"])
 
         #if test "$have_chase" = no
         #then
@@ -44,13 +44,13 @@ then
         #        cd ../..
         #fi
 
-        AC_CHECK_FILES("${CHASE_LIBS_R}/libchase_c.a"    ,[],[AC_ERROR([lchase_c not found   ])])
-        AC_CHECK_FILES("${CHASE_LIBS_R}/libchase_f.a"    ,[],[AC_ERROR([lchase_f not found   ])])
-        #AC_CHECK_FILES("${CHASE_LIBS_R}/libchase_cuda_kernels.a" ,[],[AC_ERROR([lchase_cuda not found])])
+        AC_CHECK_FILES("$with_chase_libdir/libchase_c.a"    ,[],[AC_ERROR([lchase_c not found   ])])
+        AC_CHECK_FILES("$with_chase_libdir/libchase_f.a"    ,[],[AC_ERROR([lchase_f not found   ])])
+        #AC_CHECK_FILES("$with_chase_libdir/libchase_cuda_kernels.a" ,[],[AC_ERROR([lchase_cuda not found])])
 
-        AC_SUBST([CHASE_INCS],["${CHASE_INCS} -I${CHASE_INCS_R}"])
-        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L${CHASE_LIBS_R} -lchase_c -lchase_f "])
-        #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L${CHASE_LIBS_R} -lchase_c -lchase_f -lchase_cuda_kernels "])
+        AC_SUBST([CHASE_INCS],["${CHASE_INCS} -I$with_chase_includedir"])
+        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f "])
+        #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f -lchase_cuda_kernels "])
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lstdc++ "])
 	
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  "])
