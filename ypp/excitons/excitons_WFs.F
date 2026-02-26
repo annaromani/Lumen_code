@@ -47,7 +47,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  integer           :: iv,ic,ikbz,ikibz,is,neh,i1,i2,i_lambda,j_lambda,i_sp_c,i_sp_v,ir,ir_fixed,j1,&
 &                     n_lambda_deg,BS_E_deg_done,neh1,iv1,ic1,ikbz1,ikibz1,i_sp_c1,i_sp_v1,is1,&
 &                     i_spin_hole,i_spin_elec,n1_lambda,n2_lambda
- integer           :: ikpbz,ikp,isp,i_spinor,j_spinor,rh_size,ir_fixed_rlu(3)
+ integer           :: ikpbz,ikp,isp,i_spinor,j_spinor,rh_size,re_size,ir_fixed_rlu(3)
  character(schlen) :: exc_index_msg
  real(SP)          :: r_fixed_rlu(3),k1(3),k2(3)
  complex(SP)       :: B_coeff
@@ -160,8 +160,14 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  if(.not.l_average_eh) then
    rh_size=1
-   if (l_free_hole) rh_size=nr_tot
-   YAMBO_ALLOC(k_dot_r_e,(nr_tot))
+   re_size=1
+   if (l_free_hole) then
+     re_size=nr_tot
+     rh_size=nr_tot
+   endif
+   if (fixed_hole_plot) re_size=nr_tot
+   if (fixed_elec_plot) rh_size=nr_tot
+   YAMBO_ALLOC(k_dot_r_e,(re_size))
    YAMBO_ALLOC(kp_dot_r_h,(rh_size))
    !
    i1=n_spinor
@@ -462,7 +468,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
                 alpha(ir)=k_dot_r_e(1)-kp_dot_r_h(ir)
                 phase(ir)=cmplx(cos(alpha(ir)),sin(alpha(ir)),kind=SP)
                 wf_tmp(ir,i_spinor,j_spinor) = wf_tmp(ir,i_spinor,j_spinor)+&
-                &  BS_mat(neh,j_lambda)*wf_vc(rindex(ir),i_spinor,j_spinor)*phase(ir)
+                &  wf_vc(rindex(ir),i_spinor,j_spinor)*phase(ir)
              enddo
            enddo
          enddo

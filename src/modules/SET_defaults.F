@@ -29,7 +29,8 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  use functions,  ONLY:bose_E_cut
  use D_lattice,  ONLY:i_space_inv,inv_index,n_atoms_species_max,n_atomic_species,mag_syms,&
 &                     input_Tel_is_negative,non_periodic_directions,lattice,Bose_Temp,    &
-&                     molecule_position,l_0D,l_1D,l_2D,l_3D,Boltz_Temp
+&                     non_symmorphic_syms,molecule_position,l_0D,l_1D,l_2D,l_3D,Boltz_Temp,&
+&                     old_nsym
  use pseudo,     ONLY:pp_n_l_times_proj_max,pp_kbv_dim
  use R_lattice,  ONLY:n_g_shells,ng_closed,bse_scattering,coll_scattering,&
 &                     Xk_grid_is_uniform,RIM_id_epsm1_reference,RIM_epsm1,&
@@ -56,8 +57,8 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
 &                     BSS_slepc_precondition,BSS_slepc_approach,BSS_slepc_matrix_format,BSS_slepc_mpd,&
 &                     BSS_slepc_pseudo_herm
 #endif
- use BS,         ONLY:BS_n_g_W,BS_eh_en,BS_identifier,BS_q,BS_eh_win,MAX_BSK_LIN_size,&
-&                     BS_K_dim,BS_not_const_eh_f,BSK_mode,l_BSE_kernel_complete,&
+ use BS,         ONLY:BS_n_g_W,BS_eh_en,BS_identifier,BS_q,BS_eh_win,MAX_BSK_LIN_size,BSK_IO_shape,&
+&                     BS_K_dim,BS_not_const_eh_f,BSK_mode,l_BSE_kernel_complete,BSE_disk_IO,&
 &                     BS_K_is_ALDA,BSE_mode,BSE_prop,BSE_L_kind,BS_K_cutoff,BS_perturbative_SOC,BSK_IO_mode
  use TDDFT,      ONLY:FXC_type,FXC_n_g_corr,FXC_mode,&
 &                     FXC_per_memstps,FXC_LRC_alpha,FXC_PF_alpha,FXC_LRC_beta,FXC_SVD_digits,&
@@ -81,7 +82,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
 &                     l_Mean_Potential,SC_up_W_iters,l_SC_diagonal,&
 &                     l_SC_nl_mix,SC_kind,SC_perturbation,SC_desc,SC_neq_kind,SC_last_coh_it
 #endif
-#if defined _SC || defined _RT || defined _QED || defined _NL
+#if defined _SC || defined _RT || defined _QED || defined _NL || defined _FL
  use collision_ext,  ONLY:COLLISIONS_naming,COLLISIONS_cutoff,COLLISIONS_CV_only, &
 &                         COLLISIONS_load_SP,COLLISIONS_compr,COLL_bands_frozen_ch
  use hamiltonian,    ONLY:H_potential
@@ -110,6 +111,11 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  use nl_optics,  ONLY:NL_correlation,NL_er,n_frequencies,NL_damping,NL_LRC_alpha,NL_initial_versor,     &
 &                     NL_verb_name,NL_bands,NL_desc,n_angles,NL_rot_axis,NL_bands_frozen_ch,max_angle
  use fields,     ONLY:Efield,Efield_reset
+#endif
+#if defined _FL
+ use fl_optics,  ONLY:FL_Chi_order,FL_Chi_thr_1,FL_Chi_thr_2,FL_Chi_thr_3,FL_deg_thrs,FL_deg_lift,&
+&                     FL_solver_mode,FL_S_inv_mode,FL_max_iterations,FL_beta,FL_add_mode,&
+&                     FL_ild,FL_Pade_damping
 #endif
 #if defined _SC
  use magnetic,    ONLY:MAG_B,MAG_radius,MAG_hamiltonian_type,MAG_landau,MAG_pauli,&
@@ -266,6 +272,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  l_1D=.FALSE.
  l_0D=.FALSE.
  Boltz_Temp=0._SP
+ old_nsym=0
  !
  ! R_lattice
  !
@@ -307,6 +314,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  i_space_inv=-1
  inv_index=0
  mag_syms=.FALSE.
+ non_symmorphic_syms=.FALSE.
  !
  ! Pseudo
  !
@@ -443,10 +451,12 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  BS_q=1
  BS_eh_win=100._SP
  BSE_L_kind='BAR'
+ BSE_disk_IO='medium'
  BSE_mode='resonant'
  BSE_prop='abs'
  BSK_mode=' '
- BSK_IO_mode='2D_standard'
+ BSK_IO_shape='2D_standard'
+ BSK_IO_mode ='2D_standard'
  l_BSE_kernel_complete=.false.
  TDDFT_mode=' '
  FXC_mode="G-def"
@@ -568,7 +578,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  !
 #endif
  !
-#if defined _SC || defined _RT || defined _QED || defined _NL
+#if defined _SC || defined _RT || defined _QED || defined _NL || defined _FL
  !
  call COLLISIONS_naming( 0 , "all" )
  !
@@ -765,6 +775,25 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  NL_verb_name='high'
  !
  call IO_desc_reset(NL_desc)
+ !
+#endif
+ !
+#if defined _FL
+ !
+ Efield(1)%ef_name="SIN"
+ FL_Chi_order = 2
+ FL_Chi_thr_1 = 1.E-1_SP
+ FL_Chi_thr_2 = 1.E-1_SP
+ FL_Chi_thr_3 = 1.E-1_SP
+ FL_deg_thrs  = 1.E-5_SP
+ FL_deg_lift  = 1.E-2_SP
+ FL_solver_mode = "D"
+ FL_S_inv_mode  = "N"
+ FL_max_iterations = 11
+ FL_beta = 1._SP
+ FL_add_mode = 0
+ FL_ild = -1._SP
+ FL_Pade_damping = 0._SP
  !
 #endif
  !

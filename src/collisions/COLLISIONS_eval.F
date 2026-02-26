@@ -156,7 +156,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
        call set_BS_blks(Xk)
        call io_control(ACTION=OP_RD,COM=REP,MODE=DUMP,ID=ID_mat)
        IO_err_BS=io_BS_PAR_init(1,ID_mat,"full")
-       call build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk_bz)
+       call load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk_bz)
        call check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
        call build_BS_kpt_map(Xk)
      endif
@@ -441,7 +441,7 @@ subroutine check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
 end subroutine check_BS_parameters_consistency
 !
 !
-subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
+subroutine load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  !
  use electrons,       ONLY:n_sp_pol
  use R_lattice,       ONLY:bz_samp
@@ -461,38 +461,12 @@ subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  !
  call read_BS_table(1,ID_mat)
  !
- !BS_nk=-1
- !do i_res_ares=1,2
- !do i_H=1,BS_K_dim(1)
- !  BS_nk = max(BS_blk(i_res_ares)%table(1,i_H),BS_nk)
- !enddo
- !enddo
- !
- allocate(BSS_eh_table_m1(Xk%nbz,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol,n_sp_pol))
- BSS_eh_table_m1=0
- !call live_timing('BSE inverse eh-table',BS_H_dim)
- !
- do i_res_ares=1,2
- do i_H=1,BS_K_dim(1)
-   !
-   ik_bz    = BS_blk(i_res_ares)%table(1,i_H)
-   iv       = BS_blk(i_res_ares)%table(2,i_H)
-   ic       = BS_blk(i_res_ares)%table(3,i_H)
-   i_sp_c   = BS_blk(i_res_ares)%table(4,i_H)
-   i_sp_v   = BS_blk(i_res_ares)%table(5,i_H)
-   !
-   BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H+(i_res_ares-1)*BS_K_dim(1)
-   !
-   !call live_timing(steps=1)
-   !
- enddo
- enddo
- !call live_timing( )
+ call build_inverse_BS_eh_table_from_BS_kernel(Xk%nbz)
  !
  deallocate(BS_blk(1)%table)
  deallocate(BS_blk(2)%table)
  !
-end subroutine build_inverse_BS_eh_table
+end subroutine load_and_build_inverse_BS_eh_table
 !
 !
 subroutine build_BS_kpt_map(Xk)

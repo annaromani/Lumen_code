@@ -10,6 +10,15 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!************************* WARNING **************************
+!* This subroutine is not correct in presence of            *
+!* non symmorphyc symmetri operations                       * 
+!* An alternative subroutine that applies symmetries in a   *
+!* different way exist: K_correlation_collisions_dir.F      *
+!* This second subroutine is automatically called in the    *
+!* such case                                                *
+!************************************************************
+!
 subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
  ! Standard implementation. This is the default algorithm.

@@ -31,6 +31,7 @@ module drivers
  logical :: l_eval_collisions    =.FALSE.
  logical :: l_use_collisions     =.FALSE.
  logical :: l_nl_optics          =.FALSE.
+ logical :: l_fl_optics          =.FALSE.
  logical :: l_nl_p_and_p         =.FALSE.
  !
  ! The self-energy correlation "kind"
@@ -121,6 +122,7 @@ module drivers
  ! TESTING
  !
  logical :: l_slk_test           =.FALSE.
+ logical :: l_exc_rad_life       =.FALSE.
  logical :: l_gpu_test           =.FALSE.
  !
 end module drivers

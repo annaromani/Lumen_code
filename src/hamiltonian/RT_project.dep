@@ -1,4 +1,5 @@
  Apply_W_field.o
+ Apply_symm_vec.o
  Bare_Hamiltonian.o
  Check_symmetries.o
  Pseudo_Hamiltonian.o

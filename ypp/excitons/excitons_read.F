@@ -9,11 +9,12 @@
 !
 #include<y_memory.h>
 !
-subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
+subroutine excitons_read(k,Xk,en,Xen,iq,what,verbose,io_err)
  !
  use pars,          ONLY:SP,pi
  use R_lattice,     ONLY:bz_samp
  use stderr,        ONLY:intc
+ use com,           ONLY:msg
  use X_m,           ONLY:X_reset
  use QP_CTL_m,      ONLY:QP_apply
  use electrons,     ONLY:levels,n_spin,n_sp_pol,spin
@@ -33,6 +34,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
  type(levels)  ::Xen,en
  integer, intent(in) :: iq
  integer, intent(out):: io_err
+ logical, intent(in) :: verbose
  character(*)        :: what
  !
  ! Work Space
@@ -62,7 +64,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
      io_err=io_E_SOC_map(en,k,io_ID)
    endif
    !
-   YAMBO_ALLOC(BSqpts,(3,iq))
+   YAMBO_ALLOC(BSqpts,(3,iq:iq))
    !
    ! X type. Also used in PARALLEL setup
    !
@@ -74,7 +76,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
    io_err=io_BSS_diago(iq,1,io_ID,Xbsk)
    !
    if (io_err/=0) then
-     call warning('ndb.BS_diago not found')
+     if(verbose) call msg('s','ndb.BS_diago_Q'//trim(intc(iq))//' not found')
      return
    endif
    !
@@ -109,9 +111,9 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
              bsL_magn=BS_R_left_magn,bsR_magn=BS_R_right_magn,bsR_pl=BS_R_PL)
      if (io_err/=0) then
        if(i_sec==1) then
-         call warning('Error reading SEC1 in ndb.BSS_diago, this can be due to the missing ndb.dipoles or ndb.ems1')
+         call warning('Error reading SEC1 in ndb.BS_diago_Qx, this can be due to the missing ndb.dipoles or ndb.ems1')
        else
-         call warning('ndb.BSS_diago, SEC '//trim(intc(i_sec))//', not compatible with ypp input')
+         call warning('ndb.BS_diago_Qx, SEC '//trim(intc(i_sec))//', not compatible with ypp input')
        endif
        return
      endif
@@ -122,7 +124,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,io_err)
  endif
  !
  if(l_eigenvec) then
-   ! 
+   !
    if(.not.BSS_write_eig_2_db) then
      call error(' Diagonalization database does not contain excitonic eigenstates.'//&
 &               ' Re-run yambo using the WRbsWF flag in the input file.')

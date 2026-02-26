@@ -17,7 +17,7 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
 &                         BSE_L_kind,l_BS_magnons,l_BSE_minimize_memory,BS_bands
  use interfaces,     ONLY:WF_load,WF_free
  use wave_func,      ONLY:WF
- use R_lattice,      ONLY:g_rot,g_rot_d,qindx_X,bz_samp
+ use R_lattice,      ONLY:g_rot,g_rot_d,g_phs,g_phs_d,qindx_X,bz_samp
  use stderr,         ONLY:STRING_match
  use electrons,      ONLY:n_sp_pol
  use timing_m,       ONLY:timing
@@ -38,7 +38,8 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
  logical :: l_load_WFs
  integer :: NK(2)
  integer :: i_T_el,i_T_el_p,N_T_el_p,i_c,i_v,i_sp_c,i_sp_v,i_k_bz,i_k,i_s,i_g0,i_g1,i_g2,i_p_bz,i_g_p,i_p,&
-&           i_sp,i_T_el_last_with_identity_sym,i_T_grp_last_with_identity_sym,i_T_grp_p
+&           i_s_m1,i_sp,i_T_el_last_with_identity_sym,i_T_grp_last_with_identity_sym,i_T_grp_p
+ complex(SP) :: gphase
  complex(SP), pointer DEV_ATTR :: O_x_p(:,:),O_x_sym_p(:,:)
  !
  call timing('T_space EXX Osc.',OPR='start')
@@ -49,7 +50,7 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
  !
 #if defined(__NOTNOW)
  !DEV_OMP parallel default(shared), private( K_EXCH_collision, &
- !DEV_OMP &        i_T_el,i_k_bz,i_k,i_s, i_p_bz,i_p,i_sp, i_v,i_c,i_sp_c,i_sp_v, &
+ !DEV_OMP &        i_T_el,i_k_bz,i_k,i_s,i_sp_m1,i_p_bz,i_p,i_sp, i_v,i_c,i_sp_c,i_sp_v, &
  !DEV_OMP &        i_T_grp_last_with_identity_sym, i_T_el_last_with_identity_sym, &
  !DEV_OMP &        i_T_grp_p, N_T_el_p, i_T_el_p, i_g1, i_g2, NK)
 #endif
@@ -68,6 +69,8 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
    i_k   =Xk%sstar(i_k_bz,1)
    i_s   =Xk%sstar(i_k_bz,2)
    !
+   i_s_m1=DEV_VAR(sop_inv)(i_s)
+   !
    i_p_bz=qindx_X(iq,i_k_bz,1)
    i_g_p =qindx_X(iq,i_k_bz,2)
    !
@@ -85,15 +88,15 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
    !
    l_load_WFs= l_bs_exch_wf_in_loop .and. (NK(1)/=min(i_k,i_p).or.NK(2)/=max(i_k,i_p))
    if (l_load_WFs) then
-#if defined(__NOTNOW) && ! defined(_CUDA)
-     !$omp critical
+#if defined(__NOTNOW)
+     !DEV_OMP critical
 #endif
      if (NK(2)/=-1) call WF_free(WF,keep_fft=.true.,keep_states_to_load=.true.)
      NK=(/min(i_k,i_p),max(i_k,i_p)/)
      call WF_load(WF,NG(1),NG(2),BS_bands,NK,k_extrema_only=.true.,quiet=.true.,&
      &            space='R',title="Kernel exch",keep_states_to_load=.true.)
-#if defined(__NOTNOW) && ! defined(_CUDA)
-     !$omp end critical
+#if defined(__NOTNOW)
+     !DEV_OMP end critical
 #endif
    endif
    !
@@ -140,13 +143,14 @@ subroutine K_exchange_collisions(iq,Xk,i_T_grp,NG,l_bs_exch_wf_in_loop)
        O_x_p     => DEV_VAR(BS_T_grp(i_T_grp)%O_x)
        O_x_sym_p => DEV_VAR(BS_T_grp(i_T_grp_last_with_identity_sym)%O_x)
        !
-       !DEV_ACC_DEBUG data present(O_x_p,O_x_sym_p,g_rot,sop_inv)
+       !DEV_ACC_DEBUG data present(O_x_p,O_x_sym_p,g_rot,g_phs)
        !DEV_ACC parallel loop private(i_g1,i_g2)
        !DEV_CUF kernel do (1) <<<*,*>>>
        !DEV_OMP parallel do default(shared), private(i_g1,i_g2)
        do i_g1=2,BS_n_g_exch
-         i_g2=DEV_VAR(g_rot)(i_g1,DEV_VAR(sop_inv)(i_s))
-         O_x_p(i_g1,i_T_el) = O_x_sym_p(i_g2,i_T_el_last_with_identity_sym)
+         i_g2=DEV_VAR(g_rot)(i_g1,i_s_m1)
+         gphase = cmplx(cos(DEV_VAR(g_phs)(i_g1,i_s)),sin(DEV_VAR(g_phs)(i_g1,i_s)))
+         O_x_p(i_g1,i_T_el) = O_x_sym_p(i_g2,i_T_el_last_with_identity_sym)*gphase
        enddo
        !DEV_ACC_DEBUG end data
        !

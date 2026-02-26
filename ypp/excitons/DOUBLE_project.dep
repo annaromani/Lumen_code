@@ -7,8 +7,10 @@
  excitons_get_user_states.o
  excitons_interpolate_setup.o
  excitons_kinematics.o
+ excitons_lifetimes.o
  excitons_ph_ass_dos.o
  excitons_read.o
  excitons_sort_and_report.o
  excitons_spin.o
+ excitons_symmetries.o
 

@@ -21,19 +21,19 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !    
  use pars,              ONLY:SP,cZERO,pi
  use LIVE_t,            ONLY:live_timing
- use R_lattice,         ONLY:k_map,bz_samp,WF_shifts,G_m_G
- use wave_func,         ONLY:WF,WF_load_mode
+ use R_lattice,         ONLY:k_map,bz_samp,WF_shifts,G_m_G,minus_G
+ use wave_func,         ONLY:WF,WAVEs,WF_load_mode
  use vec_operate,       ONLY:k_periodic_idx
  use DIPOLES,           ONLY:DIPOLE_t,DIP_S
  use ALLOC,             ONLY:DIPOLE_ALLOC_elemental
  use electrons,         ONLY:n_spinor,n_sp_pol
  use wrapper,           ONLY:Vstar_dot_V_gpu
- use wave_func,         ONLY:wf_ng_1st_BZ,wf_ng_overlaps,wf_ng
+ use wave_func,         ONLY:wf_ng_1st_BZ,wf_ng_overlaps,wf_ng,WF_copy
  use parallel_m,        ONLY:PAR_IND_DIPk_bz,PAR_IND_DIPk_bz_ID,PAR_COM_DIPk_ibz_A2A, &
 &                            PAR_IND_CON_BANDS_OVLP,PAR_IND_VAL_BANDS_OVLP,           &
 &                            PAR_IND_OVLPk_ibz,PAR_COM_DIPk_ibz_INDEX
  use parallel_int,      ONLY:PP_redux_wait,PARALLEL_WF_index,PARALLEL_WF_distribute
- use interfaces,        ONLY:WF_shift_kpoint,eval_G_minus_G,WF_load,WF_free
+ use interfaces,        ONLY:WF_symm_kpoint_g_tmp,eval_G_minus_G,WF_load,WF_free
  use gpu_m,             ONLY:have_gpu
  use timing_m,          ONLY:timing
  use y_memory_alloc
@@ -46,14 +46,20 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  ! Work Space
  !
  integer           :: ikbz,ikbzp,is,isp,ib,ibp,i_sp_pol,ik,ikp,istep,max_step
- integer           :: iG0,ng_tmp,wf_ng_save,wf_ng_1st_BZ_save
- integer           :: id,idx_kp(3),idx_k(3),shift(3),g0_idx(3,2)
+ integer           :: iG0,ig,igp,ig_shift,ng_tmp,wf_ng_save,wf_ng_1st_BZ_save
+ integer           :: id,idp,idx_kp(3),idx_k(3),shift(3),g0_idx(3,2),i_wf,i_wfp
  real(SP)          :: g0_length(3)
  !
- complex(SP), allocatable DEV_ATTR :: WF_symm(:,:,:)
- complex(SP), allocatable, target DEV_ATTR :: WF_ik(:,:,:)
+ !WF_skg1: implementation using WF_ik and WF_ikp as type WAVES
+ !         This uses the interface WF_symm_kpoint_g
+ !         It would be better, but needs to be finalized for the case WF_load_mode="all"
+ !type (WAVEs) :: WF_ik,WF_ikp
+ !
+ !WF_skg2: implementation using WF_ik and WF_ikp as complext allocatables
+ !         This uses the interface WF_symm_kpoint_g2
+ !
+ complex(SP), allocatable DEV_ATTR :: WF_ik(:,:,:)
  complex(SP), allocatable DEV_ATTR :: WF_ikp(:,:,:)
- complex(SP), pointer DEV_ATTR :: WF_tmp(:,:,:)
  !
  logical           :: USE_shifted_wf
  !
@@ -95,12 +101,19 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  !
  call PARALLEL_WF_index( )
  !
- if (trim(WF_load_mode)=="all") call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/1,Xk%nibz/),space='G',title='-Overlaps')
-
+ if (trim(WF_load_mode)=="all") then
+   !WF_skg1
+   !call error("not implemented with loading of all WFs")
+   !call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/1,Xk%nibz/),&
+   !&            wf_ng_in=wf_ng_overlaps,space='G',title='-Overlaps')
+   !WF_skg2
+   call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/1,Xk%nibz/),&
+   &            space='G',title='-Overlaps')
+ endif
  !
- YAMBO_ALLOC_GPU(WF_symm,   (wf_ng_1st_BZ,n_spinor,1))
- YAMBO_ALLOC_GPU(WF_ikp,    (wf_ng_overlaps,n_spinor,1))
- YAMBO_ALLOC_GPU(WF_ik,     (wf_ng_overlaps,n_spinor,Dip%ib(2)))
+ !WF_skg2
+ YAMBO_ALLOC_GPU(WF_ikp,(wf_ng_overlaps,n_spinor,Dip%ib(2)))
+ YAMBO_ALLOC_GPU(WF_ik, (wf_ng_overlaps,n_spinor,Dip%ib(2)))
  !
 !$OMP PARALLEL WORKSHARE
  DIP_S=cZERO
@@ -120,21 +133,28 @@ subroutine DIPOLE_overlaps(Xk,Dip)
      is = Xk%sstar(ikbz,2)
      !
      if (trim(WF_load_mode)=="on-the-fly") then
+       !WF_skg1
+       !call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
+       !&            wf_ng_in=wf_ng_overlaps,space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+       !call WF_copy(WF,WF_ik)
+       !WF_skg2
        call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ik,ik/),(/i_sp_pol,i_sp_pol/),&
        &            space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
      endif
      !
-     do ib=1,Dip%ib(2)
-       !
-       call WF_symm_kpoint_gpu((/ib,ib/),ikbz,i_sp_pol,Xk,WF_symm)
-       !
-       WF_tmp=>WF_ik(:,:,ib:ib)
-       !  
-       call WF_shift_kpoint((/ib,ib/),1,ikbz,WF_shifts(ikbz,:),Xk,WF_symm,WF_tmp)
-       !
-       nullify(WF_tmp)
-       !
-     enddo
+     shift=WF_shifts(ikbz,:)
+     ig_shift=1
+     do id=1,3
+       if(shift(id)==0) cycle
+       ig=k_map%g0_idx(id,shift(id))
+       igp=minus_G(ig_shift)
+       ig_shift=G_m_G(ig,igp)
+     enddo 
+     !
+     !WF_skg1
+     !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ik,i_sp_pol,is,ig_shift,WF_ik)
+     !WF_skg2
+     call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ik,i_sp_pol,is,ig_shift,WF,WF_ik)
      !
      if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
      !
@@ -163,6 +183,13 @@ subroutine DIPOLE_overlaps(Xk,Dip)
          if (trim(WF_load_mode)=="on-the-fly") then
            call WF_load(WF,0,1,(/1,Dip%ib(2)/),(/ikp,ikp/),(/i_sp_pol,i_sp_pol/),&
            &              space='G',title='-Oscill/G space/Overlaps',quiet=.true.)
+           !WF_skg1
+           !call WF_copy(WF,WF_ikp)
+         !WF_skg1
+         !else
+         !  ! to be fixed
+         !  !AMBO_ALLOC(WF_ikp%c,(wf_ng_overlaps,n_spinor,WF%N))
+         !  WF_ikp%c=cZERO
          endif
          !
          ! Shift the wave-function by a G-vector if the neighbor is out of the BZ (USE_shifed_wf=.true.)
@@ -192,20 +219,39 @@ subroutine DIPOLE_overlaps(Xk,Dip)
            !
          endif
          !
-         do ibp=1,Dip%ib(2) 
+         ig_shift=1
+         do idp=1,3
+           if(shift(idp)==0) cycle
+           ig=k_map%g0_idx(idp,shift(idp))
+           igp=minus_G(ig_shift)
+           ig_shift=G_m_G(ig,igp)
+         enddo 
+	 !
+	 !WF_skg1
+	 !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
+         !WF_skg2
+	 call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
+         !
+         if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
+         !
+         do ibp=1,Dip%ib(2)
            if(.not.PAR_IND_CON_BANDS_OVLP%element_1D(ibp)) cycle
-           !
-           call WF_symm_kpoint_gpu((/ibp,ibp/),ikbzp,i_sp_pol,Xk,WF_symm)
-           call WF_shift_kpoint((/ibp,ibp/),1,ikbzp,shift,Xk,WF_symm,WF_ikp)
-           !
+	   !WF_skg1
+	   !i_wfp=WF_ik%index(ibp,ikp,i_sp_pol)
            do ib=1,Dip%ib(2)
              if(.not.PAR_IND_VAL_BANDS_OVLP%element_1D(ib)) cycle
+	     !WF_skg1
+	     !i_wf=WF_ik%index(ib,ik,i_sp_pol)
+             !DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
+             !& Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik%c(:,:,i_wf),WF_ikp%c(:,:,i_wfp))
+	     !WF_skg2
              DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
-             &  Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik(:,:,ib),WF_ikp(:,:,1))
+             & Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik(:,:,ib),WF_ikp(:,:,ibp))
            enddo ! ibp
          enddo ! ib
          !
-         if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
+	 !WF_skg1
+         !call WF_free(WF_ikp)
          !
        enddo ! istep
      enddo ! idir
@@ -215,6 +261,9 @@ subroutine DIPOLE_overlaps(Xk,Dip)
      call live_timing(steps=1)
      !
    enddo ! ikbz
+   !
+   !WF_skg1
+   !call WF_free(WF_ik)
    !
    ! I need to distributed overlaps among all processors because
    ! the construction of covariant dipoles require the first and second 
@@ -229,13 +278,12 @@ subroutine DIPOLE_overlaps(Xk,Dip)
  wf_ng       =wf_ng_save
  wf_ng_1st_BZ=wf_ng_1st_BZ_save
  !
+ !WF_skg2
  if (have_gpu) then
-   YAMBO_FREE_GPU(WF_symm)
    YAMBO_FREE_GPU(WF_ik)
    YAMBO_FREE_GPU(WF_ikp)
  endif
  !
- YAMBO_FREE(WF_symm)
  YAMBO_FREE(WF_ik)
  YAMBO_FREE(WF_ikp)
  !

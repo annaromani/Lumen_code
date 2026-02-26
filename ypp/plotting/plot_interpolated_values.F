@@ -38,6 +38,7 @@ subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfile
  !
  ! Local variables
  !
+ integer, parameter    :: nval_max=21
  integer               :: ik_local,ik_ibz_grid,ik_bz_grid,iqnt,i_dim,ifile,i_point,i_sp_pol,ivalue,&
 &                         ndims,nval,n_points,n_points_max
  logical               :: PLOT_BANDS,PLOT_G2,PLOT_from_DB,PLOT_interpolated,PLOT_built_in,l_print_k_name
@@ -109,7 +110,7 @@ subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfile
    enddo
  endif
  !
- if (i_T>0 ) then
+ if (i_T>0 .and. sum(nfiles)>1 ) then
    file_name(nfiles(1)+1:nfiles(1)+nfiles(2))="occupations_"//trim(basename)
    do i_sp_pol=1,n_sp_pol
      ifile=ifile+1
@@ -118,7 +119,7 @@ subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfile
    enddo
  endif
  !
- if((PLOT_interpolated.or.PLOT_built_in).and.PLOT_BANDS.and.n_spinor==2.and.i_T<2) then
+ if((PLOT_interpolated.or.PLOT_built_in).and.PLOT_BANDS.and.n_spinor==2.and.i_T<2.and.ifile<sum(nfiles)) then
    file_name(ifile+1)="spin_factors_UP_"//trim(basename)
    file_name(ifile+2)="spin_factors_DN_"//trim(basename)
    file_name(ifile+3)="magnetization_x_"//trim(basename)
@@ -152,6 +153,11 @@ subroutine plot_interpolated_values(Xk,Xen,Ef,LOCAL_k,IDs,dims,nquantities,nfile
  if(PLOT_G2   ) then
    values(1)=0._SP
    nval=ndims+1
+ endif
+ !
+ if (nval > nval_max .and. plot_BANDS) then
+   call warning(" number of values for output file exceeds 21 and is reduced")
+   nval=nval_max
  endif
  !
  do i_dim=dims(1),dims(2)
