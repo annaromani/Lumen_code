@@ -14062,7 +14062,7 @@ fi
         CHASE_LIBS="${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f "
 
         #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f -lchase_cuda_kernels "])
-        CHASE_LIBS="${CHASE_LIBS} -lstdc++ "
+        CHASE_LIBS="${CHASE_LIBS} -lstdc++ -lmpi_cxx "
 
 
         CHASE_LIBS="${CHASE_LIBS}  "

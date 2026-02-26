@@ -51,7 +51,7 @@ then
         AC_SUBST([CHASE_INCS],["${CHASE_INCS} -I$with_chase_includedir"])
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f "])
         #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f -lchase_cuda_kernels "])
-        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lstdc++ "])
+        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lstdc++ -lmpi_cxx "])
 	
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  "])
         #-lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl
