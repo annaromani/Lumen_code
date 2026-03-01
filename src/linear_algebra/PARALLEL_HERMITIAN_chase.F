@@ -46,7 +46,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  nex = nev
  !
  deg = 20
- tol = 1e-10
+ tol = 1e-6
  mode = 'R'
  opt = 'S'
  qr = 'C'
@@ -86,6 +86,8 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
 &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #endif
  call timing('ChASE_INIT',OPR='stop')
+ !
+ if (ierr/=1) call warning("ChASE did not init properly")
 
 #if defined _DOUBLE
  call pzchase(deg,tol,mode,opt,qr)
@@ -99,7 +101,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  call pcchase_finalize(ierr)
 #endif
  !
- if (ierr/=0) call warning("[WARNING] ChASE did not finalize properly")
+ if (ierr/=0) call warning("ChASE did not finalize properly")
  !
  call timing('ChASE_Reorganize',OPR='start')
  !

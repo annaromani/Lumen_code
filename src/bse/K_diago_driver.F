@@ -49,7 +49,7 @@ subroutine K_diago_driver(iq,W,X_static)
  use IO_m,           ONLY:REP,VERIFY,OP_WR_CL,OP_RD_CL
  use parser_m,       ONLY:parser
  use timing_m,       ONLY:timing
- use parallel_m,     ONLY:CPU_structure
+ use parallel_m,     ONLY:CPU_structure,ncpu
  use parallel_int,   ONLY:PP_wait
 #if defined _SLEPC && !defined _NL
  use petscsys
@@ -770,9 +770,14 @@ subroutine K_diago_driver(iq,W,X_static)
      endif
 #endif
      !
-     ! LA for old diago solver and chase inteface
-     if (l_diago .or. l_diagx .or. l_chase) then 
+     ! LA for old diago solver and diagx solvers
+     if (l_diago .or. l_diagx) then 
        call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,CPU_structure(4)%nCPU_lin_algebra_DIAGO)
+     endif
+     !
+     ! LA for chase inteface
+     if (l_chase) then 
+       call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
      endif
      !
    end subroutine K_local_init
@@ -809,6 +814,10 @@ subroutine K_diago_driver(iq,W,X_static)
        if (BSS_n_eig>BS_mat_dim) then
          call warning('N_eigen > BS_mat_dim. Calculating 10% of the eigenvalues.')
          BSS_n_eig = nint(BS_mat_dim*0.1)
+       endif
+       !
+       if (BSS_n_eig>0.5*BS_mat_dim) then
+         call warning('N_eigen > 0.5*BS_mat_dim. You should probably use the diago solver.')
        endif
        !
      endif

@@ -17,11 +17,7 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
 &                         LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use timing_m,       ONLY:timing
-#if defined _DOUBLE
- use chase_diag,     ONLY:zchase_init,zchase,zchase_finalize
-#else
- use chase_diag,     ONLY:cchase_init,cchase,cchase_finalize
-#endif
+ use chase_diag
  use y_memory_alloc
  !
  implicit none
