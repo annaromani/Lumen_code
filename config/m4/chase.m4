@@ -5,6 +5,10 @@ AC_ARG_ENABLE(chase,   AS_HELP_STRING([--enable-chase],[Use ChASE eigensolver. D
 AC_ARG_WITH(chase_libdir,AS_HELP_STRING([--with-chase-libdir=<path>],[Path to the ChASE lib directory],[32]))
 AC_ARG_WITH(chase_includedir,AS_HELP_STRING([--with-chase-includedir=<path>],[Path to the ChASE include directory],[32]))
 
+AC_LANG_PUSH(C++)
+AC_CHECK_LIB(mpi_cxx, _init,  [use_libmpi_cxx="yes";   ],[use_libmpi_cxx="no";   ],[])
+AC_LANG_POP(C++)
+
 compile_chase="no"
 internal_chase="no"
 external_chase="yes"
@@ -51,7 +55,11 @@ then
         AC_SUBST([CHASE_INCS],["${CHASE_INCS} -I$with_chase_includedir"])
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f "])
         #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -L$with_chase_libdir -lchase_c -lchase_f -lchase_cuda_kernels "])
-        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lstdc++ -lmpi_cxx "])
+        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lstdc++"])
+        
+        if test "$use_libmpi_cxx" = "yes"; then
+          AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lmpi_cxx "])
+        fi
 	
         AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  "])
         #-lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl

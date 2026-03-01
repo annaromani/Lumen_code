@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2006 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM AF
+! Authors (see AUTHORS file for details): AM AF DS
 !
 ! #CHASE STAMP      
 !
@@ -11,7 +11,7 @@
 !
 #include<y_memory.h>
 !
-subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
+subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  !
  use pars,           ONLY:SP,cZERO,cONE
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
@@ -26,11 +26,12 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  !
  implicit none
  !
- integer     :: n,neig
- complex(SP) :: M(n,n)
- real(SP)    :: E(neig)
+ integer,     intent(in)  :: n,neig
+ complex(SP), intent(in)  :: M(n,n)
+ complex(SP), intent(out) :: Vout(n,neig)
+ real(SP),    intent(out) :: E(neig)
 
- integer     :: nev, nex, deg, ierr
+ integer     :: nex, deg, ierr
  real(SP)    :: tol
  character   :: mode, opt, qr
  !
@@ -42,31 +43,30 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  !
  E=0._SP
  !
- nev = min(neig,n)
- nex = min(n-nev,nev)
+ nex = min(n-neig,neig)
  !
  deg = 20
- tol = 1e-5_SP
+ tol = 1e-6_SP
  mode = 'R'
  opt = 'S'
  qr = 'C'
  !
- YAMBO_ALLOC(Vtemp,(n,nev+nex))
- YAMBO_ALLOC(Etemp,(nev+nex))
+ YAMBO_ALLOC(Vtemp,(n,neig+nex))
+ YAMBO_ALLOC(Etemp,(neig+nex))
  Vtemp = cZERO
  Etemp = 0._SP
  !
  call timing('ChASE_INIT',OPR='start')
  !
 #if defined _DOUBLE
- call zchase_init(n, nev, nex, M, n, Vtemp, Etemp, ierr)
+ call zchase_init(n, neig, nex, M, n, Vtemp, Etemp, ierr)
 #else
- call cchase_init(n=n, nev=nev, nex=nex, h=M, ldh=n, v=Vtemp, ritzv=Etemp, init=ierr)
+ call cchase_init(n, neig, nex, M, n, Vtemp, Etemp, ierr)
 #endif
  !
  call timing('ChASE_INIT',OPR='stop')
  !
- if (ierr/=0) call error("ChASE did not init properly")
+ if (ierr/=1) call error("ChASE did not init properly")
  !
 #if defined _DOUBLE
  call zchase(deg,tol,mode,opt,qr)
@@ -82,9 +82,8 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,neig)
  !
  if (ierr/=0) call error("ChASE did not finalize properly")
  !
- E(1:nev) = real(Etemp(1:nev),SP)
- M(:,1:nev) = Vtemp(:,1:nev)
- if (nev<n) M(:,nev+1:) = cZERO
+ E(1:neig) = real(Etemp(1:neig),SP)
+ Vout(:,1:neig) = Vtemp(:,1:neig)
  !
  YAMBO_FREE(Etemp)
  YAMBO_FREE(Vtemp)

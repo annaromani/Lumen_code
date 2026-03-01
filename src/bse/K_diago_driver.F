@@ -209,7 +209,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !   to a distributed (SLEPC shells / or eventually BLACS) matrix
      ! - The resulting matrix is symmetrized
      !
-     if (l_diago.or.l_diagx.or.l_chase) then
+     if (l_diago.or.l_diagx) then
        !
        call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_V_right,iq,"DIAGO")
        !
@@ -223,6 +223,12 @@ subroutine K_diago_driver(iq,W,X_static)
        ! Here maybe the name "K_blacs_matrix(iq)" would probably be more appropiate
        !if (     linear_algebra_is_parallel) call BS_Blocks_symmetrize_K()
 #endif
+       !
+     endif
+     !
+     if (l_chase) then
+       !
+       call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,"DIAGO")
        !
      endif
      !
@@ -284,8 +290,6 @@ subroutine K_diago_driver(iq,W,X_static)
        endif
 #endif
        !
-       if (l_diagx) call error("Diagx not coded for non coupling case")
-       !
        ! NEW <
        ! if(l_diago)  call LINEAR_ALGEBRA_driver(DIAGO,M=BS_V_right,E_cmpl=BS_E,V_left=BS_V_left)
        ! if(l_chase)  call LINEAR_ALGEBRA_driver(CHASE,M=BS_V_right,E_cmpl=BS_E,V_left=BS_V_left,neig=BSS_n_eig)
@@ -294,10 +298,12 @@ subroutine K_diago_driver(iq,W,X_static)
        ! OLD <
        ! The following code should be replaced by the above lines
        ! with a corresponding change in LINEAR_ALGEBRA_driver
-       if(l_diago.or.l_chase) then
+       if(l_diago.or.l_diagx) then
          YAMBO_ALLOC(BS_mat,(BS_mat_dim,BS_mat_dim))
          BS_mat=BS_V_right
        endif
+       !
+       if (l_diagx) call error("Diagx not coded for non coupling case")
        !
        if (l_diago) then
          call LINEAR_ALGEBRA_driver(DIAGO,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right)
@@ -340,11 +346,13 @@ subroutine K_diago_driver(iq,W,X_static)
          neigs_this_cpu = BSS_n_eig
        endif
        !
+#if defined _CHASE
        if (l_chase) then
-         call LINEAR_ALGEBRA_driver(CHASE,M=BS_V_right,E_real=BS_E_real,neig=BSS_n_eig)
+         call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_real=BS_E_real,neig=BSS_n_eig,V_right=BS_V_right)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
+#endif
        !
 #if defined _SLEPC && !defined _NL
        if(l_slepc) then
@@ -572,9 +580,15 @@ subroutine K_diago_driver(iq,W,X_static)
          endif
        endif
        !
+       ! In the old diago and diagx case BS_V_right is allocated by K_stored_in_a_big_matrix
 #if defined _SLEPC && !defined _NL
-       ! In the old diago case BS_V_right is allocated by K_stored_in_a_big_matrix
        if(l_slepc) then
+         YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
+       endif
+#endif
+       !
+#if defined _CHASE
+       if(l_chase) then
          YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
        endif
 #endif
@@ -784,7 +798,7 @@ subroutine K_diago_driver(iq,W,X_static)
      nullify(BS_R_PL)
      nullify(tmp_res_ptr)
      !
-     if (l_slepc) then
+     if (l_slepc.or.l_chase) then
        !
        if (BSS_n_eig<1) then
          BSS_n_eig = nint(BS_H_dim*0.01)
@@ -799,7 +813,7 @@ subroutine K_diago_driver(iq,W,X_static)
        !
      endif
      !
-     if(l_diago.or.l_diagx.or.l_chase) BSS_n_eig = BS_mat_dim
+     if(l_diago.or.l_diagx) BSS_n_eig = BS_mat_dim
      !
 #if defined _LDIAGO
      ! set a Ldiago defaults.

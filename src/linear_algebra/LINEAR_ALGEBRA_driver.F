@@ -329,9 +329,9 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
        !
        !... Hermitian case
        if (present(M_slk)) then
-         call SERIAL_HERMITIAN_chase(N,M_slk%blc(:,:,M_slk%I),E_real,neig)
+         call SERIAL_HERMITIAN_chase(N,M_slk%blc(:,:,M_slk%I),E_real,V_right,neig)
        else
-         call SERIAL_HERMITIAN_chase(N,M,E_real,neig)
+         call SERIAL_HERMITIAN_chase(N,M,E_real,V_right,neig)
        endif
        !
      endif
