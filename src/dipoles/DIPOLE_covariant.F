@@ -102,7 +102,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
        do istep=1,max_step 
          !
          idx=k_map%k_map_inv(ikbz,:)
-         idx(id_red)=idx(id_red)-istep
+         idx(id_red)=idx(id_red)-istep*k_map%step
          idx=k_periodic_idx(idx,k_map)
          ikm1=k_map%k_map_dir(idx(1),idx(2),idx(3))
          !
@@ -122,7 +122,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
            enddo
          enddo
          !
-         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(istep,SP))
+         Wop(:,:,istep)=Wop(:,:,istep)*cI*k_map%max_kdir(id_red)/(4._SP*pi*real(istep*k_map%step,SP))
          !
        enddo ! istep
        !

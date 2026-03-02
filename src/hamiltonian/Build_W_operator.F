@@ -70,7 +70,7 @@ subroutine Build_W_operator(en,Xk,ik,i_sp,V_bands,Wk)
        !
        delta_V_tilde=V_tilde(:,:,1)-V_tilde(:,:,2)
        !
-       alpha=cI*real(k_map%max_kdir(id_red),SP)/(4._SP*pi*real(istep,SP))
+       alpha=cI*real(k_map%max_kdir(id_red),SP)/(4._SP*pi*real(istep*k_map%step,SP))
        ! 
        V_tmp=conjg(V_bands(H_ref_bands(1):,:,ik))
        !

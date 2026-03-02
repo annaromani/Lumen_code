@@ -168,7 +168,7 @@ subroutine DIPOLE_overlaps(Xk,Dip)
        do istep=1,max_step
          !
          idx_kp=idx_k
-         idx_kp(id)=idx_kp(id)+istep   ! Neighbor on the right
+         idx_kp(id)=idx_kp(id)+istep*k_map%step   ! Neighbor on the right
          !
          USE_shifted_wf=.false.
          if(idx_kp(id)>k_map%max_kdir(id)) USE_shifted_wf=.true. ! Check if the neighbor is out of the BZ
@@ -226,31 +226,31 @@ subroutine DIPOLE_overlaps(Xk,Dip)
            igp=minus_G(ig_shift)
            ig_shift=G_m_G(ig,igp)
          enddo 
-	 !
-	 !WF_skg1
-	 !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
+         !
+         !WF_skg1
+         !call WF_symm_kpoint_g((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF_ikp)
          !WF_skg2
-	 call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
+         call WF_symm_kpoint_g_tmp((/1,Dip%ib(2)/),ikp,i_sp_pol,isp,ig_shift,WF,WF_ikp)
          !
          if (trim(WF_load_mode)=="on-the-fly") call WF_free(WF)
          !
          do ibp=1,Dip%ib(2)
            if(.not.PAR_IND_CON_BANDS_OVLP%element_1D(ibp)) cycle
-	   !WF_skg1
-	   !i_wfp=WF_ik%index(ibp,ikp,i_sp_pol)
+           !WF_skg1
+           !i_wfp=WF_ik%index(ibp,ikp,i_sp_pol)
            do ib=1,Dip%ib(2)
              if(.not.PAR_IND_VAL_BANDS_OVLP%element_1D(ib)) cycle
-	     !WF_skg1
-	     !i_wf=WF_ik%index(ib,ik,i_sp_pol)
+             !WF_skg1
+             !i_wf=WF_ik%index(ib,ik,i_sp_pol)
              !DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
              !& Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik%c(:,:,i_wf),WF_ikp%c(:,:,i_wfp))
-	     !WF_skg2
+             !WF_skg2
              DIP_S(ib,ibp,id+(istep-1)*3,ikbz,i_sp_pol)= &
              & Vstar_dot_V_gpu(wf_ng_overlaps*n_spinor,WF_ik(:,:,ib),WF_ikp(:,:,ibp))
            enddo ! ibp
          enddo ! ib
          !
-	 !WF_skg1
+         !WF_skg1
          !call WF_free(WF_ikp)
          !
        enddo ! istep

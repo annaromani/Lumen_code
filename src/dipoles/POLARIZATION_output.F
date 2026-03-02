@@ -116,7 +116,7 @@ subroutine POLARIZATION_output(Xen,Xk)
    call msg('r','')
  enddo
  !
- if(l_odd) call msg('r',' The total polarization has module 1 !! ')
+ if(l_odd) call msg('r',' The total polarization has module 1 ')
  call msg('r','')
  !
 end subroutine POLARIZATION_output

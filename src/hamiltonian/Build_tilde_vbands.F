@@ -47,12 +47,12 @@ subroutine Build_tilde_vbands(en,Xk,ikbz,i_sp,istep,id_red,V_bands,V_tilde)
  if(k_map%max_kdir(id_red)==1) return
  !
  idx=k_map%k_map_inv(ikbz,:)
- idx(id_red)=idx(id_red)-istep
+ idx(id_red)=idx(id_red)-istep*k_map%step
  idx=k_periodic_idx(idx,k_map)
  ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
  !
  idx=k_map%k_map_inv(ikbz,:)
- idx(id_red)=idx(id_red)+istep
+ idx(id_red)=idx(id_red)+istep*k_map%step
  idx=k_periodic_idx(idx,k_map)
  ikp=k_map%k_map_dir(idx(1),idx(2),idx(3))
  !
