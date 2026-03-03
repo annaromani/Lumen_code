@@ -227,9 +227,8 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !open(47, file = 'BS_mat_q.dat')
  !write (47,*) "# BS_mat_q rotated: each q, each exciton state alpha, all transitions" 
  !
- !call PP_indexes_reset(px)
- !call PARALLEL_index(px,(/elph_branches(2)-elph_branches(1)+1/))
- !call PARALLEL_index(px,(/q%nibz/))
+ call PP_indexes_reset(px)
+ call PARALLEL_index(px,uplim=elph_branches(2:2),low_range=elph_branches(1:1))
  !
  do iq=1,q%nibz
    !
@@ -250,8 +249,6 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
      EXCPH_gkkp          =cZERO
      EXCPH_gkkp_sq       =rZERO
      !
-     call PP_indexes_reset(px)
-     call PARALLEL_index(px,(/elph_branches(2)-elph_branches(1)+1/))
      do il=elph_branches(1),elph_branches(2)
        !
        if (.not.px%element_1D(il)) cycle
