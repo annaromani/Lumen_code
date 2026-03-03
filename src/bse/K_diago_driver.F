@@ -581,17 +581,9 @@ subroutine K_diago_driver(iq,W,X_static)
        endif
        !
        ! In the old diago and diagx case BS_V_right is allocated by K_stored_in_a_big_matrix
-#if defined _SLEPC && !defined _NL
-       if(l_slepc) then
+       if(l_slepc.or.l_chase) then
          YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
        endif
-#endif
-       !
-#if defined _CHASE
-       if(l_chase) then
-         YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
-       endif
-#endif
        !
      end select
      !
