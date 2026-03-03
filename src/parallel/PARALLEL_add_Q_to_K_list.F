@@ -166,7 +166,7 @@ subroutine PARALLEL_add_Q_to_K_list(ZONE,IND_in,IND_in_ID,IND_k_out,IND_k_out_ID
        do istep=1,max_step
          !
          idx_kp=idx_k
-         idx_kp(id)=idx_kp(id)+istep
+         idx_kp(id)=idx_kp(id)+istep*k_map%step
          idx_kp=k_periodic_idx(idx_kp,k_map)
          !
          ikbzp=k_map%k_map_dir(idx_kp(1),idx_kp(2),idx_kp(3))

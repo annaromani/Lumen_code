@@ -277,7 +277,7 @@ subroutine INIT_activate()
    !
    call initactivate(1,'DrudeWBS Reflectivity')
    call initactivate(1,'BoseCut ShiftedPaths')
-   call initactivate(1,'BSEQptR BSEBands BSEFrozenBands BSKCut BSKIOmode BSEEhEny BSehWind NoDiagSC')
+   call initactivate(1,'BSEQptR BSEBands BSEFrozenBands BSKCut BSEEhEny BSehWind NoDiagSC')
    !
 #if defined _RT
    call initactivate(1,'RTOccMode ForceEqTrans')
@@ -620,6 +620,7 @@ subroutine INIT_activate()
    call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver')
    call initactivate(1,'FL_deg_thresh FL_deg_lift S_inv_mode FL_beta FL_max_it')
    call initactivate(1,'Field1_Phase,FL_2D_ild, FL_Pade')
+   call init_QP_ctl_switch('G')
  endif
 #endif
  !

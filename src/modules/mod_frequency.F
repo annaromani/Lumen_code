@@ -73,7 +73,7 @@ module frequency
    subroutine W_reset(W,damping)
      type(w_samp)::W
      real(SP), optional, intent(in) :: damping
-     real :: local_damping
+     real(SP) :: local_damping
      local_damping=0.1_SP
      if(present(damping)) local_damping=damping
      W%n_freqs=100

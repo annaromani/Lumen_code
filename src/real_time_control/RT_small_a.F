@@ -190,7 +190,7 @@ function small_a(T,dt,E_field,order,envelop_only)
       ! CONTROL RES / ANTIRES case
       cos_wt=cos(WtimesT) ; sin_wt=sin(WtimesT); exp_iwt=cos_wt+cI*sin_wt
       ! f1t=-f0t'
-      f0t=cmplx(cos_wt,0._SP) ; f1t=cmplx(sin_wt,0._SP)
+      f0t=cmplx(cos_wt,0._SP,kind=SP) ; f1t=cmplx(sin_wt,0._SP,kind=SP)
       if(trim(field_defs(2))=="ANTIRES")     then ; f0t= 0.5_SP*      exp_iwt  ; f1t=-cI*0.5_SP*      exp_iwt   ; endif
       if(trim(field_defs(2))=="RES")         then ; f0t= 0.5_SP*conjg(exp_iwt) ; f1t= cI*0.5_SP*conjg(exp_iwt)  ; endif
     endif

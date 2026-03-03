@@ -97,6 +97,7 @@ module R_lattice
  type bz_map
    integer, allocatable :: k_map_inv(:,:)
    integer, allocatable :: k_map_dir(:,:,:)
+   integer      :: step        ! Integer step to be performed. 1 for gamma centered grids, 2 for shifted grids
    integer      :: g0_idx(3,2) ! Index of the G-vectors to bring back k-points in the BZ, in the 3 directions
    integer      :: max_kdir(3) ! Max k-points in each direction. If 1, the direction is not periodic
    real(SP)     :: g0_length(3)
