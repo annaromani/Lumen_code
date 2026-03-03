@@ -15,6 +15,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  use parallel_int,   ONLY:PP_redux_wait
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
+ use BS_solvers,     ONLY:BSS_slepc_tol
  use parallel_m,     ONLY:PAR_COM_WORLD
  use matrix,         ONLY:PAR_matrix
  use timing_m,       ONLY:timing
@@ -23,14 +24,14 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  !
  implicit none
  !
- integer           :: N,neig
- type(PAR_matrix)  :: Mat,V
- real(SP)          :: E(neig)
+ integer,          intent(in)   :: N,neig
+ type(PAR_matrix), intent(in)   :: Mat
+ type(PAR_matrix), intent(out)  :: V
+ real(SP),         intent(out)  :: E(neig)
 
  integer   :: i,j,k,nr,nb,nprow,npcol,m,myrow,mycol,nl
- integer   :: nev, nex, ierr, deg
+ integer   :: nex, ierr, deg
  integer   :: comm
- real(SP)  :: tol
  character :: mode, opt, qr, grid_major
  !
  character(64)     :: subname="PARALLEL_HERMITIAN_chase"
@@ -42,11 +43,9 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
 
  call timing('PARALLEL_HERMITIAN_chase',OPR='start')
  !
- nev = min(neig,N)
- nex = nev
+ nex = neig
  !
  deg = 20
- tol = 1e-6
  mode = 'R'
  opt = 'S'
  qr = 'C'
@@ -61,8 +60,8 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  nl    = Mat%ncols
  comm  = SLK_ORTHO%COMM
  !
- allocate(Vtemp(m,nev+nex))
- allocate(Etemp(nev+nex))
+ allocate(Vtemp(m,neig+nex))
+ allocate(Etemp(neig+nex))
  !
  Vtemp = 0.0
  Etemp = 0.0
@@ -76,13 +75,13 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  !
 #if defined _DOUBLE
  !
- ! call pzchase_init(N,nev,nex,m,nl,Mat%blc(:,:,Mat%I),m,Vtemp,Etemp,&
+ ! call pzchase_init(N,neig,nex,m,nl,Mat%blc(:,:,Mat%I),m,Vtemp,Etemp,&
  !&                  nprow,npcol,grid_major,comm,init)
  !
- call pzchase_init_blockcyclic(N, nev, nex, nb, nb, Mat%blc(:,:,Mat%I), m, Vtemp, Etemp,&
+ call pzchase_init_blockcyclic(N, neig, nex, nb, nb, Mat%blc(:,:,Mat%I), m, Vtemp, Etemp,&
 &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #else
- call pcchase_init_blockcyclic(N, nev, nex, nb, nb, Mat%blc(:,:,Mat%I), m, Vtemp, Etemp,&
+ call pcchase_init_blockcyclic(N, neig, nex, nb, nb, Mat%blc(:,:,Mat%I), m, Vtemp, Etemp,&
 &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #endif
  call timing('ChASE_INIT',OPR='stop')
@@ -90,9 +89,9 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  if (ierr/=1) call warning("ChASE did not init properly")
 
 #if defined _DOUBLE
- call pzchase(deg,tol,mode,opt,qr)
+ call pzchase(deg,BSS_slepc_tol,mode,opt,qr)
 #else
- call pcchase(deg,tol,mode,opt,qr)
+ call pcchase(deg,BSS_slepc_tol,mode,opt,qr)
 #endif
  ! 
 #if defined _DOUBLE
@@ -105,10 +104,10 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V, N, E, neig)
  !
  call timing('ChASE_Reorganize',OPR='start')
  !
- E(1:nev) = Etemp(1:nev)
+ E(1:neig) = Etemp(1:neig)
  !
- if (nev > nl * mycol) then
-   do i = 1,min(n,nev-n*mycol)
+ if (neig > nl * mycol) then
+   do i = 1,min(n,neig-n*mycol)
      V%blc(:,i,V%I) = Vtemp(:, nl * mycol + i)
    enddo
  endif

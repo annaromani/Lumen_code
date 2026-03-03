@@ -16,6 +16,7 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  use pars,           ONLY:SP,cZERO,cONE
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,&
 &                         LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
+ use BS_solvers,     ONLY:BSS_slepc_tol
  use timing_m,       ONLY:timing
  use chase_diag
  use y_memory_alloc
@@ -28,7 +29,6 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  real(SP),    intent(out) :: E(neig)
 
  integer     :: nex, deg, ierr
- real(SP)    :: tol
  character   :: mode, opt, qr
  !
  character(64)     :: subname="SERIAL_HERMITIAN_chase"
@@ -42,7 +42,6 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  nex = min(n-neig,neig)
  !
  deg = 20
- tol = 1e-6_SP
  mode = 'R'
  opt = 'S'
  qr = 'C'
@@ -65,9 +64,9 @@ subroutine SERIAL_HERMITIAN_chase(n,M,E,Vout,neig)
  if (ierr/=1) call error("ChASE did not init properly")
  !
 #if defined _DOUBLE
- call zchase(deg,tol,mode,opt,qr)
+ call zchase(deg,BSS_slepc_tol,mode,opt,qr)
 #else
- call cchase(deg,tol,mode,opt,qr)
+ call cchase(deg,BSS_slepc_tol,mode,opt,qr)
 #endif
  ! 
 #if defined _DOUBLE
