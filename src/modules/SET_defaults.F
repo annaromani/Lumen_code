@@ -69,7 +69,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
 &                     elph_Ham_bands,elph_Ham_ik,elph_branches,RES_tresh,FAN_deltaE_treshold,DW_deltaE_treshold,&
 &                     elph_bands
  use EXCPH,      ONLY:Lin_path,Lout_path,EXCPH_states,EXCPH_sum,L_damping,EXC_q0,alphaQ, &
-&                     EXCPH_deltaE_treshold,EXCPH_kthresh
+&                     EXCPH_deltaE_treshold,EXCPH_kthresh,DmType
 #endif
  use zeros,      ONLY:zero_norm,k_iku_zero,k_rlu_zero,G_iku_zero,G_mod_zero,zero_dfl
  use y_memory,   ONLY:MEMs,LARGE_MEMs,N_MEM_max,N_MEM_SAVE_max,MEM_element_init
@@ -575,6 +575,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  EXC_q0=(/0.0,0.0,0.0/)
  alphaQ=rZERO
  EXCPH_kthresh=-1. ! If negative, use all kpoints (turn positive only for debug)
+ DmType="Lorentzian" 
  !
 #endif
  !

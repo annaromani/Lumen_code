@@ -51,6 +51,7 @@ module EXCPH
  integer                  :: EXCPH_interband(2) ! Interband states
  real(SP), allocatable    :: EXCPH_q(:,:)
  real(SP)                 :: EXC_q0(3)
+ character(schlen)        :: DmType
  !
  ! L_in and L_out paths
  !

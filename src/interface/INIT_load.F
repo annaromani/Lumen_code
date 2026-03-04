@@ -100,7 +100,7 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
 #if defined _ELPH 
  use ELPH,          ONLY:QP_PH_n_G_bands,elph_nQ_used,elph_Ham_ik,elph_Ham_bands,elph_branches,&
 &                               RES_tresh,FAN_deltaE_treshold,DW_deltaE_treshold,E_kpq_sh_fact,gkkp_db
- use EXCPH,         ONLY:EXCPH_states,EXCPH_sum,Lout_path,L_damping,EXC_q0,alphaQ, &
+ use EXCPH,         ONLY:EXCPH_states,EXCPH_sum,Lout_path,L_damping,EXC_q0,alphaQ,DmType, &
 &                        EXCPH_deltaE_treshold,EXCPH_kthresh
  use D_lattice,     ONLY:Boltz_Temp
 #endif
@@ -756,6 +756,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it('f',defs,'ExtendOutput', '[EXCPH] Print additional output with q-resolved lifetimes and resonances')
  call it('f',defs,'DbGdWEIGHTs', '[EXCPH] Use Double-grid also for satellite &
 &  weights and renormalization',verb_level=V_resp)
+ call it(defs,'DmType',     '[EXCPH] Smearing type (Lorentizan | Gaussian)',DmType)
  call it('f',defs,'PLqres', '[EXCPH] Write contribution from each q-point')
  !
  ! Testing only zone <
