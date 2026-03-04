@@ -8,24 +8,6 @@
 !
 #include<y_memory.h>
 !
-function Gaussian_smearing(W,pole)
- use pars,          ONLY:SP,cI
- !
- complex(SP), intent(in) :: W
- real(SP),    intent(in) :: pole
- !
- ! Working Space
- !     
- complex(SP) :: Gaussian_Smearing
- real(SP)    :: real_Wp
- !
- real_Wp=real(W-pole)
- imag_Wp=aimag(W-pole)
- !
- Gaussian_smearing=2.0*ddaw(real_Wp)/(aimag_Wp*sqrt(2._SP))+cI*sqrt(pi)*(exp(-real_Wp**2/(2.0*aimag_Wp**2))
- !     
-end function Gaussian_Smearing
-!
 subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  !! **EXCPH_X_phass - Phonon-Assisted Optical Susceptibility**
  !!
@@ -133,6 +115,7 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  integer,  allocatable  :: max_Sat_pos_PH_abs(:,:)
  !
  integer, external :: io_EXCPH_gkkp,io_ELPH
+ complex(SP), external :: Smear_func
  !
  min_pos  =minloc(BS_all_E(1,:))
  min_EXC_E=minval(BS_all_E(1,:))
@@ -296,12 +279,7 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
      pole =BS_E_in(i_alpha)
-     if(trim(DmType)=="Lorentizian") then
-       Epsilon_ii(iw,1:2)=Epsilon_ii(iw,1:2)+(1._SP-EXCPH_Renorm(i_alpha)-EXCPH_Renorm_PH_abs(i_alpha))*BS_R(i_alpha)/(W-pole)
-     elseif(trim(DmType)=="Gaussian") then
-       Epsilon_ii(iw,1:2)=Epsilon_ii(iw,1:2)+(1._SP-EXCPH_Renorm(i_alpha)-EXCPH_Renorm_PH_abs(i_alpha))*BS_R(i_alpha)& 
-&       *exp(-(real(W-pole)**2/(2.0*aimag(W)**2)))  
-     endif
+     Epsilon_ii(iw,1:2)=Epsilon_ii(iw,1:2)+(1._SP-EXCPH_Renorm(i_alpha)-EXCPH_Renorm_PH_abs(i_alpha))*BS_R(i_alpha)*Smear_func(W,pole)
      !
      ! [CA] The pole of luminescence should be the pole of BS_E_in 
      !      but I think this is not consistent with the Boltzman weight, I use always Lout.
