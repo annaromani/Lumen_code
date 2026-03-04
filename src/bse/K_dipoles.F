@@ -30,7 +30,7 @@ subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
 &                        BS_dip_size,l_BS_trace,BS_n_eh_spaces,&
 &                        l_BS_abs,l_BS_kerr,l_BS_magnons,l_BS_dichroism,l_BS_photolum,&
 &                        BSE_dipole_geometry,BS_field_direction,l_BS_ares_from_res,&
-&                        l_BS_mespin,l_BS_meorb
+&                        l_BS_mespin,l_BS_meorb, l_BS_optics_sp_up,l_BS_optics_sp_dw
  use parallel_int,  ONLY:PP_redux_wait
  use parallel_m,    ONLY:PAR_BS_nT_col_grps,PAR_COM_eh_INDEX,PAR_IND_T_groups,&
 &                        PAR_COM_Xk_ibz_INDEX,PARALLEL_default_mode
@@ -161,6 +161,11 @@ subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
      if(l_BS_abs.or.l_BS_kerr.or.l_BS_photolum.or.&
 &       l_BS_dichroism.or.l_BS_meorb.or.l_BS_mespin) then
        !
+       if ((l_BS_optics_sp_up .and. i_sp_pol_c == 2) .or. &
+               (l_BS_optics_sp_dw .and. i_sp_pol_c == 1) ) then
+               BS_T_grp(i_T_g)%dipoles_opt(:BS_dip_size,i_T,:) = 0.0
+               write(*,*) "INSIDE K DIPOLES"
+       else
        if(iq==1.and.i_G_shift==1) then
          call DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol_c,trim(DIP_kind),Xk,DIP_bare)
          DIP_expanded=-cI*DIP_bare
@@ -183,6 +188,8 @@ subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
          BS_T_grp(i_T_g)%dipoles_opt(:BS_dip_size,i_T,2)=DIP_projected(:BS_dip_size)
        endif
        !
+      endif !l_BS_optics_sp* ... 
+     !
      endif
      !
      ! Dichroism or orbital magnetoelectric part
