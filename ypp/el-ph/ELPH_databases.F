@@ -171,13 +171,16 @@ subroutine ELPH_databases(k,E,q)
  DB_Q_map=0
  do idb=1,DB_nq
    do iq=1,nqibz
-     v=DB_PH_qpt(idb,:)-q%pt(iq,:)
+     v=DB_PH_qpt(idb,:)+q%pt(iq,:)
      if (v_is_zero(v,zero_=k_iku_zero)) DB_Q_map(idb)=iq
    enddo
  enddo
  !
  elph_use_q_grid=.FALSE.
- if(DB_nq==nqibz.and.all(DB_Q_map/=0)) elph_use_q_grid=.TRUE.
+ if(DB_nq==nqibz.and.all(DB_Q_map/=0)) then
+   elph_use_q_grid=.TRUE.
+   call warning("Q-points of QE and Lumen not compatible!!! ")
+ endif
  !
  ! If l_gkkp_expand_only_k I suppose the q-grid is in the BZ
  !

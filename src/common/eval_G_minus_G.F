@@ -25,6 +25,7 @@ integer function eval_G_minus_G(iG,iGo,opr_in,COMM)
  !  g_vec( G_m_G(i,j) ) = g_vec(i)+g_vec(j)
  !
  use pars,         ONLY:SP
+ use stderr,       ONLY:intc
  use vec_operate,  ONLY:iku_v_norm, c2a
  use parallel_m,   ONLY:yMPI_comm,PP_indexes,PP_indexes_reset,myid
  use parallel_int, ONLY:PP_redux_wait,PARALLEL_index,PARALLEL_live_message
@@ -44,7 +45,7 @@ integer function eval_G_minus_G(iG,iGo,opr_in,COMM)
  integer :: i1,i2,is
  integer :: iG_shell,iGo_shell,iG_shell_0,iG_shell_max,iG_,iGo_,&
  &          iG_alloc,iGo_alloc,iG_closed,iGo_closed
- integer :: ngx1,ngx2,ngx3, iv1_rlu(3),iG_max
+ integer :: ngx1,ngx2,ngx3, iv1_rlu(3),iG_max,no_gmg
  real(SP):: E_iG, E_iGo, E_max
  real(SP):: v1(3),v2(3)
  real(SP), allocatable :: E_G_m_G(:,:),g_vec_rlu(:,:)
@@ -274,7 +275,9 @@ integer function eval_G_minus_G(iG,iGo,opr_in,COMM)
  G_m_G_maxval=maxval(G_m_G_maxval_tmp)
  !
  if (present(COMM)) call PP_redux_wait(G_m_G,COMM=COMM%COMM)
- if (any(G_m_G(:,:)==0)) call error("[G-vec] unexpected invalid G_index in G_m_G")
+ !
+ no_gmg=count(G_m_G(:,:)==0)
+ if (no_gmg>0) call error("[G-vec] invalid G_index in G_m_G for "//trim(intc(no_gmg))//" pairs")
  !
  ! cleanup
  !

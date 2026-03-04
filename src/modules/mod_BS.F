@@ -40,11 +40,13 @@ module BS
  logical :: l_BS_optics_sp_up=.FALSE.
  logical :: l_BS_optics_sp_dw=.FALSE.
  character(schlen) :: BSE_L_kind
+ character(schlen) :: BSE_disk_IO
  character(schlen) :: BSE_mode
  character(schlen) :: BSE_prop
  character(schlen) :: BSE_dipole_geometry="none"
  character(schlen) :: BSK_mode
  character(schlen) :: BSK_IO_mode
+ character(schlen) :: BSK_IO_shape
  character(schlen) :: BS_bands_frozen_ch=""
  !
  ! Dipoles tracing 

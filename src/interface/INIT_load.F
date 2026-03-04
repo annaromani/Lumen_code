@@ -35,7 +35,8 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
 &                        bz_samp,RIM_ng,RIM_epsm1,eps_env,RIM_id_epsm1_reference,&
 &                        RIM_n_rand_pts,RIM_sphe_n_rand_pts,cyl_ph_radius,box_length,cut_geometry,ws_cutoff
  use BS,            ONLY:BSE_mode,BSE_prop,BSK_mode,BS_eh_en,BS_eh_win,BS_q,BS_bands,BS_bands_frozen_ch,&
-&                        BS_n_g_W,BS_n_g_exch,BS_n_g_fxc,BSE_L_kind,BS_K_cutoff,BSK_IO_mode,BSE_dipole_geometry
+&                        BS_n_g_W,BS_n_g_exch,BS_n_g_fxc,BSE_L_kind,BS_K_cutoff,BSK_IO_mode,BSE_dipole_geometry,&
+&                        BSE_disk_IO,BSK_IO_shape
  use BS_solvers,    ONLY:BSS_mode,Haydock_threshold,Haydock_iterIO,BSS_n_freqs,BSS_target_E,BSS_trange_E,&
 &                        BSS_dr,BSS_er,BSS_E_dir,BSS_Q_dir,BSS_damp_reference,BSS_inversion_mode,&
 &                        BSS_Wd,K_INV_EPS,K_INV_PL,BSS_n_eig_Input,BSS_first_eig,Haydock_iterMAX,BSS_ldiago_solver
@@ -190,7 +191,7 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  !=======
  !
 #if defined _MPI 
- call CPU_structure_load( )
+ call CPU_structure_load(defs)
 #endif
  !
  ! Cutoff on the density
@@ -242,7 +243,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'EkpqShFact', '[ELPH] E(k+q) Interpolation shell factor (used only with double-grid)',E_kpq_sh_fact,verb_level=V_ph)
 #endif
  call it('f',defs,'WFbuffIO','[IO] Wave-functions buffered I/O',verb_level=V_io) 
- call it('f',defs,'NoDiagSC','New setup for non-diagonal supercells',verb_level=V_general) 
+ call it('f',defs,'NoDiagSC','New setup for non-diagonal supercells') 
  call it('f',defs,'DegFix','Force the code to impose the energy levels to respect their degeneracy',verb_level=V_general) 
  !
  ! Parallel Setup
@@ -328,8 +329,10 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  !
  ! BSE/BSK
  !
- call it(defs,'BSEmod',  '[BSE] resonant/retarded/coupling',BSE_mode,case="a")
- call it(defs,'Lkind',   '[BSE,X] bar(default)/full/tilde',BSE_L_kind,verb_level=V_resp)
+ call it(defs,'BSEmod',    '[BSE] resonant/retarded/coupling',BSE_mode,case="a")
+ call it(defs,'Lkind',     '[BSE,X] bar(default)/full/tilde',BSE_L_kind,verb_level=V_resp)
+ call it(defs,'BSKIOshape','[BSK] "1D_linear"/"2D_standard"',BSK_IO_shape,verb_level=V_resp)
+ call it(defs,'BSEdiskIO','[BSE] high(restart always) |medium(restart only corr.) |low(writes at the end)|none',BSE_disk_IO)
  call it(defs,'BSEBands','[BSK] Bands range',BS_bands)
  call it(defs,'BSEFrozenBands','[BSK] Bands expluded from BSE construction',BS_bands_frozen_ch,verb_level=V_resp)
  call it(defs,'BSENGBlk','[BSK] Screened interaction block size [if -1 uses all the G-vectors of W(q,G,Gp)]',BS_n_g_W,G_unit)
@@ -339,7 +342,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'FxcMode', '[TDDFT] ("G-XXX" or "R-XXX" with XXX=def/full/cut_Gmax/cut_GmGp") ',FXC_mode,verb_level=V_resp)
  call it(defs,'BSEEhEny','[BSK] Electron-hole energy range',BS_eh_en,E_unit,verb_level=V_resp)
  call it(defs,'BSKCut',  '[BSK] Cutoff on the BSE Kernel, 0=full 1=none',BS_K_cutoff,verb_level=V_resp)
- call it(defs,'BSKIOmode','[BSK] ("1D_linear"/"2D_standard" + "norestart" + "write_all_steps")',BSK_IO_mode,verb_level=V_resp)
  call it(defs,'BSKmod',  '[BSE] IP/Hartree/HF/ALDA/SEX/BSfxc',BSK_mode,protect=.FALSE.,case="A")
  call it(defs,'Gauge' ,  '[BSE/X] Gauge (length|velocity)',global_gauge,verb_level=V_resp)
  call it('f',defs,'NoCondSumRule' ,'[BSE/X] Do not impose the conductivity sum rule in velocity gauge',verb_level=V_resp)
@@ -836,51 +838,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  ! 
  contains 
    !
-#if defined _MPI 
-   !
-   subroutine CPU_structure_load()
-     use parallel_m, ONLY:n_CPU_str_max,CPU_structure,PARALLEL_default_mode
-     integer           :: i_s
-     character(schlen) :: name,possible_fields
-     !
-     call it(defs,"PAR_def_mode",'[PARALLEL] Default distribution mode ("balanced"/"memory"/"workload"/"KQmemory")',&
-&            PARALLEL_default_mode,verb_level=V_parallel)
-     !
-     do i_s=1,n_CPU_str_max 
-       !
-       if (i_s==1) possible_fields='(k,c,v)'     ! DIP
-       if (i_s==2) possible_fields='(q,g,k,c,v)' ! X_and_IO
-       if (i_s==3) possible_fields='(q,g,k,c,v)' ! X
-       if (i_s==4) possible_fields='(k,eh,t)'    ! BS
-       if (i_s==5) possible_fields='(q,g,qp,b)'  ! SE
-       if (i_s==6) possible_fields='(k,b,q,qp)'  ! RT
-       if (i_s==7) possible_fields='(p,d) '      ! SLK
-       if (i_s==8) possible_fields='(w,k) '      ! NL
-       if (i_s==9) possible_fields='(k) '        ! BZ
-       if (i_s==10)possible_fields='(q,k,b) '    ! PH_SE
-       if (i_s==11)possible_fields='(k,b) '      ! OSCLL
-       if (i_s==12)possible_fields='(q,g,qp,b)'  ! SX
-       !
-       if (len_trim(CPU_structure(i_s)%Short_Description)==0) cycle
-       !
-       name=trim(CPU_structure(i_s)%Short_Description)//"_CPU"
-       call it(defs,trim(name),'[PARALLEL] CPUs for each role',&
-&              CPU_structure(i_s)%CPU_string,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_ROLEs"
-       call it(defs,trim(name),'[PARALLEL] CPUs roles '//trim(possible_fields),&
-&              CPU_structure(i_s)%ROLE_string,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_INV"
-       call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
-&              CPU_structure(i_s)%nCPU_lin_algebra_INV,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_DIAGO"
-       call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
-&              CPU_structure(i_s)%nCPU_lin_algebra_DIAGO,verb_level=V_parallel)
-     enddo
-     !
-   end subroutine
-   !
-#endif
-   !
    subroutine Xload(X,wv)
      !
      use pars,   ONLY:SP
@@ -961,3 +918,56 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
    end subroutine
    !
 end subroutine
+!
+!
+#if defined _MPI 
+!
+subroutine CPU_structure_load(defs)
+  use pars,          ONLY:schlen
+  use it_tools,      ONLY:it
+  use it_m,          ONLY:initdefs,V_parallel
+  use parallel_m,    ONLY:n_CPU_str_max,CPU_structure,PARALLEL_default_mode
+  !
+  implicit none
+  !
+  type(initdefs)    :: defs
+  !
+  integer           :: i_s
+  character(schlen) :: name,possible_fields
+  !
+  call it(defs,"PAR_def_mode",'[PARALLEL] Default distribution mode ("balanced"/"memory"/"workload"/"KQmemory")',&
+&         PARALLEL_default_mode,verb_level=V_parallel)
+  !
+  do i_s=1,n_CPU_str_max 
+    !
+    if (i_s==1) possible_fields='(k,c,v)'     ! DIP
+    if (i_s==2) possible_fields='(q,g,k,c,v)' ! X_and_IO
+    if (i_s==3) possible_fields='(q,g,k,c,v)' ! X
+    if (i_s==4) possible_fields='(k,eh,t)'    ! BS
+    if (i_s==5) possible_fields='(q,qp,b)'    ! SE
+    if (i_s==6) possible_fields='(k,b,q,qp)'  ! RT
+    if (i_s==7) possible_fields='(p,d) '      ! SLK
+    if (i_s==8) possible_fields='(w,k) '      ! NL
+    if (i_s==9) possible_fields='(k) '        ! BZ
+    if (i_s==10)possible_fields='(q,k,b) '    ! PH_SE
+    if (i_s==11)possible_fields='(k,b) '      ! OSCLL
+    if (i_s==12)possible_fields='(q,g,qp,b)'  ! SX
+    !
+    if (len_trim(CPU_structure(i_s)%Short_Description)==0) cycle
+    name=trim(CPU_structure(i_s)%Short_Description)//"_CPU"
+    call it(defs,trim(name),'[PARALLEL] CPUs for each role',&
+&           CPU_structure(i_s)%CPU_string,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_ROLEs"
+    call it(defs,trim(name),'[PARALLEL] CPUs roles '//trim(possible_fields),&
+&           CPU_structure(i_s)%ROLE_string,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_INV"
+    call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
+&           CPU_structure(i_s)%nCPU_lin_algebra_INV,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_DIAGO"
+    call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
+&           CPU_structure(i_s)%nCPU_lin_algebra_DIAGO,verb_level=V_parallel)
+  enddo
+  !
+end subroutine
+   !
+#endif

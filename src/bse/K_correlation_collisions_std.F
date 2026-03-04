@@ -10,6 +10,15 @@
 #include<dev_defs.h>
 #include<y_memory.h>
 !
+!************************* WARNING **************************
+!* This subroutine is not correct in presence of            *
+!* non symmorphyc symmetri operations                       * 
+!* An alternative subroutine that applies symmetries in a   *
+!* different way exist: K_correlation_collisions_dir.F      *
+!* This second subroutine is automatically called in the    *
+!* such case                                                *
+!************************************************************
+!
 subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
  !
  ! Standard implementation. This is the default algorithm.
@@ -354,9 +363,9 @@ subroutine K_correlation_collisions_std(iq,i_block,win1_ID,win2_ID,Xk,q)
        !
        implicit none
        !
-       integer, intent(in)   :: j_Tk,j_Tp,j_Tgrp_k,j_Tgrp_p,j_block,j_q
+       integer, intent(in)   :: j_Tk,j_Tp,j_Tgrp_k,j_Tgrp_p,j_block,j_q,j_k,j_p
        integer, intent(out)  :: j_kp_s,j_s_star,j_kp_mq_s,j_s_mq_star,    &
-       &                        j_k,j_p,j_kmq,j_pmq,j_kmq_t,j_pmq_t,      &
+       &                        j_kmq,j_pmq,j_kmq_t,j_pmq_t,              &
        &                        j_c_p,j_v_p,j_p_sp_pol_v,j_p_sp_pol_c,    &
        &                        j_v_k,j_c_k,j_k_sp_pol_v,j_k_sp_pol_c,j_q_W
        integer, intent(inout):: j_p_bz_last,j_k_bz_last,j_q_W_bz_last,j_g_W_last

@@ -24,7 +24,7 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
 &                         BSS_Q_dir,BSS_E_dir
  use BS,             ONLY:BS_bands,BS_q,BS_n_g_exch,BS_res_K_corr,BS_n_g_W,BS_cpl_K_corr,&
 &                         BS_Blocks_and_Transitions_free,BSqpts,O_ng,BSE_L_kind,BS_iq_now,&
-&                         BS_kpt_bz,BS_kpt_ibz
+&                         BS_kpt_bz,BS_kpt_ibz,BSE_disk_IO
  use TDDFT,          ONLY:FXC_per_memstps,FXC_n_mem_freqs,FXC_is_retarded
  use drivers,        ONLY:l_rpa_IP,l_bs_fxc,l_bss
  use parallel_m,     ONLY:PAR_IND_WF_b_and_k,PAR_K_scheme,PARALLEL_default_mode
@@ -67,6 +67,9 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
  !
  call msg('s','[BSE] Response kind is: ',trim(BSE_L_kind))
  ! q0 renormalization and field direction
+ !
+ call msg('s','[BSE] Disk IO is: ',trim(BSE_disk_IO))
+ ! IO kind
  !
  BSS_E_dir(:) = BSS_E_dir(:)/v_norm(BSS_E_dir)
  BSS_Q_dir(:) = BSS_Q_dir(:)/v_norm(BSS_Q_dir)
@@ -159,10 +162,6 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
      call section('=','Bethe Salpeter Equation @q'//trim(intc(iq)))
    endif
    !
-   ! BSS output arrays
-   !===================
-   call X_ALLOC_global("ALLOC",W_bss)
-   !
    if (any((/BS_res_K_corr,BS_cpl_K_corr/)).and..not.l_bs_fxc) then
      !
      ! W/X RL size setup looking at the max index of G-G' 
@@ -199,6 +198,10 @@ subroutine K_driver(Xen,Ken,Xk,q,X_static_pp,Xw,Dip)
    !
    !... Blocks build-up
    if (.not.l_rpa_IP) call K_blocks(iq)
+   !
+   ! BSS output arrays
+   !===================
+   call X_ALLOC_global("ALLOC",W_bss)
    !
    ! Wave Functions distribution 
    !=============================

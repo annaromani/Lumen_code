@@ -18,6 +18,7 @@ subroutine p2y_db1(en,k)
  use mod_com2y,             ONLY : print_interface_dimensions
  use xc_functionals,        ONLY : xc_string,GS_xc_FUNCTIONAL,GS_exx_FRACTION,GS_exx_SCREENING
  use R_lattice,             ONLY : ng_vec,g_vec,bz_samp
+ use D_lattice,             ONLY : lattice
  use wave_func,             ONLY : wf_ng, wf_nc_k, wf_ncx, wf_igk
  use mod_com2y,             ONLY : force_noWFs
  use y_memory_alloc
@@ -58,6 +59,7 @@ subroutine p2y_db1(en,k)
  call msg('s','Symmetries...')
  !
  call get_symmetries
+ call msg("l","...["//trim(lattice)//" latt]")
  !
  !---------------------------------------------------------------------*
  !    Read XC functional                                               *

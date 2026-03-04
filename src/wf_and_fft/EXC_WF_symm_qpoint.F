@@ -10,7 +10,7 @@
 #include<y_memory.h>
 !
 subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
-&                                        ID,S_index,EXC_WFs,l_min_mem)
+&                                    ID,S_index,EXC_WFs,l_min_mem_in)
  !
  use pars,          ONLY:SP,cZERO,cONE
  use electrons,     ONLY:n_sp_pol,n_max_deg,n_spinor
@@ -32,11 +32,11 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
  integer,       intent(inout):: ID
  complex(SP),   intent(out)  :: EXC_WFs(BS_H_dim,nstates)
  integer,       intent(in)   :: S_index(BSS_n_eig)
- logical,       intent(in)   :: l_min_mem
+ logical,     optional,   intent(in)  :: l_min_mem_in
  !
  ! Work space
  !
- logical                 :: t_rev
+ logical                 :: t_rev,l_min_mem
  integer :: iexc,il,ik,istark,isk,ikbz,ipbz,ipmqbz,ipmqg0,iv1,ic1,iv2,ic2,&
  &          i_v1_bnd,i_v1_grp,i_c1_bnd,i_c1_grp,i_v2_bnd,i_v2_grp,i_c2_bnd,i_c2_grp,&
  &          ikmqbz,ikmqg0,iqbz,i_sp_pol,ip,ipmq,istarp,istarpmq,i1,i2,&
@@ -51,6 +51,9 @@ subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
    enddo
    return
  endif
+ !
+ l_min_mem=.false.
+ if (present(l_min_mem_in)) l_min_mem=l_min_mem_in
  !
  t_rev= S_contains_TR(isq)
  !

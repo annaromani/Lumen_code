@@ -173,7 +173,7 @@ subroutine INIT_activate()
  !
  if (l_em1s.or.l_em1d.or.l_X.or.l_mpa)      call initactivate(1,'Chimod ChiLinAlgMod')
  if (l_optics.and.l_chi)           call initactivate(1,'Chimod ChiLinAlgMod')
- if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind')
+ if (l_optics.and.l_bse)           call initactivate(1,'BSKmod BSEmod Lkind BSKIOshape BSEdiskIO')
  if (l_optics.and.l_bse.and.l_bss) call initactivate(1,'BSSmod')
  !
  if (l_dipoles) then
@@ -277,7 +277,7 @@ subroutine INIT_activate()
    !
    call initactivate(1,'DrudeWBS Reflectivity')
    call initactivate(1,'BoseCut ShiftedPaths')
-   call initactivate(1,'BSEQptR BSEBands BSEFrozenBands BSKCut BSKIOmode BSEEhEny BSehWind NoDiagSC')
+   call initactivate(1,'BSEQptR BSEBands BSEFrozenBands BSKCut BSEEhEny BSehWind NoDiagSC')
    !
 #if defined _RT
    call initactivate(1,'RTOccMode ForceEqTrans')
@@ -329,6 +329,7 @@ subroutine INIT_activate()
    call X_activate('Xs',(/'QpntsR','BndsRn','NGsBlk','GrFnTp','DmRnge','CGrdSp','EhEngy','LongDr','DrudeW'/))
    call initactivate(1,'XTermKind')
    call initactivate(1,'XTermEn')
+   call initactivate(1,'OptDipAverage')
  endif
  !
  ! GW (PPA, MPA, & COHSEX) 
@@ -612,6 +613,7 @@ subroutine INIT_activate()
    call initactivate(1,'Xorder Xadd_mode Xthresh_1 Xthresh_2 Xthresh_3 FL_solver')
    call initactivate(1,'FL_deg_thresh FL_deg_lift S_inv_mode FL_beta FL_max_it')
    call initactivate(1,'Field1_Phase,FL_2D_ild, FL_Pade')
+   call init_QP_ctl_switch('G')
  endif
 #endif
  !
@@ -635,22 +637,6 @@ subroutine INIT_activate()
  contains
    !
    !
-   subroutine CPU_activate(what)
-     character(*) :: what 
-#if defined _MPI
-     call initactivate(1,"PAR_def_mode")
-     call initactivate(1,what//"_CPU")
-     call initactivate(1,what//"_ROLEs")
-     if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
-     if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-     if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-#endif
-#if defined _SCALAPACK &&  defined _MPI
-     if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
-#endif
-     !
-   end subroutine
-   !
    subroutine X_activate(mode,what)
      character(2)::mode
      character(6)::what(:)
@@ -661,4 +647,23 @@ subroutine INIT_activate()
      enddo
    end subroutine
    !
+end subroutine
+!
+!
+subroutine CPU_activate(what)
+ use drivers,     ONLY:l_sc_run 
+ implicit none
+ character(*) :: what 
+#if defined _MPI
+ call initactivate(1,"PAR_def_mode")
+ call initactivate(1,what//"_CPU")
+ call initactivate(1,what//"_ROLEs")
+ if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
+ if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+ if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
+#endif
+#if defined _SCALAPACK &&  defined _MPI
+ if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
+#endif
+ !
 end subroutine

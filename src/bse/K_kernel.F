@@ -21,7 +21,8 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  use electrons,     ONLY:levels,spin_occ,spin,n_spin,n_spinor,n_sp_pol
  use FFT_m,         ONLY:fft_size
  use interfaces,    ONLY:WF_load,WF_free,eval_G_minus_G,TDDFT_ALDA_eh_space_R_kernel
- use D_lattice,     ONLY:nsym,DL_vol,S_contains_TR,i_space_inv,sop_inv,sop_tab
+ use D_lattice,     ONLY:nsym,DL_vol,S_contains_TR,i_space_inv,sop_inv,sop_tab,&
+&                        non_symmorphic_syms
  use R_lattice,     ONLY:qindx_X,bz_samp,&
 &                        qindx_B,qindx_B_max,RIM_W,RIM_W_d,&
 &                        RIM_ng,RIM_W_is_diagonal,RIM_W_ng
@@ -219,10 +220,16 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  !
  if (l_bs_corr) then
    O_ng_shift=qindx_B_max
-   ! Default is standard algorithm, unless imposed from input
-   call parser('ImposeDirAlg',l_dir_alg)
-   l_std_alg=.not.l_dir_alg
-   if (l_std_alg) call parser('SkipPhases',l_skip_phases)
+   if ( non_symmorphic_syms .and. nsym>1) then
+     ! Default is direct algorithm, unless imposed from input
+     call parser('ImposeStdAlg',l_std_alg)
+     l_dir_alg=.not.l_std_alg
+   else
+     ! Default is standard algorithm, unless imposed from input
+     call parser('ImposeDirAlg',l_dir_alg)
+     l_std_alg=.not.l_dir_alg
+   endif
+   call parser('SkipPhases',l_skip_phases)
    call msg('r','[BSE] Correlation components ',(/BS_n_g_W,O_ng/))
  endif
  !
@@ -911,6 +918,11 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
            BS_blk(i_block)%table(2,i_Tp)=BS_T_grp(i_Tgrp_p)%table(i_Tp,3)
            BS_blk(i_block)%table(3,i_Tp)=BS_T_grp(i_Tgrp_p)%table(i_Tp,2)
          endif
+       endif
+       !
+       if (H_pos(1)==H_pos(2)) then
+         if (.not.mode_now=="C") BS_blk(i_block)%table(:,i_Tk)=(/i_p_bz,i_v_p,i_c_p,i_p_sp_pol_c,i_p_sp_pol_v/)
+         if (     mode_now=="C") BS_blk(i_block)%table(:,i_Tk)=(/i_p_bz,i_c_p,i_v_p,i_p_sp_pol_c,i_p_sp_pol_v/)
        endif
        !
      enddo   ! i_Tk
