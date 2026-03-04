@@ -24,14 +24,13 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  !
  ! * DIAGO: M => M + E_real/E_cmpl + V_left/V_right (SLK external arrays still to implement)
  ! * DIAGX: M => M + few E_real/E_cmpl + V_left/V_right
- ! * CHASE: M => M + few E_real/E_cmpl + V_left/V_right
  !
  ! * LIN_SYSTEM: M_slk/M + B_slk/B => B_slk/B 
  !
  ! * MAT_MUL: M_slk/M + B_slk/B => C_slk/C 
  !
  use pars,          ONLY:SP,cONE,cZERO
- use linear_algebra,ONLY:INV,DIAGO,DIAGX,CHASE,LIN_SYS,SVD_INV,MAT_MUL,USE_LK,USE_SLK
+ use linear_algebra,ONLY:INV,DIAGO,DIAGX,LIN_SYS,SVD_INV,MAT_MUL,USE_LK,USE_SLK
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
  use wrapper,       ONLY:M_by_M
  use parallel_m,    ONLY:linear_algebra_is_parallel,ncpu
@@ -70,7 +69,6 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  logical             :: USE_GPU
  double precision    :: starttime,endtime
  character(len=20)   :: matfilename
- real(SP), allocatable :: E_raux(:)
  !
  call timing("LINEAR ALGEBRA",OPR="start")
  !
@@ -103,8 +101,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  if (present(lib_in)) then
    lib_in_use=lib_in
  endif
- if(idriver==SVD_INV.or.((idriver==DIAGO.or.idriver==DIAGX&
-&                        .or.idriver==CHASE).and.present(E_cmpl))) lib_in_use=USE_LK 
+ if(idriver==SVD_INV.or.((idriver==DIAGO.or.idriver==DIAGX).and.present(E_cmpl))) lib_in_use=USE_LK 
  if (.not.linear_algebra_is_parallel) lib_in_use=USE_LK
  !
  ! whether to use CUDA lib
@@ -113,12 +110,8 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
 &                    .or.idriver==MAT_MUL) USE_GPU=.false.
  if (USE_GPU) lib_in_use=USE_LK
  !
-#if ! defined _CHASE
- if (idriver==CHASE) idriver=DIAGO
-#endif
- !
 #if defined _SCALAPACK
- if ((idriver==DIAGO.or.idriver==DIAGX.or.idriver==CHASE).and.present(E_cmpl).and.ncpu>1) then
+ if ((idriver==DIAGO.or.idriver==DIAGX).and.present(E_cmpl).and.ncpu>1) then
    !
    call warning('Parallel non-herm diag not yet implemented. Switching to LK')
    lib_in_use=USE_LK
@@ -128,7 +121,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  !
  ! =============== PARALLEL SECTION ==========================================================
  !
- if((lib_in_use==USE_SLK.and..not.USE_GPU).or.(lib_in_use==USE_SLK.and.idriver==CHASE)) then 
+ if(lib_in_use==USE_SLK.and..not.USE_GPU) then 
    !
    if (.not.present(M_slk)) then
      !
@@ -156,31 +149,6 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
      YAMBO_FREE(V_loc%blc)
      call MATRIX_reset(V_loc)
      !
-#if defined _CHASE
-     !
-   else if (idriver==CHASE) then
-     !
-     call MATRIX_init("SLK",  V_loc, N, 1 )
-     YAMBO_ALLOC(V_loc%blc,(V_loc%BLCrows(1):V_loc%BLCrows(2),V_loc%BLCcols(1):V_loc%BLCcols(2),V_loc%Nb))
-     !
-     if (present(E_cmpl)) then
-       !
-       !... non-Hermitian case
-       !call PARALLEL_PSEUDOHERM_chase( M_loc, V_loc, N, E_real, neig )
-       !
-     else
-       !
-       !... Hermitian case
-       call PARALLEL_HERMITIAN_chase( M_loc, V_loc, N, E_real, neig )
-       !
-     endif
-     !
-     call MATRIX_transfer( M_in = V_loc , M=M )
-     YAMBO_FREE(V_loc%blc)
-     call MATRIX_reset(V_loc)
-     V_right(:,:)=M(:,:neig)
-     !
-#endif
      !
    else if (idriver==INV) then
      !
@@ -314,34 +282,6 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
        !
      endif
      !
-#if defined _CHASE
-   else if(idriver==CHASE) then
-     !
-     if (present(E_cmpl)) then
-       !
-       !... non-Hermitian case
-       YAMBO_ALLOC( E_raux,(neig) )
-       !
-       if (present(M_slk)) then
-         call SERIAL_PSEUDOHERM_chase(N,M_slk%blc(:,:,M_slk%I),E_raux,V_left,V_right,neig)
-       else
-         call SERIAL_PSEUDOHERM_chase(N,M,E_raux,V_left,V_right,neig)
-       endif
-       !
-       E_cmpl(1:neig)=cmplx(E_raux(1:neig),kind=SP)
-       YAMBO_FREE( E_raux )
-       !
-     else
-       !
-       !... Hermitian case
-       if (present(M_slk)) then
-         call SERIAL_HERMITIAN_chase(N,M_slk%blc(:,:,M_slk%I),E_real,V_right,neig)
-       else
-         call SERIAL_HERMITIAN_chase(N,M,E_real,V_right,neig)
-       endif
-       !
-     endif
-#endif
      !
    endif
    !

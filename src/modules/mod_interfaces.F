@@ -112,12 +112,24 @@ module interfaces
      !
    end subroutine
    !
-  subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
+#if defined _LDIAGO
+   subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_blk_size )
+     use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
+     integer,             intent(in)   :: i_BS_mat
+     type(c_ptr),         intent(out)  :: mpicxt, diago_mat
+     integer(YDIAGO_INT), intent(out)  :: blacs_blk_size 
+   end subroutine K_stored_in_a_blacs_matrix_ldiago
+   !
+   subroutine LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, &
+    & blacs_blk_size, BS_energies, BS_VR, &
     & neigs_this_cpu, neig_shift, neigs_range, eigvals_range, &
     & BS_VL, BS_overlap, solver_type, elpasolver)
-    use pars,           ONLY:SP
+    use pars,             ONLY:SP
+    use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
     implicit none
     integer, intent(in)      :: i_BS_mat
+    type(c_ptr), intent(in)  :: mpicxt, diago_mat
+    integer(YDIAGO_INT), intent(in) :: blacs_blk_size 
     complex(SP), allocatable :: BS_energies(:)
     complex(SP), allocatable, target :: BS_VR(:,:) 
     integer, intent(out)     :: neigs_this_cpu  
@@ -128,7 +140,24 @@ module interfaces
     character, optional                :: solver_type
     integer,  optional                 :: elpasolver
     complex(SP),pointer,optional       :: BS_overlap(:,:)
-  end subroutine LDIAGO_driver
+   end subroutine LDIAGO_driver
+#endif
+
+
+#if defined _CHASE
+   subroutine CHASE_driver(N,M,M_slk,V_left,V_right,E_cmpl,E_real,neig)
+     use pars,          ONLY:SP
+     use matrix,        ONLY:PAR_matrix
+     integer,          optional :: N
+     complex(SP),      optional :: M(:,:)
+     type(PAR_matrix), optional :: M_slk
+     complex(SP),      optional :: V_left(:,:)
+     complex(SP),      optional :: V_right(:,:)
+     real(SP),         optional :: E_real(:)
+     complex(SP),      optional :: E_cmpl(:)
+     integer,          optional :: neig
+   end subroutine CHASE_driver
+#endif
 
    subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
      use pars,           ONLY:SP

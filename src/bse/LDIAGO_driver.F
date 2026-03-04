@@ -5,7 +5,7 @@
 !
 ! Authors (see AUTHORS file for details): NM
 !
-subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
+subroutine LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size, BS_energies, BS_VR, &
     & neigs_this_cpu, neig_shift, neigs_range, eigvals_range, &
     & BS_VL, BS_overlap, solver_type, elpasolver)
   !
@@ -37,7 +37,10 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
   !
   implicit none
   !
-  integer, intent(in)      :: i_BS_mat
+  integer,             intent(in)  :: i_BS_mat
+  type(c_ptr),         intent(in)  :: mpicxt, diago_mat
+  integer(YDIAGO_INT), intent(in)  :: blacs_blk_size 
+  !
   complex(SP), allocatable :: BS_energies(:)
   ! Energy values. these will be allocated internally.(realloced if already allocated)
   ! Each cpu gets full set of eigenvalues and size(BS_energies) gives 
@@ -67,12 +70,12 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
   ! 64 is good default but give a variable so advanced expert users can play with it
   !
   ! Local variables
-  type(c_ptr)                        :: mpicxt, diago_mat, evecs
-  integer                            :: nProcs, my_rank, neig_tmp
-  integer(YDIAGO_INT)                :: SL_H_dim, ProcX, ProcY, elpa_nthreads, mpi_comm_diago
+  type(c_ptr)                        :: evecs
+  integer                            :: neig_tmp
+  integer(YDIAGO_INT)                :: SL_H_dim, elpa_nthreads
   integer(ERROR_INT)                 :: error_diago ! diagonalization error code
   integer                            :: ierr !! mpi error code 
-  integer(YDIAGO_INT)                :: neig_found, i_c, i_r, blacs_blk_size 
+  integer(YDIAGO_INT)                :: neig_found, i_c, i_r
   integer(YDIAGO_LL_INT)             :: nelements
   ! optional local vars with their defaults
   character                          :: solver_type_aux   = 's'
@@ -122,6 +125,8 @@ subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
   if(present(BS_VL)) compute_left_eigs = .true.
   if(present(solver_type)) solver_type_aux = solver_type
   if(present(elpasolver)) elpa_solver_aux = elpasolver
+  ! If block size is <8, geev solver will fail, force scalapack solver
+  if(blacs_blk_size == 8)  solver_type_aux = 's'
   !
 #if !defined _ELPA
   ! K_diago_driver does these checks. Here we just proceed
@@ -162,59 +167,7 @@ endif
   if(     BS_K_coupling) SL_H_dim=BS_H_dim
   if(.not.BS_K_coupling) SL_H_dim=BS_K_dim(i_BS_mat)
   !
-  ! Allocate the 2D block cyclic matrix
-  !
-#if defined _MPI
-  ! First create a blacs grid
-  call MPI_COMM_SIZE(MPI_COMM_WORLD, nProcs, ierr)
-  call MPI_COMM_RANK(MPI_COMM_WORLD, my_rank, ierr)
-
-  ProcX = int(sqrt(real(nProcs)),kind=YDIAGO_INT)
-  ProcY = ProcX
-  ! Maximize the number of cpus participating
-  if ( ProcX * (ProcX + 1) .le. nProcs) ProcY = ProcX + 1
-  if ( ProcX * (ProcX + 2) .le. nProcs) ProcY = ProcX + 2
-  ! Geev block size must be smaller than mat dim and >=8
-  ! Start with the default 64
-  blacs_blk_size = blacs_block_size
-  ! if not try 32
-  if (blacs_blk_size .gt. SL_H_dim/ProcY) blacs_blk_size = blacs_blk_size/2
-  ! if not try 16
-  if (blacs_blk_size .gt. SL_H_dim/ProcY) blacs_blk_size = blacs_blk_size/2
-  ! Last try.
-  if (blacs_blk_size .gt. SL_H_dim/ProcY) then
-    ! force the solver to be scalapack
-    ! If block size is <8, geev solver will fail.
-    solver_type_aux = 's'
-    blacs_blk_size = 8 !SL_H_dim
-    ProcX = 1
-    ProcY = 1
-  endif
-
-  call msg("s","BLACS grid",(/ProcX,ProcY/))
-#else
-  ProcX=1
-  ProcY=1
-  blacs_blk_size = 1
-#endif
-
-  mpi_comm_diago = MPI_COMM_WORLD
-
-  mpicxt = BLACScxtInit_Fortran('R', mpi_comm_diago, ProcX, ProcY)
-  if (.not. c_associated(mpicxt)) then
-    call error("Failed to initiate BLACS context")
-  end if
-
-  diago_mat = init_D_Matrix(SL_H_dim, SL_H_dim, blacs_blk_size, blacs_blk_size, mpicxt)
-  if (.not. c_associated(diago_mat)) then
-    call error("Failed to initiate block cyclic BSE matrix")
-  end if
-  !
-  ! Fill the block cyclic matrix
-  call live_timing('Filling BSE Matrix',1)
-  call K_fill_block_cyclic(i_BS_mat, diago_mat)
-  call live_timing()
-  ! Now we create a matix for eigenvectors
+  ! Allocate the eigvals and evecs matrices
   !
   allocate(eig_vals(SL_H_dim))
 

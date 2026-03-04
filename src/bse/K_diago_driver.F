@@ -41,9 +41,15 @@ subroutine K_diago_driver(iq,W,X_static)
  use linear_algebra, ONLY:DIAGO,DIAGX,CHASE
  use interfaces,     ONLY:K_diago_response_functions,LINEAR_ALGEBRA_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
- &                        K_diago_perturbative, K_stored_in_a_big_matrix
+ &                        K_diago_perturbative, K_stored_in_a_big_matrix,&
+ &                        K_stored_in_a_blacs_matrix_ldiago
 #if defined _LDIAGO
- use interfaces,     ONLY:LDIAGO_driver
+ use interfaces,       ONLY:LDIAGO_driver
+ use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
+#endif
+#if defined _CHASE
+ use interfaces,     ONLY:CHASE_driver
+ use matrix,         ONLY:PAR_matrix
 #endif
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,VERIFY,OP_WR_CL,OP_RD_CL
@@ -85,6 +91,15 @@ subroutine K_diago_driver(iq,W,X_static)
  ! Mat becomes type(tMat) after source is pre-processed
  Mat                   :: slepc_mat
  PetscErrorCode        :: ierr
+#endif
+
+#if defined _LDIAGO
+ type(c_ptr)           :: mpicxt, diago_mat
+ integer(YDIAGO_INT)   :: blacs_blk_size 
+#endif
+
+#if defined _CHASE
+ type(PAR_matrix)      :: M_blacs
 #endif
  !
  ! Excitonic hamiltonian, residuals independent
@@ -226,11 +241,18 @@ subroutine K_diago_driver(iq,W,X_static)
        !
      endif
      !
+#if defined _CHASE
      if (l_chase) then
        !
-       call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,"DIAGO")
+       !call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,"DIAGO")
+       call K_stored_in_a_blacs_matrix_yambo(M_blacs)
        !
      endif
+#endif
+     !
+#if defined _LDIAGO
+     if (l_ldiago) call K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_blk_size )
+#endif
      !
 #if defined _SLEPC && !defined _NL
      if(l_slepc) then
@@ -281,7 +303,8 @@ subroutine K_diago_driver(iq,W,X_static)
          ! In coupling case, if the user requested n values,
          ! we compute the first min(n/2,BS_H_dim/2) positive and 
          ! min(n/2,BS_ham/2) negative eigvals and eigvectors, making it a total of min(n,BS_ham)
-         call LDIAGO_driver(i_BS_mat, BS_E, BS_V_right, neigs_this_cpu, neig_shift, &
+         call LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size,            &
+         &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
          &                   neigs_range=neigs_range, eigvals_range=eigvals_range,  &
          &                   BS_VL=BS_V_left,BS_overlap=BS_overlap,                 &
          &                   solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
@@ -309,10 +332,13 @@ subroutine K_diago_driver(iq,W,X_static)
          call LINEAR_ALGEBRA_driver(DIAGO,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right)
        endif
        !
+#if defined _CHASE
        if (l_chase) then
-         call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right,neig=BSS_n_eig)
+         !call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right,neig=BSS_n_eig)
+         call CHASE_driver(M_slk=M_blacs, V_left=BS_V_left, V_right=BS_V_right, N=BS_H_dim, E_cmpl=BS_E, neig=BSS_n_eig)
          neigs_this_cpu = BSS_n_eig
        endif
+#endif
        !
        YAMBO_FREE(BS_mat)
        ! OLD >
@@ -327,7 +353,8 @@ subroutine K_diago_driver(iq,W,X_static)
        !
 #if defined _LDIAGO
        if (l_ldiago) then
-         call LDIAGO_driver(i_BS_mat, BS_E, BS_V_right, neigs_this_cpu, neig_shift, &
+         call LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size,            &
+         &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
 &                           neigs_range=neigs_range, eigvals_range=eigvals_range,   &
 &                           solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
          BSS_n_eig = size(BS_E)
@@ -348,7 +375,8 @@ subroutine K_diago_driver(iq,W,X_static)
        !
 #if defined _CHASE
        if (l_chase) then
-         call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_real=BS_E_real,neig=BSS_n_eig,V_right=BS_V_right)
+         !call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_real=BS_E_real,neig=BSS_n_eig,V_right=BS_V_right)
+         call CHASE_driver(M_slk=M_blacs, V_right=BS_V_right, N=BS_K_dim(i_BS_mat), E_real=BS_E_real, neig=BSS_n_eig)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
