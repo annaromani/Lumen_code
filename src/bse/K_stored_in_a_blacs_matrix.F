@@ -99,9 +99,12 @@ end subroutine K_stored_in_a_blacs_matrix_ldiago
 #if defined _SCALAPACK
 subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
+ use pars,           ONLY:cZERO
  use matrix,         ONLY:PAR_matrix
+ use linear_algebra, ONLY:diago
  use interfaces,     ONLY:MATRIX_transfer
- use BS,             ONLY:BS_blk,BS_H_dim
+ use parallel_m,     ONLY:ncpu
+ use BS,             ONLY:BS_blk,BS_H_dim,BS_Blocks_symmetrize_K
  use y_memory_alloc
  !
  implicit none
@@ -112,16 +115,24 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  integer :: rows(2)
  integer :: cols(2)
+ !
+ call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
+ !
+ call BS_Blocks_symmetrize_K()
  ! 
  ! SLK matrix initialization before the Kernel loading
  !
  call MATRIX_init( "SLK", M_blacs, BS_H_dim, 1 )
+ M_blacs%kind="SLK"
  !
  rows=M_blacs%BLCrows
  cols=M_blacs%BLCcols
  YAMBO_ALLOC(M_blacs%blc,(rows(1):rows(2),cols(1):cols(2),1))
+ M_blacs%blc=cZERO
  ! 
  call MATRIX_transfer(M_out=M_blacs, M_bse= BS_blk )
+ !
+ call K_add_E_diagonal_slk(M_blacs)
  !
 end subroutine K_stored_in_a_blacs_matrix_yambo
 #endif

@@ -145,11 +145,10 @@ module interfaces
 
 
 #if defined _CHASE
-   subroutine CHASE_driver(N,M,M_slk,V_left,V_right,E_cmpl,E_real,neig)
+   subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
      use pars,          ONLY:SP
      use matrix,        ONLY:PAR_matrix
      integer,          optional :: N
-     complex(SP),      optional :: M(:,:)
      type(PAR_matrix), optional :: M_slk
      complex(SP),      optional :: V_left(:,:)
      complex(SP),      optional :: V_right(:,:)

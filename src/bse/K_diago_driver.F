@@ -41,10 +41,9 @@ subroutine K_diago_driver(iq,W,X_static)
  use linear_algebra, ONLY:DIAGO,DIAGX,CHASE
  use interfaces,     ONLY:K_diago_response_functions,LINEAR_ALGEBRA_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
- &                        K_diago_perturbative, K_stored_in_a_big_matrix,&
- &                        K_stored_in_a_blacs_matrix_ldiago
+ &                        K_diago_perturbative, K_stored_in_a_big_matrix 
 #if defined _LDIAGO
- use interfaces,       ONLY:LDIAGO_driver
+ use interfaces,       ONLY:LDIAGO_driver,K_stored_in_a_blacs_matrix_ldiago
  use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
 #endif
 #if defined _CHASE
@@ -228,26 +227,16 @@ subroutine K_diago_driver(iq,W,X_static)
        !
        call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_V_right,iq,"DIAGO")
        !
-       ! These line will be needed when the BS kernel will not be folded in BS_mat. But in order to do so
-       ! also linear_algebra_is_parallel must be swiched off when K is not hermitian.
-       !=========================
-       !
        !if (.not.linear_algebra_is_parallel) call K_stored_in_a_big_matrix(i_BS_mat,BS_V_right,iq,"DIAGO")
        !
 #if defined _SCALAPACK
-       ! Here maybe the name "K_blacs_matrix(iq)" would probably be more appropiate
-       !if (     linear_algebra_is_parallel) call BS_Blocks_symmetrize_K()
+       !if (     linear_algebra_is_parallel) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
 #endif
        !
      endif
      !
 #if defined _CHASE
-     if (l_chase) then
-       !
-       !call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,"DIAGO")
-       call K_stored_in_a_blacs_matrix_yambo(M_blacs)
-       !
-     endif
+     if (l_chase) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
 #endif
      !
 #if defined _LDIAGO

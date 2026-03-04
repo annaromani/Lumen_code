@@ -88,6 +88,6 @@ subroutine K_shell_matrix(i_BS_mat,slepc_mat)
  !
  ! Symmetrize BS_blk%mat to be used in K_multiply_by_V
  !
- if(.not.BSS_kernel_IO_on_the_fly) call BS_blocks_symmetrize_K()
+ if(.not.BSS_kernel_IO_on_the_fly) call BS_Blocks_symmetrize_K()
  !
 end subroutine K_shell_matrix
