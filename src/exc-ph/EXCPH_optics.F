@@ -65,7 +65,7 @@ subroutine EXCPH_optics(E,k,q,X,wv)
 &                         BSE_alloc,BSE_free,EXC_occ,alphaQ,q_DbGd,  &
 &                         RESIDUALS_and_EIGENVALUES_free, RESIDUALS_and_EIGENVALUES_alloc,EXC_E_DbGd,  &
 &                         l_DbGd_PH_only,l_DbGd_WEIGHTs,l_no_matrix_elements,Sat_alloc,Sat_free, &
-&                         min_EXC_E_DbGd,min_pos_E_DbGd
+&                         min_EXC_E_DbGd,min_pos_E_DbGd,DmType
  use ELPH,           ONLY:use_PH_DbGd
  use BS_solvers,     ONLY:BSS_alloc,BSS_free
  use BS,             ONLY:BSE_prop,BS_dip_size
@@ -113,6 +113,14 @@ subroutine EXCPH_optics(E,k,q,X,wv)
  !
  BSE_prop='abs'
  BS_dip_size=1
+ !
+ if(trim(DmType)=="Lorentzian") then
+   call msg('rs','Smearing type: Lorentzian')
+ elseif(trim(DmType)=="Gaussian") then
+   call msg('rs','Smearing type: Gaussian')
+ else
+   call error("Unknown smearing model")
+ endif
  !
  call K_observables()
  !
