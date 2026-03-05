@@ -67,8 +67,8 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !write(*,*) cols,ncols,N
  if (nbr/=nrows) call warning("There is a bug for nrows/=nbr. This run is affected")
  !
- allocate(Vtemp(nbr,2*nex))
- allocate(Etemp(2*nex))
+ allocate(Vtemp(nbr,neig+nex))
+ allocate(Etemp(neig+nex))
  !
  Vtemp = 0.0
  Etemp = 0.0
@@ -85,11 +85,13 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  ! call pzchase_init(N,neig,nex,m,nl,Mat%blc(:,:,Mat%I),m,Vtemp,Etemp,&
  !&                  nprow,npcol,grid_major,comm,init)
  !
- call pzchase_init_blockcyclic(N, neig, nex, nbr, nbr, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
+ call pzchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
 &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #else
- call pcchase_init_blockcyclic(N, neig, nex, nbr, nbr, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
-&                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
+ !call pcchase_init_blockcyclic(N, neig, nex, nrows, ncols, &
+ !&                  Mat%blc(rows(1):rows(2),cols(1):cols(2),1), nrows, Vtemp, Etemp,&
+ call pcchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
+ &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #endif
  call timing('ChASE_INIT',OPR='stop')
  !
