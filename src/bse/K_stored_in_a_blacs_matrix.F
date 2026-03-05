@@ -102,7 +102,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  use pars,           ONLY:cZERO
  use matrix,         ONLY:PAR_matrix
  use linear_algebra, ONLY:diago
- !use interfaces,     ONLY:MATRIX_transfer
+ use interfaces,     ONLY:MATRIX_transfer
  use timing_m,       ONLY:timing
  use parallel_m,     ONLY:ncpu
  use BS,             ONLY:BS_blk,BS_H_dim,BS_Blocks_symmetrize_K
@@ -125,17 +125,20 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  ! 
  ! SLK matrix initialization before the Kernel loading
  !
- !call MATRIX_init( "SLK", M_blacs, BS_H_dim, 1 )
- !M_blacs%kind="SLK"
- call SLK_MATRIX_init( M_blacs, BS_H_dim, 1 )
- !
+ ! WORKS always
+ call MATRIX_init( "SLK", M_blacs, BS_H_dim, 1 )
+ M_blacs%kind="SLK"
+ ! WORKS only for ncpu>1
+ !call SLK_MATRIX_init( M_blacs, BS_H_dim, 1 )
  rows=M_blacs%BLCrows
  cols=M_blacs%BLCcols
  YAMBO_ALLOC(M_blacs%blc,(rows(1):rows(2),cols(1):cols(2),1))
  M_blacs%blc=cZERO
  ! 
- !call MATRIX_transfer(M_out=M_blacs, M_bse= BS_blk )
- call MATRIX_BSE_to_PAR(BS_blk,M_blacs)
+ ! WORKS always
+ call MATRIX_transfer(M_out=M_blacs, M_bse= BS_blk )
+ ! WORKS only for ncpu>1
+ !call MATRIX_BSE_to_PAR(BS_blk,M_blacs)
  !
  call K_add_E_diagonal_slk(M_blacs)
  !
