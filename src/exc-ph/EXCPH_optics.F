@@ -119,7 +119,6 @@ subroutine EXCPH_optics(E,k,q,X,wv)
    Smearing_type=LORENTZIAN
  elseif(trim(DmType)=="Gaussian") then
    call msg('rs','Smearing type: Gaussian')
-   call warning('Gaussian smearing only implemented for the imaginary part')
    Smearing_type=GAUSSIAN
  else
    call error("Unknown smearing model")
