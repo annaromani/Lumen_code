@@ -55,7 +55,7 @@ module EXCPH
  ! Smearing function 
  character(schlen)        :: DmType
  integer,parameter        :: LORENTZIAN=1
- integer,parameter        :: GUASSIAN=2
+ integer,parameter        :: GAUSSIAN=2
  integer                  :: Smearing_type
  !
  ! L_in and L_out paths
