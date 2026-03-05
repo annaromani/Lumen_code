@@ -163,22 +163,24 @@ subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
        !
        if ((l_BS_optics_sp_up .and. i_sp_pol_c == 2) .or. &
                (l_BS_optics_sp_dw .and. i_sp_pol_c == 1) ) then
-               BS_T_grp(i_T_g)%dipoles_opt(:BS_dip_size,i_T,:) = 0.0
-               write(*,*) "INSIDE K DIPOLES"
+               !Case BSE only from spin-up or spin-down
+               DIP_projected(:)=cZERO
        else
-       if(iq==1.and.i_G_shift==1) then
-         call DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol_c,trim(DIP_kind),Xk,DIP_bare)
-         DIP_expanded=-cI*DIP_bare
-         do i_dip=1,BS_dip_size
-           DIP_projected(i_dip)=dot_product(BS_field_direction(:,i_dip),DIP_expanded)
-         enddo
-         ! This is needed to have something consistent with the definiion from scatter_Bamp at finite-q
-         if (trim(global_gauge)=="length") DIP_projected=DIP_projected*q0_def_norm
-       else
-         if(trim(global_gauge)=="length")   call scatter_Bamp(BSE_scatt)
-         if(trim(global_gauge)=="velocity") call scatter_Bamp_using_the_gradient(BSE_scatt,"o")
-         DIP_projected(1)=-conjg(BSE_scatt%rhotw(i_G_shift))
-       endif
+         !BSE subroutines
+         if(iq==1.and.i_G_shift==1) then
+           call DIPOLE_rotate(ic,iv,ik_bz,i_sp_pol_c,trim(DIP_kind),Xk,DIP_bare)
+           DIP_expanded=-cI*DIP_bare
+           do i_dip=1,BS_dip_size
+             DIP_projected(i_dip)=dot_product(BS_field_direction(:,i_dip),DIP_expanded)
+           enddo
+           ! This is needed to have something consistent with the definiion from scatter_Bamp at finite-q
+           if (trim(global_gauge)=="length") DIP_projected=DIP_projected*q0_def_norm
+         else
+           if(trim(global_gauge)=="length")   call scatter_Bamp(BSE_scatt)
+           if(trim(global_gauge)=="velocity") call scatter_Bamp_using_the_gradient(BSE_scatt,"o")
+           DIP_projected(1)=-conjg(BSE_scatt%rhotw(i_G_shift))
+         endif
+       endif !l_BS_optics_sp* ... 
        !
        BS_T_grp(i_T_g)%dipoles_opt(:BS_dip_size,i_T,1)=conjg(DIP_projected(:BS_dip_size))
        if (BS_K_coupling.and.l_BS_ares_from_res.and.iq==1) then
@@ -188,7 +190,6 @@ subroutine K_dipoles(iq,Ken,Xk,q,X_oscillators,Dip)
          BS_T_grp(i_T_g)%dipoles_opt(:BS_dip_size,i_T,2)=DIP_projected(:BS_dip_size)
        endif
        !
-      endif !l_BS_optics_sp* ... 
      !
      endif
      !

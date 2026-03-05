@@ -18,7 +18,7 @@ subroutine K_components_folded_in_serial_arrays(iq)
 &                         BSS_dipoles_opt,BSS_eh_table,BSS_eh_E,BSS_eh_f,BSS_eh_f_RES,BSS_eh_W,BSS_eh_Z,BSS_alloc
  use BS,             ONLY:BS_K_dim,BS_nT_grps,BS_T_grp,BS_K_coupling,BS_perturbative_SOC,&
 &                         BS_n_eh_spaces,l_BS_optics,l_BS_magnons,l_BS_dichroism,l_BS_mespin,l_BS_meorb,&
-&                         l_BS_photolum,BS_dip_size,BS_H_dim,l_BS_ares_from_res,l_BS_optics_sp_up,l_BS_optics_sp_dw
+&                         l_BS_photolum,BS_dip_size,BS_H_dim,l_BS_ares_from_res
  use timing_m,       ONLY:timing
  use LIVE_t,         ONLY:live_timing
  use MAGNONS,        ONLY:BSS_dipoles_magn,BSS_MAGN_alloc
@@ -103,15 +103,7 @@ subroutine K_components_folded_in_serial_arrays(iq)
        if (allocated(BS_T_grp(i_g)%W)) BSS_eh_W(H_pos)=BS_T_grp(i_g)%W(i_Tr)*ares_fac
        if (BS_perturbative_SOC) BSS_eh_E_SOC_corr(:,H_pos)=BS_T_grp(i_g)%E_SOC_corr(:,i_Tr)*ares_fac
        !
-       !if (l_BS_optics) BSS_dipoles_opt(:,H_pos)=BS_T_grp(i_g)%dipoles_opt(:,i_Tr,i_res_ares_solver)
-       if (l_BS_optics) then
-            if ((l_BS_optics_sp_up .and. i_sp_c == 2) .or. &
-                (l_BS_optics_sp_dw .and. i_sp_c == 1) ) then
-                    BSS_dipoles_opt(:,H_pos) = 0
-            else
-                BSS_dipoles_opt(:,H_pos) = BS_T_grp(i_g)%dipoles_opt(:,i_Tr,i_res_ares_solver)
-            end if
-       end if
+       if (l_BS_optics) BSS_dipoles_opt(:,H_pos)=BS_T_grp(i_g)%dipoles_opt(:,i_Tr,i_res_ares_solver)
        !
        if (l_BS_magnons) BSS_dipoles_magn(:,H_pos)=BS_T_grp(i_g)%dipoles_mag(:,i_Tr,i_res_ares_solver)
        !

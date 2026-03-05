@@ -37,8 +37,6 @@ module BS
  logical :: BS_perturbative_SOC=.FALSE.
  logical :: BS_K_has_been_calculated_loaded=.FALSE.
  logical :: BSK_IO_sum_value
- logical :: l_BS_optics_sp_up=.FALSE.
- logical :: l_BS_optics_sp_dw=.FALSE.
  character(schlen) :: BSE_L_kind
  character(schlen) :: BSE_disk_IO
  character(schlen) :: BSE_mode
@@ -67,6 +65,8 @@ module BS
  logical :: l_BS_magnons
  logical :: l_BS_dichroism
  logical :: l_BS_optics
+ logical :: l_BS_optics_sp_up=.FALSE.
+ logical :: l_BS_optics_sp_dw=.FALSE.
  logical :: l_BS_esort
  logical :: l_BS_esort_indx
  logical :: l_BS_mespin
