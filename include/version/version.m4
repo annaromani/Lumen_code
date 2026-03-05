@@ -2,8 +2,8 @@ AC_INIT(Lumen, 2.0.0, https://gitlab.com/lumen-code/lumen/-/issues, lumen ,www.l
 SVERSION="5"
 SSUBVERSION="3"
 SPATCHLEVEL="0"
-SREVISION="27138"
-SHASH="cbbe3dad63"
+SREVISION="27139"
+SHASH="aa7cadc91f"
 AC_SUBST(SVERSION)
 AC_SUBST(SSUBVERSION)
 AC_SUBST(SPATCHLEVEL)
