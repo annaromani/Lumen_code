@@ -16,7 +16,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use BS_solvers,     ONLY:BSS_slepc_tol
- use parallel_m,     ONLY:PAR_COM_WORLD,MPI_COMM_WORLD
+ use parallel_m,     ONLY:PAR_COM_WORLD,MPI_COMM_WORLD,myid
  use parallel_int,   ONLY:PP_redux_wait
  use matrix,         ONLY:PAR_matrix
  use timing_m,       ONLY:timing
@@ -30,8 +30,8 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  complex(SP),      intent(out)  :: V_blc(N,neig)
  real(SP),         intent(out)  :: E(neig)
 
- integer   :: i,j,k,nr,nb,nprow,npcol,m,myrow,mycol,nl,rows(2)
- integer   :: nex, ierr, deg
+ integer   :: i,j,k,nr,nbr,nbc,nprow,npcol,myrow,mycol,ncols,nrows,rows(2),cols(2)
+ integer   :: nex, ierr, deg, nmax, nelem
  character :: mode, opt, qr, grid_major
  !
  character(64)     :: subname="PARALLEL_HERMITIAN_chase"
@@ -43,8 +43,6 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
 
  call timing('PARALLEL_HERMITIAN_chase',OPR='start')
  !
- nex = neig
- !
  deg = 20
  mode = 'R'
  opt = 'S'
@@ -55,13 +53,22 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  npcol = SLK_ORTHO%grid(2)
  myrow = SLK_ORTHO%coordinate(1)
  mycol = SLK_ORTHO%coordinate(2)
- nb    = Mat%BLCnrows
- m     = Mat%nrows
- nl    = Mat%ncols
- rows  = Mat%BLCrows
+ nbr    = Mat%BLCnrows
+ nbc    = Mat%BLCncols
+ nrows = Mat%nrows
+ ncols = Mat%ncols
+ rows  = Mat%rows
+ cols  = Mat%cols
  !
- allocate(Vtemp(m,neig+nex))
- allocate(Etemp(neig+nex))
+ !nex = min(neig,ncols)
+ nex = neig
+ !
+ !write(*,*) rows,nrows,N
+ !write(*,*) cols,ncols,N
+ if (nbr/=nrows) call warning("There is a bug for nrows/=nbr. This run is affected")
+ !
+ allocate(Vtemp(nbr,2*nex))
+ allocate(Etemp(2*nex))
  !
  Vtemp = 0.0
  Etemp = 0.0
@@ -78,10 +85,10 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  ! call pzchase_init(N,neig,nex,m,nl,Mat%blc(:,:,Mat%I),m,Vtemp,Etemp,&
  !&                  nprow,npcol,grid_major,comm,init)
  !
- call pzchase_init_blockcyclic(N, neig, nex, nb, nb, Mat%blc(:,:,1), m, Vtemp, Etemp,&
+ call pzchase_init_blockcyclic(N, neig, nex, nbr, nbr, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
 &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #else
- call pcchase_init_blockcyclic(N, neig, nex, nb, nb, Mat%blc(:,:,1), m, Vtemp, Etemp,&
+ call pcchase_init_blockcyclic(N, neig, nex, nbr, nbr, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
 &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #endif
  call timing('ChASE_INIT',OPR='stop')
@@ -105,12 +112,13 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  call timing('ChASE_Reorganize',OPR='start')
  !
  E(1:neig) = Etemp(1:neig)
+ !if(myid==0) write(*,*) E
  !
  V_blc=cZERO
- if (neig > nl * mycol) then
-   do i = 1,min(n,neig-n*mycol)
-     V_blc(rows(1):rows(2),i) = Vtemp(:, nl * mycol + i)
-   enddo
+ if (neig >= cols(1)) then
+   nmax=min(neig,cols(2))
+   nelem=nmax-cols(1)+1
+   V_blc(rows(1):rows(2),cols(1):nmax) = Vtemp(:nrows,cols(1):nmax)
  endif
  call PP_redux_wait(V_blc)
  ! 
