@@ -60,14 +60,11 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  rows  = Mat%rows
  cols  = Mat%cols
  !
- !nex = min(neig,ncols)
  nex = neig
  !
- !write(*,*) rows,nrows,N
- !write(*,*) cols,ncols,N
  if (nbr/=nrows) call warning("There is a bug for nrows/=nbr. This run is affected")
  !
- allocate(Vtemp(nbr,neig+nex))
+ allocate(Vtemp(nrows,neig+nex))
  allocate(Etemp(neig+nex))
  !
  Vtemp = 0.0
