@@ -26,11 +26,12 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  use BS,           ONLY:BSE_L_kind,BSE_mode,BS_K_is_ALDA,BS_dip_size,l_BSE_minimize_memory,BS_perturbative_SOC,&
 &                       BS_perturbative_SOC,l_BS_magnons,l_BS_photolum,BSK_IO_mode,l_BSE_kernel_full,&
 &                       BS_cpl_K_exchange,BS_n_g_exch,BS_res_K_exchange,BS_K_coupling,BS_res_ares_n_mat,&
-&                       BS_cpl_K_corr,BS_res_K_corr,&
+&                       BS_cpl_K_corr,BS_res_K_corr,BSE_disk_IO,BSK_IO_shape,&
 &                       BS_n_eh_spaces,l_BS_ares_from_res,BS_bands,BS_K_anti_resonant,l_BS_res_from_E
  use TDDFT,        ONLY:FXC_is_retarded,FXC_n_g_corr,l_Fxc_from_Vxc
  use drivers,      ONLY:l_col_cut,l_rpa_IP,l_alda_fxc,l_bs_fxc
  use D_lattice,    ONLY:i_time_rev,i_space_inv,l_3D
+ use IO_m,         ONLY:DBs_IO_control_string,io_BS_K
 #if defined _RT
  use drivers,      ONLY:l_rt_carriers_in_use
  use RT_control,   ONLY:NEQ_Kernel,EQ_Transitions,EQ_NoOcc,ALL_NoOcc,NEQ_Residuals,RT_BSE_Occ_Mode
@@ -316,6 +317,22 @@ subroutine K_driver_init(what,iq,Ken,Xk)
  &          .or. ((Ken%FG%nb>=BS_bands(2)) .and. (index(BSS_mode,'h')/=0))
  !
  call parser('BSS_FKE',BSS_uses_FKE)
+ !
+ ! I/O bse
+ ! ==============
+ if(index(BSE_disk_IO,"high")>0) then
+   BSK_IO_mode=BSK_IO_shape//" write_all_steps"
+ else if(index(BSE_disk_IO,"medium")>0) then
+   BSK_IO_mode=BSK_IO_shape
+ else if(index(BSE_disk_IO,"low")>0) then
+   BSK_IO_mode=BSK_IO_shape//" norestart"
+ else if(index(BSE_disk_IO,"none")>0) then
+   BSK_IO_mode="off"
+   DBs_IO_control_string=DBs_IO_control_string//" BS"
+   io_BS_K=.FALSE.
+ else
+   call error("Unknon BSE disk mode! ")
+ endif
  !
  ! I/O structure
  !===============
