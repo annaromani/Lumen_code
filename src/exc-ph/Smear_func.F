@@ -21,8 +21,8 @@ function Smear_func(W,pole)
  ! Working Space
  !     
  complex(SP) :: Smear_func
- real(SP)    :: real_Wp,imag_Wp
- complex(DP) :: daw
+ real(SP)    :: real_Wp,imag_Wp,A
+ complex(DP), external :: daw
  !
  if(Smearing_type==LORENTZIAN) then
    !
@@ -34,8 +34,9 @@ function Smear_func(W,pole)
    imag_Wp=aimag(W-pole)
    !
    ! Full Gaussian real and imaginart compatible with KK-relation (need Dawson function)
-!   Smear_func=2._SP*daw(dble(real_Wp))/(aimag_Wp*sqrt(2._SP))+cI*sqrt(pi)*(exp(-real_Wp**2/(2._SP*aimag_Wp**2)))
-   Smear_func=-cI/sqrt(imag_Wp**2)*(exp(-real_Wp**2/(2._SP*imag_Wp**2)))
+   A=-1.0/sqrt(imag_Wp**2)
+   Smear_func=2._SP*A/sqrt(pi)*real(daw(dble(-real_Wp/(sqrt(2._DP)*imag_Wp))))
+   Smear_func=Smear_func+A*cI*(exp(-real_Wp**2/(2._SP*imag_Wp**2)))
    !     
  endif
  !  
