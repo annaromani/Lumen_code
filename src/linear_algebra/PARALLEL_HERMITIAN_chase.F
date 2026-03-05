@@ -78,7 +78,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  ! 
  call mpi_barrier(MPI_COMM_WORLD,ierr)
  !
- call timing('ChASE_INIT',OPR='start')
+ call timing('ChASE init',OPR='start')
  !
 #if defined _DOUBLE
  !
@@ -86,14 +86,14 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !&                  nprow,npcol,grid_major,comm,init)
  !
  call pzchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
-&                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
+ &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #else
  !call pcchase_init_blockcyclic(N, neig, nex, nrows, ncols, &
  !&                  Mat%blc(rows(1):rows(2),cols(1):cols(2),1), nrows, Vtemp, Etemp,&
  call pcchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
  &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
 #endif
- call timing('ChASE_INIT',OPR='stop')
+ call timing('ChASE init',OPR='stop')
  !
  if (ierr/=1) call warning("ChASE did not init properly")
 
@@ -111,10 +111,9 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !
  if (ierr/=0) call warning("ChASE did not finalize properly")
  !
- call timing('ChASE_Reorganize',OPR='start')
+ call timing('ChASE redux',OPR='start')
  !
  E(1:neig) = Etemp(1:neig)
- !if(myid==0) write(*,*) E
  !
  V_blc=cZERO
  if (neig >= cols(1)) then
@@ -124,7 +123,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  endif
  call PP_redux_wait(V_blc)
  ! 
- call timing('ChASE_Reorganize',OPR='stop')
+ call timing('ChASE redux',OPR='stop')
  !
  deallocate(Etemp)
  deallocate(Vtemp)
