@@ -16,8 +16,7 @@ AC_CONFIG_FILES([lib/ldiago/make_ldiago.inc:lib/ldiago/make_ldiago.inc.in])
 compile_ldiago="no"
 def_ldiago=""
 
-if test "$def_scalapack" = "-D_SCALAPACK" && test "x$def_chase" = "x" &&
-   test "$enable_ldiago" = "yes" ; then
+if test "$def_scalapack" = "-D_SCALAPACK" && test "$enable_ldiago" = "yes" ; then
 
   compile_ldiago="yes"
   def_ldiago="-D_LDIAGO"

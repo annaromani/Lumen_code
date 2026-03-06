@@ -145,7 +145,10 @@ subroutine K_diago_driver(iq,W,X_static)
 #endif
  !
  l_diagx     = index(BSS_mode,'x')/=0
+#if defined _CHASE
  l_chase     = index(BSS_mode,'c')/=0
+#endif
+ !
 #if defined _LDIAGO
  l_diago     = index(BSS_mode,'o')/=0.or. (     l_BS_photolum.and.(index(BSS_mode,'d')/=0))
  l_ldiago    = index(BSS_mode,'d')/=0.and. .not.l_BS_photolum
