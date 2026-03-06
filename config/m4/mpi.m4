@@ -49,6 +49,16 @@ fi
 #
 if test "$mpibuild" = "yes"; then
   #
+  # MPICXX
+  #
+  AC_LANG_PUSH(C++)
+  ACX_MPI([],AC_MSG_WARN([could not compile a C++ mpi test program.]))
+  AC_LANG_POP(C++)
+  #
+fi
+#
+if test "$mpibuild" = "yes"; then
+  #
   def_mpi="-D_MPI"
   ACX_GET_MPI_KIND()
   MPI_PATH=`which $CC |sed "s/bin\/$CC//g"`
