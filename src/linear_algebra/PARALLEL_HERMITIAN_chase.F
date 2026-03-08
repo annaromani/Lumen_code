@@ -16,8 +16,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use BS_solvers,     ONLY:BSS_slepc_tol
- use parallel_m,     ONLY:PAR_COM_WORLD,MPI_COMM_WORLD,myid
- use parallel_int,   ONLY:PP_redux_wait
+ use parallel_m,     ONLY:myid,MPI_COMM_WORLD
  use matrix,         ONLY:PAR_matrix
  use timing_m,       ONLY:timing
  use chase_diag
@@ -32,6 +31,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
 
  integer   :: i,j,k,nr,nbr,nbc,nprow,npcol,myrow,mycol,ncols,nrows,rows(2),cols(2)
  integer   :: nex, ierr, deg, nmax, nelem
+ integer   :: comm
  character :: mode, opt, qr, grid_major
  !
  character(64)     :: subname="PARALLEL_HERMITIAN_chase"
@@ -40,6 +40,9 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !
  integer :: myrank_intra, myrank_inter, intra_size, inter_size,&
 &           myrank_slk_ortho_comm, slk_ortho_comm_size
+
+ V_blc=cZERO
+ if (SLK_ORTHO%coordinate(1)==-1) return
 
  call timing('PARALLEL_HERMITIAN_chase',OPR='start')
  !
@@ -53,16 +56,15 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  npcol = SLK_ORTHO%grid(2)
  myrow = SLK_ORTHO%coordinate(1)
  mycol = SLK_ORTHO%coordinate(2)
- nbr    = Mat%BLCnrows
- nbc    = Mat%BLCncols
+ nbr   = Mat%BLCnrows
+ nbc   = Mat%BLCncols
  nrows = Mat%nrows
  ncols = Mat%ncols
  rows  = Mat%rows
  cols  = Mat%cols
+ comm  = SLK_ORTHO%COMM
  !
  nex = neig
- !
- if (nbr/=nrows) call warning("There is a bug for nrows/=nbr. This run is affected")
  !
  allocate(Vtemp(nrows,neig+nex))
  allocate(Etemp(neig+nex))
@@ -70,10 +72,18 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  Vtemp = 0.0
  Etemp = 0.0
  ! 
- call mpi_comm_rank(MPI_COMM_WORLD,myrank_slk_ortho_comm,ierr)
- call mpi_comm_size(MPI_COMM_WORLD,slk_ortho_comm_size  ,ierr)
+ call mpi_comm_rank(comm,myrank_slk_ortho_comm,ierr)
+ call mpi_comm_size(comm,slk_ortho_comm_size  ,ierr)
+ !write(*,*) "mpi comm out ",myrank_slk_ortho_comm,slk_ortho_comm_size
  ! 
- call mpi_barrier(MPI_COMM_WORLD,ierr)
+ call mpi_barrier(comm,ierr)
+ !write(*,*) "mpi barrier overcome ",myrank_slk_ortho_comm,myid
+ !write(*,*) myid,comm,MPI_COMM_WORLD,rows,cols,nprow,npcol
+ !write(100+myid,*) rows,cols,comm
+ !write(100+myid,*) N, neig, nex, nbr, nbc, nprow, npcol
+ !do i=cols(1),cols(2)
+ !  write(100+myid,*) Mat%blc(rows(1):rows(2),i,1)
+ !enddo
  !
  call timing('ChASE init',OPR='start')
  !
@@ -83,15 +93,16 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !&                  nprow,npcol,grid_major,comm,init)
  !
  call pzchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
- &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
+ &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #else
  !call pcchase_init_blockcyclic(N, neig, nex, nrows, ncols, &
  !&                  Mat%blc(rows(1):rows(2),cols(1):cols(2),1), nrows, Vtemp, Etemp,&
  call pcchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
- &                              nprow, npcol, grid_major, 0, 0, MPI_COMM_WORLD, ierr)
+ &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #endif
  call timing('ChASE init',OPR='stop')
  !
+ !write(*,*) "init block_cyclic done "
  if (ierr/=1) call warning("ChASE did not init properly")
 
 #if defined _DOUBLE
@@ -112,13 +123,11 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !
  E(1:neig) = Etemp(1:neig)
  !
- V_blc=cZERO
  if (neig >= cols(1)) then
    nmax=min(neig,cols(2))
    nelem=nmax-cols(1)+1
    V_blc(rows(1):rows(2),cols(1):nmax) = Vtemp(:nrows,cols(1):nmax)
  endif
- call PP_redux_wait(V_blc)
  ! 
  call timing('ChASE redux',OPR='stop')
  !

@@ -14,8 +14,9 @@ subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
  use pars,          ONLY:SP,cZERO
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
  use linear_algebra,ONLY:USE_LK,USE_SLK
- use parallel_m,    ONLY:ncpu,myid
+ use parallel_m,    ONLY:ncpu
  use interfaces,    ONLY:MATRIX_transfer
+ use parallel_int,  ONLY:PP_redux_wait,PP_wait
 #if defined _SCALAPACK
  use SLK_m,         ONLY:SLK_ORTHO
 #endif
@@ -81,6 +82,13 @@ subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
      !
      !... Hermitian case
      call PARALLEL_HERMITIAN_chase( M_slk, V_right, N, E_real, neig)
+     !
+     if (ncpu>SLK_ORTHO%n_CPU) then
+       call PP_wait()
+       call PP_redux_wait(V_right)
+       call PP_redux_wait(E_real)
+       E_real=E_real/real(SLK_ORTHO%n_CPU,SP)
+     endif
      !
    endif
    !

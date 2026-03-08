@@ -285,7 +285,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      ! Diagonalization of the excitonic hamiltonian
      !==============================================
-     if(l_diago.or.l_diagx.or.l_chase) call live_timing('BSK diagonalize',1)
+     if(l_diago.or.l_diagx.or.l_chase) call live_timing('BSK '//trim(Solver),1)
      ! 
      if (K_is_not_hermitian) then !coupling
        !
@@ -787,10 +787,11 @@ subroutine K_diago_driver(iq,W,X_static)
        call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,CPU_structure(4)%nCPU_lin_algebra_DIAGO)
      endif
      !
-     ! LA for chase inteface
-     if (l_chase) then 
-       call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
-     endif
+     ! LA for chase inteface. For now this is done inside
+     ! K_stored_in_a_blacs_matrix.F
+     !if (l_chase) then 
+     !  call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
+     !endif
      !
    end subroutine K_local_init
    !
