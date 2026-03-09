@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
+subroutine CHASE_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
  !
  use pars,          ONLY:SP,cZERO
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
@@ -24,13 +24,13 @@ subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
  !
  implicit none
  !
- integer,          optional :: N
- type(PAR_matrix), optional :: M_slk
- complex(SP),      optional :: V_left(:,:)
- complex(SP),      optional :: V_right(:,:)
- real(SP),         optional :: E_real(:)
- complex(SP),      optional :: E_cmpl(:)
- integer,          optional :: neig
+ integer, intent(in)           :: N
+ integer, intent(in)           :: neig
+ type(PAR_matrix), intent(in)  :: M_slk
+ complex(SP),      intent(out) :: V_right(N,neig)
+ complex(SP),      intent(out), optional :: V_left(N,neig)
+ real(SP),         intent(out), optional :: E_real(neig)
+ complex(SP),      intent(out), optional :: E_cmpl(neig)
  !
  ! Workspace
  !
@@ -83,9 +83,9 @@ subroutine CHASE_driver(N,M_slk,V_left,V_right,E_cmpl,E_real,neig)
      !... Hermitian case
      call PARALLEL_HERMITIAN_chase( M_slk, V_right, N, E_real, neig)
      !
+     call PP_redux_wait(V_right)
+     !
      if (ncpu>SLK_ORTHO%n_CPU) then
-       call PP_wait()
-       call PP_redux_wait(V_right)
        call PP_redux_wait(E_real)
        E_real=E_real/real(SLK_ORTHO%n_CPU,SP)
      endif

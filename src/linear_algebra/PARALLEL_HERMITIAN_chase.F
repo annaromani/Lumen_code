@@ -11,7 +11,7 @@
 !
 subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  !
- use pars,           ONLY:SP,cZERO
+ use pars,           ONLY:SP,cZERO,rZERO
  use parallel_int,   ONLY:PP_redux_wait
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
  use linear_algebra, ONLY:LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
@@ -42,6 +42,7 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
 &           myrank_slk_ortho_comm, slk_ortho_comm_size
 
  V_blc=cZERO
+ E=rZERO
  if (SLK_ORTHO%coordinate(1)==-1) return
 
  call timing('PARALLEL_HERMITIAN_chase',OPR='start')
@@ -74,35 +75,20 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  ! 
  call mpi_comm_rank(comm,myrank_slk_ortho_comm,ierr)
  call mpi_comm_size(comm,slk_ortho_comm_size  ,ierr)
- !write(*,*) "mpi comm out ",myrank_slk_ortho_comm,slk_ortho_comm_size
  ! 
  call mpi_barrier(comm,ierr)
- !write(*,*) "mpi barrier overcome ",myrank_slk_ortho_comm,myid
- !write(*,*) myid,comm,MPI_COMM_WORLD,rows,cols,nprow,npcol
- !write(100+myid,*) rows,cols,comm
- !write(100+myid,*) N, neig, nex, nbr, nbc, nprow, npcol
- !do i=cols(1),cols(2)
- !  write(100+myid,*) Mat%blc(rows(1):rows(2),i,1)
- !enddo
  !
  call timing('ChASE init',OPR='start')
  !
 #if defined _DOUBLE
- !
- ! call pzchase_init(N,neig,nex,m,nl,Mat%blc(:,:,Mat%I),m,Vtemp,Etemp,&
- !&                  nprow,npcol,grid_major,comm,init)
- !
  call pzchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
  &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #else
- !call pcchase_init_blockcyclic(N, neig, nex, nrows, ncols, &
- !&                  Mat%blc(rows(1):rows(2),cols(1):cols(2),1), nrows, Vtemp, Etemp,&
  call pcchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
  &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
 #endif
  call timing('ChASE init',OPR='stop')
  !
- !write(*,*) "init block_cyclic done "
  if (ierr/=1) call warning("ChASE did not init properly")
 
 #if defined _DOUBLE

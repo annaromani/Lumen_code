@@ -326,8 +326,7 @@ subroutine K_diago_driver(iq,W,X_static)
        !
 #if defined _CHASE
        if (l_chase) then
-         !call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right,neig=BSS_n_eig)
-         call CHASE_driver(M_slk=M_blacs, V_left=BS_V_left, V_right=BS_V_right, N=BS_H_dim, E_cmpl=BS_E, neig=BSS_n_eig)
+         call CHASE_driver(BS_H_dim,BSS_n_eig,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
          neigs_this_cpu = BSS_n_eig
        endif
 #endif
@@ -367,8 +366,7 @@ subroutine K_diago_driver(iq,W,X_static)
        !
 #if defined _CHASE
        if (l_chase) then
-         !call LINEAR_ALGEBRA_driver(CHASE,M=BS_mat,E_real=BS_E_real,neig=BSS_n_eig,V_right=BS_V_right)
-         call CHASE_driver(M_slk=M_blacs, V_right=BS_V_right, N=BS_K_dim(i_BS_mat), E_real=BS_E_real, neig=BSS_n_eig)
+         call CHASE_driver(BS_K_dim(i_BS_mat),BSS_n_eig,M_blacs,BS_V_right,E_real=BS_E_real)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
