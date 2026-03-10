@@ -20,6 +20,7 @@ make        = @MAKE@
 ar          = @AR@
 arflags     = @AR_FLAGS@
 cc          = @CC@
+cxx         = @CXX@
 cflags      = @CFLAGS@ 
 cpp         = @CPP@
 cppflags    = @CPPFLAGS_yambo@ 

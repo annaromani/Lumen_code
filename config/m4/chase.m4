@@ -6,7 +6,8 @@ AC_ARG_WITH(chase_libdir,AS_HELP_STRING([--with-chase-libdir=<path>],[Path to th
 AC_ARG_WITH(chase_includedir,AS_HELP_STRING([--with-chase-includedir=<path>],[Path to the ChASE include directory],[32]))
 
 AC_LANG_PUSH(C++)
-AC_CHECK_LIB(mpi_cxx, _init,  [use_libmpi_cxx="yes";   ],[use_libmpi_cxx="no";   ],[])
+AC_CHECK_LIB(mpi_cxx, _init,  [use_libmpi_cxx="yes"; ],[use_libmpi_cxx="no";   ],[])
+#AC_CHECK_LIB(nccl, nccl_init, [use_libnccl="yes"; ], [use_libnccl="no"; ])
 AC_LANG_POP(C++)
 
 compile_chase="no"
@@ -60,9 +61,11 @@ then
         if test "$use_libmpi_cxx" = "yes"; then
           AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lmpi_cxx "])
         fi
-	
-        AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  "])
-        #-lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl
+
+        if test "$with_cuda_runtime" != "none"; then	
+          AC_SUBST([CHASE_LIBS],["${CHASE_LIBS} -lchase_cuda_kernels"])
+          #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  -lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl"])
+        fi
         #LIBS="${LIBS} ${CHASE_LIBS} "
         #INCS="${INCS} ${CHASE_INCS} "
 

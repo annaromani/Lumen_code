@@ -15361,6 +15361,7 @@ else case e in #(
 esac
 fi
 
+#AC_CHECK_LIB(nccl, nccl_init, [use_libnccl="yes"; ], [use_libnccl="no"; ])
 ac_ext=${ac_fc_srcext-f}
 ac_compile='$FC -c $FCFLAGS $ac_fcflags_srcext conftest.$ac_ext >&5'
 ac_link='$FC -o conftest$ac_exeext $FCFLAGS $LDFLAGS $ac_fcflags_srcext conftest.$ac_ext $LIBS >&5'
@@ -15483,9 +15484,11 @@ fi
 
         fi
 
-        CHASE_LIBS="${CHASE_LIBS}  "
+        if test "$with_cuda_runtime" != "none"; then
+          CHASE_LIBS="${CHASE_LIBS} -lchase_cuda_kernels"
 
-        #-lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl
+          #AC_SUBST([CHASE_LIBS],["${CHASE_LIBS}  -lcudart -lcublas -lcusolver -lcudart -lcurand -lnccl"])
+        fi
         #LIBS="${LIBS} ${CHASE_LIBS} "
         #INCS="${INCS} ${CHASE_INCS} "
 
