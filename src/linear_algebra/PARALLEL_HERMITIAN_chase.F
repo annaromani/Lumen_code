@@ -70,8 +70,8 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  allocate(Vtemp(nrows,neig+nex))
  allocate(Etemp(neig+nex))
  !
- Vtemp = 0.0
- Etemp = 0.0
+ Vtemp = cZERO
+ Etemp = rZERO
  ! 
  call mpi_comm_rank(comm,myrank_slk_ortho_comm,ierr)
  call mpi_comm_size(comm,slk_ortho_comm_size  ,ierr)
