@@ -65,7 +65,7 @@ subroutine RT_INV_step_accurate(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  !*******************************************************
  !U_k=Ho_plus_Sigma(:,:,ik,i_sp_pol)
- !call SERIAL_HERMITIAN_diagonalization(RT_nbands,U_k,En)
+ !call SERIAL_HERMITIAN_diago(RT_nbands,U_k,En)
  !!
  !! Generate the matrix  
  !!
