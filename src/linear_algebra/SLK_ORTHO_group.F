@@ -47,7 +47,8 @@ subroutine SLK_ORTHO_group( ORTHO, POOL, nproc_try_in, comm_all )
  !
  !  find the square closer (but lower) to nproc_try
  !
- CALL grid2d_dims( 'S', nproc_try, ORTHO%grid(1), ORTHO%grid(2) )
+ !CALL grid2d_dims( 'S', nproc_try, ORTHO%grid(1), ORTHO%grid(2) )
+ CALL grid2d_dims( 'A', nproc_try, ORTHO%grid(1), ORTHO%grid(2) )
  !
  !  now, and only now, it is possible to define the number of tasks
  !  in the ortho group for parallel linear algebra

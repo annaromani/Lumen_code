@@ -75,9 +75,11 @@ subroutine GRID2D_DIMS( grid_shape, nproc, nprow, npcol )
  ELSE
    ! Rectangular grid
    DO i = 1, sqrtnp + 1
-     IF( MOD( nproc, i ) == 0 ) nprow = i
+     !IF( MOD( nproc, i ) == 0 ) nprow = i
+     IF( MOD( nproc, i ) == 0 ) npcol = i
    end do
-   npcol = nproc / nprow
+   !npcol = nproc / nprow
+   nprow = nproc / npcol
  END IF
  !
  RETURN

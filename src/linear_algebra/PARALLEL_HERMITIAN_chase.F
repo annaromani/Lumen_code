@@ -81,11 +81,17 @@ subroutine PARALLEL_HERMITIAN_chase(Mat, V_blc, N, E, neig)
  call timing('ChASE init',OPR='start')
  !
 #if defined _DOUBLE
- call pzchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
- &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
+ call pzchase_init( N, neig, nex, nrows, ncols, Mat%blc(:,:,1), nbr, &
+ &                  Vtemp, Etemp, nprow, npcol, grid_major, comm, ierr)
+ !call pzchase_init_blockcyclic(&
+ !&                  N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, &
+ !&                  Vtemp, Etemp, nprow, npcol, grid_major, 0, 0, comm, ierr)
 #else
- call pcchase_init_blockcyclic(N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, Vtemp, Etemp,&
- &                              nprow, npcol, grid_major, 0, 0, comm, ierr)
+ call pcchase_init( N, neig, nex, nrows, ncols, Mat%blc(:,:,1), nbr, &
+ &                  Vtemp, Etemp, nprow, npcol, grid_major, comm, ierr)
+ !call pcchase_init_blockcyclic(&
+ !&                  N, neig, nex, nbr, nbc, Mat%blc(:,:,1), nbr, &
+ !&                  Vtemp, Etemp, nprow, npcol, grid_major, 0, 0, comm, ierr)
 #endif
  call timing('ChASE init',OPR='stop')
  !
