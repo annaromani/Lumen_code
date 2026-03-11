@@ -692,12 +692,20 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      if (l_slepc) then
        !
-       if (index(BSS_slepc_matrix_format,'explicit')>0) &
-       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
-       &  're-distributed from internal to slepc parallel scheme')
-       if (BSS_slepc_matrix_format=='shell')            &
-       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
-       &           'used with yambo parallel distribution scheme')
+       if (BSS_slepc_matrix_format=='shell') then
+#if defined _PETSC_HAVE_CUDA
+         call warning('[SLEPC] Library is GPU ported. Imposing explicit alogrithm')
+         BSS_slepc_matrix_format="explicit"
+#else
+         call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
+         &           'used with yambo parallel distribution scheme')
+#endif
+       endif
+       !
+       if (index(BSS_slepc_matrix_format,'explicit')>0) then
+         call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
+         &  're-distributed from internal to slepc parallel scheme')
+       endif
        !
        call SlepcInitialize(PETSC_NULL_CHARACTER,ierr)
        !

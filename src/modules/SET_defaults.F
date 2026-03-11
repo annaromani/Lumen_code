@@ -507,7 +507,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  call IO_desc_reset(BSS_desc)
  !
 #if defined _SLEPC && !defined _NL
- BSS_slepc_matrix_format='shell'
+ BSS_slepc_matrix_format='explicit'
  BSS_slepc_approach='none'
  BSS_slepc_precondition='none'
  BSS_slepc_extraction='ritz'

@@ -44,14 +44,15 @@ subroutine K_stored_in_a_nest_matrix(i_BS_mat,iq,slepc_mat)
  Mat,     intent(out) :: slepc_mat
  !
  integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2)
- character(lchlen)   :: live_msg
+ character(lchlen)   :: live_msg,timing_msg
  Mat                 :: R,C
  PetscScalar         :: Mij,Mij_star
  PetscInt            :: H_pos(2),SL_K_dim(2),SL_H_dim
  PetscErrorCode      :: ierr
  !
 #if PETSC_VERSION_GE(3,22,0)
- call timing('BSE mat slepc redist',OPR='start')
+ timing_msg='Yambo to nested slepc redistr'
+ call timing(trim(timing_msg),OPR='start')
  !
  SL_H_dim=BS_H_dim
  SL_K_dim=BS_K_dim
@@ -164,7 +165,7 @@ subroutine K_stored_in_a_nest_matrix(i_BS_mat,iq,slepc_mat)
  !
  call MatCreateBSE(R,C,slepc_mat,ierr);
  !
- call timing('BSE mat slepc redist',OPR='stop')
+ call timing(trim(timing_msg),OPR='stop')
 #endif
  !
 end subroutine K_stored_in_a_nest_matrix

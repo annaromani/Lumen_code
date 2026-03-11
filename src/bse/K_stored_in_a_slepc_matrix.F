@@ -41,12 +41,13 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  Mat,     intent(out) :: slepc_mat
  !
  integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2)
- character(lchlen)   :: live_msg
+ character(lchlen)   :: live_msg,timing_msg
  PetscScalar         :: Mij,Mij_star
  PetscInt            :: H_pos(2),SL_K_dim(2),SL_H_dim
  PetscErrorCode      :: ierr
  !
- call timing('BSE mat slepc redist',OPR='start')
+ timing_msg='Yambo to slepc redistr'
+ call timing(trim(timing_msg),OPR='start')
  !
  if (l_BSE_kernel_full) call error("Slepc with matrix not coded with full BSE mode")
  !
@@ -176,6 +177,6 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
  call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
  !
- call timing('BSE mat slepc redist',OPR='stop')
+ call timing(trim(timing_msg),OPR='stop')
  !
 end subroutine K_stored_in_a_slepc_matrix

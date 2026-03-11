@@ -14,14 +14,15 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   !
   ! Here we store the BSE kernel into a blacs matrix using K_fill_block_cyclic
   !
-  use pars,           ONLY:cI,cONE, SP
+  use pars,           ONLY:cI,cONE,SP,schlen
   use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
     &                        BS_res_ares_n_mat,l_BS_ares_from_res
   use parallel_m,     ONLY:MPI_COMM_WORLD
   use com,            ONLY:msg
+  use timing_m,       ONLY:timing
   use ldiago_interface
 #if defined _MPI
-  USE mpi
+  use mpi
 #endif
   !
   implicit none
@@ -34,11 +35,15 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   integer, parameter                 :: blacs_block_size = 64
   ! blacs block size
   ! 64 is good default but give a variable so advanced expert users can play with it
+  character(schlen) :: timing_msg
   !
   ! Local variables
   integer                            :: nProcs, my_rank, neig_tmp
   integer(YDIAGO_INT)                :: SL_H_dim, ProcX, ProcY
   integer                            :: ierr !! mpi error code 
+  !
+  timing_msg='Yambo to blacs redistr'
+  call timing(trim(timing_msg),OPR='start')
   !
   ! Start the function
   !
@@ -92,6 +97,8 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   ! Fill the block cyclic matrix
   call K_fill_block_cyclic(i_BS_mat, diago_mat)
   !
+  call timing(trim(timing_msg),OPR='stop')
+  !
 end subroutine K_stored_in_a_blacs_matrix_ldiago
 #endif
 !
@@ -99,7 +106,7 @@ end subroutine K_stored_in_a_blacs_matrix_ldiago
 #if defined _SCALAPACK
 subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
- use pars,           ONLY:cZERO
+ use pars,           ONLY:cZERO,schlen
  use matrix,         ONLY:PAR_matrix
  use linear_algebra, ONLY:diago
  use interfaces,     ONLY:MATRIX_transfer
@@ -115,10 +122,12 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  ! workspace
  !
+ character(schlen) :: timing_msg
  integer :: rows(2)
  integer :: cols(2)
  !
- call timing('K_stored_in_a_blacs_matrix',OPR='start')
+ timing_msg='Yambo to blacs redistr'
+ call timing(trim(timing_msg),OPR='start')
  !
  call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
  !
@@ -148,7 +157,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  if (SLK_ORTHO%coordinate(1)/=-1) call K_add_E_diagonal_slk(M_blacs)
  !
- call timing('K_stored_in_a_blacs_matrix',OPR='stop')
+ call timing(trim(timing_msg),OPR='stop')
  !
 end subroutine K_stored_in_a_blacs_matrix_yambo
 #endif
