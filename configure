@@ -13486,7 +13486,7 @@ if test x"$with_slepc_libs"   != "x" ; then enable_slepc="yes" ; fi
 # Set SLEPC LIBS and FLAGS from INPUT
 #
 if test "x$compile_petsc" = "xno" && test "x$enable_petsc" = "xyes" ; then
-if test -d "$with_slepc_path" || test -d "$with_slec_libdir" || test x"$with_slepc_libs" != "x" ; then
+if test -d "$with_slepc_path" || test -d "$with_slepc_libdir" || test x"$with_slepc_libs" != "x" ; then
   #
   # external slepc
   #
