@@ -14,6 +14,7 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  use BS,             ONLY:BS_block,n_BS_blks,BS_K_dim,BS_K_coupling
  use parallel_m,     ONLY:ncpu,myid
  use parallel_int,   ONLY:PP_wait,PP_redux_wait
+ use LIVE_t,         ONLY:live_timing
  use matrix,         ONLY:PAR_matrix
  !
  implicit none
@@ -56,6 +57,8 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  enddo
  !  
  call PP_redux_wait(BSE_components)
+
+ call live_timing('Redistributing BSE matrix in Blacs form',n_pools*SLK_POOL%n_CPU*ncpu)
  !
  do i_pool=1,n_pools
    !
@@ -223,11 +226,15 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
          !
        enddo
        !
+       call live_timing(steps=1)
+       !
      enddo
      !
    enddo
    !
  enddo
+ !
+ call live_timing()
  !
  deallocate(BSE_components)
  !
