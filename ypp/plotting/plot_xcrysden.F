@@ -185,4 +185,64 @@ subroutine plot_xcrysden()
      !
  end select
  !
-end subroutine
+end subroutine plot_xcrysden
+!
+!
+subroutine plot_xcrysden_kspace()
+ !
+ use pars,        ONLY:SP,schlen
+ use units,       ONLY:BO2ANG
+ use C_driver,    ONLY:code_version
+ use com,         ONLY:msg
+ use YPPm,        ONLY:nr,v2plot,plot_title,output_string
+ use R_lattice,   ONLY:b
+ use LIVE_t,      ONLY:live_timing
+ !
+ implicit none
+ !
+ ! Work Space...
+ !
+ integer  :: i1,i2,i3,ik
+ real(SP) :: b_angs(3,3)    !lattice vectors in inverse Angstrom
+ real(SP) :: rv(3)
+ character(schlen) :: ch
+ ! 
+ !the atomic cell is given in a.u. and I want
+ !to write the output of xcrysden in \AA
+ !
+ b_angs(:,:) = b(:,:)/BO2ANG
+ !
+ call msg(output_string,'BEGIN_BLOCK_BANGRID_3D')
+ call msg(output_string,'Generated with YPP',code_version)
+ call msg(output_string,'BEGIN_BANDGRID_3D')
+ !
+ call msg(output_string,'',1) ! number of bands
+ call msg(output_string,'',nr)
+ call msg(output_string,'',(/0._SP,0._SP,0._SP/))
+ call msg(output_string,'',b_angs(1,:))
+ call msg(output_string,'',b_angs(2,:))
+ call msg(output_string,'',b_angs(3,:))
+ !
+ call msg(output_string,'BAND',1)
+ !
+ ik = 0
+ call live_timing('3D Plot',nr(3))
+ !
+ do i3 = 0, nr(3)-1
+   do i2 = 0, nr(2)-1
+     do i1 = 0, nr(1)-1
+       ik = 1 + i1 + i2*nr(1) + i3*nr(1)*nr(2)
+       call msg(output_string,'',v2plot(ik))
+     enddo
+   enddo
+   !
+   call live_timing(steps=1)
+   !
+ enddo
+ !
+ call live_timing()
+ !
+ call msg(output_string,'','END_BANDGRID_3D')
+ call msg(output_string,'','END_BLOCK_BANDGRID_3D')
+ !
+end subroutine plot_xcrysden_kspace
