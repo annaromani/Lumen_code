@@ -625,7 +625,7 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
  ! Workspace
  !
  integer           :: iv,ic,ikbz,ik_3D,ik1,ik2,ik3,neh,i_lambda,j_lambda,i_sp_c,i_sp_v,&
-&                     n_lambda_deg,BS_E_deg_done,i1,n1_lambda,n2_lambda
+&                     n_lambda_deg,BS_E_deg_done,i1,n1_lambda,n2_lambda,ip1,ip2,ip3
  character(schlen) :: exc_index_msg
  !
  call section('+','Excitonic Wave Function in reciprocal space')
@@ -670,7 +670,12 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
          !
          ik_3D=ik_3D+1
          !
+         !ip1=mod(ik1+1,k_map%max_kdir(1))+1
+         !ip2=mod(ik2+1,k_map%max_kdir(2))+1
+         !ip3=mod(ik3+1,k_map%max_kdir(3))+1
+         !
          ikbz=k_map%k_map_dir(ik1,ik2,ik3)
+         !ikbz=k_map%k_map_dir(ip1,ip2,ip3)
          !
          !if (.not.px%element_1D(ikbz)) cycle
          !
@@ -693,7 +698,7 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
            neh=BSS_eh_table_m1(ikbz,iv,ic,i_sp_c,i_sp_v)
            if (neh==0) cycle
            !
-           v2plot(ik_3D) = conjg(BS_mat(neh,j_lambda))* BS_mat(neh,j_lambda)
+           v2plot(ik_3D) = v2plot(ik_3D) + abs(BS_mat(neh,j_lambda))**2
            !
          enddo
          enddo
