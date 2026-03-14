@@ -610,10 +610,8 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
  use R_lattice,     ONLY:bz_samp,k_map
  use units,         ONLY:BO2ANG
  use stderr,        ONLY:intc
- !use D_lattice,     ONLY:a,alat
- use com,           ONLY:msg,of_open_close
  use electrons,     ONLY:n_spinor,n_sp_pol
- use YPPm,          ONLY:v2plot,nr,output_fname,EXCITONS_user_indexes,EXCITONS_n_user_states
+ use YPPm,          ONLY:v2plot,nr,EXCITONS_user_indexes,EXCITONS_n_user_states
  use BS_solvers,    ONLY:BSS_eh_table_m1,BS_mat,BSS_desc,BSS_n_eig
  use BS,            ONLY:BS_bands
  use LIVE_t,        ONLY:live_timing
@@ -641,6 +639,8 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
  call k_map_nearest_by_dir(Xk,k_map)
  !
  nr=k_map%max_kdir
+ !
+ BS_E_deg_done=-1
  !
  do i_lambda=1,EXCITONS_n_user_states
    !
@@ -713,18 +713,7 @@ subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
    if (n_lambda_deg==1) exc_index_msg=trim(intc(j_lambda))
    if (n_lambda_deg> 1) exc_index_msg=trim(intc(n1_lambda))//'-'//trim(intc(n2_lambda))
    !
-   call msg('s','Plotting state(s) '//trim(exc_index_msg))
-   !
-   ! PLOT
-   !
-   output_fname='exc_qpt'//trim(intc(iq))//'_3d_'//trim(exc_index_msg)//'.bxsf'
-   !
-   call of_open_close(trim(output_fname),'ot')
-   !call DESC_write('o exc','#',BSS_desc)
-   !
-   call plot_xcrysden_kspace()
-   !
-   call of_open_close(trim(output_fname))
+   call plot_xcrysden_kspace(iq,exc_index_msg)
    !
  enddo
  !

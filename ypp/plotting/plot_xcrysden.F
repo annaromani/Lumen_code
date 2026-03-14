@@ -188,17 +188,21 @@ subroutine plot_xcrysden()
 end subroutine plot_xcrysden
 !
 !
-subroutine plot_xcrysden_kspace()
+subroutine plot_xcrysden_kspace(iq,exc_index_msg)
  !
  use pars,        ONLY:SP,schlen
  use units,       ONLY:BO2ANG
  use C_driver,    ONLY:code_version
- use com,         ONLY:msg
- use YPPm,        ONLY:nr,v2plot,plot_title,output_string
+ use com,         ONLY:msg,of_open_close
+ use stderr,      ONLY:intc
  use R_lattice,   ONLY:b
  use LIVE_t,      ONLY:live_timing
+ use YPPm,        ONLY:nr,v2plot,plot_title,output_string,output_fname
  !
  implicit none
+ !
+ integer,           intent(in) :: iq
+ character(schlen), intent(in) :: exc_index_msg
  !
  ! Work Space...
  !
@@ -206,14 +210,23 @@ subroutine plot_xcrysden_kspace()
  real(SP) :: b_angs(3,3)    !lattice vectors in inverse Angstrom
  real(SP) :: rv(3)
  character(schlen) :: ch
+ !
+ call msg('s','Plotting state(s) '//trim(exc_index_msg))
+ !
+ ! PLOT
+ !
+ output_fname='exc_qpt'//trim(intc(iq))//'_3d_'//trim(exc_index_msg)//'.bxsf'
+ !
+ call of_open_close(trim(output_fname),'o')
+ !call DESC_write('o exc','#',BSS_desc)
  ! 
  !the atomic cell is given in a.u. and I want
  !to write the output of xcrysden in \AA
  !
  b_angs(:,:) = b(:,:)/BO2ANG
  !
- call msg(output_string,'BEGIN_BLOCK_BANGRID_3D')
- call msg(output_string,'Generated with YPP',code_version)
+ call msg(output_string,'BEGIN_BLOCK_BANDGRID_3D')
+ call msg(output_string,'Exciton_wf_in_kspace')
  call msg(output_string,'BEGIN_BANDGRID_3D')
  !
  call msg(output_string,'',1) ! number of bands
@@ -242,7 +255,9 @@ subroutine plot_xcrysden_kspace()
  !
  call live_timing()
  !
- call msg(output_string,'','END_BANDGRID_3D')
- call msg(output_string,'','END_BLOCK_BANDGRID_3D')
+ call msg(output_string,'END_BANDGRID_3D')
+ call msg(output_string,'END_BLOCK_BANDGRID_3D')
+ !
+ call of_open_close(trim(output_fname))
  !
 end subroutine plot_xcrysden_kspace
