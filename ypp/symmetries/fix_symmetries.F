@@ -22,7 +22,8 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  use vec_operate,         ONLY:v_norm
  use D_lattice,           ONLY:nsym,dl_sop,dl_tra,i_time_rev,alat,mag_syms,       &
 &                              i_space_inv,sop_inv,inv_index,symmetry_group_table,&
-&                              old_i_time_rev,S_contains_TR,spin_sop
+&                              old_i_time_rev,S_contains_TR,spin_sop,             &
+&                              non_symmorphic_syms
  use y_memory_alloc
  !
  implicit none
@@ -42,8 +43,8 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  real(SP), allocatable  :: dl_tra_tmp(:,:)
  real(SP)               :: B_cart(3)
  logical                :: Reduce_syms
- logical                :: Rm_all_syms,Rm_TR,Rm_INV,Rm_no_symmo
- logical                :: use_E_field,use_B_field,has_magnetization
+ logical                :: Rm_all_syms,Rm_TR,Rm_INV,Rm_no_symmo,Add_TR_if_possible
+ logical                :: use_E_field,use_B_field,has_magnetization,l_spin_and_space_linked
  !
  ! Dummies
  !
@@ -64,6 +65,7 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  call parser('RmNoSymmo',Rm_no_symmo)
  !
  call parser('RmTimeRev',Rm_TR)
+ Add_TR_if_possible=.not.Rm_TR .and. i_time_rev==0 .and. .not.Rm_all_syms
  if (i_time_rev==0) Rm_TR=.false.
  !
  call parser('RmSpaceInv',Rm_INV)
@@ -73,8 +75,10 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
  !
  ! Check if we are using mag symmetries
  !
- mag_syms= ( use_B_field .or. (n_spinor==2.and.has_magnetization)) &
-&           .and. (i_time_rev==1) .and. (.not.Rm_TR)
+ l_spin_and_space_linked = ( use_B_field .or. (n_spinor==2.and.has_magnetization))
+ if (l_spin_and_space_linked) Add_TR_if_possible=.false.
+ !
+ mag_syms= l_spin_and_space_linked .and. (i_time_rev==1) .and. (.not.Rm_TR)
  !
  if (mag_syms) call msg('s','There is T-rev with (a) [a magnetic field] or (b) [SOC in a magnetic system]')
  !
@@ -221,6 +225,43 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
      enddo
    endif
    !
+ !
+ if(nsym==spatial_nsym) then
+   i_time_rev=0
+   mag_syms=.false.
+ endif
+ !
+ non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
+ !
+ ! Remap Inversion symmetry index
+ !
+ inv_index=-1
+ do is=1,nsym
+   forall (i1=1:3,i2=1:3) rl_sop(i1,i2,is)=dl_sop(i1,i2,is)*alat(i1)/alat(i2)
+   if ( all(nint(reshape(dl_sop(:,:,is),(/9/)))==(/-1.,0.,0.,0.,-1.,0.,0.,0.,-1./)) ) inv_index=is
+ enddo
+ if (inv_index<0) i_space_inv=0
+ !
+ if (Add_TR_if_possible .and. inv_index<0 ) then
+   call msg('s','[SYMs] Replacing mmissing inversion with time-reversal')
+   call warning("If you do not want to Trev, set flag RmTrev to input")
+   i_time_rev=1
+   do is=1,nsym
+     dl_sop(:,:,is+nsym)=-dl_sop(:,:,is)
+   enddo
+   inv_index=nsym+1
+   nsym=2*nsym
+ endif
+ !
+ if(i_time_rev==1 .and. inv_index>0) then
+   if(inv_index<=spatial_nsym) then
+     i_space_inv=0
+     call msg('s','[SYMs] Spatial inversion '//trim(intc(inv_index))//' is a symmetry')
+   else
+     call msg('s','[SYMs] Spatial inversion '//trim(intc(inv_index))//' is NOT a symmetry')
+   endif
+ endif
+   !
    YAMBO_ALLOC(dl_sop_tmp,(3,3,nsym*n_spinor))
    YAMBO_ALLOC(dl_tra_tmp,(3,nsym*n_spinor))
    dl_sop_tmp(1:3,1:3,1:nsym)=dl_sop(1:3,1:3,1:nsym)
@@ -237,17 +278,13 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
    dl_tra=dl_tra_tmp
    YAMBO_FREE(dl_sop_tmp)
    YAMBO_FREE(dl_tra_tmp)
-   !
+ !
+ ! Final messagin
  !
  if(.not.RM_all_syms)&
 & call msg('s',trim(intc(old_spatial_nsym))//' spatial symmetries reduced/increased to ...'//trim(intc(spatial_nsym)))
  !
- if(nsym==spatial_nsym) then
-   i_time_rev=0
-   mag_syms=.false.
- endif
- !
- if(i_time_rev==1) then
+ if(old_i_time_rev==1.or.i_time_rev==1) then
    call msg('s',trim(intc(old_trev_nsym))//' T-rev symmetries reduced/increased to ...'//trim(intc(nsym-spatial_nsym)))
  endif
  !
@@ -260,24 +297,6 @@ subroutine fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_in
    do is=spatial_nsym+1,nsym
      call msg('s','[S*'//trim(intc(is))//']',reshape(dl_sop(:,:,is),(/9/)))  
    enddo
- endif
- !
- ! Remap Inversion symmetry index
- !
- inv_index=-1
- do is=1,nsym
-   forall (i1=1:3,i2=1:3) rl_sop(i1,i2,is)=dl_sop(i1,i2,is)*alat(i1)/alat(i2)
-   if ( all(nint(reshape(dl_sop(:,:,is),(/9/)))==(/-1.,0.,0.,0.,-1.,0.,0.,0.,-1./)) ) inv_index=is
- enddo
- if (inv_index<0) i_space_inv=0
- !
- if(i_time_rev==1 .and. inv_index>0) then
-   if(inv_index<=spatial_nsym) then
-     i_space_inv=0
-     call msg('s','[SYMs] Spatial inversion '//trim(intc(inv_index))//' is a symmetry')
-   else
-     call msg('s','[SYMs] Spatial inversion '//trim(intc(inv_index))//' is NOT a symmetry')
-   endif
  endif
  !
  ! Check group table

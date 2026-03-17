@@ -243,7 +243,7 @@ subroutine NL_initialize(E,k)
    call msg('sr','[NL] Non-linear optics configuration')
    call msg('sr','[NL] Loop on frequencies/angles of the first field ')
    if(NL_er(1)==0._SP) call error("NLEnRange cannot start from zero (simulation time equal to infinity!!) ")
-   call warning('Variables Field1_Freq and Field1_NFreqs ignored')
+   call warning('Variable Field1_Freq is ignored')
  endif
  !
  if(.not.l_pump_and_probe.and.Efield(1)%ef_name/='SOFTSIN'.and.Efield(1)%ef_name/='SIN') &
