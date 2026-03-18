@@ -19,7 +19,8 @@ subroutine symmetries_driver(E,Xk)
  use IO_int,              ONLY:ver_is_gt_or_eq,io_control
  use com,                 ONLY:msg,core_io_path,more_io_path,jobstr
  use R_lattice,           ONLY:bz_samp,ng_closed,ng_vec,bz_samp_reset,bz_samp_duplicate,nqbz
- use D_lattice,           ONLY:nsym,atom_mass,atoms_map,n_atoms_species_max,n_atomic_species
+ use D_lattice,           ONLY:nsym,atom_mass,atoms_map,n_atoms_species_max,n_atomic_species,&
+ &                             old_i_time_rev,i_time_rev
  use wave_func,           ONLY:wf_ng,WF
  use stderr,              ONLY:intc
  use LIVE_t,              ONLY:live_timing
@@ -104,7 +105,7 @@ subroutine symmetries_driver(E,Xk)
  !
  call fix_symmetries(old_nsym,old_dl_sop,old_dl_tra,old_spin_sop,old_sop_inv,old_S_contains_TR)
  !
- if(old_nsym==nsym) then
+ if(old_nsym==nsym.and.i_time_rev==old_i_time_rev) then
    call msg('s','Symmetries did not change. Program terminaned.')
    return
  endif

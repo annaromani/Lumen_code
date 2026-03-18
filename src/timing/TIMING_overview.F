@@ -15,7 +15,6 @@ subroutine TIMING_overview(list,main_name)
  use stderr,        ONLY:log_as_a_file
  use parallel_m,    ONLY:ncpu,myid,master_cpu
  use parallel_int,  ONLY:PP_redux_wait,PP_bcast
- use vec_operate,   ONLY:sort
  !
  implicit none
  !
@@ -29,15 +28,12 @@ subroutine TIMING_overview(list,main_name)
  !
  ! clocks parallel collection
  !
- INTEGER            :: i,j,k,call_number(ncpu),i_cpu,n_clocks(ncpu),cpu_id(ncpu),bcast_id
+ INTEGER            :: i,j,call_number(ncpu),i_cpu,n_clocks(ncpu),cpu_id(ncpu),bcast_id
  real(DP)           :: total_time(ncpu),min_max_time(2)
  character(lchlen)  :: clock_name
  !
  integer,  allocatable :: tmp_int(:)
  real(SP), allocatable :: tmp_real(:)
- !
- integer, allocatable :: sorted_times_index(:)
- real(SP),allocatable :: sorted_times(:)
  !
 #ifndef _TIMING
  return
@@ -114,46 +110,34 @@ subroutine TIMING_overview(list,main_name)
  MAX_name_length=0
  MAX_calls_length=0
  !
- allocate(sorted_times(list%nclock),sorted_times_index(list%nclock))
- !
  do i=1,list%nclock
    MAX_name_length=max(MAX_name_length,len_trim(list%clock(i)%name))
    MAX_calls_length=max( MAX_calls_length, int( log10(real(list%clock(i)%call_number)) ) )
-   sorted_times(i)=list%clock(i)%total_time
  ENDDO
- call sort(arrin=sorted_times(:list%nclock),indx=sorted_times_index(:list%nclock))
  do i=1,list%nclock
-   j=sorted_times_index(i)
-   tmp_clock = list%clock(j)
+   tmp_clock = list%clock(i)
    CALL TIMING_clock_write(tmp_clock,"LOG")
    if (ncpu==1) CALL TIMING_clock_write(tmp_clock,"REP")
  enddo
  !
- deallocate(sorted_times,sorted_times_index)
- !
  ! Parallel Report
  !=================
  if (.not.master_cpu.or.ncpu==1) return
- !
- allocate(sorted_times(list_all_cpu%nclock),sorted_times_index(list_all_cpu%nclock))
  !
  MAX_name_length=0
  MAX_calls_length=0
  DO i=1,list_all_cpu%nclock 
    MAX_name_length=max(MAX_name_length,len_trim(list_all_cpu%clock(i)%name))
    MAX_calls_length=max( MAX_calls_length, int( log10(real(list_all_cpu%clock(i)%call_number)) ) )
-   sorted_times(i)=list_all_cpu%clock(i)%total_time
  ENDDO
- call sort(arrin=sorted_times(:list_all_cpu%nclock),indx=sorted_times_index(:list_all_cpu%nclock))
  !
  do i=1,list_all_cpu%nclock
-   k=sorted_times_index(i)
-   if (.not.list_all_cpu%clock(k)%running) cycle
-   tmp_clock=list_all_cpu%clock(k)
-   min_max_time=list_all_cpu%clock(k)%total_time
+   if (.not.list_all_cpu%clock(i)%running) cycle
+   tmp_clock=list_all_cpu%clock(i)
+   min_max_time=list_all_cpu%clock(i)%total_time
    do j=1,list_all_cpu%nclock
-     if (j==k) cycle
-     if (trim(list_all_cpu%clock(k)%name)==trim(list_all_cpu%clock(j)%name)) then
+     if (j==i) cycle
+     if (trim(list_all_cpu%clock(i)%name)==trim(list_all_cpu%clock(j)%name)) then
        list_all_cpu%clock(j)%running=.FALSE.
        if (list_all_cpu%clock(j)%total_time>min_max_time(2)) then
          min_max_time(2)=list_all_cpu%clock(j)%total_time
@@ -167,7 +151,5 @@ subroutine TIMING_overview(list,main_name)
    enddo
    CALL TIMING_clock_write(tmp_clock,"REP")
  enddo
- !
- deallocate(sorted_times,sorted_times_index)
  !
 end subroutine TIMING_overview

@@ -325,9 +325,9 @@ subroutine INIT_ypp_load(defs)
  !
  ! p_dir: plot cut in the a1,a2,a3 basis
  ! 
- ! p_format: (c)ube/(g)nuplot/(x)crysden
+ ! p_format: (c)ube/(g)nuplot/(x)crysden in real space, or simply (k)-space
  !
- call it(defs,'Format', 'Output format [(c)ube/(g)nuplot/(x)crysden]',p_format)
+ call it(defs,'Format', 'Output format [(c)ube/(g)nuplot/(x)crysden;(k)-space]',p_format)
  call it(defs,'Direction', '[rlu] [1/2/3] for 1d or [12/13/23] for 2d [123] for 3D',p_dir)
  call it(defs,'MagDir', 'Magnetization component',mag_dir)
  call it(defs,'CurrentDir', '[cc] Carthesian direction (used to average in 2D/3D plots or to plot in 1D)',current_dir)
