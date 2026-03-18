@@ -18,7 +18,7 @@ subroutine K_observables(W,Xk)
  use BS,           ONLY:BS_dip_size,l_BS_anomalous_Hall,l_BS_abs,l_BS_jdos,l_BS_trace,BSE_prop,&
 &                       l_BS_esort,l_BS_kerr,l_BS_magnons,l_BS_dichroism,l_BS_anomalous_Hall,l_BS_photolum,&
 &                       l_BS_optics,BS_dip_size,l_BS_magnons,l_BS_photolum,l_BS_kerr_asymm,l_BS_esort_indx,&
-&                       l_BS_mespin,l_BS_meorb
+&                       l_BS_mespin,l_BS_meorb, l_BS_optics_sp_up, l_BS_optics_sp_dw
  use parser_m,     ONLY:parser
  use stderr,       ONLY:STRING_match
  use electrons,    ONLY:levels,n_sp_pol,n_spin
@@ -44,6 +44,11 @@ subroutine K_observables(W,Xk)
  l_BS_magnons = STRING_match(BSE_prop,'magn')   .and.n_spin>1
  l_BS_MEspin = STRING_match(BSE_prop,'MEspin') .and.n_spin>1
  l_BS_MEorb = STRING_match(BSE_prop,'MEorb')  .and.n_spin>1
+ l_BS_optics_sp_up = STRING_match(BSE_prop,'sp_up') .and. n_sp_pol>1
+ l_BS_optics_sp_dw = STRING_match(BSE_prop,'sp_down') .and. n_sp_pol>1
+ !
+ if (l_BS_optics_sp_up) call warning("BSE only spin-up channel contribution")
+ if (l_BS_optics_sp_dw) call warning("BSE only spin-down channel contribution")
  !
  ! How ...
  !---------
@@ -113,6 +118,8 @@ subroutine K_observables(W,Xk)
  if(l_BS_trace)           BSE_prop=trim(BSE_prop)//' trace'
  if(l_BS_mespin)          BSE_prop=trim(BSE_prop)//' MEspin'
  if(l_BS_meorb)           BSE_prop=trim(BSE_prop)//' MEorb'
+ if(l_BS_optics_sp_up)    BSE_prop=trim(BSE_prop)//' sp_up'
+ if(l_BS_optics_sp_dw)    BSE_prop=trim(BSE_prop)//' sp_down'
  !
  ! Solver Logicals
  !=================

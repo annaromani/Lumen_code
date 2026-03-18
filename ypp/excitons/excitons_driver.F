@@ -20,7 +20,7 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  use electrons,     ONLY:levels,spin
  use YPP_interfaces,ONLY:excitons_sort_and_report
  use YPPm,          ONLY:l_magnons,l_sort,l_exc_wf,l_exc_symm,l_spin,l_amplitude,exc_kind,&
- &                       EXCITONS_n_user_states,EXCITONS_user_indexes,BSiq, &
+ &                       EXCITONS_n_user_states,EXCITONS_user_indexes,BSiq,p_format, &
  &                       BS_R_left,BS_R_right,BS_R_left_magn,BS_R_right_magn,&
  &                       BS_E,BS_E_SOC_corr,l_interp,l_dipoles,MAGNON_Res_threshold
  use BS_solvers,    ONLY:BSS_n_eig
@@ -138,7 +138,10 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  ! Exciton's WFs
  !=====================
- if (l_exc_wf)     call exciton_WFs(Xk,BS_E_degs,iq)
+ if (l_exc_wf) then
+   if(p_format/="k")  call exciton_WFs(Xk,BS_E_degs,iq)
+   if(p_format=="k")  call exciton_WFs_kspace(Xk,BS_E_degs,iq)
+ endif
  !
  ! Excitonic Eliashberg function 
  !================================

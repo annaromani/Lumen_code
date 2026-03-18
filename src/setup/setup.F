@@ -219,6 +219,12 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  call G_shells_finder()
  !
+ if (ng_closed<wf_ng) then
+   call warning("wf_ng is larged than ng_closed. Reducing it to ng_closed")
+   wf_ng=ng_closed
+   wf_ng_1st_BZ=ng_closed
+ endif
+ !
  if ( wf_ng > maxval(wf_igk) ) then
    call msg("r","wf_ng > maxval(wf_igk), likely because FFTGvecs was set in input.")
    call msg("rn","Reducing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(maxval(wf_igk))))
@@ -270,10 +276,11 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
    enddo
  endif
  !
- wf_ng_1st_BZ=maxval(g_rot(:min(wf_ng,ng_closed),:))
+ wf_ng_1st_BZ=maxval(g_rot(:wf_ng,:))
  !
- if (wf_ng_1st_BZ/=wf_ng) then
-   call warning( 'Increasing wf_ng from '//trim(intc(wf_ng))//' to '//trim(intc(wf_ng_1st_BZ)) )
+ if (wf_ng_1st_BZ>wf_ng) then
+   call msg("r","wf_ng < maxval(g_rot(:wf_ng)). Increasing it to handle rotated WFs in the BZ")
+   call msg("rn","Reducing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(wf_ng_1st_BZ)))
    wf_ng=wf_ng_1st_bz
  endif
  !
