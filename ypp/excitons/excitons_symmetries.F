@@ -315,7 +315,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
  use pars,           ONLY:SP
  use com,            ONLY:msg
  use D_lattice,      ONLY:nclass
- use YPPm,           ONLY:symm_thresh
+ use YPPm,           ONLY:mix_thresh
  use stderr,         ONLY:intc
  !
  implicit none
@@ -346,7 +346,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
        !write(*,*) i_grp,il1,il2,loc_reps(:,il2,il1,i_grp)
        call msg('s',"Rep "//trim(intc(i_grp))//" ,Exc. mix "//trim(intc(iexc))//","&
        &                  //trim(intc(jexc)),sum(abs(loc_reps(:,il2,il1,i_grp))))
-       if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*symm_thresh) cycle
+       if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*mix_thresh) cycle
        ref_exc_grp(il2,i_grp)=-1
      enddo
    enddo
