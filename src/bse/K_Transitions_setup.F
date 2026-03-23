@@ -29,7 +29,7 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
  use BS_solvers,   ONLY:BSS_mode,BSS_uses_DbGd
  use BS,           ONLY:T_group,BS_bands,BS_T_grp,BS_nT_grps,BS_n_eh_spaces,&
 &                       BS_Blocks_and_Transitions_alloc,BS_perturbative_SOC,&
-&                       BS_nkFGbz_in_Tgrp,BS_bands_frozen
+&                       BS_nkFGbz_in_Tgrp
  use DIPOLES,      ONLY:DIPOLE_t
  use parallel_m,   ONLY:PAR_IND_WF_b_and_k,PAR_IND_T_ordered,PAR_IND_T_groups,&
 &                       PAR_IND_T_Haydock,PP_indexes_reset
@@ -60,7 +60,7 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
 &                i_T_now,i_T_group_now,i_T_group_last,i_T_group_start,i_g,n_loops,i_loop,i_T_in_the_grp,i_res_ares,&
 &                nColFG_in_T_group_now,i_ColFG,ikFGbz,ikFG
  !
- logical, external :: K_Transition_check
+ logical, external :: K_Transition_check,check_state_frozen
  !
  call section("=",'Transition Groups build-up @q'//trim(intc(iq)))
  !
@@ -111,11 +111,11 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
        !
        do iv=V_bands(1),V_bands(2)
          !
-	 if (BS_bands_frozen(iv)==1) cycle
-	 !
+         if(check_state_frozen(Ken,iv,ik,i_sp_v)) cycle
+         !
          do ic=C_bands(1),C_bands(2)
-	   !
-	   if (BS_bands_frozen(ic)==1) cycle
+           !
+           if(check_state_frozen(Ken,ic,ik,i_sp_c)) cycle
            !
            do i_sp_c=1,n_sp_pol
              i_sp_v=i_sp_c
@@ -243,7 +243,7 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
  use parser_m,     ONLY:parser
  use BS,           ONLY:BS_K_dim,BS_H_dim,BS_nT_at_k,BS_K_coupling,   &
 &                       l_BS_ares_from_res,BS_res_ares_n_mat,BS_bands,&
-&                       BS_n_eh_spaces,BS_bands_frozen
+&                       BS_n_eh_spaces
  use DIPOLES,      ONLY:DIPOLE_t
  use electrons,    ONLY:levels,n_sp_pol,i_spin_majority
  use com,          ONLY:msg
@@ -270,7 +270,7 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
  integer      :: ikbz,ikpbz,iv,ic,ik,ikp,i_sp_v,i_sp_c,i_star,ib1,ib2,  &
 &                i_res_ares,BS_nT_at_k_tmp(Xk%nibz*2)
  !
- logical, external :: K_Transition_check
+ logical, external :: K_Transition_check,check_state_frozen
  !
  call section("+P",'Transition pre-analysis @q'//trim(intc(iq)))
  !
@@ -325,11 +325,11 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
          !
          do iv=V_bands(1),V_bands(2)
            !
-	   if (BS_bands_frozen(iv)==1) cycle
-	   !
+           if(check_state_frozen(Ken,iv,ik,i_sp_v)) cycle
+           !
            do ic=C_bands(1),C_bands(2)
-	     !
-	     if (BS_bands_frozen(ic)==1) cycle
+             !
+             if(check_state_frozen(Ken,ic,ik,i_sp_c)) cycle
              !
              if (i_res_ares==1) then; ib1=iv; ib2=ic; endif
              if (i_res_ares==2) then; ib1=ic; ib2=iv; endif
@@ -363,3 +363,36 @@ subroutine K_Transitions_dimensions(iq,Ken,Xk,Dip,V_bands,C_bands)
  endif
  !
 end subroutine K_Transitions_dimensions
+!
+!
+logical function check_state_frozen(Ken,ib_ref,ik,i_sp)
+ !
+ use pars,           ONLY:SP
+ use electrons,      ONLY:levels
+ use BS,             ONLY:BS_bands,BS_bands_frozen
+ !
+ implicit none
+ !
+ type(levels), intent(in)  :: Ken
+ integer,      intent(in)  :: ib_ref,ik,i_sp
+ !
+ ! workspace
+ !
+ integer :: ib
+ !
+ check_state_frozen=.false.
+ !
+ if (BS_bands_frozen(ib_ref)/=1) return
+ !
+ ! If the state is listed among the frozen band tag it to be excluded
+ check_state_frozen=.true.
+ !
+ do ib=BS_bands(1),BS_bands(2)
+   if ( BS_bands_frozen(ib)==1 ) cycle
+   if ( abs(Ken%E(ib,ik,i_sp)-Ken%E(ib_ref,ik,i_sp))>1.E-5_SP) cycle
+   ! if the state ib_ref, previously tagged to be excluded, is degenerate to
+   ! another included state, then it is re-included
+   check_state_frozen=.false.
+ enddo
+ !
+end function check_state_frozen
