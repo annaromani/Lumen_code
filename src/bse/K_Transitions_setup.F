@@ -111,11 +111,7 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
        !
        do iv=V_bands(1),V_bands(2)
          !
-         if(check_state_frozen(Ken,iv,ik,i_sp_v)) cycle
-         !
          do ic=C_bands(1),C_bands(2)
-           !
-           if(check_state_frozen(Ken,ic,ik,i_sp_c)) cycle
            !
            do i_sp_c=1,n_sp_pol
              i_sp_v=i_sp_c
@@ -124,6 +120,10 @@ subroutine K_Transitions_setup(iq,Ken,Xk,Dip,V_bands,C_bands)
                if(i_sp_c==i_spin_majority) cycle
                i_sp_v=mod(i_sp_c,n_sp_pol)+1
              endif
+             !
+             if(check_state_frozen(Ken,iv,ik,i_sp_v)) cycle
+             !
+             if(check_state_frozen(Ken,ic,ik,i_sp_c)) cycle
              !
              do i_star=1,Xk%nstar(ik)
                !
