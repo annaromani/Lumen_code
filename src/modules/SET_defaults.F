@@ -468,7 +468,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  BSS_inversion_mode='pf'
  BSS_ldiago_solver='s'
 #if defined _ELPA
- BSS_ldiago_solver='e'
+ BSS_ldiago_solver='e2'
 #endif
  BSS_er=(/0._SP,10._SP/)/HA2EV
  BSS_dr=0.1_SP/HA2EV

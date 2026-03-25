@@ -75,12 +75,14 @@ subroutine K_diago_driver(iq,W,X_static)
  !
  ! Work Space
  !
- integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, ncpu_blacs, neigs_this_cpu, neig_shift, elpa_solver = 2
+ integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, ncpu_blacs, neigs_this_cpu, neig_shift
  logical          :: K_is_not_hermitian,l_odiago,l_chase,l_slepc,l_dip_more,l_target_erange,l_neig_input, &
  &                   l_ldiago,l_kerr_lft,l_kerr_rgt,l_abs_res
  character(1)     :: sec
  character(10)    :: Solver
  ! Ldiago varibles
+ character(1)     :: ldiago_solver
+ integer          :: elpa_solver
  integer, target  :: neigs_range(2)
  real(SP), target :: eigvals_range(2)
  !
@@ -286,7 +288,7 @@ subroutine K_diago_driver(iq,W,X_static)
          &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
          &                   neigs_range=neigs_range, eigvals_range=eigvals_range,  &
          &                   BS_VL=BS_V_left,BS_overlap=BS_overlap,                 &
-         &                   solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
+         &                   solver_type=ldiago_solver, elpasolver=elpa_solver)
          BSS_n_eig = size(BS_E)
          !
        endif
@@ -316,7 +318,7 @@ subroutine K_diago_driver(iq,W,X_static)
          call LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size,            &
          &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
 &                           neigs_range=neigs_range, eigvals_range=eigvals_range,   &
-&                           solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
+&                           solver_type=ldiago_solver, elpasolver=elpa_solver)
          BSS_n_eig = size(BS_E)
        endif
 #endif
@@ -687,61 +689,94 @@ subroutine K_diago_driver(iq,W,X_static)
 #if defined _LDIAGO
      if (l_ldiago) then
        !
-       if (BSS_ldiago_solver/="s" .and. BSS_ldiago_solver/="e") then
-         call warning("Invalid ldiago solver. Switching to default")
-#if defined _ELPA
-         BSS_ldiago_solver="e"
-#else
-         BSS_ldiago_solver="s"
-#endif
-       endif
-       !
 #if defined _GPU && defined _ELPA
        if (BSS_ldiago_solver=="s") then
          call warning("gpu ported code. Switching to Elpa solver")
-         BSS_ldiago_solver="e"
+         BSS_ldiago_solver="e1"
        endif
 #endif
        !
 #if !defined _ELPA
-       if (BSS_ldiago_solver=="e") then
+       if (index(BSS_ldiago_solver,"e")/=0) then
          call warning("Elpa solver selected, but elpa not linked. Switching to scalapack")
          BSS_ldiago_solver="s"
        endif
 #endif
+       !
+       if (BSS_ldiago_solver=="s") then
+         ldiago_solver="s"
+         elpa_solver=0
+#if defined _ELPA
+       else if ( index(BSS_ldiago_solver,"e")/=0) then
+         ldiago_solver="e"
+#if !defined _GPU
+       if ( index(BSS_ldiago_solver,"1")/=0) then
+#endif
+         BSS_ldiago_solver="e1"
+         elpa_solver=1
+#if !defined _GPU
+       else
+         BSS_ldiago_solver="e2"
+         elpa_solver=2
+       endif
+#endif
+#endif
+       else
+         call warning("Invalid ldiago solver. Switching to default")
+#if defined _ELPA
+         ldiago_solver="e"
+#if defined _GPU
+         BSS_ldiago_solver="e1"
+         elpa_solver=1
+#else
+         BSS_ldiago_solver="e2"
+         elpa_solver=2
+#endif
+#else
+         BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
+#endif
+       endif
        !
        l_target_erange=BSS_trange_E(1)>0._SP .and. BSS_trange_E(2)>BSS_trange_E(1)
        l_neig_input=BSS_n_eig>0
        ! Here I double the number of n_eig to get correct allocations
        if (l_neig_input .and. K_is_not_hermitian) BSS_n_eig=BSS_n_eig*2
        !
-       if (l_target_erange .and. BSS_ldiago_solver=="e") then
+       if (l_target_erange .and. index(BSS_ldiago_solver,"e")/=0) then
 #if defined _GPU && defined _ELPA
          call warning(' energy range not compatible with elpa. Switching it off on gpu')
          l_target_erange=.false.
 #else
          call warning(' energy range not compatible with elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !
-       if (BSS_first_eig>1 .and. BSS_ldiago_solver=="e") then
+       if (BSS_first_eig>1 .and. index(BSS_ldiago_solver,"e")/=0) then
 #if defined _GPU && defined _ELPA
          call warning(' eigenvalues range not compatible with elpa. Switching it off on gpu')
          BSS_first_eig=1
 #else
          call warning(' eigenvalues range not compatible with elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !
-       if (l_neig_input .and. BSS_ldiago_solver=="e" .and. K_is_not_hermitian) then
+       if (l_neig_input .and. index(BSS_ldiago_solver,"e")/=0 .and. K_is_not_hermitian) then
 #if defined _GPU && defined _ELPA
          call warning(' Few eigenvalues not compatible with non hermitian elpa. Switching it off on gpu')
          l_neig_input=.false.
 #else
          call warning(' Few eigenvalues not compatible with non hermitian elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !

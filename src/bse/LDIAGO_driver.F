@@ -22,6 +22,7 @@ subroutine LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size, BS_energie
   !  and the left eigenvectors are choosen such that overlap is a an identity matrix.
   !  This implies that left eigenvectors maynot be normalized in some cases.
   use pars,           ONLY:cI,cONE, SP
+  use stderr,         ONLY:intc
   use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
     &                        BS_res_ares_n_mat,l_BS_ares_from_res
   use BS_solvers,     ONLY:BSS_eh_E,BSS_eh_W,BSS_perturbative_width
@@ -191,7 +192,7 @@ endif
     !
   endif
   !
-  if (solver_type_aux .eq. 'e')   call section('=','ELPA Diagonalization')
+  if (solver_type_aux .eq. 'e')   call section('=','ELPA (type '//trim(intc(elpa_solver_aux))//') Diagonalization')
   if (solver_type_aux .eq. 's')   call section('=','Scalapack Diagonalization')
   !
   ! Call the solvers
