@@ -14,8 +14,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E,Res)
  use pars,           ONLY:SP,DP,cZERO,schlen
  use units,          ONLY:HA2EV
  use parser_m,       ONLY:parser
- use YPPm,           ONLY:deg_energy,EXCITONS_n_user_states,&
- &                        EXCITONS_user_indexes
+ use YPPm,           ONLY:deg_energy,EXCITONS_n_user_states,EXCITONS_user_indexes, &
+ &                        mix_thresh,symm_thresh
  use R_lattice,      ONLY:bz_samp!,coll_scattering
  use electrons,      ONLY:levels,n_sp_pol
  use BS_solvers,     ONLY:BSS_n_eig
@@ -39,7 +39,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E,Res)
  real(SP)            :: Res(BSS_n_eig)
  !
  real(SP) :: BS_E_real(EXCITONS_n_user_states),Res_sum
- logical  :: l_min_mem
+ logical  :: l_min_mem,l_mix_thresh_set
  integer  :: S_index(EXCITONS_n_user_states)
  integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max,iexc_ref
  integer  :: ik,i_sp_pol,iqbz,nsymq,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID,n_exc_sbgrp
@@ -72,6 +72,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E,Res)
  io_err=io_WF_phases(BS_bands,0,0,0,ID,nsz)
  !
  call parser("MinimizeMem",l_min_mem)
+ call parser("Mix_thresh",l_mix_thresh_set)
+ if (.not.l_mix_thresh_set) mix_thresh=symm_thresh 
  !
  if (.not.l_min_mem) then
    nsz(1:2)=maxval(WF_phases_b_map(:,:,:,1))
