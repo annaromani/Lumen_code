@@ -9,4 +9,5 @@
  mod_interfaces.o
  mod_nl_optics.o
  mod_plasma.o
+ objects.o
 

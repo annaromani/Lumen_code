@@ -54,4 +54,5 @@
  variables_SC.o
  variables_X.o
  ver_is_gt_or_eq.o
+ objects.o
 

@@ -38,10 +38,10 @@ subroutine K_diago_driver(iq,W,X_static)
  use frequency,      ONLY:w_samp
  use com,            ONLY:isec
  use LIVE_t,         ONLY:live_timing
- use linear_algebra, ONLY:DIAGO,DIAGX,CHASE
- use interfaces,     ONLY:K_diago_response_functions,LINEAR_ALGEBRA_driver,&
+ use linear_algebra, ONLY:DIAGO
+ use interfaces,     ONLY:K_diago_response_functions,ODIAGO_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
- &                        K_diago_perturbative, K_stored_in_a_big_matrix 
+ &                        K_diago_perturbative, K_stored_in_a_big_matrix
 #if defined _LDIAGO
  use interfaces,       ONLY:LDIAGO_driver,K_stored_in_a_blacs_matrix_ldiago
  use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
@@ -75,8 +75,8 @@ subroutine K_diago_driver(iq,W,X_static)
  !
  ! Work Space
  !
- integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, neigs_this_cpu, neig_shift, elpa_solver = 2
- logical          :: K_is_not_hermitian,l_diago,l_diagx,l_chase,l_slepc,l_dip_more,l_target_erange,l_neig_input, &
+ integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, ncpu_blacs, neigs_this_cpu, neig_shift, elpa_solver = 2
+ logical          :: K_is_not_hermitian,l_odiago,l_chase,l_slepc,l_dip_more,l_target_erange,l_neig_input, &
  &                   l_ldiago,l_kerr_lft,l_kerr_rgt,l_abs_res
  character(1)     :: sec
  character(10)    :: Solver
@@ -108,7 +108,6 @@ subroutine K_diago_driver(iq,W,X_static)
  complex(SP),allocatable :: BS_corrections(:,:)
  !
  ! Coupling
- complex(SP),allocatable         :: BS_mat(:,:)
  complex(SP),allocatable, target :: BS_V_left(:,:)
  complex(SP),allocatable, target :: BS_V_right(:,:)
  complex(SP),pointer             :: BS_overlap(:,:)
@@ -144,16 +143,15 @@ subroutine K_diago_driver(iq,W,X_static)
  l_slepc     = index(BSS_mode,'s')/=0
 #endif
  !
- l_diagx     = index(BSS_mode,'x')/=0
 #if defined _CHASE
  l_chase     = index(BSS_mode,'c')/=0
 #endif
  !
 #if defined _LDIAGO
- l_diago     = index(BSS_mode,'o')/=0.or. (     l_BS_photolum.and.(index(BSS_mode,'d')/=0))
+ l_odiago    = index(BSS_mode,'o')/=0.or. (     l_BS_photolum.and.(index(BSS_mode,'d')/=0))
  l_ldiago    = index(BSS_mode,'d')/=0.and. .not.l_BS_photolum
 #else
- l_diago     = index(BSS_mode,'o')/=0 .or. index(BSS_mode,'d')/=0
+ l_odiago     = index(BSS_mode,'o')/=0 .or. index(BSS_mode,'d')/=0
  l_ldiago    = .false.
 #endif
  !
@@ -164,13 +162,12 @@ subroutine K_diago_driver(iq,W,X_static)
    ! However, at this stage, it is not possible to know how the user configured yambo
    call warning("non-linear optics forces DP compilation and breaks Ldiago library interface in SP")
    l_ldiago = .false.
-   l_diago  = .true.
+   l_odiago  = .true.
  endif
 #endif
  !
- if(l_diago) Solver="Diago"
+ if(l_odiago) Solver="Odiago"
  if(l_ldiago) Solver="Ldiago" 
- if(l_diagx) Solver="Diagx"
  if(l_chase) Solver="ChASE"
  if(l_slepc) Solver="Slepc"
  !
@@ -226,17 +223,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !   to a distributed (SLEPC shells / or eventually BLACS) matrix
      ! - The resulting matrix is symmetrized
      !
-     if (l_diago.or.l_diagx) then
-       !
-       call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_V_right,iq,"DIAGO")
-       !
-       !if (.not.linear_algebra_is_parallel) call K_stored_in_a_big_matrix(i_BS_mat,BS_V_right,iq,"DIAGO")
-       !
-#if defined _SCALAPACK
-       !if (     linear_algebra_is_parallel) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
-#endif
-       !
-     endif
+     if (l_odiago) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
      !
 #if defined _CHASE
      if (l_chase) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
@@ -285,7 +272,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      ! Diagonalization of the excitonic hamiltonian
      !==============================================
-     if(l_diago.or.l_diagx.or.l_chase) call live_timing('BSK '//trim(Solver),1)
+     if(l_odiago.or.l_chase) call live_timing('BSK '//trim(Solver),1)
      ! 
      if (K_is_not_hermitian) then !coupling
        !
@@ -305,23 +292,8 @@ subroutine K_diago_driver(iq,W,X_static)
        endif
 #endif
        !
-       ! NEW <
-       ! if(l_diago)  call LINEAR_ALGEBRA_driver(DIAGO,M=BS_V_right,E_cmpl=BS_E,V_left=BS_V_left)
-       ! if(l_chase)  call LINEAR_ALGEBRA_driver(CHASE,M=BS_V_right,E_cmpl=BS_E,V_left=BS_V_left,neig=BSS_n_eig)
-       ! NEW >
-       !
-       ! OLD <
-       ! The following code should be replaced by the above lines
-       ! with a corresponding change in LINEAR_ALGEBRA_driver
-       if(l_diago.or.l_diagx) then
-         YAMBO_ALLOC(BS_mat,(BS_mat_dim,BS_mat_dim))
-         BS_mat=BS_V_right
-       endif
-       !
-       if (l_diagx) call error("Diagx not coded for non coupling case")
-       !
-       if (l_diago) then
-         call LINEAR_ALGEBRA_driver(DIAGO,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right)
+       if (l_odiago) then
+         call ODIAGO_driver(BS_H_dim,BSS_n_eig,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
        endif
        !
 #if defined _CHASE
@@ -330,9 +302,6 @@ subroutine K_diago_driver(iq,W,X_static)
          neigs_this_cpu = BSS_n_eig
        endif
 #endif
-       !
-       YAMBO_FREE(BS_mat)
-       ! OLD >
        !
 #if defined _SLEPC && !defined _NL
        if (l_slepc) then
@@ -352,14 +321,8 @@ subroutine K_diago_driver(iq,W,X_static)
        endif
 #endif
        !
-       if (l_diago) then
-         call LINEAR_ALGEBRA_driver(DIAGO,M=BS_V_right,E_real=BS_E_real)
-         BS_E=cmplx(BS_E_real,0._SP,kind=SP)
-         neigs_this_cpu = BSS_n_eig
-       endif
-       !
-       if (l_diagx) then
-         call LINEAR_ALGEBRA_driver(DIAGX,M=BS_V_right,E_real=BS_E_real,neig=BSS_n_eig)
+       if (l_odiago) then
+         call ODIAGO_driver(BS_K_dim(i_BS_mat),BSS_n_eig,M_blacs,BS_V_right,E_real=BS_E_real)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
@@ -395,7 +358,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !
 #endif
      !
-     if(l_diago.or.l_diagx.or.l_chase) call live_timing()
+     if(l_odiago.or.l_chase) call live_timing()
      !
 #if defined _LDIAGO
      if (l_ldiago) then
@@ -598,10 +561,7 @@ subroutine K_diago_driver(iq,W,X_static)
          endif
        endif
        !
-       ! In the old diago and diagx case BS_V_right is allocated by K_stored_in_a_big_matrix
-       if(l_slepc.or.l_chase) then
-         YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
-       endif
+       YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
        !
      end select
      !
@@ -788,16 +748,19 @@ subroutine K_diago_driver(iq,W,X_static)
      endif
 #endif
      !
-     ! LA for old diago solver and diagx solvers
-     if (l_diago .or. l_diagx) then 
-       call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,CPU_structure(4)%nCPU_lin_algebra_DIAGO)
+     if (l_chase.or.l_odiago) then 
+       if (l_chase)  ncpu_blacs=ncpu
+       if (l_odiago) then
+         ncpu_blacs=int(sqrt(real(ncpu,SP)))**2
+         if(ncpu_blacs<ncpu) then
+           !call warning("Setting ncpu_blacs to "//trim(intc(ncpu_blacs))// &
+           !&                             " while ncpu is "//trim(intc(ncpu)))
+           !call warning("Odiago implementation with non squared blacs grid is grids buggy")
+           call error("Odiago implementation with non squared blacs grid is grids buggy")
+         endif
+       endif
+       call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu_blacs)
      endif
-     !
-     ! LA for chase inteface. For now this is done inside
-     ! K_stored_in_a_blacs_matrix.F
-     !if (l_chase) then 
-     !  call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
-     !endif
      !
    end subroutine K_local_init
    !
@@ -841,7 +804,7 @@ subroutine K_diago_driver(iq,W,X_static)
        !
      endif
      !
-     if(l_diago.or.l_diagx) BSS_n_eig = BS_mat_dim
+     if(l_odiago.and.BSS_n_eig==0) BSS_n_eig = BS_mat_dim
      !
 #if defined _LDIAGO
      ! set a Ldiago defaults.

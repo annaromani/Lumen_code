@@ -2,4 +2,5 @@
  mod_ALLOC.o
  mod_ELPH.o
  mod_EXCPH.o
+ objects.o
 

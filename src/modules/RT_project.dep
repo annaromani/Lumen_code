@@ -12,4 +12,5 @@
  mod_interpolate_tools.o
  mod_plasma.o
  mod_real_time.o
+ objects.o
 

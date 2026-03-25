@@ -7,4 +7,5 @@
  mod_fields.o
  mod_magnetic.o
  mod_plasma.o
+ objects.o
 

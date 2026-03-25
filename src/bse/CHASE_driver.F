@@ -36,8 +36,6 @@ subroutine CHASE_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
  !
  integer   :: lib_in_use
  real(SP), allocatable :: E_raux(:)
- type (PAR_matrix)   :: M_loc,V_loc
- complex(SP), allocatable :: M_tmp(:,:)
  !
  lib_in_use=USE_LK
 #if defined _SCALAPACK 
@@ -47,7 +45,7 @@ subroutine CHASE_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
 !
  if (present(E_cmpl).and.ncpu>1) then
    !
-   call warning('Parallel non-herm diag not yet implemented. Switching to LK')
+   call warning('Parallel non-herm chase not yet implemented. Switching to LK')
    lib_in_use=USE_LK
    !
  endif

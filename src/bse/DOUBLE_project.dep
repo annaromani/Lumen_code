@@ -54,6 +54,7 @@
  K_stored_in_a_nest_matrix.o
  K_stored_in_a_slepc_matrix.o
  LDIAGO_driver.o
+ ODIAGO_driver.o
  PL_diago_residual.o
  PL_via_perturbative_inversion.o
 

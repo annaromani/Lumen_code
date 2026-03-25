@@ -85,4 +85,5 @@
  mod_wrapper_omp.o
  mod_xc_functionals.o
  mod_zeros.o
+ objects.o
 

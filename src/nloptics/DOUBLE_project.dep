@@ -20,4 +20,5 @@
  NL_test_collisions.o
  RK_basestep.o
  el_density_vbands.o
+ objects.o
 

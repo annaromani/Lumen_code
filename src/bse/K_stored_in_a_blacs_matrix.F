@@ -108,11 +108,9 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  use pars,           ONLY:cZERO,schlen
  use matrix,         ONLY:PAR_matrix
- use linear_algebra, ONLY:diago
  use interfaces,     ONLY:MATRIX_transfer
  use SLK_m,          ONLY:SLK_ORTHO
  use timing_m,       ONLY:timing
- use parallel_m,     ONLY:ncpu
  use BS,             ONLY:BS_blk,BS_H_dim,BS_Blocks_symmetrize_K
  use y_memory_alloc
  !
@@ -128,8 +126,6 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  timing_msg='Yambo to blacs redistr'
  call timing(trim(timing_msg),OPR='start')
- !
- call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu)
  !
  call BS_Blocks_symmetrize_K()
  ! 

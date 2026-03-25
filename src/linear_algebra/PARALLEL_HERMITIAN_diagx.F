@@ -4,7 +4,7 @@
 ! Copyright (C) 2016 The Yambo Team
 ! Copyright (C) 2004 WanT Group
 !
-! Authors (see AUTHORS file for details): CR AF
+! Authors (see AUTHORS file for details): CR AF DS
 !
 ! headers
 !
@@ -18,7 +18,6 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  use pars,           ONLY:SP
  use parallel_int,   ONLY:PP_redux_wait
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
- use linear_algebra, ONLY:LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS
  use matrix,         ONLY:PAR_matrix
  use timing_m,       ONLY:timing
  use y_memory_alloc
@@ -34,12 +33,12 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  integer            :: ivar(1)
  real(SP)           :: rvar(1)
  complex(SP)        :: cvar(1)
- type(LALGEBRA_WS)  :: WS
  real(SP), external :: PDLAMCH,PSLAMCH 
  real(SP)           :: abstol,orfac
- real(SP), allocatable :: Etemp(:),gap(:)
- integer,  allocatable :: iwork(:),ifail(:),iclustr(:)
- integer :: comm,ierr,myrank_slk_ortho_comm,slk_ortho_comm_size,nl
+ real(SP),    allocatable :: Etemp(:),gap(:)
+ real(SP),    allocatable :: v_real(:)
+ complex(SP), allocatable :: v_cmplx(:)
+ integer,     allocatable :: iwork(:),ifail(:),iclustr(:)
  !
  E=0.0_SP
  !
@@ -76,12 +75,12 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  lrwork = nint(real(rvar(1)))
  liwork = nint(real(ivar(1)))
  !
- YAMBO_ALLOC(WS%v_cmplx,(lwork))
- YAMBO_ALLOC(WS%v_real,(lrwork))
+ YAMBO_ALLOC(v_cmplx,(lwork))
+ YAMBO_ALLOC(v_real,(lrwork))
  YAMBO_ALLOC(iwork,(liwork))
  !
  Etemp = 0.0_SP
- V%blc(:,:,V%I) = 0.0
+ V%blc(:,:,1) = 0.0
  !
 #if defined _DOUBLE
  call PZHEEVx&
@@ -89,19 +88,20 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  call PCHEEVx&
 #endif
 &('V','I','U',N,M%blc(:,:,M%I),1,1,M%desc,1.0,1.0,1,neig,abstol,neigsl,neigsV,Etemp&
-&,orfac,V%blc(:,:,V%I),1,1,V%desc,WS%v_cmplx,lwork,WS%v_real,lrwork,iwork,liwork,ifail,iclustr,gap,info)
+&,orfac,V%blc(:,:,V%I),1,1,V%desc,v_cmplx,lwork,v_real,lrwork,iwork,liwork,ifail,iclustr,gap,info)
  !
  do ii = 1,neigsl
    E(ii) = Etemp(ii)
  enddo
  !
- if(info/=0) call LINEAR_ALGEBRA_error(subname,'performing P(Z/C)HEEVX')
+ if(info/=0) call error(trim(subname)//': P(Z/C)HEEV failed')
  !
  if (SLK_ORTHO%task/=0) E=0.0_SP
  !
  call PP_redux_wait(E,COMM=SLK_POOL%INTRA_comm)
  !
- call LINEAR_ALGEBRA_WS_reset(WS) 
+ YAMBO_FREE(v_cmplx)
+ YAMBO_FREE(v_real)
  YAMBO_FREE(iwork)
  !
  call timing('PARALLEL_HERMITIAN_diagx',OPR='stop')

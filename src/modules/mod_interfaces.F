@@ -158,6 +158,20 @@ module interfaces
    end subroutine CHASE_driver
 #endif
 
+
+   subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
+     use pars,          ONLY:SP
+     use matrix,        ONLY:PAR_matrix
+     integer, intent(in)           :: N
+     integer, intent(in)           :: neig
+     type(PAR_matrix), intent(in)  :: M_slk
+     complex(SP),      intent(out) :: V_right(N,neig)
+     complex(SP),      intent(out), optional :: V_left(N,neig)
+     real(SP),         intent(out), optional :: E_real(neig)
+     complex(SP),      intent(out), optional :: E_cmpl(neig)
+   end subroutine ODIAGO_driver
+
+
    subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
      use pars,           ONLY:SP
      use electrons,      ONLY:levels

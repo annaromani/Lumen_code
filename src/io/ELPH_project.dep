@@ -8,4 +8,5 @@
  io_gFsq.o
  variables_ELPH.o
  variables_RT_static.o
+ objects.o
 
