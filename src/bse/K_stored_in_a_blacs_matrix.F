@@ -116,7 +116,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  implicit none
  !
- type(PAR_matrix) :: M_blacs
+ type(PAR_matrix), intent(out) :: M_blacs
  !
  ! workspace
  !

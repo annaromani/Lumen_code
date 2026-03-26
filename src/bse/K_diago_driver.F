@@ -563,7 +563,10 @@ subroutine K_diago_driver(iq,W,X_static)
          endif
        endif
        !
-       YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
+       ! Onldy in the ldiago chase the eigenvectors are not duplicated in memory
+       if(l_slepc.or.l_chase.or.l_odiago) then
+         YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
+       endif
        !
      end select
      !
