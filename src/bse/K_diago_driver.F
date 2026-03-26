@@ -41,7 +41,7 @@ subroutine K_diago_driver(iq,W,X_static)
  use linear_algebra, ONLY:DIAGO
  use interfaces,     ONLY:K_diago_response_functions,ODIAGO_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
- &                        K_diago_perturbative, K_stored_in_a_big_matrix
+ &                        K_diago_perturbative
  use matrix,         ONLY:PAR_matrix
 #if defined _LDIAGO
  use interfaces,       ONLY:LDIAGO_driver,K_stored_in_a_blacs_matrix_ldiago
@@ -579,6 +579,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      YAMBO_FREE(BS_E_real)
      YAMBO_FREE(BS_corrections)
+     YAMBO_FREE(M_blacs%blc)
      YAMBO_FREE(BS_V_right)
      YAMBO_FREE(BS_V_left)
      YAMBO_FREE_P(BS_overlap)

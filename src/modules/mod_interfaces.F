@@ -329,13 +329,6 @@ module interfaces
      complex(SP), pointer, optional,   intent(in)  :: BS_Overlap(:,:) 
    end subroutine K_diago_L_res
    !
-   subroutine K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,what)
-    use pars,           ONLY:SP
-    integer,      intent(in) :: i_BS_mat,iq,BS_mat_dim
-    complex(SP), allocatable, target :: BS_mat(:,:) 
-    character(*), intent(in) :: what
-   end subroutine K_stored_in_a_big_matrix
-   !
    subroutine K_diago_perturbative(pert_dim, what, i_BS_mat, &
     &           BS_corrections, BS_VR, neigs_this_cpu, neig_shift, BS_VL, BS_Overlap) 
      use pars,           ONLY:SP

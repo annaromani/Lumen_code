@@ -31,7 +31,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
  use matrix,         ONLY:MATRIX_reset
  use timing_m,       ONLY:timing
  use BS_solvers,     ONLY:BS_mat
- use interfaces,     ONLY:K_stored_in_a_big_matrix
 #if defined _SCALAPACK
  use interfaces,     ONLY:MATRIX_transfer,MATRIX_duplicate
  use parallel_m,     ONLY:linear_algebra_is_parallel
