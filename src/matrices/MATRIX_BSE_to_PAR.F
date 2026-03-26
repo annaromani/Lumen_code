@@ -9,7 +9,7 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  !
  ! M_bse (WORLD) ->M_slk (SLK WORLD)
  !
- use pars,           ONLY:SP
+ use pars,           ONLY:SP,lchlen
  use SLK_m,          ONLY:SLK_POOL,n_pools
  use BS,             ONLY:BS_block,n_BS_blks,BS_K_dim,BS_K_coupling
  use parallel_m,     ONLY:ncpu,myid
@@ -24,6 +24,7 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  !
  ! Work Space
  !
+ character(lchlen) :: timing_msg
  integer :: i_B,i_c1,i_c2,GLOBAL_n_BS_blks(ncpu),&
 &           SLK_coordinates(SLK_POOL%n_CPU,4),K_coo(4),MAX_n_BS_blks,i_r,i_c,&
 &           SLK_cpu_id_in_the_world(SLK_POOL%n_CPU),i_pool
@@ -58,7 +59,12 @@ subroutine MATRIX_BSE_to_PAR( M_bse , M_slk )
  !  
  call PP_redux_wait(BSE_components)
 
- call live_timing('Redistributing BSE matrix in Blacs form',n_pools*SLK_POOL%n_CPU*ncpu)
+ timing_msg="Copying BSE kernel in matrix form"
+ if(ncpu>1) timing_msg='Redistributing BSE kernel in a serial matrix'
+#if defined _SCALAPACK
+ if(SLK_POOL%n_CPU>1) timing_msg='Redistributing BSE kernel in Blacs form'
+#endif
+ call live_timing(trim(timing_msg),n_pools*SLK_POOL%n_CPU*ncpu)
  !
  do i_pool=1,n_pools
    !

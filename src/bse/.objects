@@ -6,7 +6,7 @@ SLEPC_objects = K_stored_in_a_slepc_matrix.o K_shell_matrix.o K_stored_in_a_nest
 PARIO_objects = K_compress.o
 #endif
 #if defined _SCALAPACK
-SLK_objects = K_inversion_do_it_SLK.o K_stored_in_a_blacs_matrix.o
+SLK_objects = K_inversion_do_it_SLK.o
 #endif
 #if defined _SCALAPACK && defined _LDIAGO
 LDIAGO_objects = K_fill_block_cyclic.o LDIAGO_driver.o
@@ -25,6 +25,6 @@ objs =	K_blocks.o K_driver_init.o K_dipoles.o K_IP.o K_IP_sort.o \
         K_diago_driver.o K_diago_left_residuals.o K_diago_right_residuals.o K_diago_overlap_matrix.o \
         K_diago_perturbative.o K_diago_response_functions.o K_eps_interpolate.o \
         K_observables.o K_multiply_by_V.o K_multiply_by_V_transpose.o K_dot_product.o K_components_folded_in_serial_arrays.o \
-        K_stored_in_a_big_matrix.o \
+        K_stored_in_a_big_matrix.o K_stored_in_a_blacs_matrix.o \
         ODIAGO_driver.o \
         PL_diago_residual.o PL_via_perturbative_inversion.o $(SLEPC_objects) $(SLK_objects) $(LDIAGO_objects) $(CHASE_objects)

@@ -17,7 +17,7 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   use pars,           ONLY:cI,cONE,SP,schlen
   use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
     &                        BS_res_ares_n_mat,l_BS_ares_from_res
-  use parallel_m,     ONLY:MPI_COMM_WORLD
+  use parallel_m,     ONLY:MPI_COMM_WORLD,ncpu
   use com,            ONLY:msg
   use timing_m,       ONLY:timing
   use ldiago_interface
@@ -42,7 +42,8 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   integer(YDIAGO_INT)                :: SL_H_dim, ProcX, ProcY
   integer                            :: ierr !! mpi error code 
   !
-  timing_msg='Yambo to blacs redistr'
+  timing_msg='BSE kernel redistr'
+  if(ncpu>1) timing_msg='Yambo to blacs redistr'
   call timing(trim(timing_msg),OPR='start')
   !
   ! Start the function
@@ -103,7 +104,6 @@ end subroutine K_stored_in_a_blacs_matrix_ldiago
 #endif
 !
 !
-#if defined _SCALAPACK
 subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  use pars,           ONLY:cZERO,schlen
@@ -111,6 +111,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  use interfaces,     ONLY:MATRIX_transfer
  use SLK_m,          ONLY:SLK_ORTHO
  use timing_m,       ONLY:timing
+ use parallel_m,     ONLY:ncpu
  use BS,             ONLY:BS_blk,BS_H_dim,BS_Blocks_symmetrize_K
  use y_memory_alloc
  !
@@ -124,7 +125,10 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  integer :: rows(2)
  integer :: cols(2)
  !
- timing_msg='Yambo to blacs redistr'
+ timing_msg='BSE kernel redistr'
+#if defined _SCALAPACK
+ if(ncpu>1) timing_msg='Yambo to blacs redistr'
+#endif
  call timing(trim(timing_msg),OPR='start')
  !
  call BS_Blocks_symmetrize_K()
@@ -156,4 +160,3 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  call timing(trim(timing_msg),OPR='stop')
  !
 end subroutine K_stored_in_a_blacs_matrix_yambo
-#endif

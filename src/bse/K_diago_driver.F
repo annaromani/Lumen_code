@@ -42,13 +42,13 @@ subroutine K_diago_driver(iq,W,X_static)
  use interfaces,     ONLY:K_diago_response_functions,ODIAGO_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
  &                        K_diago_perturbative, K_stored_in_a_big_matrix
+ use matrix,         ONLY:PAR_matrix
 #if defined _LDIAGO
  use interfaces,       ONLY:LDIAGO_driver,K_stored_in_a_blacs_matrix_ldiago
  use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
 #endif
 #if defined _CHASE
  use interfaces,     ONLY:CHASE_driver
- use matrix,         ONLY:PAR_matrix
 #endif
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,VERIFY,OP_WR_CL,OP_RD_CL
@@ -99,9 +99,7 @@ subroutine K_diago_driver(iq,W,X_static)
  integer(YDIAGO_INT)   :: blacs_blk_size 
 #endif
 
-#if defined _CHASE
  type(PAR_matrix)      :: M_blacs
-#endif
  !
  ! Excitonic hamiltonian, residuals independent
  !==============================================
@@ -143,10 +141,14 @@ subroutine K_diago_driver(iq,W,X_static)
  !
 #if defined _SLEPC && !defined _NL
  l_slepc     = index(BSS_mode,'s')/=0
+#else
+ l_slepc     = .false.
 #endif
  !
 #if defined _CHASE
  l_chase     = index(BSS_mode,'c')/=0
+#else
+ l_chase     = .false.
 #endif
  !
 #if defined _LDIAGO
