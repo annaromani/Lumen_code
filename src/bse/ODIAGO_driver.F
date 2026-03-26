@@ -66,10 +66,10 @@ subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
      !... Hermitian case
      if (neig==N) call SERIAL_HERMITIAN_diago(N,M_slk%blc(:,:,1),E_real)
      if (neig< N) call SERIAL_HERMITIAN_diagx(N,M_slk%blc(:,:,1),E_real,neig)
+     V_right=M_slk%blc(:,:neig,1)
      !
    endif
    !
-   V_right=M_slk%blc(:,:neig,1)
    !
  else
    !

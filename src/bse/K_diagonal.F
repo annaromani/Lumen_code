@@ -183,7 +183,7 @@ subroutine K_add_E_diagonal_slk(M_blacs)
    if (i_r<=BS_K_dim(1)) then
      M_blacs%blc(i_r,i_r,1)=M_blacs%blc(i_r,i_r,1)+E_plus_W
    else if (l_cpl) then
-     M_blacs%blc(i_r,i_r,1)=M_blacs%blc(i_r,i_r,1)-conjg(E_plus_W)
+     M_blacs%blc(i_r,i_r,1)=M_blacs%blc(i_r,i_r,1)+conjg(E_plus_W)
    endif
    !
  enddo

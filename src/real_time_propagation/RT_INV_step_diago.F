@@ -20,8 +20,6 @@ subroutine RT_INV_step_diago(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  use pars,           ONLY:SP,cI
  use wrapper_omp,    ONLY:M_by_M_omp
- !use linear_algebra, ONLY:LIN_SYS
- !use interfaces,     ONLY:LINEAR_ALGEBRA_driver
  use real_time,      ONLY:Ho_plus_Sigma,RT_bands,RT_nbands,&
 &                         G_lesser_reference,I1_matrix
  !
