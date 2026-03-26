@@ -4,5 +4,4 @@
  io_RT_components.o
  io_RT_components_V_bands.o
  variables_NL.o
- objects.o
 

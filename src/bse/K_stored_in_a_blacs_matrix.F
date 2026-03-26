@@ -10,12 +10,12 @@
 #include <y_memory.h>
 !
 #if defined _LDIAGO
-subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_blk_size )
+subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, BS_mat_dim, diago_mat, mpicxt, blacs_blk_size )
   !
   ! Here we store the BSE kernel into a blacs matrix using K_fill_block_cyclic
   !
   use pars,           ONLY:cI,cONE,SP,schlen
-  use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
+  use BS,             ONLY:BS_blk,n_BS_blks,BS_K_coupling,&
     &                        BS_res_ares_n_mat,l_BS_ares_from_res
   use parallel_m,     ONLY:MPI_COMM_WORLD,ncpu
   use com,            ONLY:msg
@@ -28,6 +28,7 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   implicit none
   !
   integer,             intent(in)   :: i_BS_mat
+  integer,             intent(in)   :: BS_mat_dim
   type(c_ptr),         intent(out)  :: mpicxt, diago_mat
   integer(YDIAGO_INT), intent(out)  :: blacs_blk_size 
   !
@@ -48,8 +49,7 @@ subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_
   !
   ! Start the function
   !
-  if(     BS_K_coupling) SL_H_dim=BS_H_dim
-  if(.not.BS_K_coupling) SL_H_dim=BS_K_dim(i_BS_mat)
+  SL_H_dim=BS_mat_dim
   !
   ! Allocate the 2D block cyclic matrix
   !
@@ -112,7 +112,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_d
  use SLK_m,          ONLY:SLK_ORTHO
  use timing_m,       ONLY:timing
  use parallel_m,     ONLY:ncpu
- use BS,             ONLY:BS_blk,BS_H_dim,BS_Blocks_symmetrize_K
+ use BS,             ONLY:BS_blk,BS_Blocks_symmetrize_K
  use y_memory_alloc
  !
  implicit none
@@ -135,10 +135,10 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_d
  ! SLK matrix initialization before the Kernel loading
  !
  ! WORKS always
- call MATRIX_init( "SLK", M_blacs, BS_H_dim, 1 )
+ call MATRIX_init( "SLK", M_blacs, BS_mat_dim, 1 )
  M_blacs%kind="SLK"
  ! WORKS only for ncpu>1
- !call SLK_MATRIX_init( M_blacs, BS_H_dim, 1 )
+ !call SLK_MATRIX_init( M_blacs, BS_mat_dim, 1 )
  if (SLK_ORTHO%coordinate(1)==-1) then
    rows=(/1,1/)
    cols=(/1,1/)

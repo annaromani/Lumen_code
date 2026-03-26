@@ -9,5 +9,4 @@
  io_RT_components_header.o
  variables_RT_dynamic.o
  variables_RT_static.o
- objects.o
 

@@ -235,7 +235,7 @@ subroutine K_diago_driver(iq,W,X_static)
 #endif
      !
 #if defined _LDIAGO
-     if (l_ldiago) call K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_blk_size )
+     if (l_ldiago) call K_stored_in_a_blacs_matrix_ldiago(i_BS_mat,BS_mat_dim,diago_mat,mpicxt,blacs_blk_size)
 #endif
      !
 #if defined _SLEPC && !defined _NL

@@ -113,9 +113,10 @@ module interfaces
    end subroutine
    !
 #if defined _LDIAGO
-   subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, diago_mat, mpicxt, blacs_blk_size )
+   subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, BS_mat_dim, diago_mat, mpicxt, blacs_blk_size )
      use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
      integer,             intent(in)   :: i_BS_mat
+     integer,             intent(in)   :: BS_mat_dim
      type(c_ptr),         intent(out)  :: mpicxt, diago_mat
      integer(YDIAGO_INT), intent(out)  :: blacs_blk_size 
    end subroutine K_stored_in_a_blacs_matrix_ldiago
