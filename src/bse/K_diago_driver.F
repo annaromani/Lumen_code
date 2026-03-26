@@ -186,9 +186,10 @@ subroutine K_diago_driver(iq,W,X_static)
  if (isec(2)/=0) sec="="
  if (isec(2)==0) sec="+"
  call section(sec,trim(Solver)//' Solver @q'//trim(intc(iq)))
-
  !  
  call K_local_init()
+ !
+ call K_LA_init()
  !
  ! Eigenstates 2 DB ?
  !====================
@@ -227,10 +228,10 @@ subroutine K_diago_driver(iq,W,X_static)
      !   to a distributed (SLEPC shells / or eventually BLACS) matrix
      ! - The resulting matrix is symmetrized
      !
-     if (l_odiago) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
+     if (l_odiago) call K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_dim,iq)
      !
 #if defined _CHASE
-     if (l_chase) call K_stored_in_a_blacs_matrix_yambo(M_blacs)
+     if (l_chase) call K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_dim,iq)
 #endif
      !
 #if defined _LDIAGO
@@ -297,7 +298,7 @@ subroutine K_diago_driver(iq,W,X_static)
 #endif
        !
        if (l_odiago) then
-         call ODIAGO_driver(BS_H_dim,BSS_n_eig,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
+         call ODIAGO_driver(BS_H_dim,BSS_n_eig,ncpu_blacs,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
        endif
        !
 #if defined _CHASE
@@ -326,7 +327,7 @@ subroutine K_diago_driver(iq,W,X_static)
 #endif
        !
        if (l_odiago) then
-         call ODIAGO_driver(BS_K_dim(i_BS_mat),BSS_n_eig,M_blacs,BS_V_right,E_real=BS_E_real)
+         call ODIAGO_driver(BS_K_dim(i_BS_mat),BSS_n_eig,ncpu_blacs,M_blacs,BS_V_right,E_real=BS_E_real)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
@@ -565,8 +566,8 @@ subroutine K_diago_driver(iq,W,X_static)
          endif
        endif
        !
-       ! Onldy in the ldiago chase the eigenvectors are not duplicated in memory
-       if(l_slepc.or.l_chase.or.l_odiago) then
+       ! Only with ldiago the eigenvectors are not duplicated in memory
+       if(l_slepc.or.l_odiago) then
          YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
        endif
        !
@@ -788,21 +789,35 @@ subroutine K_diago_driver(iq,W,X_static)
      endif
 #endif
      !
-     if (l_chase.or.l_odiago) then 
-       if (l_chase)  ncpu_blacs=ncpu
-       if (l_odiago) then
-         ncpu_blacs=int(sqrt(real(ncpu,SP)))**2
-         if(ncpu_blacs<ncpu) then
-           !call warning("Setting ncpu_blacs to "//trim(intc(ncpu_blacs))// &
-           !&                             " while ncpu is "//trim(intc(ncpu)))
-           !call warning("Odiago implementation with non squared blacs grid is grids buggy")
-           call error("Odiago implementation with non squared blacs grid is grids buggy")
-         endif
+   end subroutine K_local_init
+   !
+   !
+   subroutine K_LA_init()
+     !
+     if (.not.(l_chase.or.l_odiago)) return
+     !
+     if (l_chase)  ncpu_blacs=ncpu
+     !
+     if (l_odiago) then
+       ncpu_blacs=int(sqrt(real(ncpu,SP)))**2
+       if(ncpu_blacs<ncpu) then
+         call warning("Parallel diago would fail with non squared blacs grids. Exit code 806/706/606")
+         call warning("Setting ncpu_blacs to "//trim(intc(ncpu_blacs))// &
+         &                            " while ncpu is "//trim(intc(ncpu)))
+         call warning("Matrix transfer would fail with ncpu_blacs < ncpu. Switching to serial LA")
+         ncpu_blacs=1
        endif
-       call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu_blacs)
      endif
      !
-   end subroutine K_local_init
+     if (BS_K_coupling.and.ncpu_blacs>1) then
+        call warning('Parallel non-herm diag not yet implemented. Switching to serial LA')
+        ncpu_blacs=1
+      endif
+     !
+     call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu_blacs)
+     !
+   end subroutine K_LA_init
+   !
    !
    subroutine BSS_n_eig_init()
      !

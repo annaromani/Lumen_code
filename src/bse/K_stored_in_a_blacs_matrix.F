@@ -104,7 +104,7 @@ end subroutine K_stored_in_a_blacs_matrix_ldiago
 #endif
 !
 !
-subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
+subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_dim,iq)
  !
  use pars,           ONLY:cZERO,schlen
  use matrix,         ONLY:PAR_matrix
@@ -117,6 +117,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  !
  implicit none
  !
+ integer,          intent(in)  :: ncpu_blacs,i_BS_mat,BS_mat_dim,iq
  type(PAR_matrix), intent(out) :: M_blacs
  !
  ! workspace
@@ -126,9 +127,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  integer :: cols(2)
  !
  timing_msg='BSE kernel redistr'
-#if defined _SCALAPACK
- if(ncpu>1) timing_msg='Yambo to blacs redistr'
-#endif
+ if(ncpu_blacs>1) timing_msg='Yambo to blacs redistr'
  call timing(trim(timing_msg),OPR='start')
  !
  call BS_Blocks_symmetrize_K()
@@ -151,11 +150,17 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs)
  M_blacs%blc=cZERO
  ! 
  ! WORKS always
- call MATRIX_transfer(M_out=M_blacs, M_bse= BS_blk )
- ! WORKS only for ncpu>1
- !call MATRIX_BSE_to_PAR(BS_blk,M_blacs)
- !
- if (SLK_ORTHO%coordinate(1)/=-1) call K_add_E_diagonal_slk(M_blacs)
+ if (ncpu_blacs==ncpu) then
+   call MATRIX_transfer(M_out=M_blacs, M_bse= BS_blk )
+   ! WORKS only for ncpu>1
+   !call MATRIX_BSE_to_PAR(BS_blk,M_blacs)
+   !
+   if (SLK_ORTHO%coordinate(1)/=-1) call K_add_E_diagonal_slk(M_blacs)
+ else if(ncpu_blacs==1) then
+   call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,M_blacs%blc(:,:,1),iq,"DIAGO")
+ else
+   call error("Filling of blacs matrix not coded with ncpu_blacs/=ncpu")
+ endif
  !
  call timing(trim(timing_msg),OPR='stop')
  !

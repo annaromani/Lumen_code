@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
+subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
  !
  use pars,          ONLY:SP,cZERO
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
@@ -26,6 +26,7 @@ subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
  !
  integer, intent(in)           :: N
  integer, intent(in)           :: neig
+ integer, intent(in)           :: ncpu_blacs
  type(PAR_matrix), intent(in)  :: M_slk
  complex(SP),      intent(out) :: V_right(N,neig)
  complex(SP),      intent(out), optional :: V_left(N,neig)
@@ -34,27 +35,19 @@ subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
  !
  ! Workspace
  !
- integer   :: lib_in_use,rows(2),cols(2)
+ integer   :: rows(2),cols(2)
  type (PAR_matrix)   :: V_loc
  !
- lib_in_use=USE_LK
-#if defined _SCALAPACK 
- if(ncpu>1) lib_in_use=USE_SLK
-#endif
-!
- if (present(E_cmpl).and.ncpu>1) then
-   call warning('Parallel non-herm diag not yet implemented. Switching to LK')
-   lib_in_use=USE_LK
- endif
+ if (present(E_cmpl).and.ncpu_blacs>1) call error("Parallel non-Hermitian diago not available")
  !
 #if defined _MAGMA
- if (lib_in_use==USE_LK .and. .not.magma_init_done) then
+ if (ncpu_blacs==1 .and. .not.magma_init_done) then
    call msg('sr','Initializing magma library in geev')
    call magma_setup()
  endif
 #endif
  !
- if (lib_in_use==USE_LK) then
+ if (ncpu_blacs==1) then
    !
    if (present(E_cmpl)) then
      !

@@ -152,7 +152,10 @@ subroutine K_inversion_driver(iq,W,E,k,q)
    !
  else
    !
-   call K_stored_in_a_big_matrix(1,BS_H_dim,BS_mat,iq,"INV")
+   if (.not.allocated(BS_mat)) then
+     YAMBO_ALLOC(BS_mat,(BS_H_dim,BS_H_dim))
+     call K_stored_in_a_big_matrix(1,BS_H_dim,BS_mat,iq,"INV")
+   endif
    !
    ! Diagonal removal
    !==================

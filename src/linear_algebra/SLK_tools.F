@@ -80,6 +80,11 @@ subroutine GRID2D_DIMS( grid_shape, nproc, nprow, npcol )
    end do
    !npcol = nproc / nprow
    nprow = nproc / npcol
+   IF (nprow>npcol) then
+     i=nprow
+     nprow=npcol
+     npcol=i
+   endif
  END IF
  !
  RETURN

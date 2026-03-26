@@ -159,11 +159,12 @@ module interfaces
 #endif
 
 
-   subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
+   subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      use pars,          ONLY:SP
      use matrix,        ONLY:PAR_matrix
      integer, intent(in)           :: N
      integer, intent(in)           :: neig
+     integer, intent(in)           :: ncpu_blacs
      type(PAR_matrix), intent(in)  :: M_slk
      complex(SP),      intent(out) :: V_right(N,neig)
      complex(SP),      intent(out), optional :: V_left(N,neig)
