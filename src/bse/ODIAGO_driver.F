@@ -43,11 +43,16 @@ subroutine ODIAGO_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
 #endif
 !
  if (present(E_cmpl).and.ncpu>1) then
-   !
    call warning('Parallel non-herm diag not yet implemented. Switching to LK')
    lib_in_use=USE_LK
-   !
  endif
+ !
+#if defined _MAGMA
+ if (lib_in_use==USE_LK .and. .not.magma_init_done) then
+   call msg('sr','Initializing magma library in geev')
+   call magma_setup()
+ endif
+#endif
  !
  if (lib_in_use==USE_LK) then
    !

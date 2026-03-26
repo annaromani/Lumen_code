@@ -19,7 +19,7 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  !                V_left(j)**H * M = E(j) * V_left(j)**H
  !  where V_left(j)**H denotes the conjugate transpose of V_left(j).
  !
- use pars,            ONLY: SP
+ use pars,            ONLY: SP,schlen
  use linear_algebra,  ONLY: LINEAR_ALGEBRA_error,LINEAR_ALGEBRA_WS_reset,LALGEBRA_WS,&
 &                           magma_init_done,magma_setup,la_xgeev
 #ifdef _MAGMA
@@ -34,25 +34,28 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  !
  implicit none
  !
+ character(schlen) :: subname
  integer           :: n
  complex(SP)       :: M(n,n),E(n),V_left(n,n),V_right(n,n)
  type(LALGEBRA_WS) :: WS
  !
  integer :: nthreads_save
- logical :: l_msg
 
-#if defined _DOUBLE
-#  define magmaf_xgeev_m magmaf_zgeev_m
+#if defined _MAGMA
+# if defined _DOUBLE
+#   define magmaf_xgeev_m magmaf_zgeev_m
+# else
+#   define magmaf_xgeev_m magmaf_cgeev_m
+# endif
+#endif
+
+#if defined _MAGMA
+ subname="SER_HERM_magma"
 #else
-#  define magmaf_xgeev_m magmaf_cgeev_m
+ subname="SER_HERM_lapack"
 #endif
 
- l_msg=.true.
-#if defined _FL
- l_msg=.false.
-#endif
-
- call timing('SERIAL_diago',OPR='start')
+ call timing(trim(subname),OPR='start')
  !
  ! Thread safety
 #if defined _OPENMP
@@ -67,16 +70,14 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  YAMBO_ALLOC(WS%v_real,(2*n))
  !
 #if defined _MAGMA
-   !
-   if (.not.magma_init_done) then
-     call msg('sr','Initializing magma library in geev')
-     call magma_setup()
-   endif
-   !   
+ if (magma_init_done) then
    call magmaf_xgeev_m('V','V', n,M,n,E,V_left,n,V_right,n,&
 &                      WS%v_cmplx,-1,WS%v_real,WS%i_fail)
-#else
+ else
+#endif
    call la_xgeev('V','V',n,M,n,E,V_left,n,V_right,n,WS%v_cmplx,-1,WS%v_real,WS%i_fail)
+#if defined _MAGMA
+ endif
 #endif
  !
  if(WS%i_fail /=0 ) call LINEAR_ALGEBRA_error(' _XGEEV_ ','WS%v_cmplx size query failed')
@@ -85,24 +86,21 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  deallocate(WS%v_cmplx)
  YAMBO_ALLOC(WS%v_cmplx,(WS%dim))
 
- !   
- ! use magma (if available)
- !   
 #if defined _MAGMA
- !   
- if(l_msg) call msg('sr','SERIAL diagonalization with magma')
- !
- call magmaf_xgeev_m('V','V', n,M,n,E,V_left,n,V_right,n,&
-&                    WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
- !   
-#else
- !   
- ! use lapack (otherwise)
- !   
- if(l_msg) call msg('sr','SERIAL diagonalization with lapack')
- !
- call la_xgeev('V','V',n,M,n,E,V_left,n,V_right,n,WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
- !   
+ if (magma_init_done) then
+   !   
+   ! use magma (if available)
+   call magmaf_xgeev_m('V','V', n,M,n,E,V_left,n,V_right,n,&
+   &                    WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
+   !
+ else   
+#endif
+   !   
+   ! use lapack (otherwise)
+   call la_xgeev('V','V',n,M,n,E,V_left,n,V_right,n,WS%v_cmplx,WS%dim,WS%v_real,WS%i_fail)
+   !
+#if defined _MAGMA
+ endif
 #endif
  !
  if(WS%i_fail /= 0) call LINEAR_ALGEBRA_error(' _XGEEV_ ','failed')
@@ -114,7 +112,6 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  call omp_set_num_threads(nthreads_save)
 #endif
  !   
- !
- call timing('SERIAL_diago',OPR='stop')
+ call timing(trim(subname),OPR='stop')
  !
 end subroutine
