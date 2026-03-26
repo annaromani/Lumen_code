@@ -18,7 +18,6 @@ subroutine SERIAL_HERMITIAN_diago(n,M,E)
  use magma,          ONLY: magmaf_cheevd_m, magmaf_zheevd_m
 #endif
  use timing_m,       ONLY: timing
- use com,            ONLY: msg
 #ifdef _OPENMP
  use omp_lib
 #endif

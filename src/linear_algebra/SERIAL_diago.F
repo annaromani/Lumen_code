@@ -26,7 +26,6 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
  use magma,           ONLY: magmaf_zgeev_m,magmaf_cgeev_m
 #endif
  use timing_m,        ONLY: timing
- use com,             ONLY: msg
 #ifdef _OPENMP
  use omp_lib
 #endif
@@ -50,9 +49,9 @@ subroutine SERIAL_diago(n,M,E,V_left,V_right)
 #endif
 
 #if defined _MAGMA
- subname="SER_HERM_magma"
+ subname="SER_GENERAL_magma"
 #else
- subname="SER_HERM_lapack"
+ subname="SER_GENERAL_lapack"
 #endif
 
  call timing(trim(subname),OPR='start')
