@@ -48,7 +48,7 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  !
  if (SLK_ORTHO%coordinate(1)==-1) return
  !
- call timing('PARALLEL_HERMITIAN_diagx',OPR='start')
+ call timing('PAR_HERM_diagx',OPR='start')
  !
  allocate(Etemp(N))
  allocate(ifail(N))
@@ -104,6 +104,6 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  YAMBO_FREE(v_real)
  YAMBO_FREE(iwork)
  !
- call timing('PARALLEL_HERMITIAN_diagx',OPR='stop')
+ call timing('PAR_HERM_diagx',OPR='stop')
  !
 end subroutine PARALLEL_HERMITIAN_diagx
