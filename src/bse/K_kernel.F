@@ -565,6 +565,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    if (trim(BS_blk(i_block)%mode)=="C" .and. iHxc==3 .and. .not.BS_cpl_K_corr) then
      BS_blk(i_block)%done(:,:)="t"
      if(BS_K_cutoff>0._SP) BS_max_val_CPU(myid+1)=maxval( (/BS_max_val_CPU(myid+1),abs(BS_blk(i_block)%mat(:,:))/) )
+     call timing(trim(section_title)//' init',OPR='stop')
      goto 100
    endif
    !
@@ -954,8 +955,6 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    !
    call timing(trim(section_title)//' sum',OPR='stop')
    !
-   call timing(trim(section_title)//' close',OPR='start')
-   !
    if(BS_K_cutoff>0._SP.and.l_write_kernel) &
 &     BS_max_val_CPU(myid+1)=maxval( (/BS_max_val_CPU(myid+1),abs(BS_blk(i_block)%mat(:,:))/) )
    !
@@ -972,6 +971,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    if(iHxc==3) call BS_correlation_oscillators_free(i_block,l_std_alg)
    !
 100 if(l_write_kernel.or.l_write_kernel_step) then
+     call timing(trim(section_title)//' IO',OPR='start')
 #if defined _PAR_IO
      call io_control(ACTION=WR,ID=ID)
      call io_BS_PAR_block(iq,i_block,ID,"full")
@@ -980,11 +980,11 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
      io_BS_err=io_BS(iq,X,ID)
 #endif
      if (io_BS_K.and.l_write_kernel_step) call K_block_free(i_block,"all")
+     call timing(trim(section_title)//' IO',OPR='stop')
    endif
    !
    call live_timing(steps=i_steps)
    !
-   call timing(trim(section_title)//' close',OPR='stop')
    !
  enddo block_loop
  !
