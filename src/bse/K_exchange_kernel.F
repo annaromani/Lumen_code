@@ -27,10 +27,12 @@ function K_exchange_kernel(iq, BS_n_g_exch, BS_T_grp_ip, i_Tp, BS_T_grp_ik, i_Tk
   type(BS_T_group), target, intent(in) :: BS_T_grp_ip,BS_T_grp_ik
   complex(SP) :: H_x
   !
+#ifdef _GPU
   complex(SP), pointer DEV_ATTR :: BS_T_grp_ip_O_x_p(:,:)
   complex(SP), pointer DEV_ATTR :: BS_T_grp_ik_O_x_p(:,:)
   integer :: ig
   real(SP):: H_x_r,H_x_i
+#endif
   !
   if (l_BS_magnons.and.n_sp_pol==2) then
     H_x=cZERO
@@ -88,10 +90,12 @@ function K_exchange_kernel_coupling(iq, BS_n_g_exch, BS_T_grp_ip, i_Tp, BS_T_grp
   type(BS_T_group), target, intent(in) :: BS_T_grp_ip,BS_T_grp_ik
   complex(SP) :: H_x
   !
+#ifdef _GPU
   complex(SP), pointer DEV_ATTR :: BS_T_grp_ip_O_x_p(:,:)
   complex(SP), pointer DEV_ATTR :: BS_T_grp_ik_O_x_p(:,:)
   integer :: ig
   real(SP):: H_x_r,H_x_i
+#endif
   !
   if (l_BS_magnons.and.n_sp_pol==2) then
     H_x=cZERO
