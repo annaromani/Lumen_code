@@ -34,7 +34,8 @@ subroutine YPP_SET_defaults()
 &                         Eh_pumped_pair_deltaE,Eh_pumped_pair_energy,Eh_pumped_pair_width,l_RealTime,l_RT_dos,&
 &                         l_RT_abs,l_RT_bands,l_RT_DBs,l_RT_density,l_RT_energy,l_RT_lifetimes,l_RT_occupations,&
 &                         l_RT_time,l_RT_X,Eh_pumped_pair_n_BZ_regions,Probe_Keyword ,Pump_Keyword,X_order,&
-&                         Eh_mu,Eh_temp,h_mu_autotune_thr,RT_p_format,l_RT_G_two_times,X_kind,Pump_path,l_RT_ARPES
+&                         Eh_mu,Eh_temp,h_mu_autotune_thr,RT_p_format,l_RT_G_two_times,X_kind,Pump_path,l_RT_ARPES,&
+&                         TRabs_Exc_Pol
  use fields,         ONLY:n_ext_fields
 #endif
 #if defined _YPP_ELPH
@@ -253,6 +254,7 @@ subroutine YPP_SET_defaults()
  !TR abs
  !
  RT_p_format="3col" 
+ TRabs_Exc_Pol=(/1._SP,0._SP,0._SP/)
  !
 #endif
  !
