@@ -113,6 +113,7 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_d
  use timing_m,       ONLY:timing
  use parallel_m,     ONLY:ncpu
  use BS,             ONLY:BS_blk,BS_Blocks_symmetrize_K
+ use BS_solvers,     ONLY:run_inversion,run_Haydock
  use y_memory_alloc
  !
  implicit none
@@ -161,6 +162,9 @@ subroutine K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_d
  else
    call error("Filling of blacs matrix not coded with ncpu_blacs/=ncpu")
  endif
+ !
+ ! Free the blocks immediately if not required.
+ if ( (.not.(run_Haydock.or.run_inversion)) ) call BS_blks_free(i_BS_mat)
  !
  call timing(trim(timing_msg),OPR='stop')
  !
