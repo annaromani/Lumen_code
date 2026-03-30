@@ -24,9 +24,10 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  !
  implicit none
  !
- integer           :: N,neig
- type(PAR_matrix)  :: M,V
- real(SP)          :: E(neig)
+ integer, intent(in)             :: N,neig
+ type(PAR_matrix), intent(in)    :: M
+ type(PAR_matrix), intent(inout) :: V
+ real(SP),         intent(out)   :: E(neig)
  !
  character(64)      :: subname="PARALLEL_HERMITIAN_diagr"
  integer            :: lwork,lrwork,liwork,neigsl,neigsV,info,nprow,npcol,ii
@@ -59,7 +60,7 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  liwork=-1
  !
 #if defined _DOUBLE
- call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1.0_DP, 1.0_DP, 1, neig, &
+ call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1.0_SP, 1.0_SP, 1, neig, &
  & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, cvar, lwork, rvar, lrwork, &
  & ivar, liwork, ifail, iclustr, info)
 #else
@@ -81,7 +82,7 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  V%blc(:,:,1) = 0.0
  !
 #if defined _DOUBLE
- call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._DP, 1._DP, 1, neig, &
+ call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, &
  & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, v_cmplx, lwork, v_real, lrwork, &
  & iwork, liwork, ifail, iclustr, info)
 #else
