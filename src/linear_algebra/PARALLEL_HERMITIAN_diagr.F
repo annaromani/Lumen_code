@@ -49,8 +49,8 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  !
  call timing('PAR_HERM_diagr',OPR='start')
  !
- allocate(Etemp(neig))
- allocate(ifail(neig))
+ allocate(Etemp(N))
+ allocate(ifail(N))
  allocate(iclustr(2*nprow*npcol))
  allocate(gap(nprow*npcol))
  !
