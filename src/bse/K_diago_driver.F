@@ -170,7 +170,7 @@ subroutine K_diago_driver(iq,W,X_static)
  endif
 #endif
  !
- if(l_odiago) Solver="Odiago"
+ if(l_odiago) Solver="Odiago (heevr)"
  if(l_ldiago) Solver="Ldiago" 
  if(l_chase) Solver="ChASE"
  if(l_slepc) Solver="Slepc"

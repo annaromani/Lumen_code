@@ -12,7 +12,7 @@
 !
 subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  !
- ! perform the diagonalization by using scalapack pheevcx
+ ! perform the diagonalization by using scalapack pheevx
  ! and conputes only neig eigenpairs
  !
  use pars,           ONLY:SP

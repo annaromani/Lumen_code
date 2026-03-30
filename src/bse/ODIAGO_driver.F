@@ -91,7 +91,7 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      !
      !... Hermitian case
      if(neig==N) call PARALLEL_HERMITIAN_diago( M_slk, V_loc, N, E_real )
-     if(neig< N) call PARALLEL_HERMITIAN_diagx( M_slk, V_loc, N, E_real, neig )
+     if(neig< N) call PARALLEL_HERMITIAN_diagr( M_slk, V_loc, N, E_real, neig )
      !
      call MATRIX_transfer( M_in = V_loc , M=V_right )
      YAMBO_FREE(V_loc%blc)
