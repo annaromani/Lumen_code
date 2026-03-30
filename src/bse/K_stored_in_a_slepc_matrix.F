@@ -41,7 +41,7 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  integer, intent(in)  :: i_BS_mat,iq
  Mat,     intent(out) :: slepc_mat
  !
- integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2),n_MatAssembly_steps,n_steps
+ integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2),n_steps_before_MatAssembly,n_min_steps
  character(lchlen)   :: live_msg,timing_msg
  PetscScalar         :: Mij,Mij_star
  PetscInt            :: H_pos(2),SL_K_dim(2),SL_H_dim
@@ -73,18 +73,14 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  call MatSetUp(slepc_mat,ierr)
  !
 
- !! Query local ownership to only insert rows owned by this rank
- !call MatGetOwnershipRange(slepc_mat,local_start,local_end,ierr)
- !local_rows = local_end - local_start
-
- n_MatAssembly_steps=2*n_BS_blks
- if(n_BS_blks_min>0)       n_steps=2
- if(n_BS_blks_min>10)      n_steps=4
- if(n_BS_blks_min>100)     n_steps=10
- if(n_BS_blks_min>10000)   n_steps=100
- if(n_BS_blks_min>1000000) n_steps=1000
+ n_steps_before_MatAssembly=2*n_BS_blks
+ if(n_BS_blks_min>0)       n_min_steps=2
+ if(n_BS_blks_min>10)      n_min_steps=4
+ if(n_BS_blks_min>100)     n_min_steps=10
+ if(n_BS_blks_min>10000)   n_min_steps=100
+ if(n_BS_blks_min>1000000) n_min_steps=1000
  !
- n_MatAssembly_steps=n_BS_blks/(n_BS_blks_min/n_steps)
+ n_steps_before_MatAssembly=n_BS_blks/(n_BS_blks_min/n_min_steps)
  !
  ! filling of the slepc_mat
  !
@@ -183,7 +179,8 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
      call K_block_free(i_B,"all")
    endif
    !
-   if ( mod(i_B,n_MatAssembly_steps)==0 .and. i_B<=(n_BS_blks_min/n_steps)*n_MatAssembly_steps ) then
+   if ( mod(i_B,n_steps_before_MatAssembly)==0 .and. &
+   & i_B<=(n_BS_blks_min/n_min_steps)*n_steps_before_MatAssembly ) then
      call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
      call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
    endif
