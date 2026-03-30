@@ -22,13 +22,14 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  !      | (-cI*K_c^*)  (-K_r^*) |
  !
  use pars,           ONLY:cI,cONE,lchlen
- use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
+ use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,n_BS_blks_min,&
  &                        BS_res_ares_n_mat,l_BSE_kernel_full,l_BS_ares_from_res,BS_ID
  use BS_solvers,     ONLY:BSS_eh_E,BSS_eh_W,BSS_perturbative_width,&
  &                        run_inversion,run_Haydock,BSS_kernel_last_stored_block
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:RD
  use LIVE_t,         ONLY:live_timing
+ use parallel_int,   ONLY:PP_wait
  use timing_m,       ONLY:timing
  use gpu_m,          ONLY:have_cuda
  !
@@ -40,7 +41,7 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  integer, intent(in)  :: i_BS_mat,iq
  Mat,     intent(out) :: slepc_mat
  !
- integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2)
+ integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2),n_MatAssembly_steps,n_steps
  character(lchlen)   :: live_msg,timing_msg
  PetscScalar         :: Mij,Mij_star
  PetscInt            :: H_pos(2),SL_K_dim(2),SL_H_dim
@@ -70,7 +71,21 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  endif
 
  call MatSetUp(slepc_mat,ierr)
- ! 
+ !
+
+ !! Query local ownership to only insert rows owned by this rank
+ !call MatGetOwnershipRange(slepc_mat,local_start,local_end,ierr)
+ !local_rows = local_end - local_start
+
+ n_MatAssembly_steps=2*n_BS_blks
+ if(n_BS_blks_min>0)       n_steps=2
+ if(n_BS_blks_min>10)      n_steps=4
+ if(n_BS_blks_min>100)     n_steps=10
+ if(n_BS_blks_min>10000)   n_steps=100
+ if(n_BS_blks_min>1000000) n_steps=1000
+ !
+ n_MatAssembly_steps=n_BS_blks/(n_BS_blks_min/n_steps)
+ !
  ! filling of the slepc_mat
  !
  live_msg="Redistribute BSE in slepc_mat"
@@ -168,14 +183,26 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
      call K_block_free(i_B,"all")
    endif
    !
+   if ( mod(i_B,n_MatAssembly_steps)==0 .and. i_B<=(n_BS_blks_min/n_steps)*n_MatAssembly_steps ) then
+     call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
+     call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
+   endif
+   !
    call live_timing(steps=1)
    !
  enddo
  !
  if (n_BS_blks>0) call live_timing()
  !
+ call PP_wait()
+ !
+ call live_timing("Final matrix assembly",1)
+ !
  call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
  call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
+ !
+ call live_timing(steps=1)
+ call live_timing()
  !
  call timing(trim(timing_msg),OPR='stop')
  !
