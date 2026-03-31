@@ -92,12 +92,12 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      !
      !... Hermitian case, QR diago
      if(neig==N) then
-       if (BSS_ldiago_solver=="o") then
-         ! QR Algorithm, less memory, slower (pcheev)
-         call PARALLEL_HERMITIAN_diago( M_slk, V_loc, N, E_real )
-       else
+       if (BSS_ldiago_solver=="d") then
          ! Divide and conquer more memory, faster, ideal for HPC (pcheevd), O(n3)
          call PARALLEL_HERMITIAN_diagd( M_slk, V_loc, N, E_real )
+       else
+         ! QR Algorithm, less memory, slower (pcheev)
+         call PARALLEL_HERMITIAN_diago( M_slk, V_loc, N, E_real )
        endif
      endif
      if(neig< N) then
