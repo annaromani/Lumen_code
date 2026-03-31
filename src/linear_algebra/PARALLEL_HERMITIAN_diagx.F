@@ -71,10 +71,10 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  & ivar, liwork, ifail, iclustr, gap, info)
 
  !
- lwork = nint(real(cvar(1)))
+ lwork = nint(real(cvar(1))*1.0001_SP)
  !lrwork=2*n + 2*n-2
- lrwork = nint(real(rvar(1)))
- liwork = nint(real(ivar(1)))
+ lrwork = nint(real(rvar(1))*1.0001_SP)
+ liwork = ivar(1)
  !
  YAMBO_ALLOC(v_cmplx,(lwork))
  YAMBO_ALLOC(v_real,(lrwork))

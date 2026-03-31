@@ -35,10 +35,10 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  real(SP)           :: rvar(1)
  complex(SP)        :: cvar(1)
  real(SP)           :: abstol,orfac
- real(SP),    allocatable :: Etemp(:),gap(:)
+ real(SP),    allocatable :: Etemp(:)
  real(SP),    allocatable :: v_real(:)
  complex(SP), allocatable :: v_cmplx(:)
- integer,     allocatable :: iwork(:),ifail(:),iclustr(:)
+ integer,     allocatable :: iwork(:)
  !
  E=0.0_SP
  !
@@ -51,9 +51,6 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  call timing('PAR_HERM_diagr',OPR='start')
  !
  allocate(Etemp(N))
- allocate(ifail(N))
- allocate(iclustr(2*nprow*npcol))
- allocate(gap(nprow*npcol))
  !
  lwork =-1
  lrwork=-1
@@ -69,9 +66,9 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  & ivar, liwork, info)
 
  !
- lwork = nint(real(cvar(1)))
- lrwork = nint(real(rvar(1)))
- liwork = nint(real(ivar(1)))
+ lwork = nint(real(cvar(1))*1.0001_SP)
+ lrwork = nint(real(rvar(1))*1.0001_SP)
+ liwork = ivar(1)
  !
  YAMBO_ALLOC(v_cmplx,(lwork))
  YAMBO_ALLOC(v_real,(lrwork))

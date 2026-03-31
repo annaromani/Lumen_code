@@ -56,8 +56,8 @@ subroutine PARALLEL_HERMITIAN_diago(M, V, N, E)
  !
  if(i_fail/=0) call error(trim(subname)//': P(Z/C)HEEV init failed with error '//trim(intc(i_fail)))
  !
- lwork = nint(real(cvar(1)))
- lrwork = nint(real(rvar(1)))
+ lwork = nint(real(cvar(1))*1.0001_SP)
+ lrwork = nint(real(rvar(1))*1.0001_SP)
  YAMBO_ALLOC(v_cmplx,(lwork))
  YAMBO_ALLOC(v_real,(lrwork))
  !

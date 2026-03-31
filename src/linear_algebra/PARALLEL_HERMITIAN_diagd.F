@@ -49,6 +49,7 @@ subroutine PARALLEL_HERMITIAN_diagd(M, V, N, E)
  liwork=-1
  rvar=0._SP
  cvar=cZERO
+ ivar=0
  !
 #if defined _DOUBLE
  call PZHEEVD&
@@ -60,8 +61,8 @@ subroutine PARALLEL_HERMITIAN_diagd(M, V, N, E)
  !
  if(i_fail/=0) call error(trim(subname)//': P(Z/C)HEED init failed with error '//trim(intc(i_fail)))
  !
- lwork = nint(real(cvar(1)))
- lrwork = nint(real(rvar(1)))
+ lwork = nint(real(cvar(1))*1.0001_SP)
+ lrwork = nint(real(rvar(1))*1.0001_SP)
  liwork = ivar(1)
  YAMBO_ALLOC(v_cmplx,(lwork))
  YAMBO_ALLOC(v_real,(lrwork))
