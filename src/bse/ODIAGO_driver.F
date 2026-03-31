@@ -17,6 +17,7 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
  use parallel_m,    ONLY:ncpu
  use interfaces,    ONLY:MATRIX_transfer
  use parallel_int,  ONLY:PP_redux_wait,PP_wait
+ use BS_solvers,    ONLY:BSS_ldiago_solver
 #if defined _SCALAPACK
  use SLK_m,         ONLY:SLK_ORTHO
 #endif
@@ -89,9 +90,26 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      YAMBO_ALLOC(V_loc%blc,(rows(1):rows(2),cols(1):cols(2),1))
      V_loc%blc=cZERO
      !
-     !... Hermitian case
-     if(neig==N) call PARALLEL_HERMITIAN_diago( M_slk, V_loc, N, E_real )
-     if(neig< N) call PARALLEL_HERMITIAN_diagr( M_slk, V_loc, N, E_real, neig )
+     !... Hermitian case, QR diago
+     if(neig==N) then
+       if (BSS_ldiago_solver=="o") then
+         ! QR Algorithm, less memory, slower (pcheev)
+         call PARALLEL_HERMITIAN_diago( M_slk, V_loc, N, E_real )
+       else
+         ! Divide and conquer more memory, faster, ideal for HPC (pcheevd), O(n3)
+         call PARALLEL_HERMITIAN_diagd( M_slk, V_loc, N, E_real )
+       endif
+     endif
+     if(neig< N) then
+       if (BSS_ldiago_solver=="x") then
+         ! Bisection and Inverse Iteration, ok for very few eigenvalues (pcheevx), O(n3)
+         call PARALLEL_HERMITIAN_diagx( M_slk, V_loc, N, E_real, neig )
+       else
+         ! Multiple Relatively Robust Representations, more scalable, better for
+         ! more eigenvalues or anyway for larger matrices (pcheevr), O(n2)
+         call PARALLEL_HERMITIAN_diagr( M_slk, V_loc, N, E_real, neig )
+       endif
+     endif
      !
      call MATRIX_transfer( M_in = V_loc , M=V_right )
      YAMBO_FREE(V_loc%blc)
