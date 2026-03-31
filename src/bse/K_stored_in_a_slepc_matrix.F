@@ -181,8 +181,8 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
    !
    if ( mod(i_B,n_steps_before_MatAssembly)==0 .and. &
    & i_B<=(n_BS_blks_min/n_min_steps)*n_steps_before_MatAssembly ) then
-     call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
-     call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
+     call MatAssemblyBegin(slepc_mat,MAT_FLUSH_ASSEMBLY,ierr)
+     call MatAssemblyEnd(slepc_mat,MAT_FLUSH_ASSEMBLY,ierr)
    endif
    !
    call live_timing(steps=1)
