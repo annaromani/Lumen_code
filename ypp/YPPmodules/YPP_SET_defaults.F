@@ -254,7 +254,7 @@ subroutine YPP_SET_defaults()
  !TR abs
  !
  RT_p_format="3col" 
- TRabs_Exc_Pol=(/1._SP,0._SP,0._SP/)
+ TRabs_Exc_Pol=(/-1._SP,-1._SP,-1._SP/)
  !
 #endif
  !
