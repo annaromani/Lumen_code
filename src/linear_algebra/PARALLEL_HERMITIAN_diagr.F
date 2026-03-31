@@ -15,7 +15,7 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  ! perform the diagonalization by using scalapack pheevr
  ! and conputes only neig eigenpairs
  !
- use pars,           ONLY:SP
+ use pars,           ONLY:SP,cZERO
  use parallel_int,   ONLY:PP_redux_wait
  use SLK_m,          ONLY:SLK_POOL,SLK_ORTHO
  use matrix,         ONLY:PAR_matrix
@@ -34,7 +34,6 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  integer            :: ivar(1)
  real(SP)           :: rvar(1)
  complex(SP)        :: cvar(1)
- real(SP)           :: abstol,orfac
  real(SP),    allocatable :: Etemp(:)
  real(SP),    allocatable :: v_real(:)
  complex(SP), allocatable :: v_cmplx(:)
@@ -44,7 +43,6 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  !
  nprow = SLK_ORTHO%grid(1)
  npcol = SLK_ORTHO%grid(2)
- orfac  = 0.001
  !
  if (SLK_ORTHO%coordinate(1)==-1) return
  !
@@ -55,6 +53,10 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  lwork =-1
  lrwork=-1
  liwork=-1
+ !
+ cvar=cZERO
+ rvar=0._SP
+ ivar=0
  !
 #if defined _DOUBLE
  call PZHEEVR&
@@ -74,8 +76,8 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  YAMBO_ALLOC(v_real,(lrwork))
  YAMBO_ALLOC(iwork,(liwork))
  !
- Etemp = 0.0_SP
- V%blc(:,:,1) = 0.0
+ Etemp = 0._SP
+ V%blc(:,:,1) = cZERO
  !
 #if defined _DOUBLE
  call PZHEEVR&

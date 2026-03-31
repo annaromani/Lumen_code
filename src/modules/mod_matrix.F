@@ -41,8 +41,8 @@ module matrix
    ! Dimensions
    integer :: I           ! Block element
    integer :: N           ! Global dimension (Parent Matrix)
-   integer :: rows(2)     ! Real
-   integer :: cols(2)     !
+   integer :: rows(2)     ! Rows coordinates
+   integer :: cols(2)     ! Cols coordinates
    integer :: nrows       ! 
    integer :: ncols       ! 
    !
@@ -56,6 +56,11 @@ module matrix
    integer :: lrwork
    integer :: liwork
    integer :: info
+   !
+   ! NM: This is a opaque pointer use to  matrix transfer.
+   ! i.e used when we do PAR_MAT to SLK and viceversa. 
+   !
+   type(C_PTR) :: c_handle = c_null_ptr
    !
    ! COMMs
    type(yMPI_comm) :: INTRA_comm

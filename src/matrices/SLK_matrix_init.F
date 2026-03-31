@@ -27,7 +27,11 @@ subroutine SLK_matrix_init(M_slk, N, N_blocks)
  !
  ! Work Space
  !
+ integer   :: blacs_block_size(2)
  integer   :: lld,SLK_block_size(2),nprow,npcol,myrow,mycol
+ !
+ ! Scalapack function
+ integer, external :: numroc
  !
  ! init global blacs grid
  !
@@ -48,13 +52,22 @@ subroutine SLK_matrix_init(M_slk, N, N_blocks)
  !
  SLK_block_size(1) = int(N/nprow)
  if (SLK_block_size(1)*nprow < N ) SLK_block_size(1)=SLK_block_size(1)+1
+ ! Alternative based on numroc
+ !SLK_block_size(1) = MAX(1, numroc(N, blacs_block_size, myrow, 0, nprow))
  !
  SLK_block_size(2) = int(N/npcol)
  if (SLK_block_size(2)*npcol < N ) SLK_block_size(2)=SLK_block_size(2)+1
+ ! Alternative based on numroc
+ !SLK_block_size(2) = NUMROC(N, blacs_block_size, mycol, 0, npcol)
  !
  lld = SLK_block_size(1)
  !
- call DESCINIT( M_slk%desc, N, N, SLK_block_size(1), SLK_block_size(2), 0, 0, SLK_ORTHO%ortho_cntx, lld, M_slk%info )
+ ! This would be the correct thing to do
+ !blacs_block_size=64
+ ! This is the present code logic, which is bad
+ blacs_block_size = SLK_block_size
+ !
+ call DESCINIT( M_slk%desc, N, N, blacs_block_size(1), blacs_block_size(2), 0, 0, SLK_ORTHO%ortho_cntx, lld, M_slk%info )
  !
  M_slk%rows       = (/myrow*SLK_block_size(1)+1,min((myrow+1)*SLK_block_size(1),N)/)
  M_slk%cols       = (/mycol*SLK_block_size(2)+1,min((mycol+1)*SLK_block_size(2),N)/)

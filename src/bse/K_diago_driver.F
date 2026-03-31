@@ -799,6 +799,11 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      if (l_chase)  ncpu_blacs=ncpu
      !
+     ! The following could be removed (and ncpu_blacs always set to ncpu)
+     ! if we change the blacs_block_size to 64 inside src/matrices/SLK_matrix_init.F
+     ! However, such change, which would imply a significant speed-up, would
+     ! also need to re-write src/matrices/MATRIX_BSE_to_PAR.F by using
+     ! the code inside K_stored_in_a_blacs_matrix_ldiago (or something similar)
      if (l_odiago) then
        ncpu_blacs=int(sqrt(real(ncpu,SP)))**2
        if(ncpu_blacs<ncpu) then
