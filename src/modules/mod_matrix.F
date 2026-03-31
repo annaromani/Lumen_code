@@ -57,10 +57,10 @@ module matrix
    integer :: liwork
    integer :: info
    !
-   ! NM: This is a opaque pointer use to  matrix transfer.
-   ! i.e used when we do PAR_MAT to SLK and viceversa. 
-   !
-   type(C_PTR) :: c_handle = c_null_ptr
+   !! NM: This is a opaque pointer use to  matrix transfer.
+   !! i.e used when we do PAR_MAT to SLK and viceversa. 
+   !!
+   !type(C_PTR) :: c_handle = c_null_ptr
    !
    ! COMMs
    type(yMPI_comm) :: INTRA_comm

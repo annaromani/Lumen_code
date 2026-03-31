@@ -72,15 +72,18 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
 
  call MatSetUp(slepc_mat,ierr)
  !
-
- n_steps_before_MatAssembly=2*n_BS_blks
- if(n_BS_blks_min>0)       n_min_steps=2
- if(n_BS_blks_min>10)      n_min_steps=4
- if(n_BS_blks_min>100)     n_min_steps=10
- if(n_BS_blks_min>10000)   n_min_steps=100
- if(n_BS_blks_min>1000000) n_min_steps=1000
+ n_min_steps=1
+ n_steps_before_MatAssembly=1
+ if(n_BS_blks>0) n_steps_before_MatAssembly=2*n_BS_blks
  !
- n_steps_before_MatAssembly=n_BS_blks/(n_BS_blks_min/n_min_steps)
+ if(n_BS_blks_min>0) then
+   if(n_BS_blks_min>1)       n_min_steps=2
+   if(n_BS_blks_min>10)      n_min_steps=4
+   if(n_BS_blks_min>100)     n_min_steps=10
+   if(n_BS_blks_min>10000)   n_min_steps=100
+   if(n_BS_blks_min>1000000) n_min_steps=1000
+   n_steps_before_MatAssembly=n_BS_blks/(n_BS_blks_min/n_min_steps)
+ endif
  !
  ! filling of the slepc_mat
  !
