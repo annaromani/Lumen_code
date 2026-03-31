@@ -66,8 +66,9 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
  abstol = PSLAMCH(SLK_ORTHO%ortho_cntx,'U')
  call PCHEEVx&
 #endif
-&('V','I','U',N,M%blc(:,:,M%I),1,1,M%desc,1.0,1.0,1,neig,abstol,neigsl,neigsV,Etemp,&
-&  orfac,V%blc(:,:,V%I),1,1,V%desc,cvar,lwork,rvar,lrwork,ivar,liwork,ifail,iclustr,gap,info)
+ & ('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, abstol, &
+ & neigsl, neigsV, Etemp, orfac, V%blc(:,:,1), 1,1, V%desc, cvar, lwork, rvar, lrwork, &
+ & ivar, liwork, ifail, iclustr, gap, info)
 
  !
  lwork = nint(real(cvar(1)))
@@ -87,8 +88,9 @@ subroutine PARALLEL_HERMITIAN_diagx(M, V, N, E, neig)
 #else
  call PCHEEVx&
 #endif
-&('V','I','U',N,M%blc(:,:,M%I),1,1,M%desc,1.0,1.0,1,neig,abstol,neigsl,neigsV,Etemp&
-&,orfac,V%blc(:,:,V%I),1,1,V%desc,v_cmplx,lwork,v_real,lrwork,iwork,liwork,ifail,iclustr,gap,info)
+ & ('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, abstol, &
+ & neigsl, neigsV, Etemp, orfac, V%blc(:,:,1), 1,1, V%desc, v_cmplx, lwork, v_real, lrwork, &
+ & iwork, liwork, ifail, iclustr, gap, info)
  !
  do ii = 1,neigsl
    E(ii) = Etemp(ii)

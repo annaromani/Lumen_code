@@ -60,14 +60,13 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  liwork=-1
  !
 #if defined _DOUBLE
- call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1.0_SP, 1.0_SP, 1, neig, &
- & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, cvar, lwork, rvar, lrwork, &
- & ivar, liwork, ifail, iclustr, info)
+ call PZHEEVR&
 #else
- call PCHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1.0_SP, 1.0_SP, 1, neig, &
- & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, cvar, lwork, rvar, lrwork, &
- & ivar, liwork, ifail, iclustr, info)
+ call PCHEEVR&
 #endif
+ & ('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, &
+ & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, cvar, lwork, rvar, lrwork, &
+ & ivar, liwork, info)
 
  !
  lwork = nint(real(cvar(1)))
@@ -82,14 +81,13 @@ subroutine PARALLEL_HERMITIAN_diagr(M, V, N, E, neig)
  V%blc(:,:,1) = 0.0
  !
 #if defined _DOUBLE
- call PZHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, &
- & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, v_cmplx, lwork, v_real, lrwork, &
- & iwork, liwork, ifail, iclustr, info)
+ call PZHEEVR&
 #else
- call PCHEEVR('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, &
- & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, v_cmplx, lwork, v_real, lrwork, &
- & iwork, liwork, ifail, iclustr, info)
+ call PCHEEVR&
 #endif
+ & ('V','I','U',N, M%blc(:,:,1), 1,1, M%desc, 1._SP, 1._SP, 1, neig, &
+ & neigsl, neigsV, Etemp, V%blc(:,:,1), 1,1, V%desc, v_cmplx, lwork, v_real, lrwork, &
+ & iwork, liwork, info)
  !
  do ii = 1,neigsl
    E(ii) = Etemp(ii)
