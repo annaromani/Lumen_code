@@ -96,9 +96,9 @@ subroutine K_stored_in_a_nest_matrix(i_BS_mat,iq,slepc_mat)
  !
  ! Fill the values of the explicit submatrices of the nest matrix
  !
- live_msg="Redistribute BSE in slepc_mat"
+ live_msg="Redistribute BSE in nested slepc mats"
  if (BSS_kernel_last_stored_block<n_BS_blks) &
- & live_msg="Load and distribute BSE in slepc mat"
+ & live_msg="Load and distribute BSE in nested slepc mats"
  if (n_BS_blks>0) call live_timing(trim(live_msg),n_BS_blks)
  !
  do i_B=1,n_BS_blks
