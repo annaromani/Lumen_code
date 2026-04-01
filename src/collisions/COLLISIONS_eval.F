@@ -37,6 +37,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  use global_XC,      ONLY:QP_SE_GW_NEQ,QP_SE_GW_QED
  use collision_ext,  ONLY:COLLISIONS_parallel_SC_structure,COLLISIONS_group,COLLISIONS_from_BSE,&
 &                        COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions,COLLISIONS_naming
+ use QP_m,           ONLY:QP_ng_Sc
  use X_m,            ONLY:X_t
  use plasma,         ONLY:EH_gas
  use frequency,      ONLY:w_samp
@@ -47,6 +48,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  use parallel_m,     ONLY:PAR_IND_G_k,PAR_IND_Bp_mat,PAR_IND_Plasma
  use parallel_int,   ONLY:PP_wait,PARALLEL_global_indexes,PARALLEL_WF_distribute,PARALLEL_WF_index
  use interfaces,     ONLY:WF_free
+ use com,            ONLY:msg
  use timing_m,       ONLY:timing
  !
  implicit none
@@ -54,7 +56,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  type(levels)  :: E
  type(w_samp)  :: Xw(2) 
  type(bz_samp) :: k,Xk,q
- type(X_t)     :: X(4)
+ type(X_t)     :: X
  !
  ! WorkSpace
  !
@@ -126,6 +128,11 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
  endif
  !
+ if (QP_ng_Sc<0) then
+   QP_ng_Sc=X%ng
+   call msg('s','[COLL] Correlation use all G-vectors of W ',QP_ng_Sc)
+  endif
+ !
  if (l_use_Hxc_collisions.or.l_use_COH_collisions) then
    !
    call section('+',trim(H_potential)//' (e-e correlation)')
@@ -141,13 +148,13 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      ! Check if I can use the BSE kernel for the collisions
      !
      call io_control(ACTION=OP_RD,COM=NONE,MODE=DUMP,ID=ID_head)
-     IO_err_BS=io_BS_header(1,X(2),ID_head,"connect")
+     IO_err_BS=io_BS_header(1,X,ID_head,"connect")
      BS_nk_bz =netcdf_dim_size(ID_head,"n_kpt_bz")
      BS_nk_ibz=netcdf_dim_size(ID_head,"n_kpt_ibz")
      allocate(BS_kpt_bz(3,BS_nk_bz))
      allocate(BS_kpt_ibz(3,BS_nk_ibz))
      call io_control(ACTION=RD_CL,COM=NONE,MODE=DUMP,ID=ID_head)
-     IO_err_BS=io_BS_header(1,X(2),ID_head,"full")
+     IO_err_BS=io_BS_header(1,X,ID_head,"full")
      !
      if (IO_err_BS/=0) then
         call error("Collisions from BSE, error while reading io_BS_header")
@@ -169,7 +176,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
    if (IO_err_COLL/=0) then
      !
-     call COLLISIONS_HXC(X(2),Xk,E,k,q,Xw(2),IO_err_BS,ID_mat)
+     call COLLISIONS_HXC(X,Xk,E,k,q,Xw(2),IO_err_BS,ID_mat)
      !
      ! COHSEX clean
      !--------------
@@ -230,7 +237,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
    if (IO_err_COLL/=0) then 
      !
-     call COLLISIONS_NEQ_GW_static(X(2),Xk,E,k,q,Xw(2)) 
+     call COLLISIONS_NEQ_GW_static(X,Xk,E,k,q,Xw(2)) 
      !
      ! GW_NEQ clean
      !--------------
