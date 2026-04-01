@@ -65,6 +65,8 @@ module BS
  logical :: l_BS_magnons
  logical :: l_BS_dichroism
  logical :: l_BS_optics
+ logical :: l_BS_optics_sp_up=.FALSE.
+ logical :: l_BS_optics_sp_dw=.FALSE.
  logical :: l_BS_esort
  logical :: l_BS_esort_indx
  logical :: l_BS_mespin

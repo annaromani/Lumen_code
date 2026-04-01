@@ -86,6 +86,7 @@ subroutine G_shells_finder()
      YAMBO_FREE(g_rot)
      YAMBO_FREE(g_phs)
      YAMBO_FREE(minus_G)
+     YAMBO_FREE(G_mod_indx)
    endif
    !
  endif

@@ -70,14 +70,17 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  use LIVE_t,         ONLY:live_timing
  use timing_m,       ONLY:timing
  use com,            ONLY:msg
+ use parallel_m,    ONLY:PP_indexes,myid,PP_indexes_reset
+ use parallel_int,  ONLY:PP_redux_wait,PARALLEL_index
  !
  use y_memory_alloc
  !
  implicit none
  !
- type(levels)  ::E
- type(bz_samp) ::k,q
- type(X_t)     ::X
+ type(levels)      ::E
+ type(bz_samp)     ::k,q
+ type(X_t)         ::X
+ type(PP_indexes)  :: px
  !
  ! Work Space
  !
@@ -224,7 +227,12 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !open(47, file = 'BS_mat_q.dat')
  !write (47,*) "# BS_mat_q rotated: each q, each exciton state alpha, all transitions" 
  !
+ call PP_indexes_reset(px)
+ call PARALLEL_index(px,uplim=elph_branches(2:2),low_range=elph_branches(1:1))
+ !
  do iq=1,q%nibz
+   !
+   !if (.not.px%element_1D(iq)) cycle
    !
    if(iq>1) call EXCPH_load_L(iq,X,'check','Lout')
    call EXCPH_load_L(iq,X,'load','Lout')
@@ -243,12 +251,15 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
      !
      do il=elph_branches(1),elph_branches(2)
        !
+       if (.not.px%element_1D(il)) cycle
        call EXCPH_gkkp_eval(iq_s,iq_bz,il,k,q,ID_gkkp) ! Calculation of the exc-ph matrix element at iq_bz
        !
        call live_timing(steps=1)
        !
      enddo
      !
+     call PP_redux_wait(EXCPH_Gkkp)
+     call PP_redux_wait(EXCPH_Gkkp_sq)
      !iq_db=Q_io_map(iq_bz)
      !if (iq_db/=iq_bz) write(*,*) "WARNING: iq_db/=iq_bz",iq_db,iq_bz
      !
@@ -266,6 +277,12 @@ subroutine EXCPH_gkkp_driver(E,k,q,X)
  !
  call live_timing( )
  !
+ !write(*,*) "Before PP_redux_wait"
+ !call PP_redux_wait(EXCPH_Gkkp)
+ !call PP_redux_wait(EXCPH_Gkkp_sq)
+ !write(*,*) "After PP_redux_wait"
+ !
+ call PP_indexes_reset(px)
  call BSS_free()
  call BSE_free()
  call BSE_in_free()
