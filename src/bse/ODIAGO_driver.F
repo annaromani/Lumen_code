@@ -90,8 +90,9 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      YAMBO_ALLOC(V_loc%blc,(rows(1):rows(2),cols(1):cols(2),1))
      V_loc%blc=cZERO
      !
-     !... Hermitian case, QR diago
+     ! Hermitian case
      if(neig==N) then
+       ! All eigenvectors required
        if (BSS_ldiago_solver=="d") then
          ! Divide and conquer more memory, faster, ideal for HPC (pcheevd), O(n3)
          call PARALLEL_HERMITIAN_diagd( M_slk, V_loc, N, E_real )
@@ -101,6 +102,7 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
        endif
      endif
      if(neig< N) then
+       ! Few eigenvectors required
        if (BSS_ldiago_solver=="x") then
          ! Bisection and Inverse Iteration, ok for very few eigenvalues (pcheevx), O(n3)
          call PARALLEL_HERMITIAN_diagx( M_slk, V_loc, N, E_real, neig )
