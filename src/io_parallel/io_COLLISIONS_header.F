@@ -14,7 +14,7 @@ integer function io_COLLISIONS_header(ID,COLL)
  use pars,          ONLY:schlen,IP,IP_YIO,LP_YIO
  use R_lattice,     ONLY:RIM_ng,RIM_n_rand_pts
  use collision_ext, ONLY:COLLISIONS_cutoff,COLL_bands,COLLISIONS_group,&
-&                        COLLISIONS_CV_only,COLL_bands_frozen
+&                        COLLISIONS_CV_only,COLL_bands_frozen,COLL_check_cutoff
  use IO_m,          ONLY:variable_exist,write_is_on,io_status,IO_OUTDATED_DB,read_is_on
  use IO_int,        ONLY:io_connect,io_header,io_elemental,ver_is_gt_or_eq, &
 &                        io_variable_bulk,def_variable_bulk,io_disconnect,  &
@@ -23,7 +23,7 @@ integer function io_COLLISIONS_header(ID,COLL)
  use global_XC,     ONLY:QP_SE_GW_NEQ,QP_SE_GW_QED,&
 &                        H_SE_FOCK,H_SE_COH,H_SE_SEX,H_SE_HARTREE
  use plasma,        ONLY:N_plasma_poles_global,PLASMA_redux_percent
- use QP_m,          ONLY:QP_ng_Sx,QP_ng_SH,SC_band_mixing,QP_QED_ng
+ use QP_m,          ONLY:QP_ng_Sc,QP_ng_Sx,QP_ng_SH,SC_band_mixing,QP_QED_ng
  use X_m,           ONLY:X_desc
  use drivers,       ONLY:l_elel_scatt,l_elphoton_scatt
  use timing_m,      ONLY:timing
@@ -116,6 +116,9 @@ integer function io_COLLISIONS_header(ID,COLL)
      SIZE_ = SIZE_-1
      ! COLLISIONS_cutoff is always zero in io_parallel
    endif
+   if (ver_is_gt_or_eq(ID,revision=27210).and.(V_kind_disk==H_SE_SEX.or.V_kind_disk==H_SE_HARTREE+H_SE_SEX)) then
+     SIZE_ = SIZE_+1
+   endif
 
    call io_elemental(ID,VAR="HXC_PARAMETERS",VAR_SZ=SIZE_,MENU=0)
    if (.not.ver_is_gt_or_eq(ID,revision=24190)) then
@@ -125,12 +128,16 @@ integer function io_COLLISIONS_header(ID,COLL)
    !
    if (V_kind_disk>=H_SE_HARTREE) then
      call io_elemental(ID,I0=QP_ng_SH,&
-&         VAR='Hartree  RL vectors             ',CHECK=.true.,OP=(/"=="/))
+&         VAR='Hartree  RL vectors             ',WARN=.not.COLL_check_cutoff,CHECK=COLL_check_cutoff,OP=(/"=="/))
    endif
    if (V_kind_disk==             H_SE_FOCK.or.V_kind_disk==             H_SE_SEX.or.&
 &        V_kind_disk==H_SE_HARTREE+H_SE_FOCK.or.V_kind_disk==H_SE_HARTREE+H_SE_SEX) then
      call io_elemental(ID,I0=QP_ng_Sx,&
-&         VAR='Exchange RL vectors             ',CHECK=.true.,OP=(/"=="/))
+&         VAR='Exchange RL vectors             ',WARN=.not.COLL_check_cutoff,CHECK=COLL_check_cutoff,OP=(/"=="/))
+   endif
+   if (V_kind_disk==             H_SE_SEX.or.V_kind_disk==H_SE_HARTREE+H_SE_SEX) then
+     call io_elemental(ID,I0=QP_ng_Sc,&
+&         VAR='Correlation RL vectors          ',WARN=.not.COLL_check_cutoff,CHECK=COLL_check_cutoff,OP=(/"=="/))
    endif
  endif
  !

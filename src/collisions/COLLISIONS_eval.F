@@ -36,7 +36,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  use hamiltonian,    ONLY:H_potential,H_kind
  use global_XC,      ONLY:QP_SE_GW_NEQ,QP_SE_GW_QED
  use collision_ext,  ONLY:COLLISIONS_parallel_SC_structure,COLLISIONS_group,COLLISIONS_from_BSE,&
-&                        COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions,COLLISIONS_naming
+&                        COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions,COLLISIONS_naming 
  use QP_m,           ONLY:QP_ng_Sc
  use X_m,            ONLY:X_t
  use plasma,         ONLY:EH_gas
@@ -292,6 +292,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      ! Define io_COLLs_header to handle either serial or parallel I/O
      !
      use COLL_interfaces,   ONLY:io_COLLISIONS
+     use collision_ext,     ONLY:COLL_check_cutoff
 #if defined _PAR_IO
      integer, external :: io_COLLs_header
 #endif
@@ -302,20 +303,24 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      !
      IO_err_COLL=-1
      !
+     COLL_check_cutoff=.TRUE.
+     !
      if (io_COLLs) then
        COLL_grp%IO_status=-1
        call io_control(ACTION=OP_RD_CL,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID)
        IO_err_COLL=io_COLLs_header(ID,COLL_grp)
 #if defined _PAR_IO
-       call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),ID=ID)
-       io_err_COLL=io_COLLISIONS(ID,COLL_grp)
-       if(io_err_COLL==0) then
-         call warning(" Restarting from previous database")
-         do i_coll=1,COLL_grp%N
-           IO_ACT=manage_action(RD_CL_IF_END,i_coll,1,COLL_grp%N)
-           call io_control(ACTION=IO_ACT,COM=REP,SEC=(/4/),ID=ID)
-           io_err_COLL=io_COLLISIONS(ID,COLL_grp,i_coll=i_coll)
-         enddo
+       if(IO_err_COLL==0) then
+         call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),ID=ID)
+         io_err_COLL=io_COLLISIONS(ID,COLL_grp)
+         if(io_err_COLL==0) then
+           call warning(" Restarting from previous database")
+           do i_coll=1,COLL_grp%N
+             IO_ACT=manage_action(RD_CL_IF_END,i_coll,1,COLL_grp%N)
+             call io_control(ACTION=IO_ACT,COM=REP,SEC=(/4/),ID=ID)
+             io_err_COLL=io_COLLISIONS(ID,COLL_grp,i_coll=i_coll)
+           enddo
+         endif
        endif
 #endif
        if (any(COLL_grp%IO_status/=1)) IO_err_COLL=-1

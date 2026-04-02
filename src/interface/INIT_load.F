@@ -280,8 +280,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'EXXRLvcs', '[XX] Exchange    RL components',QP_ng_Sx,G_unit)
  call it('f',defs,'UseNLCC',  '[XC] If present, add NLCC contributions to the charge density ',verb_level=V_qp)
  call it(defs,'VXCRLvcs', '[XC] XCpotential RL components',QP_ng_Vxc,G_unit)
- call it(defs,'CORRLvcs', '[GW] Correlation RL components [if -1 uses all the G-vectors of W_{G,Gp}]' &
-&  ,QP_ng_Sc,G_unit,verb_level=V_sc)
+ call it(defs,'CORRLvcs', '[GW] Correlation RL components [if -1 uses all the G-vectors of W_{G,Gp}]',QP_ng_Sc,G_unit)
 #if defined _QED
  call it(defs,'QEDRLvcs', '[QED] Vector-Potential G-vectors components',QP_QED_ng,G_unit)
 #endif
