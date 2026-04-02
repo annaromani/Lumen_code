@@ -7,6 +7,8 @@
 !
 subroutine PARALLEL_global_ScaLapacK( )
  !
+ ! This is use only by SLK_test.F 
+ !
  use linear_algebra,ONLY:INV
  use parallel_m,    ONLY:CPU_structure
  use parallel_int,  ONLY:PARALLEL_assign_chains_and_COMMs

@@ -38,7 +38,7 @@ subroutine MATRIX_transfer( M_in, M_bse, M, M_out, INDEX_in, INDEX_out, SND, RCV
  !
  ! Work Space
  !
- integer              :: N
+ integer              :: Nr,Nc
  character(3)         :: M_in_kind, M_out_kind
  logical              :: l_MAT_ARRAY
  type(PAR_matrix)     :: M_Xdn
@@ -48,7 +48,8 @@ subroutine MATRIX_transfer( M_in, M_bse, M, M_out, INDEX_in, INDEX_out, SND, RCV
  l_MAT_ARRAY=.FALSE.
  if (present(M)) then
    l_MAT_ARRAY=.TRUE.
-   N=size(M,1)
+   Nr=size(M,1)
+   Nc=size(M,2)
  endif
  !
  M_in_kind = "NAN"
@@ -106,9 +107,9 @@ subroutine MATRIX_transfer( M_in, M_bse, M, M_out, INDEX_in, INDEX_out, SND, RCV
    if (present(M_in)) then
      call MATRIX_PAR_to_from_PAR(M_in%blc(M_in%rows(1):M_in%rows(2),M_in%cols(1):M_in%cols(2),M_in%I)  ,&
 &                                M_in%rows, M_in%cols,&
-&                                M        , (/1,N/),   (/1,N/))
+&                                M        , (/1,Nr/),   (/1,Nc/))
    else if (present(M_out)) then
-     call MATRIX_PAR_to_from_PAR(M                     ,(/1,N/),   (/1,N/),&
+     call MATRIX_PAR_to_from_PAR(M        , (/1,Nr/),   (/1,Nc/),&
 &                                M_out%blc(M_out%rows(1):M_out%rows(2),M_out%cols(1):M_out%cols(2),M_out%I),&
 &                                M_out%rows,M_out%cols) 
    endif

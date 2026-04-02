@@ -157,6 +157,15 @@ elif test "$enable_slepc" = "yes" ; then
   SLEPC_check="E"
 fi
 #
+CHASE_check="-"
+if test "$internal_chase" = "yes" ; then
+  if test "$compile_chase" = "yes" ; then CHASE_check="C"; fi
+  if test "$compile_chase" = "no"  ; then CHASE_check="I"; fi
+  #if ! test "$with_chase_branch" = "none"; then CHASE_LIBS="$CHASE_LIBS (git branch $with_slepc_branch)"; fi
+elif test "$enable_chase" = "yes" ; then
+  CHASE_check="E"
+fi
+#
 LIBXC_check="E"
 if test "$internal_libxc" = "yes" ; then
   if test "$compile_libxc" = "yes"; then LIBXC_check="C"; fi
@@ -257,6 +266,7 @@ AC_SUBST(ELPA_check)
 AC_SUBST(LDIAGO_check)
 AC_SUBST(PETSC_check)
 AC_SUBST(SLEPC_check)
+AC_SUBST(CHASE_check)
 AC_SUBST(PETSC_info)
 AC_SUBST(SLEPC_info)
 #
@@ -357,6 +367,13 @@ ACX_STRIPE_SUBPATH($SCALAPACK_INCS,"INC")
 SCALAPACK_INCS_R=$STRIPE
 AC_SUBST(SCALAPACK_LIBS_R)
 AC_SUBST(SCALAPACK_INCS_R)
+#
+ACX_STRIPE_SUBPATH($CHASE_LIBS,"LIB")
+CHASE_LIBS_R=$STRIPE
+ACX_STRIPE_SUBPATH($CHASE_INCS,"INC")
+CHASE_INCS_R=$STRIPE
+AC_SUBST(CHASE_LIBS_R)
+AC_SUBST(CHASE_INCS_R)
 #
 ACX_STRIPE_SUBPATH($ELPA_LIBS,"LIB")
 ELPA_LIBS_R=$STRIPE

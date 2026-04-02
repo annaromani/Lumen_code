@@ -39,9 +39,6 @@ subroutine K_driver_init(what,iq,Ken,Xk)
 #if defined _CUDA
  use TDDFT,        ONLY:FXC_mode
 #endif
-#if defined _CUDA
- use TDDFT,        ONLY:FXC_mode
-#endif
  !
  implicit none
  !

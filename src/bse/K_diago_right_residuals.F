@@ -6,7 +6,7 @@
 ! Authors (see AUTHORS file for details): DS NM
 !
 subroutine K_diago_R_res(mode, i_BS_mat, BS_E, &
-  &                  neigs_this_cpu, neig_shift, BS_R_right, BS_V_right) 
+&                  neigs_this_cpu, neig_shift, BS_R_right, BS_V_right)
  !
  !  The right eigenvector v(j) of A satisfies
  !                   A * v(j) = lambda(j) * v(j)
@@ -60,8 +60,9 @@ subroutine K_diago_R_res(mode, i_BS_mat, BS_E, &
  &             " and Rres. ("//trim(intc(n_size))//"), mode= "//trim(mode))
  !
  n_size=size(BS_V_right,dim=2)
+ ! NB: in chase PR "/=" was changed in "<", thus accepting ">" chase
  if (n_size /= neigs_this_cpu) &
- &  call error("Different size for eigen. ("//trim(intc(neig_total))//")"// &
+ &  call error("Different size for eigen. ("//trim(intc(neigs_this_cpu))//")"// &
  &             " and Rres. ("//trim(intc(n_size))//"), mode= "//trim(mode))
  !
  velocity_correction=(index(mode,"opt")>0).and.(trim(global_gauge)=="velocity")
@@ -81,6 +82,7 @@ subroutine K_diago_R_res(mode, i_BS_mat, BS_E, &
  n_steps=neigs_this_cpu
  step_shift=neig_shift
  res_shift=0
+ !
  if (l_duplicate_mem_par) then
    call PP_indexes_reset(px)
    call PARALLEL_index(px,(/neig_total/),CONSECUTIVE=.TRUE.)

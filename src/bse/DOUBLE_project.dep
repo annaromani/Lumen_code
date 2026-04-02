@@ -1,4 +1,5 @@
  BSE_utilities.o
+ CHASE_driver.o
  EPS_via_perturbative_inversion.o
  K_Haydock.o
  K_Haydock_gather.o
@@ -49,9 +50,11 @@
  K_shell_matrix.o
  K_solvers.o
  K_stored_in_a_big_matrix.o
+ K_stored_in_a_blacs_matrix.o
  K_stored_in_a_nest_matrix.o
  K_stored_in_a_slepc_matrix.o
  LDIAGO_driver.o
+ ODIAGO_driver.o
  PL_diago_residual.o
  PL_via_perturbative_inversion.o
 
