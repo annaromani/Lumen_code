@@ -28,7 +28,13 @@ AC_LANG_CASE([C], [
 [C++], [
         AC_REQUIRE([AC_PROG_CXX])
         AC_ARG_VAR(MPICXX,[Parallel C++ compiler command])
-        AC_CHECK_PROGS(MPICXX_test,$MPICXX mpic++ mpiCC mpCC hcp mpxlC mpxlC_r cmpic++, $CXX)
+        if test x"$MPICXX" = "x" ; then
+          AC_CHECK_PROGS(MPICXX_test,$MPICXX mpic++ mpiCC mpCC hcp mpxlC mpxlC_r cmpic++, $CXX)
+        else
+          AC_CHECK_FILES($MPICXX,
+                         [MPICXX_test=$MPICXX],
+                         [AC_CHECK_PROGS(MPICXX_test,$MPICXX mpic++ mpiCC mpCC hcp mpxlC mpxlC_r cmpic++, $CXX)])
+        fi
         MPICXX=$MPICXX_test
         CXX=$MPICXX_test
 ],

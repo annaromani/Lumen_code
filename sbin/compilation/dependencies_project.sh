@@ -53,6 +53,7 @@ do
  for file in $sources
  do
   obj=`echo $file| sed 's/\.F/\.o/g'| sed 's/\.c/\.o/g'| sed 's/\.f/\.o/g'`
+  if [ "$obj" == "objects.o" ] ; then continue ; fi
   if [ "$PJ" == "_DOUBLE" ] ; then
     sources_pj_dependent+=" ${obj}\n"
     continue
