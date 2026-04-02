@@ -16,20 +16,18 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
 &                                B,B_slk,&
 &                                C,C_slk,&
 &                                V_left,V_right,E_real,E_cmpl,&
-&                                SVD_digits,det)
+&                                SVD_digits,det,neig)
  !
  ! Operations:
  !
  ! * INV:   M_slk/M => M_slk/M
- !
- ! * DIAGO: M => M + E_real/E_cmpl + V_left/V_right (SLK external arrays still to implement)
  !
  ! * LIN_SYSTEM: M_slk/M + B_slk/B => B_slk/B 
  !
  ! * MAT_MUL: M_slk/M + B_slk/B => C_slk/C 
  !
  use pars,          ONLY:SP,cONE,cZERO
- use linear_algebra,ONLY:INV,DIAGO,LIN_SYS,SVD_INV,MAT_MUL,USE_LK,USE_SLK
+ use linear_algebra,ONLY:INV,LIN_SYS,SVD_INV,MAT_MUL,USE_LK,USE_SLK
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
  use wrapper,       ONLY:M_by_M
  use parallel_m,    ONLY:linear_algebra_is_parallel,ncpu
@@ -38,6 +36,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  use timing_m,      ONLY:timing
  use gpu_m,         ONLY:have_gpu
  use devxlib,       ONLY:devxlib_mapped
+ use mpi,           ONLY:MPI_Wtime
  use y_memory_alloc
  !
  implicit none
@@ -57,6 +56,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  complex(SP),      optional :: E_cmpl(:)
  integer,          optional :: SVD_digits 
  complex(SP),      optional :: det
+ integer,          optional :: neig
  !
  ! Work Spaces ...
  !
@@ -64,6 +64,8 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  integer             :: N,lib_in_use
  type (PAR_matrix)   :: M_loc,B_loc,C_loc,V_loc
  logical             :: USE_GPU
+ double precision    :: starttime,endtime
+ character(len=20)   :: matfilename
  !
  call timing("LINEAR ALGEBRA",OPR="start")
  !
@@ -93,27 +95,19 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  if (present(lib_in)) then
    lib_in_use=lib_in
  endif
- if (idriver==SVD_INV.or.(idriver==DIAGO.and.present(E_cmpl))) lib_in_use=USE_LK 
+ if (idriver==SVD_INV) lib_in_use=USE_LK 
  if (.not.linear_algebra_is_parallel) lib_in_use=USE_LK
  !
  ! whether to use CUDA lib
  !
- if (idriver==SVD_INV.or.idriver==INV.or.idriver==DIAGO&
-&                    .or.idriver==MAT_MUL) USE_GPU=.false.
+ if (idriver==SVD_INV.or.idriver==INV.or.idriver==MAT_MUL) USE_GPU=.false.
  if (USE_GPU) lib_in_use=USE_LK
  !
 #if defined _SCALAPACK
- if (idriver==DIAGO.and.present(E_cmpl).and.ncpu>1) then
-   !
-   call warning('Parallel non-herm diag not yet implemented. Switching to LK')
-   lib_in_use=USE_LK
-   !
- endif
-
  !
  ! =============== PARALLEL SECTION ==========================================================
  !
- if (lib_in_use==USE_SLK.and..not.USE_GPU) then 
+ if(lib_in_use==USE_SLK.and..not.USE_GPU) then 
    !
    if (.not.present(M_slk)) then
      !
@@ -128,18 +122,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
      !
    endif
    !
-   if (idriver==DIAGO) then
-     !
-     call MATRIX_init("SLK",  V_loc, N, 1 )
-     YAMBO_ALLOC(V_loc%blc,(V_loc%BLCrows(1):V_loc%BLCrows(2),V_loc%BLCcols(1):V_loc%BLCcols(2),V_loc%Nb))
-     !
-     call PARALLEL_HERMITIAN_diagonalization( M_loc, V_loc, N, E_real )
-     !
-     call MATRIX_transfer( M_in = V_loc , M=M )
-     YAMBO_FREE(V_loc%blc)
-     call MATRIX_reset(V_loc)
-     !
-   else if (idriver==INV) then
+   if (idriver==INV) then
      !
      if (present(M)) then
        call PARALLEL_inversion( M_loc, N ) 
@@ -227,29 +210,6 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
      if(present(det)) det=det_
    endif
    !
-   ! ###> SERIAL DIAGONALIZATION
-   !
-   if (idriver==DIAGO) then
-     !
-     if (present(E_cmpl)) then
-       !
-       !... non-Hermitian case
-       if (present(M_slk)) then
-         call SERIAL_diagonalization(N,M_slk%blc(:,:,M_slk%I),E_cmpl,V_left,V_right)
-       else
-         call SERIAL_diagonalization(N,M,E_cmpl,V_left,V_right)
-       endif
-     else
-       !
-       !... Hermitian case
-       if (present(M_slk)) then
-         call SERIAL_HERMITIAN_diagonalization(N,M_slk%blc(:,:,M_slk%I),E_real)
-       else
-         call SERIAL_HERMITIAN_diagonalization(N,M,E_real)
-       endif
-     endif
-     !
-   endif
    !
    ! ####> LINEAR SYSTEM SOLUTION
    !

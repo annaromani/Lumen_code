@@ -31,7 +31,6 @@ subroutine K_inversion_driver(iq,W,E,k,q)
  use matrix,         ONLY:MATRIX_reset
  use timing_m,       ONLY:timing
  use BS_solvers,     ONLY:BS_mat
- use interfaces,     ONLY:K_stored_in_a_big_matrix
 #if defined _SCALAPACK
  use interfaces,     ONLY:MATRIX_transfer,MATRIX_duplicate
  use parallel_m,     ONLY:linear_algebra_is_parallel
@@ -152,7 +151,10 @@ subroutine K_inversion_driver(iq,W,E,k,q)
    !
  else
    !
-   call K_stored_in_a_big_matrix(1,BS_H_dim,BS_mat,iq,"INV")
+   if (.not.allocated(BS_mat)) then
+     YAMBO_ALLOC(BS_mat,(BS_H_dim,BS_H_dim))
+     call K_stored_in_a_big_matrix(1,BS_H_dim,BS_mat,iq,"INV")
+   endif
    !
    ! Diagonal removal
    !==================

@@ -29,6 +29,8 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:RD
  use LIVE_t,         ONLY:live_timing
+ use parallel_int,   ONLY:PP_redux_wait,PP_wait
+ use parallel_m,     ONLY:myid,ncpu
  use timing_m,       ONLY:timing
  use gpu_m,          ONLY:have_cuda
  !
@@ -40,13 +42,15 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  integer, intent(in)  :: i_BS_mat,iq
  Mat,     intent(out) :: slepc_mat
  !
- integer     :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2)
- character(lchlen)   :: live_msg
+ integer     :: i_c,i_r,i_Tk,i_Tp,i_B,j_B,H_shift(2),n_steps_before_MatAssembly,n_min_steps,&
+ &              n_BS_blks_min,n_BS_blks_now,n_BS_blks_CPUs(ncpu)
+ character(lchlen)   :: live_msg,timing_msg
  PetscScalar         :: Mij,Mij_star
  PetscInt            :: H_pos(2),SL_K_dim(2),SL_H_dim
  PetscErrorCode      :: ierr
  !
- call timing('BSE mat slepc redist',OPR='start')
+ timing_msg='Yambo to slepc redistr'
+ call timing(trim(timing_msg),OPR='start')
  !
  if (l_BSE_kernel_full) call error("Slepc with matrix not coded with full BSE mode")
  !
@@ -69,20 +73,46 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
  endif
 
  call MatSetUp(slepc_mat,ierr)
- ! 
+ !
+ n_BS_blks_now=0
+ do i_B=1,n_BS_blks
+   if (i_BS_mat/=BS_blk(i_B)%ira_k .and. BS_res_ares_n_mat==2) cycle
+   n_BS_blks_now=n_BS_blks_now+1
+ enddo
+ !
+ n_BS_blks_CPUs=0
+ n_BS_blks_CPUs(myid+1)=n_BS_blks_now
+ call PP_redux_wait(n_BS_blks_CPUs)
+ n_BS_blks_min=minval(n_BS_blks_CPUs)
+ !
+ n_min_steps=1
+ n_steps_before_MatAssembly=1
+ if(n_BS_blks_now>0) n_steps_before_MatAssembly=2*n_BS_blks_now
+ !
+ if(n_BS_blks_min>0) then
+   if(n_BS_blks_min>1)       n_min_steps=2
+   if(n_BS_blks_min>10)      n_min_steps=4
+   if(n_BS_blks_min>100)     n_min_steps=10
+   if(n_BS_blks_min>10000)   n_min_steps=100
+   if(n_BS_blks_min>1000000) n_min_steps=1000
+   n_steps_before_MatAssembly=n_BS_blks_now/(n_BS_blks_min/n_min_steps)
+ endif
+ !
  ! filling of the slepc_mat
  !
- live_msg="Redistribute BSE in slepc_mat"
+ live_msg="Redistribute BSE in slepc mat"
  if (BSS_kernel_last_stored_block<n_BS_blks) &
  & live_msg="Load and distribute BSE in slepc mat"
  if (n_BS_blks>0) call live_timing(trim(live_msg),n_BS_blks)
  !
+ j_B=0
  do i_B=1,n_BS_blks
    !
    i_Tk  =BS_blk(i_B)%iT_k
    i_Tp  =BS_blk(i_B)%iT_p
    !
    if (i_BS_mat/=BS_blk(i_B)%ira_k .and. BS_res_ares_n_mat==2) cycle
+   j_B=j_B+1
    !
    H_shift=0
    if(BS_blk(i_B)%mode=="C") H_shift(2)=BS_K_dim(1)
@@ -167,15 +197,28 @@ subroutine K_stored_in_a_slepc_matrix(i_BS_mat,iq,slepc_mat)
      call K_block_free(i_B,"all")
    endif
    !
+   if ( mod(i_B,n_steps_before_MatAssembly)==0 .and. &
+   & j_B<=(n_BS_blks_min/n_min_steps)*n_steps_before_MatAssembly ) then
+     call MatAssemblyBegin(slepc_mat,MAT_FLUSH_ASSEMBLY,ierr)
+     call MatAssemblyEnd(slepc_mat,MAT_FLUSH_ASSEMBLY,ierr)
+   endif
+   !
    call live_timing(steps=1)
    !
  enddo
  !
  if (n_BS_blks>0) call live_timing()
  !
+ call PP_wait()
+ !
+ call live_timing("Final matrix assembly",1)
+ !
  call MatAssemblyBegin(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
  call MatAssemblyEnd(slepc_mat,MAT_FINAL_ASSEMBLY,ierr)
  !
- call timing('BSE mat slepc redist',OPR='stop')
+ call live_timing(steps=1)
+ call live_timing()
+ !
+ call timing(trim(timing_msg),OPR='stop')
  !
 end subroutine K_stored_in_a_slepc_matrix

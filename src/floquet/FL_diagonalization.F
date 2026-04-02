@@ -102,7 +102,7 @@ subroutine FL_diagonalization(E,k,FL_V_bands,FL_QE,iter_num)
        !
        FL_eigenvectors(FL_states(1):FL_states(2),FL_states(1):FL_states(2),ik_mem,is) = &
 &      FL_Ho_plus_Sigma(FL_states(1):FL_states(2),FL_states(1):FL_states(2),ik_mem,is)
-       call SERIAL_HERMITIAN_diagonalization(FL_n_states, &
+       call SERIAL_HERMITIAN_diago(FL_n_states, &
        & FL_eigenvectors(FL_states(1):FL_states(2),FL_states(1):FL_states(2),ik_mem,is),&
        & FL_eigenvalues(FL_states(1):FL_states(2),ik_bz,is)) 
        !
@@ -116,7 +116,7 @@ subroutine FL_diagonalization(E,k,FL_V_bands,FL_QE,iter_num)
        !
        NHM_Mat(FL_states(1):FL_states(2),FL_states(1):FL_states(2)) = &
 &      FL_Ho_plus_Sigma(FL_states(1):FL_states(2),FL_states(1):FL_states(2),ik_mem,is)
-       call SERIAL_diagonalization(FL_n_states, &
+       call SERIAL_diago(FL_n_states, &
                                 & NHM_Mat(FL_states(1):FL_states(2),FL_states(1):FL_states(2)),&
                                 & NHM_Cmpl_Val(FL_states(1):FL_states(2)),&
                                 & NHM_Left_Vec(FL_states(1):FL_states(2),FL_states(1):FL_states(2)),&

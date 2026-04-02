@@ -282,8 +282,6 @@ end subroutine
 subroutine read_upf_parameters_v1(psfile,nmesh,nbeta,mesh,psp_has_so,psp_has_nlcc, &
 &                                 wmesh,rho_nlcc,vloc,lbeta,mesh_beta,beta,d,dmat,ierr)
   !-----------------------------------------------------------------------
-  use interfaces,     ONLY:LINEAR_ALGEBRA_driver
-  use linear_algebra, ONLY:DIAGO
   implicit none
   !
   character(len=*), intent(in)  :: psfile
@@ -401,7 +399,7 @@ subroutine read_upf_parameters_v1(psfile,nmesh,nbeta,mesh,psp_has_so,psp_has_nlc
   !
   if(nbeta>1) then
     cd_tmp=cmplx(d_tmp,0._SP)
-    call LINEAR_ALGEBRA_driver(DIAGO,M=cd_tmp,E_real=d)
+    call SERIAL_HERMITIAN_diago(nbeta,cd_tmp,d)
     d_tmp=real(cd_tmp)
   else
     d=d_tmp(1,1)
@@ -424,8 +422,6 @@ subroutine read_upf_parameters_v2(psfile,nmesh,nbeta,mesh,psp_has_so,psp_has_nlc
 &                                 wmesh,rho_nlcc,vloc,lbeta,jbeta,mesh_beta,beta,d,dmat,ierr)
   !-----------------------------------------------------------------------
   !
-  use interfaces,     ONLY:LINEAR_ALGEBRA_driver
-  use linear_algebra, ONLY:DIAGO
   use stderr,         ONLY:intc
   implicit none
   !
@@ -489,7 +485,7 @@ subroutine read_upf_parameters_v2(psfile,nmesh,nbeta,mesh,psp_has_so,psp_has_nlc
     !
     if(nbeta>1) then
       cd_tmp=cmplx(d_tmp,0._SP)
-      call LINEAR_ALGEBRA_driver(DIAGO,M=cd_tmp,E_real=d)
+      call SERIAL_HERMITIAN_diago(nbeta,cd_tmp,d)
       d_tmp=real(cd_tmp)
     else
       d=d_tmp(1,1)
