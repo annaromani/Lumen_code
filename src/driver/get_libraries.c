@@ -59,6 +59,10 @@ char *running_libraries()
     i_str++;
     strcpy(strings[i_str], "SLEPC");
 #endif
+#if defined _CHASE
+    i_str++;
+    strcpy(strings[i_str], "CHASE");
+#endif
 #if defined _PAR_IO
     i_str++;
     strcpy(strings[i_str], "HDF5_MPI_IO");

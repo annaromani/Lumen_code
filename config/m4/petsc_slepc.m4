@@ -81,6 +81,7 @@ if test -d "$with_petsc_path" || test -d "$with_petsc_libdir" || test x"$with_pe
   #
   try_PETSC_INCS="$IFLAG$try_petsc_incdir" ;
   try_PETSC_LIBS="-L$try_petsc_libdir -lpetsc" ;
+  if test -d "$try_petsc_libdir" ; then PETSC_linker_path="-Wl,-rpath=$try_petsc_libdir"; fi
   #
   if test "$use_libdl"    = "yes"; then try_PETSC_LIBS="$try_PETSC_LIBS -ldl"   ; fi
   if test "$use_libstdc"  = "yes"; then try_PETSC_LIBS="$try_PETSC_LIBS -lstdc++"   ; fi
@@ -109,7 +110,7 @@ if test -d "$with_petsc_path" || test -d "$with_petsc_libdir" || test x"$with_pe
   if test "x$petsc" = "xyes"; then
     AC_MSG_RESULT([yes]) ;
     PETSC_INCS="$try_PETSC_INCS" ;
-    PETSC_LIBS="$try_PETSC_LIBS" ;
+    PETSC_LIBS="$try_PETSC_LIBS $PETSC_linker_path" ;
     compile_petsc="no";
     internal_petsc="no";
   else
@@ -206,6 +207,7 @@ if test -d "$with_slepc_path" || test -d "$with_slepc_libdir" || test x"$with_sl
   #
   try_SLEPC_INCS="$IFLAG$try_slepc_incdir" ;
   try_SLEPC_LIBS="-L$try_slepc_libdir -lslepc" ;
+  if test -d "$try_slepc_libdir" ; then SLEPC_linker_path="-Wl,-rpath=$try_slepc_libdir"; fi
   #
   if test x"$with_slepc_libs" != "x" ; then  try_SLEPC_LIBS="$with_slepc_libs" ; fi
   if test x"$with_slepc_incs" != "x" ; then  try_SLEPC_INCS="$with_slepc_incs" ; fi
@@ -229,7 +231,7 @@ if test -d "$with_slepc_path" || test -d "$with_slepc_libdir" || test x"$with_sl
   if test "x$slepc" = "xyes"; then
     AC_MSG_RESULT([yes]) ;
     SLEPC_INCS="$try_SLEPC_INCS" ;
-    SLEPC_LIBS="$try_SLEPC_LIBS" ;
+    SLEPC_LIBS="$try_SLEPC_LIBS $SLEPC_linker_path" ;
     compile_slepc="no";
     internal_slepc="no";
     def_slepc="-D_SLEPC";

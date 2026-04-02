@@ -39,14 +39,22 @@ subroutine K_diago_driver(iq,W,X_static)
  use com,            ONLY:isec
  use LIVE_t,         ONLY:live_timing
  use linear_algebra, ONLY:DIAGO
- use interfaces,     ONLY:K_diago_response_functions,LINEAR_ALGEBRA_driver,LDIAGO_driver,&
+ use interfaces,     ONLY:K_diago_response_functions,ODIAGO_driver,&
  &                        PL_diago_residual,K_diago_L_res,K_diago_R_res,&
- &                        K_diago_perturbative, K_stored_in_a_big_matrix
+ &                        K_diago_perturbative
+ use matrix,         ONLY:PAR_matrix
+#if defined _LDIAGO
+ use interfaces,       ONLY:LDIAGO_driver,K_stored_in_a_blacs_matrix_ldiago
+ use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
+#endif
+#if defined _CHASE
+ use interfaces,     ONLY:CHASE_driver
+#endif
  use IO_int,         ONLY:io_control
  use IO_m,           ONLY:REP,VERIFY,OP_WR_CL,OP_RD_CL
  use parser_m,       ONLY:parser
  use timing_m,       ONLY:timing
- use parallel_m,     ONLY:CPU_structure
+ use parallel_m,     ONLY:CPU_structure,ncpu
  use parallel_int,   ONLY:PP_wait
 #if defined _SLEPC && !defined _NL
  use petscsys
@@ -67,12 +75,14 @@ subroutine K_diago_driver(iq,W,X_static)
  !
  ! Work Space
  !
- integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, neigs_this_cpu, neig_shift, elpa_solver = 2
- logical          :: K_is_not_hermitian,l_diago,l_slepc,l_dip_more,l_target_erange,l_neig_input, &
+ integer          :: i_BS_mat,BSS_n_eig_before_solver, BS_mat_dim, ncpu_blacs, neigs_this_cpu, neig_shift
+ logical          :: K_is_not_hermitian,l_odiago,l_chase,l_slepc,l_dip_more,l_target_erange,l_neig_input, &
  &                   l_ldiago,l_kerr_lft,l_kerr_rgt,l_abs_res
  character(1)     :: sec
  character(10)    :: Solver
  ! Ldiago varibles
+ character(1)     :: ldiago_solver
+ integer          :: elpa_solver
  integer, target  :: neigs_range(2)
  real(SP), target :: eigvals_range(2)
  !
@@ -83,6 +93,13 @@ subroutine K_diago_driver(iq,W,X_static)
  Mat                   :: slepc_mat
  PetscErrorCode        :: ierr
 #endif
+
+#if defined _LDIAGO
+ type(c_ptr)           :: mpicxt, diago_mat
+ integer(YDIAGO_INT)   :: blacs_blk_size 
+#endif
+
+ type(PAR_matrix)      :: M_blacs
  !
  ! Excitonic hamiltonian, residuals independent
  !==============================================
@@ -91,7 +108,6 @@ subroutine K_diago_driver(iq,W,X_static)
  complex(SP),allocatable :: BS_corrections(:,:)
  !
  ! Coupling
- complex(SP),allocatable         :: BS_mat(:,:)
  complex(SP),allocatable, target :: BS_V_left(:,:)
  complex(SP),allocatable, target :: BS_V_right(:,:)
  complex(SP),pointer             :: BS_overlap(:,:)
@@ -123,12 +139,24 @@ subroutine K_diago_driver(iq,W,X_static)
  l_kerr_lft=l_BS_kerr_asymm.or.l_BS_dichroism
  l_kerr_rgt=l_BS_kerr      .or.l_BS_dichroism
  !
+#if defined _SLEPC && !defined _NL
  l_slepc     = index(BSS_mode,'s')/=0
-#if defined _SCALAPACK
- l_diago     = index(BSS_mode,'o')/=0.or. (     l_BS_photolum.and.(index(BSS_mode,'d')/=0))
+#else
+ l_slepc     = .false.
+#endif
+ !
+#if defined _CHASE
+ l_chase     = index(BSS_mode,'c')/=0
+#else
+ l_chase     = .false.
+#endif
+ !
+#if defined _LDIAGO
+ l_odiago    = index(BSS_mode,'o')/=0.or. (     l_BS_photolum.and.(index(BSS_mode,'d')/=0))
  l_ldiago    = index(BSS_mode,'d')/=0.and. .not.l_BS_photolum
 #else
- l_diago     = index(BSS_mode,'o')/=0 .or. index(BSS_mode,'d')/=0
+ l_odiago     = index(BSS_mode,'o')/=0 .or. index(BSS_mode,'d')/=0
+ l_ldiago    = .false.
 #endif
  !
 #if defined _NL
@@ -138,15 +166,14 @@ subroutine K_diago_driver(iq,W,X_static)
    ! However, at this stage, it is not possible to know how the user configured yambo
    call warning("non-linear optics forces DP compilation and breaks Ldiago library interface in SP")
    l_ldiago = .false.
-   l_diago  = .true.
+   l_odiago  = .true.
  endif
 #endif
  !
- if(l_diago) Solver="Diago"
+ if(l_odiago) Solver="Odiago"
  if(l_ldiago) Solver="Ldiago" 
-#if defined _SLEPC && !defined _NL
+ if(l_chase) Solver="ChASE"
  if(l_slepc) Solver="Slepc"
-#endif
  !
  call timing(trim(Solver)//' Solver',OPR='start')
  !
@@ -161,6 +188,8 @@ subroutine K_diago_driver(iq,W,X_static)
  call section(sec,trim(Solver)//' Solver @q'//trim(intc(iq)))
  !  
  call K_local_init()
+ !
+ call K_LA_init()
  !
  ! Eigenstates 2 DB ?
  !====================
@@ -199,22 +228,15 @@ subroutine K_diago_driver(iq,W,X_static)
      !   to a distributed (SLEPC shells / or eventually BLACS) matrix
      ! - The resulting matrix is symmetrized
      !
-     if (l_diago) then
-       !
-       call K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_V_right,iq,"DIAGO")
-       !
-       ! These line will be needed when the BS kernel will not be folded in BS_mat. But in order to do so
-       ! also linear_algebra_is_parallel must be swiched off when K is not hermitian.
-       !=========================
-       !
-       !if (.not.linear_algebra_is_parallel) call K_stored_in_a_big_matrix(i_BS_mat,BS_V_right,iq,"DIAGO")
-       !
-#if defined _SCALAPACK
-       ! Here maybe the name "K_blacs_matrix(iq)" would probably be more appropiate
-       !if (     linear_algebra_is_parallel) call BS_Blocks_symmetrize_K()
+     if (l_odiago) call K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_dim,iq)
+     !
+#if defined _CHASE
+     if (l_chase) call K_stored_in_a_blacs_matrix_yambo(M_blacs,ncpu_blacs,i_BS_mat,BS_mat_dim,iq)
 #endif
-       !
-     endif
+     !
+#if defined _LDIAGO
+     if (l_ldiago) call K_stored_in_a_blacs_matrix_ldiago(i_BS_mat,BS_mat_dim,diago_mat,mpicxt,blacs_blk_size)
+#endif
      !
 #if defined _SLEPC && !defined _NL
      if(l_slepc) then
@@ -255,55 +277,68 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      ! Diagonalization of the excitonic hamiltonian
      !==============================================
-     if(l_diago) call live_timing('BSK diagonalize',1)
+     if(l_odiago.or.l_chase) call live_timing('BSK '//trim(Solver),1)
      ! 
      if (K_is_not_hermitian) then !coupling
        !
-#if defined _SCALAPACK
+#if defined _LDIAGO
        if (l_ldiago) then 
          ! BS_V_left are only referenced in non-hermitian case
          ! In coupling case, if the user requested n values,
          ! we compute the first min(n/2,BS_H_dim/2) positive and 
          ! min(n/2,BS_ham/2) negative eigvals and eigvectors, making it a total of min(n,BS_ham)
-         call LDIAGO_driver(i_BS_mat, BS_E, BS_V_right, neigs_this_cpu, neig_shift, &
+         call LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size,            &
+         &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
          &                   neigs_range=neigs_range, eigvals_range=eigvals_range,  &
          &                   BS_VL=BS_V_left,BS_overlap=BS_overlap,                 &
-         &                   solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
+         &                   solver_type=ldiago_solver, elpasolver=elpa_solver)
          BSS_n_eig = size(BS_E)
-      endif
+         !
+       endif
 #endif
-      !
-      if(l_diago) then
-         ! call LINEAR_ALGEBRA_driver(DIAGO,M=BS_V_right,E_cmpl=BS_E,V_left=BS_V_left)
-         ! The following code should be replaced by the above line wich a change in LINEAR_ALGEBRA_driver
-         YAMBO_ALLOC(BS_mat,(BS_mat_dim,BS_mat_dim))
-         BS_mat=BS_V_right
-         call LINEAR_ALGEBRA_driver(DIAGO,M=BS_mat,E_cmpl=BS_E,V_left=BS_V_left,V_right=BS_V_right)
-         YAMBO_FREE(BS_mat)
+       !
+       if (l_odiago) then
+         call ODIAGO_driver(BS_H_dim,BSS_n_eig,ncpu_blacs,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
        endif
        !
+#if defined _CHASE
+       if (l_chase) then
+         call CHASE_driver(BS_H_dim,BSS_n_eig,M_blacs,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
+         neigs_this_cpu = BSS_n_eig
+       endif
+#endif
+       !
 #if defined _SLEPC && !defined _NL
-       if(l_slepc) then
+       if (l_slepc) then
          call MATRIX_slepc(slepc_mat,BSS_n_eig,BS_V_right,V_left=BS_V_left,E_cmpl=BS_E)
        endif
 #endif
        !
      else !no coupling
        !
-#if defined _SCALAPACK
+#if defined _LDIAGO
        if (l_ldiago) then
-         call LDIAGO_driver(i_BS_mat, BS_E, BS_V_right, neigs_this_cpu, neig_shift, &
+         call LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, blacs_blk_size,            &
+         &                   BS_E, BS_V_right, neigs_this_cpu, neig_shift,          &
 &                           neigs_range=neigs_range, eigvals_range=eigvals_range,   &
-&                           solver_type=BSS_ldiago_solver, elpasolver=elpa_solver)
+&                           solver_type=ldiago_solver, elpasolver=elpa_solver)
          BSS_n_eig = size(BS_E)
        endif
 #endif
        !
-       if(l_diago) then
-         call LINEAR_ALGEBRA_driver(DIAGO,M=BS_V_right,E_real=BS_E_real)
+       if (l_odiago) then
+         call ODIAGO_driver(BS_K_dim(i_BS_mat),BSS_n_eig,ncpu_blacs,M_blacs,BS_V_right,E_real=BS_E_real)
          BS_E=cmplx(BS_E_real,0._SP,kind=SP)
          neigs_this_cpu = BSS_n_eig
        endif
+       !
+#if defined _CHASE
+       if (l_chase) then
+         call CHASE_driver(BS_K_dim(i_BS_mat),BSS_n_eig,M_blacs,BS_V_right,E_real=BS_E_real)
+         BS_E=cmplx(BS_E_real,0._SP,kind=SP)
+         neigs_this_cpu = BSS_n_eig
+       endif
+#endif
        !
 #if defined _SLEPC && !defined _NL
        if(l_slepc) then
@@ -328,14 +363,15 @@ subroutine K_diago_driver(iq,W,X_static)
      !
 #endif
      !
-     if (l_diago) call live_timing( )
+     if(l_odiago.or.l_chase) call live_timing()
      !
-#if defined _SCALAPACK
+#if defined _LDIAGO
      if (l_ldiago) then
        ! BSS_n_eig could be lowered by LDIAGO_driver
        if (BSS_n_eig_before_solver/=BSS_n_eig) call K_ldiago_resize_variables()
      endif
 #endif
+
      !
      ! Compute residuals
      !
@@ -345,9 +381,9 @@ subroutine K_diago_driver(iq,W,X_static)
      !====================================
      !
      ! Right residuals
-     if(l_abs_res) then
-                      call K_diago_R_res("opt1",i_BS_mat,BS_E,neigs_this_cpu,neig_shift,BS_R_right_abs, BS_V_right)
-       if(l_kerr_rgt) call K_diago_R_res("opt2",i_BS_mat,BS_E,neigs_this_cpu,neig_shift,BS_R_right_kerr,BS_V_right)
+     if (l_abs_res) then
+                       call K_diago_R_res("opt1",i_BS_mat,BS_E,neigs_this_cpu,neig_shift,BS_R_right_abs, BS_V_right)
+       if (l_kerr_rgt) call K_diago_R_res("opt2",i_BS_mat,BS_E,neigs_this_cpu,neig_shift,BS_R_right_kerr,BS_V_right)
      endif
      !
      if(l_BS_dichroism) then
@@ -455,7 +491,7 @@ subroutine K_diago_driver(iq,W,X_static)
      &                                                   BS_mat=BS_V_right,write_ev=.not.l_ldiago)
      !
      call PP_wait()
-#if defined _SCALAPACK
+#if defined _LDIAGO
      if (l_ldiago .and. BSS_write_eig_2_db) call write_bs_ev_par(iq, i_BS_mat, &
 &                             neigs_this_cpu, neig_shift, BS_V_right, BS_V_left)
 #endif
@@ -530,12 +566,10 @@ subroutine K_diago_driver(iq,W,X_static)
          endif
        endif
        !
-#if defined _SLEPC && !defined _NL
-       ! In the old diago case BS_V_right is allocated by K_stored_in_a_big_matrix
-       if(l_slepc) then
+       ! Only with ldiago the eigenvectors are not duplicated in memory
+       if(l_slepc.or.l_odiago.or.l_chase) then
          YAMBO_ALLOC(BS_V_right,(BS_mat_dim,BSS_n_eig))
        endif
-#endif
        !
      end select
      !
@@ -545,6 +579,7 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      YAMBO_FREE(BS_E_real)
      YAMBO_FREE(BS_corrections)
+     YAMBO_FREE(M_blacs%blc)
      YAMBO_FREE(BS_V_right)
      YAMBO_FREE(BS_V_left)
      YAMBO_FREE_P(BS_overlap)
@@ -626,12 +661,20 @@ subroutine K_diago_driver(iq,W,X_static)
      !
      if (l_slepc) then
        !
-       if (index(BSS_slepc_matrix_format,'explicit')>0) &
-       & call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
-       &  're-distributed from internal to slepc parallel scheme')
-       if (BSS_slepc_matrix_format=='shell')            &
-       & call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
-       &           'used with yambo parallel distribution scheme')
+       if (BSS_slepc_matrix_format=='shell') then
+#if defined _PETSC_HAVE_CUDA
+         call warning('[SLEPC] Library is GPU ported. Imposing explicit alogrithm')
+         BSS_slepc_matrix_format="explicit"
+#else
+         call msg( 's', '[SLEPC] Slower algorithm, BSE matrix '//&
+         &           'used with yambo parallel distribution scheme')
+#endif
+       endif
+       !
+       if (index(BSS_slepc_matrix_format,'explicit')>0) then
+         call msg( 's', '[SLEPC] Faster algorithm, BSE matrix '//&
+         &  're-distributed from internal to slepc parallel scheme')
+       endif
        !
        call SlepcInitialize(PETSC_NULL_CHARACTER,ierr)
        !
@@ -650,74 +693,137 @@ subroutine K_diago_driver(iq,W,X_static)
      !
 #endif
      !
-#if defined _SCALAPACK
+#if defined _LDIAGO
      if (l_ldiago) then
-       !
-       if (BSS_ldiago_solver/="s" .and. BSS_ldiago_solver/="e") then
-         call warning("Invalid ldiago solver. Switching to default")
-#if defined _ELPA
-         BSS_ldiago_solver="e"
-#else
-         BSS_ldiago_solver="s"
-#endif
-       endif
        !
 #if defined _GPU && defined _ELPA
        if (BSS_ldiago_solver=="s") then
          call warning("gpu ported code. Switching to Elpa solver")
-         BSS_ldiago_solver="e"
+         BSS_ldiago_solver="e1"
        endif
 #endif
        !
 #if !defined _ELPA
-       if (BSS_ldiago_solver=="e") then
+       if (index(BSS_ldiago_solver,"e")/=0) then
          call warning("Elpa solver selected, but elpa not linked. Switching to scalapack")
          BSS_ldiago_solver="s"
        endif
 #endif
+       !
+       if (BSS_ldiago_solver=="s") then
+         ldiago_solver="s"
+         elpa_solver=0
+#if defined _ELPA
+       else if ( index(BSS_ldiago_solver,"e")/=0) then
+         ldiago_solver="e"
+#if !defined _GPU
+       if ( index(BSS_ldiago_solver,"1")/=0) then
+#endif
+         BSS_ldiago_solver="e1"
+         elpa_solver=1
+#if !defined _GPU
+       else
+         BSS_ldiago_solver="e2"
+         elpa_solver=2
+       endif
+#endif
+#endif
+       else
+         call warning("Invalid ldiago solver. Switching to default")
+#if defined _ELPA
+         ldiago_solver="e"
+#if defined _GPU
+         BSS_ldiago_solver="e1"
+         elpa_solver=1
+#else
+         BSS_ldiago_solver="e2"
+         elpa_solver=2
+#endif
+#else
+         BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
+#endif
+       endif
        !
        l_target_erange=BSS_trange_E(1)>0._SP .and. BSS_trange_E(2)>BSS_trange_E(1)
        l_neig_input=BSS_n_eig>0
        ! Here I double the number of n_eig to get correct allocations
        if (l_neig_input .and. K_is_not_hermitian) BSS_n_eig=BSS_n_eig*2
        !
-       if (l_target_erange .and. BSS_ldiago_solver=="e") then
+       if (l_target_erange .and. index(BSS_ldiago_solver,"e")/=0) then
 #if defined _GPU && defined _ELPA
          call warning(' energy range not compatible with elpa. Switching it off on gpu')
          l_target_erange=.false.
 #else
          call warning(' energy range not compatible with elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !
-       if (BSS_first_eig>1 .and. BSS_ldiago_solver=="e") then
+       if (BSS_first_eig>1 .and. index(BSS_ldiago_solver,"e")/=0) then
 #if defined _GPU && defined _ELPA
          call warning(' eigenvalues range not compatible with elpa. Switching it off on gpu')
          BSS_first_eig=1
 #else
          call warning(' eigenvalues range not compatible with elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !
-       if (l_neig_input .and. BSS_ldiago_solver=="e" .and. K_is_not_hermitian) then
+       if (l_neig_input .and. index(BSS_ldiago_solver,"e")/=0 .and. K_is_not_hermitian) then
 #if defined _GPU && defined _ELPA
          call warning(' Few eigenvalues not compatible with non hermitian elpa. Switching it off on gpu')
          l_neig_input=.false.
 #else
          call warning(' Few eigenvalues not compatible with non hermitian elpa. Switching to scalapack on cpu')
          BSS_ldiago_solver="s"
+         ldiago_solver="s"
+         elpa_solver=0
 #endif
        endif
        !
      endif
 #endif
      !
-     ! LA for old diago solver
-     if (l_diago) call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,CPU_structure(4)%nCPU_lin_algebra_DIAGO)
-     !
    end subroutine K_local_init
+   !
+   !
+   subroutine K_LA_init()
+     !
+     if (.not.(l_chase.or.l_odiago)) return
+     !
+     if (l_chase)  ncpu_blacs=ncpu
+     !
+     ! The following could be removed (and ncpu_blacs always set to ncpu)
+     ! if we change the blacs_block_size to 64 inside src/matrices/SLK_matrix_init.F
+     ! However, such change, which would imply a significant speed-up, would
+     ! also need to re-write src/matrices/MATRIX_BSE_to_PAR.F by using
+     ! the code inside K_stored_in_a_blacs_matrix_ldiago (or something similar)
+     if (l_odiago) then
+       ncpu_blacs=int(sqrt(real(ncpu,SP)))**2
+       if(ncpu_blacs<ncpu) then
+         call warning("Parallel diago would fail with non squared blacs grids. Exit code 806/706/606")
+         call warning("Setting ncpu_blacs to "//trim(intc(ncpu_blacs))// &
+         &                            " while ncpu is "//trim(intc(ncpu)))
+         call warning("Matrix transfer would fail with ncpu_blacs < ncpu. Switching to serial LA")
+         ncpu_blacs=1
+       endif
+     endif
+     !
+     if (BS_K_coupling.and.ncpu_blacs>1) then
+        call warning('Parallel non-herm diag not yet implemented. Switching to serial LA')
+        ncpu_blacs=1
+      endif
+     !
+     call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu_blacs)
+     !
+   end subroutine K_LA_init
+   !
    !
    subroutine BSS_n_eig_init()
      !
@@ -740,7 +846,7 @@ subroutine K_diago_driver(iq,W,X_static)
      nullify(BS_R_PL)
      nullify(tmp_res_ptr)
      !
-     if (l_slepc) then
+     if (l_slepc.or.l_chase) then
        !
        if (BSS_n_eig<1) then
          BSS_n_eig = nint(BS_H_dim*0.01)
@@ -753,11 +859,15 @@ subroutine K_diago_driver(iq,W,X_static)
          BSS_n_eig = nint(BS_mat_dim*0.1)
        endif
        !
+       if (BSS_n_eig>0.5*BS_mat_dim) then
+         call warning('N_eigen > 0.5*BS_mat_dim. You should probably use the diago solver.')
+       endif
+       !
      endif
      !
-     if(l_diago) BSS_n_eig = BS_mat_dim
+     if(l_odiago.and.BSS_n_eig==0) BSS_n_eig = BS_mat_dim
      !
-#if defined _SCALAPACK
+#if defined _LDIAGO
      ! set a Ldiago defaults.
      if(l_ldiago) then
        !

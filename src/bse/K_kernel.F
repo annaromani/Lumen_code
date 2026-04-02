@@ -270,7 +270,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    !
  endif
  !
- call timing('X T_space Kernel',OPR='start')
+ call timing('BSE Kernel',OPR='start')
  !
  ! TDDFT xc-kernel Setup
  !======================
@@ -528,7 +528,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    ! - The anti-resonant "A" and anti-coupling "Q" blocks are expliciltly needed only when l_BS_ares_from_res=.false.
    !   also in this case the code switches to mode_now="F"(ull) and standard relations are used
    !
-   call timing('X T_space Kernel more',OPR='start')
+   call timing(trim(section_title)//' init',OPR='start')
    !
    mode_now=BS_blk(i_block)%mode
    if (BS_n_eh_spaces==2) mode_now="F"
@@ -565,6 +565,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    if (trim(BS_blk(i_block)%mode)=="C" .and. iHxc==3 .and. .not.BS_cpl_K_corr) then
      BS_blk(i_block)%done(:,:)="t"
      if(BS_K_cutoff>0._SP) BS_max_val_CPU(myid+1)=maxval( (/BS_max_val_CPU(myid+1),abs(BS_blk(i_block)%mat(:,:))/) )
+     call timing(trim(section_title)//' init',OPR='stop')
      goto 100
    endif
    !
@@ -625,7 +626,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
      !
    endif
    !
-   call timing('X T_space Kernel more',OPR='stop')
+   call timing(trim(section_title)//' init',OPR='stop')
    !
    ! Correlation oscillators
    !----------------------
@@ -634,7 +635,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
      if (l_dir_alg) call K_correlation_collisions_dir(iq,i_block,win1_ID,win2_ID,Xk,q)
    endif
    !
-   call timing('X T_space Kernel sum',OPR='start')
+   call timing(trim(section_title)//' sum',OPR='start')
    !
    ! Transition Loops
    !------------------
@@ -952,9 +953,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    !
    !DEV_OMP end parallel
    !
-   call timing('X T_space Kernel sum',OPR='stop')
-   !
-   call timing('X T_space Kernel more',OPR='start')
+   call timing(trim(section_title)//' sum',OPR='stop')
    !
    if(BS_K_cutoff>0._SP.and.l_write_kernel) &
 &     BS_max_val_CPU(myid+1)=maxval( (/BS_max_val_CPU(myid+1),abs(BS_blk(i_block)%mat(:,:))/) )
@@ -972,6 +971,7 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
    if(iHxc==3) call BS_correlation_oscillators_free(i_block,l_std_alg)
    !
 100 if(l_write_kernel.or.l_write_kernel_step) then
+     call timing(trim(section_title)//' IO',OPR='start')
 #if defined _PAR_IO
      call io_control(ACTION=WR,ID=ID)
      call io_BS_PAR_block(iq,i_block,ID,"full")
@@ -980,11 +980,11 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
      io_BS_err=io_BS(iq,X,ID)
 #endif
      if (io_BS_K.and.l_write_kernel_step) call K_block_free(i_block,"all")
+     call timing(trim(section_title)//' IO',OPR='stop')
    endif
    !
    call live_timing(steps=i_steps)
    !
-   call timing('X T_space Kernel more',OPR='stop')
    !
  enddo block_loop
  !
@@ -1059,6 +1059,6 @@ subroutine K_kernel(iq,Ken,Xk,q,X,Xw,W_bss)
  io_BS_err=io_BS(iq,X,ID)
 #endif
  !
- call timing('X T_space Kernel',OPR='stop')
+ call timing('BSE Kernel',OPR='stop')
  !
 end subroutine K_kernel
