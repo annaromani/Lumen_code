@@ -257,6 +257,7 @@ m4_include([config/m4/scalapack.m4])
 m4_include([config/m4/petsc_slepc.m4])
 m4_include([config/m4/magma.m4])
 m4_include([config/m4/libcuda.m4])
+m4_include([config/m4/chase.m4])
 m4_include([config/m4/device_xlib.m4])
 #
 AC_LANG_PUSH(Fortran)
@@ -306,6 +307,9 @@ AC_SET_GPU
 # ============================================================================
 # Diago library
 AC_LDIAGO
+# ============================================================================
+# ChASE
+AC_CHASE_SETUP
 # ============================================================================
 # Device XLIB
 ACX_DEVXLIB

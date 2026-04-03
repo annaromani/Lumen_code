@@ -209,7 +209,7 @@ subroutine ELPH_Hamiltonian(en,k,q)
    close(1)
  else
    call live_timing('Diagonalization',1)
-   call LINEAR_ALGEBRA_driver(DIAGO,M=elph_Mat,lib_in=USE_LK,E_real=elph_E)
+   call SERIAL_HERMITIAN_diago(H_size,elph_Mat,elph_E)
    call live_timing(steps=1)
    call live_timing()
    open(unit=100,file=trim(db_name),status='new',form='unformatted')

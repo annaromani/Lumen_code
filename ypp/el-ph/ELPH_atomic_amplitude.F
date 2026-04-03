@@ -22,9 +22,7 @@ subroutine ELPH_atomic_amplitude(q)
  use IO_m,                ONLY:manage_action,OP_RD,RD_CL_IF_END,DUMP,RD_CL
  use stderr,              ONLY:intc
  use functions,           ONLY:bose_f
- use interfaces,          ONLY:LINEAR_ALGEBRA_driver
  use ALLOC,               ONLY:ELPH_alloc
- use linear_algebra,      ONLY:DIAGO,USE_LK
  use stderr,              ONLY:intc
  use y_memory_alloc
  !
@@ -114,7 +112,7 @@ subroutine ELPH_atomic_amplitude(q)
  !
  do is=1,n_atoms
    !
-   call LINEAR_ALGEBRA_driver(DIAGO,M=mean_ui_uj(is,:,:),lib_in=USE_LK,E_real=U_eigenvalues)
+   call SERIAL_HERMITIAN_diago(3,mean_ui_uj(is,:,:),U_eigenvalues)
    !
    call msg('s','Atom '//intc(is))
    call msg('s','Displacement  [a.u.]/A #1 ',sqrt(U_eigenvalues(1))*(/1._SP,BO2ANG/) )

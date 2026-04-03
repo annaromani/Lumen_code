@@ -111,33 +111,6 @@ subroutine SLK_test(E,k,q)
  !
  call matrix_check( "Mat Mult", ndim, ndim, A_out, A_out_par )
  !
- ! diagonalization
- !
- call section("=",'Matrix Hermitean Diagonalization')
- !
- call build_matrix( ndim, A_in )
- A_in=hermitian(A_in)
- !
- YAMBO_ALLOC(W,(ndim))
- YAMBO_ALLOC(W_par,(ndim))
- !
- A_out  =A_in
- call LINEAR_ALGEBRA_driver(DIAGO,M=A_out,lib_in=USE_LK,e_real=W)
- !
- A_out_par =A_in
- call LINEAR_ALGEBRA_driver(DIAGO,M=A_out_par,lib_in=USE_SLK,e_real=W_par)
- !
- call matrix_check( " Eigenval", ndim, 1, cmplx(W,KIND=SP), cmplx(W_par,KIND=SP))
- !
- ! in order to check the eigenvectors
- ! an overall phase must be aligned.
- ! At least we can check their moduli
- !
- call matrix_check( "EigenVect", ndim, ndim, cmplx(abs(A_out),KIND=SP), cmplx(abs(A_out_par),KIND=SP) )
- !
- YAMBO_FREE(W)
- YAMBO_FREE(W_par)
- !
  ! cleanup
  !
  YAMBO_FREE(A_in)

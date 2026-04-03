@@ -86,12 +86,14 @@ module BS_solvers
  logical  :: run_inversion=.FALSE.
  logical  :: run_Diago=.FALSE.
  logical  :: load_Diago=.FALSE.
+ logical  :: run_Diagx=.FALSE.
+ logical  :: run_Chase=.FALSE.
  logical  :: run_Slepc=.FALSE.
  !
  ! Solvers (Diago)
  !=========
  logical  :: BSS_write_eig_2_db
- character(1) :: BSS_ldiago_solver     ! "s" for scalapack / "e" for elpa
+ character(2) :: BSS_ldiago_solver     ! "s" for scalapack / "e2" for elpa2 / "e1" for elpa1
  !
  ! Solvers (Haydock)
  !=========
