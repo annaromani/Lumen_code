@@ -308,12 +308,7 @@ subroutine INIT_activate()
      call initactivate(1,'BSSSlepcMaxIt BSSSlepcNCV BSSSlepcMPD BSSSlepcTol BSSSlepcMatrixFormat')
    endif
    !
-   if (index(BSS_mode,'x')/=0) then
-        call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
-   endif
-   if (index(BSS_mode,'c')/=0) then
-        call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
-   endif
+   if (index(BSS_mode,'c')/=0)  call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
    !
    ! Special project dependent variables
    !
