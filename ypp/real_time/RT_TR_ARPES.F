@@ -86,7 +86,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  l_few_excitons=.not.(l_exciton_distribution.or.l_single_exciton)
  !
  if (.not. (l_single_exciton .or. l_exciton_distribution .or. l_few_excitons ) ) &
-&    call error(" Select either Exc states or Exc temp in input")
+ &     call error(" Select either Exc states or Exc temp in input")
  !
  ! Par Setup
  !============
