@@ -17,7 +17,7 @@ subroutine YPP_SET_defaults()
 &                         BSiq,l_PROJECT_atom,PDOS_atoms,PDOS_kinds,PDOS_wfcs,PDOS_l,PDOS_j,PDOS_m,&
 &                         EXCITON_Res_treshold,EXCITON_E_treshold,l_PROJECT_line,l_PROJECT_plane,K_grid,&
 &                         MAGNON_Res_threshold,DIPs_C_bands,DIPs_V_bands,DIPs_E_range,&
-&                         symm_thresh,mix_thresh,l_sp_symm,l_exc_symm
+&                         symm_thresh,mix_thresh,l_sp_symm,l_exc_symm,exc_kind
  use YPP_symm,       ONLY:wf_ng_cut
  use units,          ONLY:FS2AUT
  use interpolate,    ONLY:INTERP_shell_factor,interpls,max_interpls
@@ -168,6 +168,7 @@ subroutine YPP_SET_defaults()
  WF_multiplier=1._SP
  BSiq=1
  AVE_exc='h'
+ exc_kind="exciton"
  !
  ! EXC Symm analysis
  !
