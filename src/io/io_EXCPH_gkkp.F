@@ -26,7 +26,28 @@
 ! MA 02111-1307, USA or visit http://www.gnu.org/copyleft/gpl.txt.
 !
 integer function io_EXCPH_gkkp(ID)
- !
+ !! **io_EXCPH_gkkp - Read/write ndb.excph_gkkp database**
+ !!
+ !! Handles I/O for the excitonic electron-phonon coupling database,
+ !! which stores the matrix elements of the lattice perturbation dV
+ !! in the basis of BSE exciton states:
+ !!
+ !!   EXCPH_gkkp(nu, S', S)    = <S'| dV_nu(q) |S>    complex(SP)
+ !!   EXCPH_gkkp_sq(nu, S', S) = |<S'| dV_nu(q) |S>|^2  real(SP)
+ !!
+ !! where nu is the phonon mode, S is the initial exciton state (1..EXCPH_states(2)),
+ !! and S' is the scattered exciton state (1..EXCPH_sum(2)).
+ !!
+ !! Database layout (fragmented by q-point iq):
+ !!   Section 1 (header): nqbz, EXCPH_states, EXCPH_sum, ph_modes, L_kind_in, L_kind_out
+ !!   Section iq+1 (fragment iq):
+ !!     EXCPH_Q{iq}                   - q-point coordinates (3)          [write only]
+ !!     EXCITON_PH_GKKP_Q{iq}         - EXCPH_gkkp  (2, ph_modes, S', S) complex
+ !!     EXCITON_PH_GKKP_SQUARED_Q{iq} - EXCPH_gkkp_sq (ph_modes, S', S)  real
+ !!
+ !! The header also checks consistency of L_kind_in/L_kind_out to ensure the
+ !! BSE L matrices used during writing match those used when reading.
+ !!
  use pars,           ONLY:SP,schlen
  use IO_m,           ONLY:io_sec,read_is_on,frag_ELPH,io_status
  use IO_int,         ONLY:io_connect,io_disconnect,io_elemental,io_bulk,io_header,&
