@@ -222,6 +222,9 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  if ( l_em1d .or.(l_life.and.l_elel_corr) ) i_X_kind=3
  if ( l_ppa                               ) i_X_kind=4
  if ( l_mpa                               ) i_X_kind=5
+#if defined _SC || defined _RT
+ if (l_eval_collisions) 		    i_X_kind=2
+#endif
  if ( i_X_kind==0 ) then
    i_X_kind=1
    if ( i_X_kind_existing_DB >0 ) i_X_kind=i_X_kind_existing_DB
@@ -246,7 +249,7 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  !=====================
  !
 #if defined _SC || defined _RT
- if (l_eval_collisions) call COLLISIONS_eval(en,X,k,Xk,q,Xw(:2),Dip)
+ if (l_eval_collisions) call COLLISIONS_eval(en,X(i_X_kind),k,Xk,q,Xw(:2),Dip)
  if (l_eval_collisions) call mem_manager_report
 #endif
  !

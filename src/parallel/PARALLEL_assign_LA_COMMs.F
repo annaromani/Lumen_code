@@ -63,6 +63,7 @@ subroutine PARALLEL_assign_LA_COMMs(ENVIRONMENT,idriver,Ncpu_in)
  else if (ENVIRONMENT=="Response_T_space") then
    !
    call SLK_communicators( PAR_COM_WORLD, PAR_COM_NULL, Ncpu_in )
+   !call SLK_communicators( PAR_COM_SLK, PAR_COM_NULL, Ncpu_in )
    !
  endif
  !

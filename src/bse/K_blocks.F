@@ -29,7 +29,8 @@ subroutine K_blocks(iq)
  use parallel_int, ONLY:PP_wait,PP_redux_wait,PARALLEL_live_message
  use BS,           ONLY:BS_blk,n_BS_blks,n_BS_blks,BS_K_coupling,BS_T_grp,BS_nT_grps,&
 &                       BS_K_dim,BS_Block_size,BS_LiveTiming_steps,BS_H_dim,n_BS_blks_min,&
-&                       BS_n_eh_spaces,BS_res_ares_n_mat,BS_IO_dim,l_BS_ares_from_res
+&                       BS_n_eh_spaces,BS_res_ares_n_mat,BS_IO_dim,l_BS_ares_from_res,&
+&                       n_BS_blks_max
  use com,          ONLY:msg
  use y_memory_alloc
  use y_memory_alloc_par
@@ -142,6 +143,7 @@ subroutine K_blocks(iq)
  n_BS_blks_CPUs(myid+1)=n_BS_blks
  call PP_redux_wait(n_BS_blks_CPUs)
  n_BS_blks_min=minval(n_BS_blks_CPUs)
+ n_BS_blks_max=maxval(n_BS_blks_CPUs)
  !
  ! Allocate the blocks
  !

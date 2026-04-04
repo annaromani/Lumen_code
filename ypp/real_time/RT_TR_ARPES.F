@@ -20,7 +20,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  use D_lattice,       ONLY:lattice,nsym
  use BS,              ONLY:BS_K_dim,BS_bands
  use BS_solvers,      ONLY:BSS_eh_table,BS_mat,BSS_n_eig
- use YPPm,            ONLY:BS_E,DIPs,exc_kind,EXCITONS_user_indexes   !,EXCITONS_n_user_states
+ use YPPm,            ONLY:BS_E,DIPs,exc_kind,EXCITONS_user_indexes,EXCITONS_n_user_states
  use YPPm,            ONLY:BANDS_path,BANDS_steps,CIRCUIT_k,BSiq  !,USER_k
  use YPP_interfaces,  ONLY:k_special
  use YPP_real_time,   ONLY:RT_conf,GreenF_T_and_W,TRabs_Exc
@@ -41,7 +41,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  type(bz_samp), intent(inout) :: Xk,Xq
  !
  type(bz_samp)         :: k_nosymm,CIRCUIT_kmq
- logical               :: l_full_expansion,l_single_exciton,l_exciton_distribution,warn
+ logical               :: l_full_expansion,l_single_exciton,l_few_excitons,l_exciton_distribution,warn
  integer               :: iq,iq_bz,i_l,i_l_ref,i_c,i_v,i_cvk,i_kibz,i_kbz,i_kmq_ibz,i_kmq_bz,i_karpes,i_ks,i_sp_pol,i_w,i_l_v, &
  &                        io_err,ID_ARPES,ID_ARPES_int,ID_bands,NV,NK,q_range(2),l_range(2),                               &
  &                        EXC_table(1000,2),N_exc,j_exc,EXC_indx(1000)
@@ -82,9 +82,11 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
  !
  call parser("FullExpansion", l_full_expansion)
  call parser("EXCTemp", l_exciton_distribution)
- l_single_exciton=.not.l_exciton_distribution
+ call parser("TRabsExcPol", l_single_exciton)
+ l_few_excitons=.not.(l_exciton_distribution.or.l_single_exciton)
  !
- if (.not. (l_single_exciton .or. l_exciton_distribution ) ) call error(" Select either Exc states or Exc temp in input")
+ if (.not. (l_single_exciton .or. l_exciton_distribution .or. l_few_excitons ) ) &
+      & call error(" Select either Exc states or Exc temp in input")
  !
  ! Par Setup
  !============
@@ -112,7 +114,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
    GreenF_T_and_W%W(i_w)=cmplx((i_w-1)*dw+RT_conf%X_W_range(1),RT_conf%damp_factor)
  enddo
  !
- if (l_single_exciton) then
+ if (l_single_exciton.or.l_few_excitons) then
    !
    ! Set the exciton
    !=================
@@ -122,12 +124,17 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
    deallocate(BS_E_degs)
    deallocate(Res)
    !
-   call RT_TRabs_rotate_exciton("DIP_iR",DIP_dir,cONE,Xen,Xk)
    i_l_ref=EXCITONS_user_indexes(1)
-   deallocate(EXCITONS_user_indexes)
    !
+   if (l_single_exciton) then
+     call RT_TRabs_rotate_exciton("DIP_iR",DIP_dir,cONE,Xen,Xk)
+     l_range= (/i_l_ref,i_l_ref/)
+   else if (l_few_excitons) then
+     l_range= (/i_l_ref,i_l_ref+EXCITONS_n_user_states/)
+   endif
+   !
+   deallocate(EXCITONS_user_indexes)
    q_range = (/BSiq,BSiq/)
-   l_range= (/i_l_ref,i_l_ref/)
    !
  else if (l_exciton_distribution) then
    !
@@ -216,7 +223,7 @@ subroutine RT_transient_ARPES(Xen,Xk,Xq)
      !
      ARPES_int = cZERO
      !
-     if (l_single_exciton)       N_lq=1._SP
+     if (l_single_exciton.or.l_few_excitons)  N_lq=1._SP
      if (l_exciton_distribution) N_lq=boltzman_f(real(BS_E(i_l))-min_exc_E)
      !
      if (N_lq<1.E-3) then

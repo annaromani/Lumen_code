@@ -161,6 +161,7 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
 #endif
  !
 #if defined _SCALAPACK
+ ! This is use only by SLK_test.F 
  if (      ENVIRONMENT=="ScaLapacK")           call PARALLEL_global_ScaLapack( )
 #endif
  !

@@ -283,6 +283,7 @@ module BS
  !
  integer                    :: n_BS_blks
  integer                    :: n_BS_blks_min
+ integer                    :: n_BS_blks_max
  type(BS_block), allocatable, target :: BS_blk(:)
  !
  ! WF phases
