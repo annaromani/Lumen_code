@@ -86,26 +86,6 @@ module interfaces
      !
    end subroutine
    !
-   subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,M,M_slk,B,B_slk,C,C_slk,&
-&                                   SVD_digits,det)
-     !
-     use matrix,         ONLY:PAR_matrix
-     use pars,           ONLY:SP
-     use BS,             ONLY:BS_block
-     !
-     integer                    :: idriver
-     integer,          optional :: lib_in
-     complex(SP),      optional :: M(:,:)
-     type(PAR_matrix), optional :: M_slk
-     complex(SP),      optional :: B(:,:)
-     type(PAR_matrix), optional :: B_slk
-     complex(SP),      optional :: C(:,:)
-     type(PAR_matrix), optional :: C_slk
-     integer,          optional :: SVD_digits 
-     complex(SP),      optional :: det
-     !
-   end subroutine
-   !
 #if defined _LDIAGO
    subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, BS_mat_dim, diago_mat, mpicxt, blacs_blk_size )
      use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
