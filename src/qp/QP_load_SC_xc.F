@@ -9,21 +9,21 @@ subroutine QP_load_SC_xc()
  !
  ! Load and Rotate non-local Hamiltonian coming from SC calculation 
  !
+ use pars,            ONLY:SP
  use electrons,       ONLY:spin,n_sp_pol
  use QP_m,            ONLY:QP_table,QP_n_states,QP_vnl_xc
  use IO_m,            ONLY:VERIFY,DUMP,NONE
  use R_lattice,       ONLY:nkibz
  use SC,              ONLY:SC_bands,load_SC_components,compatible_SC_DB,&
-&                          found_SC_DB,SC_bands
+&                          found_SC_DB,SC_nbands
  use hamiltonian,     ONLY:H_nl_sc,H_rotation
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra,  ONLY:INV
  !
  implicit none
  !
  ! Work Space
  !
- integer  :: i_qp,i_k,i_sp_pol
+ integer     :: i_qp,i_k,i_sp_pol
+ complex(SP) :: dummy_det
  !
  ! Load SC_R rotation matrices
  !
@@ -38,8 +38,8 @@ subroutine QP_load_SC_xc()
      !
      if (.not.compatible_SC_DB.or..not.found_SC_DB) return
      !
-     call LINEAR_ALGEBRA_driver(INV,M=H_rotation(:,:,i_k,i_sp_pol))
-     call OBS_rotate(H_rotation(:,:,i_k,i_sp_pol),H_nl_sc,SC_bands(2),-1)
+     call SERIAL_inversion(SC_nbands,H_rotation(:,:,i_k,i_sp_pol),dummy_det,.false.)
+     call OBS_rotate(H_rotation(:,:,i_k,i_sp_pol),H_nl_sc,SC_nbands,-1)
      !
      do i_qp=1,QP_n_states
        if (QP_table(i_qp,1) < SC_bands(1))        cycle

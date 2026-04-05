@@ -12,11 +12,9 @@
 !
 subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
 &                                M,M_slk,&
-&                                M_bse,&
 &                                B,B_slk,&
 &                                C,C_slk,&
-&                                V_left,V_right,E_real,E_cmpl,&
-&                                SVD_digits,det,neig)
+&                                SVD_digits,det)
  !
  ! Operations:
  !
@@ -45,18 +43,12 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
  integer,          optional :: lib_in
  complex(SP),      optional :: M(:,:)
  type(PAR_matrix), optional :: M_slk
- type(BS_block),   optional :: M_bse(:)
  complex(SP),      optional :: B(:,:)
  type(PAR_matrix), optional :: B_slk
  complex(SP),      optional :: C(:,:)
  type(PAR_matrix), optional :: C_slk
- complex(SP),      optional :: V_left(:,:)
- complex(SP),      optional :: V_right(:,:)
- real(SP),         optional :: E_real(:)
- complex(SP),      optional :: E_cmpl(:)
  integer,          optional :: SVD_digits 
  complex(SP),      optional :: det
- integer,          optional :: neig
  !
  ! Work Spaces ...
  !
@@ -79,8 +71,6 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
    if (M_slk%kind=="SLK") lib_in_use=USE_SLK
 #endif
    if (have_gpu.and.devxlib_mapped(DEV_VAR(M_slk%blc))) USE_GPU=.true.
- else if (present(M_bse)) then
-   N=BS_H_dim
  else if (present(M)) then
    N=size(M,1)
  endif
@@ -114,11 +104,7 @@ subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,&
      call MATRIX_init( "SLK", M_loc, N, 1 )
      YAMBO_ALLOC(M_loc%blc,(M_loc%BLCrows(1):M_loc%BLCrows(2),M_loc%BLCcols(1):M_loc%BLCcols(2),M_loc%Nb))
      !
-     if (present(M_bse)) then
-       call MATRIX_transfer( M_out= M_loc, M_bse=M_bse )
-     else if (present(M)) then
-       call MATRIX_transfer( M_out= M_loc, M=M )
-     endif
+     if (present(M)) call MATRIX_transfer( M_out= M_loc, M=M )
      !
    endif
    !

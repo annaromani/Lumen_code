@@ -29,7 +29,7 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  use drivers,       ONLY:l_HF_and_locXC,l_sc_run,l_eval_collisions,l_real_time,&
 &                        l_optics,l_chi,l_em1s,l_ppa,l_mpa,l_bss,l_bse,l_em1d,l_X,&
 &                        l_gw0,l_life,l_acfdt,l_dipoles,l_nl_optics,l_elel_corr,l_gpu_test,&
-&                        l_slk_test,l_fl_optics
+&                        l_fl_optics
 #if defined _ELPH
  use drivers,       ONLY:l_elph_Hamiltonian
 #endif
@@ -153,7 +153,7 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  !
  ! Basical 
  !
- launch_me= .not.(l_slk_test.or.l_gpu_test)
+ launch_me= .not.l_gpu_test
  if(launch_me) call setup(en,q,Xen,Ken,k,Xk)
  !
  ! Update the default variables
@@ -170,13 +170,13 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  ! In non-linear optics we do not need bare_qpg
  ! it will be loaded only if required
  !
- launch_me= .not.(l_slk_test.or.l_gpu_test.or.l_nl_optics.or.l_fl_optics)
+ launch_me= .not.(l_gpu_test.or.l_nl_optics.or.l_fl_optics)
  if(launch_me) call col_driver(maxval((/wf_ng,QP_ng_Sx,QP_ng_SH/)),q)
  !
  ! MAGN and DEN
  !=============
  !
- !launch_me= .not.(l_slk_test.or.l_gpu_test)
+ !launch_me= .not.(l_gpu_test)
  !if(launch_me) call eval_Mtot(en,k,q)
  !
  ! reset the section numbering
@@ -192,7 +192,7 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  ! QP and RT CORRECTIONS
  !=======================
  !
- launch_me= .not.(l_slk_test.or.l_gpu_test)
+ launch_me= .not.(l_gpu_test)
  if(launch_me) call External_corrections(en,Xen,Ken,DIPen,Xk,k,X)
  !
  ! DIPOLES
@@ -327,16 +327,6 @@ integer function yambo(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_d
  !
  if (l_elph_Hamiltonian) call ELPH_Hamiltonian(en,k,q)
  if (l_elph_Hamiltonian) call mem_manager_report
- !
-#endif
- !
-#if defined _SCALAPACK 
- !
- ! SLK TESTER
- !============
- !
- if (l_slk_test) call SLK_test(en,k,q)
- if (l_slk_test) call mem_manager_report
  !
 #endif
  !

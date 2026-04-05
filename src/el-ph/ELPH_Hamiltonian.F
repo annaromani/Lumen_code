@@ -22,9 +22,7 @@ subroutine ELPH_Hamiltonian(en,k,q)
  use D_lattice,     ONLY:sop_inv,nsym,sop_tab,S_contains_TR,n_atoms
  use electrons,     ONLY:levels
  use LIVE_t,        ONLY:live_timing
- use interfaces,    ONLY:LINEAR_ALGEBRA_driver
  use ALLOC,         ONLY:ELPH_alloc
- use linear_algebra,ONLY:DIAGO,USE_LK
  use stderr,        ONLY:intc
  use stderr,        ONLY:intc
  use QP_m,          ONLY:QP_G_damp

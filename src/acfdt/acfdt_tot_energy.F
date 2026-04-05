@@ -19,9 +19,8 @@ subroutine acfdt_tot_energy(Xen,Xk,En,k,q,X,Dip)
  use wave_func,      ONLY:WF
  use LIVE_t,         ONLY:live_timing
  use parallel_m,     ONLY:PP_indexes,myid,PP_indexes_reset
- use interfaces,     ONLY:WF_load,WF_free,el_density_and_current,LINEAR_ALGEBRA_driver 
+ use interfaces,     ONLY:WF_load,WF_free,el_density_and_current
  use parallel_int,   ONLY:PP_redux_wait,PARALLEL_index 
- use linear_algebra, ONLY:INV,USE_LK
  use DIPOLES,        ONLY:DIPOLE_t
  use R_lattice,      ONLY:bz_samp,bare_qpg,nqibz
  use electrons,      ONLY:levels,nel
@@ -49,6 +48,7 @@ subroutine acfdt_tot_energy(Xen,Xk,En,k,q,X,Dip)
  !
  integer  ::i1,ib,ik
  real(SP) ::Er(9),rfac(4)
+ complex(SP) ::dummy_det
  character(9)     ::ttl(4)
  character(schlen)::ch
  !
@@ -225,7 +225,7 @@ subroutine acfdt_tot_energy(Xen,Xk,En,k,q,X,Dip)
            tddftk(:,i1)=-X_mat(:,i1,iw)*4.*pi*lambda(il)/bare_qpg(iqibz,i1)**2.
            tddftk(i1,i1)=tddftk(i1,i1)+1.
          enddo
-         call LINEAR_ALGEBRA_driver(INV,M=tddftk,lib_in=USE_LK)
+         call SERIAL_inversion(X%ng,tddftk,dummy_det,.false.)
          X_s=matmul(tddftk,X_mat(:,:,iw))
 	 forall (i1=1:X%ng) dX(i1)=(X_s(i1,i1)-X_mat(i1,i1,iw))*4.*pi*isc%gamp(i1,1)
          ACFDT_Ec=ACFDT_Ec-q%nstar(iqibz)*lambda_weight(il)*freq_weight(iw)*sum(dX)

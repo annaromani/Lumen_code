@@ -86,8 +86,8 @@ module interfaces
      !
    end subroutine
    !
-   subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,M,M_slk,M_bse,B,B_slk,C,C_slk,V_left,V_right,E_real,&
-&                                   E_cmpl,SVD_digits,det,neig)
+   subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,M,M_slk,B,B_slk,C,C_slk,&
+&                                   SVD_digits,det)
      !
      use matrix,         ONLY:PAR_matrix
      use pars,           ONLY:SP
@@ -97,18 +97,12 @@ module interfaces
      integer,          optional :: lib_in
      complex(SP),      optional :: M(:,:)
      type(PAR_matrix), optional :: M_slk
-     type(BS_block),   optional :: M_bse(:)
      complex(SP),      optional :: B(:,:)
      type(PAR_matrix), optional :: B_slk
      complex(SP),      optional :: C(:,:)
      type(PAR_matrix), optional :: C_slk
-     complex(SP),      optional :: V_left(:,:)
-     complex(SP),      optional :: V_right(:,:)
-     real(SP),         optional :: E_real(:)
-     complex(SP),      optional :: E_cmpl(:)
      integer,          optional :: SVD_digits 
      complex(SP),      optional :: det
-     integer,          optional :: neig
      !
    end subroutine
    !
