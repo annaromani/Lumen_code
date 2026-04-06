@@ -185,7 +185,7 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  !
  ! Calculate Vkli (RL) 
  !
- call SERIAL_inversion(QP_ng_Sx-q,Ko,dummy_det,.false.)
+ call SERIAL_inversion(QP_ng_Sx-1,Ko,dummy_det,.false.)
  ! 
  YAMBO_ALLOC(Vkli_RL,(QP_ng_Sx-1))
  Vkli_RL=matmul(Ko,rho_xc)
