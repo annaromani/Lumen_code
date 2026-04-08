@@ -204,6 +204,11 @@ subroutine NL_driver(E,X,Xw,k,q,Dip)
    !
    eval_dG=.true.
    !
+   if(COLLISIONS_have_HARTREE) then
+     call msg('rs','Variables HARRLvcs,EXXRLvcs,CORRLvcs ignored, read from COLLISIONS')
+   else
+     call msg('rs','Variables EXXRLvcs,CORRLvcs ignored, read from COLLISIONS')
+   endif
    call COLLISIONS_load(.false.)
    !
  endif
