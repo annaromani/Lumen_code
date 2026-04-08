@@ -12,8 +12,6 @@ subroutine K_inversion_do_it_full(Lo,KERNEL,what)
  use pars,           ONLY:SP,cZERO
  use BS_solvers,     ONLY:BS_mat
  use BS,             ONLY:BS_H_dim
- use interfaces,     ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra, ONLY:INV
  !
  implicit none
  !
@@ -24,6 +22,7 @@ subroutine K_inversion_do_it_full(Lo,KERNEL,what)
  ! Work Space
  !
  integer     ::i1,i2
+ complex(SP) ::dummy_det
  !
  KERNEL=cZERO
  !
@@ -35,6 +34,6 @@ subroutine K_inversion_do_it_full(Lo,KERNEL,what)
    enddo
  enddo
  !
- call LINEAR_ALGEBRA_driver(INV,M=KERNEL)
+ call SERIAL_inversion(BS_H_dim,KERNEL,dummy_det,.false.)
  !
 end subroutine

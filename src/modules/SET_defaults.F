@@ -24,7 +24,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
 &                     QP_Sc_steps,QP_G_er,QP_G_ir,QP_G_dr,SC_band_mixing,QP_G_solver,&
 &                     COHSEX_use_empties,On_Mass_Shell_approx,&
 &                     Vnlxc_kind,Vxc_kind,l_extended_output,l_GW_terminator,&
-&                     GW_terminator_E
+&                     GW_terminator_E,QP_ng_Sc
  use QP_CTL_m,   ONLY:QP_ctl_user,QP_ctl_DB_user
  use functions,  ONLY:bose_E_cut
  use D_lattice,  ONLY:i_space_inv,inv_index,n_atoms_species_max,n_atomic_species,mag_syms,&
@@ -585,6 +585,7 @@ subroutine SET_defaults(INSTR,IND,OD,COM_DIR)
  !
  ! COLLISIONS I/O
  !
+ QP_ng_Sc=-1
 # if defined _PAR_IO
  COLLISIONS_cutoff=0.0000_SP
 # else
