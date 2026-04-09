@@ -108,9 +108,6 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  use openmp,        ONLY:n_threads_X,n_threads_SE,n_threads_SX,n_threads_RT,n_threads_DIP,n_threads_K,&
 &                        n_threads_NL,n_threads_OSCLL
 #endif
-#if defined _SCALAPACK
- use SLK_m,         ONLY:SLK_test_H_dim
-#endif
  use gpu_m,         ONLY:GPU_test_dim
  use PHOTOLUM,      ONLY:PL_weights
 #if defined _MEM_CHECK
@@ -638,13 +635,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'ExtF2_Dir',             '[NL ExtF] Versor',Efield(2)%versor,verb_level=V_nl_optics)
  call it(defs,'ExtF2_Int',             '[NL ExtF] Intensity',Efield(2)%intensity,unit=I_unit,verb_level=V_nl_optics)
  call it('f',defs,'FrSndOrd','[NL] Force second order in Covariant Dipoles',verb_level=V_sc)
-#endif
- !
-#if defined _SCALAPACK
- !
- ! SLK test
- !
- call it(defs,'SLKdim',  '[SLK] Matrix Dimension',SLK_test_H_dim)
 #endif
  !
  ! GPU test
