@@ -502,7 +502,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
          case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
          case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
          if ( .not. (case_simple .or. case_cmplx) ) cycle
-         tmp_ch=trim(name_rap(irap)(1:5))//" + "//trim(name_rap(jrap)(1:5))
+         tmp_ch=trim(name_rap(irap)(1:5))//";"//trim(name_rap(jrap)(1:5))
          l_char_not_found=.false.
          exit main_loop2
        enddo
@@ -519,7 +519,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
            case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
            case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
            if ( .not. (case_simple .or. case_cmplx) ) cycle
-           tmp_ch=trim(name_rap(irap)(1:5))//" + "//trim(name_rap(jrap)(1:5))//" + "//trim(name_rap(krap)(1:5))
+           tmp_ch=trim(name_rap(irap)(1:5))//";"//trim(name_rap(jrap)(1:5))//";"//trim(name_rap(krap)(1:5))
            l_char_not_found=.false.
            exit main_loop3
          enddo
