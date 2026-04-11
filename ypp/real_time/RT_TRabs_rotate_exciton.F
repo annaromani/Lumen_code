@@ -60,7 +60,7 @@ subroutine RT_TRabs_rotate_exciton(DIP_kind,DIP_dir,DIP_f,Xen,Xk)
  !
  ! Work space
  !
- integer           :: i_cv,i_v,i_c,i_kbz,i_kibz,i_spin,i_l,i_dir,j_dir,i_exc,i_exc_p
+ integer           :: i_cv,i_v,i_c,i_kbz,i_kibz,i_spin,i_l,i_lp,i_dir,j_dir,i_exc,i_exc_p
  character(6)      :: DIP_kind
  real(SP)          :: E_eh,DIP_proj(3,2)
  complex(SP)       :: DIP_ver(3,3),DIP_exc(3,3),DIP_inv(3,3),U(3,3),E_ver(3,3)
@@ -132,10 +132,12 @@ subroutine RT_TRabs_rotate_exciton(DIP_kind,DIP_dir,DIP_f,Xen,Xk)
  !
  call msg("s","checking initial versors ortogonality ")
  do i_exc=1,EXCITONS_n_user_states
+   i_l=EXCITONS_user_indexes(i_exc)
    do i_exc_p=i_exc+1,EXCITONS_n_user_states
+     i_lp=EXCITONS_user_indexes(i_exc_p)
      DIP_proj(1,1)= real(dot_product(DIP_ver(:,i_exc),DIP_ver(:,i_exc_p)))
      DIP_proj(1,2)=aimag(dot_product(DIP_ver(:,i_exc),DIP_ver(:,i_exc_p)))
-     call msg("s","States "//trim(intc(i_exc))//" - "//trim(intc(i_exc_p)),(/DIP_proj(1,1),DIP_proj(1,2)/))
+     call msg("s","States "//trim(intc(i_l))//" - "//trim(intc(i_lp)),(/DIP_proj(1,1),DIP_proj(1,2)/))
    enddo
  enddo
  call msg("s"," ")

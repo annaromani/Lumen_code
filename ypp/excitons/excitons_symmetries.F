@@ -410,7 +410,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
  character(9)         :: vec_ch(12)
  character(schlen)    :: filedebug,titles(3),tmp_ch,loc_msg,loc_fmt
  !
- integer  :: ich,jrap,irap,iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,max_deg
+ integer  :: ich,jrap,irap,krap,iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,max_deg
  !
  integer  :: which_class(12),ncmplx
  !
@@ -490,23 +490,42 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
        l_char_not_found=.false.
        exit
      enddo
-     if(irap==nclass+1) then
-       tmp_ch="char not found"
-       l_char_not_found=.true.
-     endif
-   else if (l_mixed_states) then
-     main_loop: do irap=1,nclass
+     ! Try again with combination of 2 states
+     if(irap==nclass+1) l_mixed_states=.true.
+   endif
+   !
+   if (l_mixed_states) then
+     main_loop2: do irap=1,nclass
        do jrap=1,nclass
          char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass))+char_mat(jrap,which_irr(:nclass)),kind=SP)
          tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
          case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
          case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
          if ( .not. (case_simple .or. case_cmplx) ) cycle
-         tmp_ch=trim(name_rap(irap))//"+"//trim(name_rap(jrap))
+         tmp_ch=trim(name_rap(irap)(1:5))//" + "//trim(name_rap(jrap)(1:5))
          l_char_not_found=.false.
-         exit main_loop
+         exit main_loop2
        enddo
-     enddo main_loop
+     enddo main_loop2
+     ! Try again with combination of 3 states
+     if (l_char_not_found) then
+       main_loop3: do irap=1,nclass
+         do jrap=1,nclass
+         do krap=1,nclass
+           char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass))&
+           &                      +char_mat(jrap,which_irr(:nclass))&
+           &                      +char_mat(krap,which_irr(:nclass)),kind=SP)
+           tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
+           case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
+           case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
+           if ( .not. (case_simple .or. case_cmplx) ) cycle
+           tmp_ch=trim(name_rap(irap)(1:5))//" + "//trim(name_rap(jrap)(1:5))//" + "//trim(name_rap(krap)(1:5))
+           l_char_not_found=.false.
+           exit main_loop3
+         enddo
+         enddo
+       enddo main_loop3
+     endif
      if(irap==nclass+1) then
        tmp_ch="mixed states (not sum)"
        l_char_not_found=.true.
