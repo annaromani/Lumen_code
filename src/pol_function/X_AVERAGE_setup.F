@@ -10,6 +10,7 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
  use pars,          ONLY:SP,rZERO
  use vec_operate,   ONLY:v_norm
  use R_lattice,     ONLY:q0_def_norm
+ use D_lattice,     ONLY:i_space_inv
  use parser_m,      ONLY:parser
  use X_m,           ONLY:OPTICAL_do_average,n_OPTICAL_dir_to_eval,OPTICAL_averaged_dirs_string
  !
@@ -22,7 +23,7 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
  ! Work Space
  !
  logical :: is_there_an_average_to_do
- integer :: ic
+ integer :: ic,idir
  real(SP), SAVE :: q0_save(3)
  !
  if (what=="INIT") then
@@ -46,14 +47,21 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
    n_OPTICAL_dir_to_eval=0
    OPTICAL_averaged_dirs_string=""
    do ic=1,3
-     if (abs(q0(ic))>0.) then
-       if (ic==1) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'X'
-       if (ic==2) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Y'
-       if (ic==3) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Z'
-       n_OPTICAL_dir_to_eval=n_OPTICAL_dir_to_eval+1
-       OPTICAL_do_average(n_OPTICAL_dir_to_eval)=ic
-     endif
+     if (abs(q0(ic))<=0._SP) cycle
+     if (ic==1) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'X'
+     if (ic==2) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Y'
+     if (ic==3) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Z'
+     n_OPTICAL_dir_to_eval=n_OPTICAL_dir_to_eval+1
+     OPTICAL_do_average(n_OPTICAL_dir_to_eval)=ic
    enddo
+   !
+   if (i_space_inv==0) then
+     do ic=1,3
+       if (abs(q0(ic))<=0._SP) cycle
+       n_OPTICAL_dir_to_eval=n_OPTICAL_dir_to_eval+1
+       OPTICAL_do_average(n_OPTICAL_dir_to_eval)=-ic
+     enddo
+   endif
    !
    return
    !
@@ -68,7 +76,10 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
  !
  if (what=="DIR-LOOP") then
    q0=rZERO
-   q0( OPTICAL_do_average(i_counter) )=1._SP
+   ic = OPTICAL_do_average(i_counter)
+   if(ic>0) idir = +1
+   if(ic<0) idir = -1
+   q0( abs(ic) )= idir*1._SP
    return
  endif
  !
