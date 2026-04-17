@@ -10,7 +10,32 @@
 #include<y_memory.h>
 !
 integer function io_ELPH(ID,what)
- !
+ !! **io_ELPH - Read/write electron-phonon coupling databases**
+ !!
+ !! Handles I/O for two related el-ph databases, selected via the 'what' argument:
+ !!
+ !!   what='gkkp_expanded'  -> ndb.elph_gkkp_expanded
+ !!     El-ph matrix elements g_{nn'}(k,q,nu) expanded to the full BZ.
+ !!     All nkbz k-points are present (no symmetry folding).
+ !!     Header uses R_LATT only (no KPTS check, no serial-number check).
+ !!     Sets elph_grids_are_expanded=.TRUE.
+ !!     Used by RAMAN_driver to load gkkp for the Raman tensor loops.
+ !!
+ !!   what='gkkp' (default) -> ndb.elph_gkkp
+ !!     El-ph matrix elements in the IBZ. Standard YAMBO elph database.
+ !!     Sets elph_grids_are_expanded=.FALSE.
+ !!
+ !! Both modes are fragmented by q-point iq. Per fragment:
+ !!   PH_FREQS{iq}            - phonon frequencies squared omega^2 (ph_modes)
+ !!   POLARIZATION_VECTORS    - phonon polarization vectors (ph_modes, n_atoms, 3) complex
+ !!   E_K_PLUS_Q{iq}          - Kohn-Sham energies at k+q (elph_nb, nkbz)
+ !!   ELPH_GKKP_Q{iq}         - el-ph matrix elements g_{nn'}(q,nu,k) (ph_modes, nb, nb, nkbz) complex
+ !!   ELPH_GKKP_BARE_Q{iq}    - bare (unscreened) el-ph m.e.  [if l_GKKP_hosts_bare_dV]
+ !!   ELPH_DW_Q{iq}           - Debye-Waller term             [if l_GKKP_hosts_DW]
+ !!
+ !! Optional modifier 'no_matrix_elements' in what: skips reading dVc/dVr,
+ !! loads only frequencies and energies E_K_PLUS_Q (used for grid-only operations).
+ !!
  use pars,           ONLY:schlen
  use IO_m,           ONLY:io_sec,read_is_on,frag_ELPH
  use IO_int,         ONLY:io_connect,io_disconnect,io_fragment,&

@@ -9,13 +9,13 @@
 !
 #include<y_memory.h>
 !
-subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
+subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E,Res)
  !
  use pars,           ONLY:SP,DP,cZERO,schlen
  use units,          ONLY:HA2EV
  use parser_m,       ONLY:parser
- use YPPm,           ONLY:deg_energy,EXCITONS_n_user_states,&
- &                        EXCITONS_user_indexes
+ use YPPm,           ONLY:deg_energy,EXCITONS_n_user_states,EXCITONS_user_indexes, &
+ &                        mix_thresh,symm_thresh
  use R_lattice,      ONLY:bz_samp!,coll_scattering
  use electrons,      ONLY:levels,n_sp_pol
  use BS_solvers,     ONLY:BSS_n_eig
@@ -36,12 +36,13 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  type(bz_samp)       :: Xk,qpt
  type(levels)        :: Xen
  complex(SP)         :: BS_E(BSS_n_eig)
+ real(SP)            :: Res(BSS_n_eig)
  !
- real(SP) :: BS_E_real(EXCITONS_n_user_states)
- logical  :: l_min_mem
+ real(SP) :: BS_E_real(EXCITONS_n_user_states),Res_sum
+ logical  :: l_min_mem,l_mix_thresh_set
  integer  :: S_index(EXCITONS_n_user_states)
- integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max
- integer  :: ik,i_sp_pol,iqbz,nsymq,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID
+ integer  :: first_exc(EXCITONS_n_user_states),n_of_exc(EXCITONS_n_user_states),n_deg_grp,n_of_exc_max,iexc_ref
+ integer  :: ik,i_sp_pol,iqbz,nsymq,nrotq,nsz(5),iexc,il1,i_grp,i_sub_grp,io_err,ID,n_exc_sbgrp
  !
  complex(SP), allocatable :: exc_trace(:,:,:)
  complex(SP), allocatable :: exc_reps(:,:,:,:)
@@ -51,7 +52,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  integer, allocatable  :: ref_exc_grp(:,:)
  integer, allocatable  :: ref_exc_sbgr(:,:)
  !
- character(schlen)    :: filebse,titles(4),loc_msg,loc_fmt
+ character(schlen)    :: filebse,titles(5),loc_msg,loc_fmt
  character(schlen), allocatable :: exc_character(:,:)
  !
  integer, external :: io_QINDX
@@ -71,6 +72,8 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  io_err=io_WF_phases(BS_bands,0,0,0,ID,nsz)
  !
  call parser("MinimizeMem",l_min_mem)
+ call parser("Mix_thresh",l_mix_thresh_set)
+ if (.not.l_mix_thresh_set) mix_thresh=symm_thresh 
  !
  if (.not.l_min_mem) then
    nsz(1:2)=maxval(WF_phases_b_map(:,:,:,1))
@@ -115,6 +118,7 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  iqbz=qpt%k_table(iq,1)
  !iGq =qpt%g_table(iq,isq)
  !
+ iexc_ref=EXCITONS_user_indexes(1)
  do iexc=1,EXCITONS_n_user_states
    il1=EXCITONS_user_indexes(iexc)
    BS_E_real(iexc)=real(BS_E(il1))
@@ -177,24 +181,27 @@ subroutine excitons_symmetries(iq,Xen,Xk,qpt,BS_E)
  ! Finally I compute the exciton character
  !
  call get_character_exc(EXCITONS_n_user_states,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
-                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,iexc_ref,&
                         &   exc_trace,exc_reps,exc_character,.true.,iq)
  !
  YAMBO_FREE(exc_reps)
  !
- titles=(/" E[eV]  ","i_lambda"," n_deg  ","exc-symm"/)
+ titles=(/"-   E[eV]   -","-   Int.    -","-  i_lambda -","-   n_deg   -","-  exc-symm -"/)
  call msg("o "//trim(filebse),"#")
- call msg("o "//trim(filebse),'#',titles,INDENT=0,USE_TABS=.true.)
+ call msg("o "//trim(filebse),'#',titles,INDENT=0,USE_TABS=.false.)
  call msg("o "//trim(filebse),"#")
  !
- loc_fmt="(F10.4,12x,i4,16x,F4.2,16x,a)"
+ loc_fmt="(F10.4,4x,E10.4,4x,i8,8x,i4,8x,a)"
  !
  do i_grp=1,n_deg_grp
    do i_sub_grp=1,n_sub_grps(i_grp)
      !
      il1=first_exc(i_grp)+ref_exc_sbgr(i_sub_grp,i_grp)-1
+     n_exc_sbgrp=nint(real(exc_trace(1,i_sub_grp,i_grp),SP))
+     Res_sum=sum(Res(il1+iexc_ref-1:il1+iexc_ref-1+n_exc_sbgrp-1))
+     !write(100,*) BS_E_real(il1)*HA2EV,real(BS_E(il1+iexc_ref-1:il1+iexc_ref-1+n_exc_sbgrp-1))*HA2EV
      !
-     write(loc_msg,loc_fmt) BS_E_real(il1)*HA2EV,il1,real(exc_trace(1,i_sub_grp,i_grp)),&
+     write(loc_msg,loc_fmt) BS_E_real(il1)*HA2EV,Res_sum,il1+iexc_ref-1,n_exc_sbgrp,&
      &              trim(exc_character(i_sub_grp,i_grp))
      call msg("o "//trim(filebse),'',loc_msg,INDENT=-2)
      !
@@ -310,7 +317,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
  use pars,           ONLY:SP
  use com,            ONLY:msg
  use D_lattice,      ONLY:nclass
- use YPPm,           ONLY:symm_thresh
+ use YPPm,           ONLY:mix_thresh
  use stderr,         ONLY:intc
  !
  implicit none
@@ -341,7 +348,7 @@ subroutine refine_groups(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
        !write(*,*) i_grp,il1,il2,loc_reps(:,il2,il1,i_grp)
        call msg('s',"Rep "//trim(intc(i_grp))//" ,Exc. mix "//trim(intc(iexc))//","&
        &                  //trim(intc(jexc)),sum(abs(loc_reps(:,il2,il1,i_grp))))
-       if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*symm_thresh) cycle
+       if ( sum(abs(loc_reps(:,il2,il1,i_grp)))>=nclass*mix_thresh) cycle
        ref_exc_grp(il2,i_grp)=-1
      enddo
    enddo
@@ -370,7 +377,7 @@ end subroutine refine_groups
 !
 !
 subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, &
-                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,&
+                        &   n_sub_grps,ref_exc_sbgr,exc_sbgr,iexc_ref,&
                         &   loc_trace,loc_reps,loc_character,l_prt_debug,iq)
  !
  use pars,           ONLY:SP,schlen,cI,cZERO
@@ -383,7 +390,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
  !
  implicit none
  !
- integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max
+ integer,      intent(in)  :: nstates,n_deg_grp,n_of_exc_max,iexc_ref
  integer,      intent(in)  :: first_exc(nstates),n_of_exc(nstates)
  integer,      intent(in)  :: n_sub_grps(n_deg_grp),ref_exc_sbgr(n_of_exc_max,n_deg_grp)
  integer,      intent(in)  :: exc_sbgr(n_of_exc_max,n_deg_grp)
@@ -403,7 +410,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
  character(9)         :: vec_ch(12)
  character(schlen)    :: filedebug,titles(3),tmp_ch,loc_msg,loc_fmt
  !
- integer  :: ich,jrap,irap,iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,max_deg
+ integer  :: ich,jrap,irap,krap,iclass,ielem,iexc,il1,il2,i_grp,i_sub_grp,max_deg
  !
  integer  :: which_class(12),ncmplx
  !
@@ -483,23 +490,42 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
        l_char_not_found=.false.
        exit
      enddo
-     if(irap==nclass+1) then
-       tmp_ch="char not found"
-       l_char_not_found=.true.
-     endif
-   else if (l_mixed_states) then
-     main_loop: do irap=1,nclass
+     ! Try again with combination of 2 states
+     if(irap==nclass+1) l_mixed_states=.true.
+   endif
+   !
+   if (l_mixed_states) then
+     main_loop2: do irap=1,nclass
        do jrap=1,nclass
          char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass))+char_mat(jrap,which_irr(:nclass)),kind=SP)
          tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
          case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
          case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
          if ( .not. (case_simple .or. case_cmplx) ) cycle
-         tmp_ch=trim(name_rap(irap))//"+"//trim(name_rap(jrap))
+         tmp_ch=trim(name_rap(irap)(1:5))//";"//trim(name_rap(jrap)(1:5))
          l_char_not_found=.false.
-         exit main_loop
+         exit main_loop2
        enddo
-     enddo main_loop
+     enddo main_loop2
+     ! Try again with combination of 3 states
+     if (l_char_not_found) then
+       main_loop3: do irap=1,nclass
+         do jrap=1,nclass
+         do krap=1,nclass
+           char_tmp(:nclass)=cmplx(char_mat(irap,which_irr(:nclass))&
+           &                      +char_mat(jrap,which_irr(:nclass))&
+           &                      +char_mat(krap,which_irr(:nclass)),kind=SP)
+           tmp_trace(:nclass)=loc_trace(:nclass,i_sub_grp,i_grp)
+           case_simple=all(abs(     tmp_trace(:nclass)       -     char_tmp(:nclass) )<=symm_thresh)
+           case_cmplx =all(abs(real(tmp_trace(:nclass))/2._SP-real(char_tmp(:nclass)))<=symm_thresh)
+           if ( .not. (case_simple .or. case_cmplx) ) cycle
+           tmp_ch=trim(name_rap(irap)(1:5))//";"//trim(name_rap(jrap)(1:5))//";"//trim(name_rap(krap)(1:5))
+           l_char_not_found=.false.
+           exit main_loop3
+         enddo
+         enddo
+       enddo main_loop3
+     endif
      if(irap==nclass+1) then
        tmp_ch="mixed states (not sum)"
        l_char_not_found=.true.
@@ -513,7 +539,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
      if (debug_file_to_open) then
        filedebug="exc_qpt"//trim(intc(iq))//"_E+syms_sorted_dbg"
        call of_open_close(filedebug,'ot')
-       loc_fmt="(i4,12x,F4.2,12x,a)"
+       loc_fmt="(i8,12x,F4.2,12x,a)"
        debug_file_to_open=.false.
        !
        call msg("o "//trim(filedebug),"# Symmetries debug at qpt ",iq,INDENT=0)
@@ -526,7 +552,7 @@ subroutine get_character_exc(nstates,n_deg_grp,n_of_exc_max,n_of_exc,first_exc, 
        !
      endif
      !
-     write(loc_msg,loc_fmt) il1,real(loc_trace(1,i_sub_grp,i_grp)),trim(tmp_ch)
+     write(loc_msg,loc_fmt) il1+iexc_ref-1,real(loc_trace(1,i_sub_grp,i_grp)),trim(tmp_ch)
      call msg("o "//trim(filedebug),'',loc_msg,INDENT=-2)
      !
      ncmplx=1

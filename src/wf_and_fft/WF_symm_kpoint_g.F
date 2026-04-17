@@ -70,7 +70,11 @@ subroutine WF_symm_kpoint_g(b_to_load,ik,i_sp_pol,isymm,ig0,WF)
  !  write(*,*) isymm,isymm_m1,ig0,kphase,gphase,dot_product(dl_tra(:,isymm),G_cc),G_cc,krot
  !endif
  !
- if (n_spinor==2) ssop_loc=DEV_VAR(spin_sop)(:,:,isymm)
+#if defined _GPU
+ call devxlib_memcpy_d2d(ssop_loc,DEV_VAR(spin_sop)(:,:,isymm))
+#else
+ if (n_spinor==2) ssop_loc=spin_sop(:,:,isymm)
+#endif
  !
  ic_max=wf_nc_k(ik)
  do ic=1,wf_nc_k(ik)

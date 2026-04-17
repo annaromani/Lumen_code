@@ -19,10 +19,6 @@ module SLK_m
  !
  integer              :: n_pools = 1 ! number of pools
  !
- ! SLK test
- !
- integer              :: SLK_test_H_dim=1
- !
  ! POOL type
  !===========
  type POOL_group

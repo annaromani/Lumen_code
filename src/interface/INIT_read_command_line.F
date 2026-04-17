@@ -214,8 +214,8 @@ subroutine INIT_read_command_line(rstr,init_)
        BSS_mode=trim(rstr_piece(i1+1))
        if (.not.STRING_match(BSS_mode,'h').and..not.STRING_match(BSS_mode,'d').and.&
 &          .not.STRING_match(BSS_mode,'i').and..not.STRING_match(BSS_mode,'t').and.&
-&          .not.STRING_match(BSS_mode,'s').and..not.STRING_match(BSS_mode,'x').and.&
-&          .not.STRING_match(BSS_mode,'c').and..not.STRING_match(BSS_mode,'o')) BSS_mode='h'
+&          .not.STRING_match(BSS_mode,'s').and..not.STRING_match(BSS_mode,'o').and.&
+&          .not.STRING_match(BSS_mode,'c')) BSS_mode='h'
        !
        ! With and ALDA Fxc the t solver is not permitted
        !

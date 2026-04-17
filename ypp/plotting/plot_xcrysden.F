@@ -206,7 +206,7 @@ subroutine plot_xcrysden_kspace(iq,exc_index_msg)
  !
  ! Work Space...
  !
- integer  :: i1,i2,i3,ik
+ integer  :: i1,i2,i3,i4,i5,ik
  real(SP) :: b_angs(3,3)    !lattice vectors in inverse Angstrom
  real(SP) :: rv(3)
  character(schlen) :: ch
@@ -230,7 +230,7 @@ subroutine plot_xcrysden_kspace(iq,exc_index_msg)
  call msg(output_string,'BEGIN_BANDGRID_3D')
  !
  call msg(output_string,'',1) ! number of bands
- call msg(output_string,'',nr)
+ call msg(output_string,'',nr+1)
  call msg(output_string,'',(/0._SP,0._SP,0._SP/))
  call msg(output_string,'',b_angs(1,:))
  call msg(output_string,'',b_angs(2,:))
@@ -246,6 +246,34 @@ subroutine plot_xcrysden_kspace(iq,exc_index_msg)
      do i1 = 0, nr(1)-1
        ik = 1 + i1 + i2*nr(1) + i3*nr(1)*nr(2)
        call msg(output_string,'',v2plot(ik))
+       if(i1==nr(1)-1) then
+         ik = 1 + (i2+1)*nr(1) + (i3+1)*nr(1)*nr(2)
+         call msg(output_string,'',v2plot(ik))
+       endif
+       if(i1==nr(1)-1.and.i2==nr(2)-1) then
+         do i4=1,nr(1)
+           ik = 1 + i4 + nr(1) + (i3+1)*nr(1)*nr(2)
+           call msg(output_string,'',v2plot(ik))
+         enddo
+         ik = 1 + 1 + nr(1) + (i3+1)*nr(1)*nr(2)
+         call msg(output_string,'',v2plot(ik))
+       endif
+       if(i1==nr(1)-1.and.i2==nr(2)-1.and.i3==nr(3)-1) then 
+         do i5=1,nr(2)
+           do i4=1,nr(1)
+             ik = 1 + i4 + i5*nr(1) + nr(1)*nr(2)
+             call msg(output_string,'',v2plot(ik))
+           enddo
+           ik = 1 + 1 + i5*nr(1) + nr(1)*nr(2)
+           call msg(output_string,'',v2plot(ik))
+         enddo
+         do i4=1,nr(1)
+           ik = 1 + i4 + nr(1) + nr(1)*nr(2)
+           call msg(output_string,'',v2plot(ik))
+         enddo
+         ik = 1 + 1 + nr(1) + nr(1)*nr(2)
+         call msg(output_string,'',v2plot(ik))
+       endif
      enddo
    enddo
    !
