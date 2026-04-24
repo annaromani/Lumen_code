@@ -351,6 +351,9 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
          do ig2=X_par(iq_mem)%cols(1),X_par(iq_mem)%cols(2)
          do ig1=X_par(iq_mem)%rows(1),X_par(iq_mem)%rows(2)
            !
+           if ( abs(X_par(iq_mem)%blc(ig1,ig2,X_range2))<=1.E-10 ) &
+           &  X_par(iq_mem)%blc(ig1,ig2,X_range2)=1.E-10
+           !
            ! RIM W support
            !
            l_RIM_W_g=(l_RIM_W.and.ig1<=RIM_W_ng.and.ig2<=RIM_W_ng.and.iqibz==1)

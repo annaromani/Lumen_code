@@ -3,12 +3,12 @@
 !
 ! Copyright (C) 2022 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM
+! Authors (see AUTHORS file for details): AM DS
 !
 subroutine X_AVERAGE_setup(what,i_counter,q0)
  !
  use pars,          ONLY:SP,rZERO
- use vec_operate,   ONLY:v_norm
+ use vec_operate,   ONLY:v_norm,c2a
  use R_lattice,     ONLY:q0_def_norm
  use D_lattice,     ONLY:i_space_inv
  use parser_m,      ONLY:parser
@@ -48,9 +48,9 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
    OPTICAL_averaged_dirs_string=""
    do ic=1,3
      if (abs(q0(ic))<=0._SP) cycle
-     if (ic==1) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'X'
-     if (ic==2) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Y'
-     if (ic==3) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'Z'
+     if (ic==1) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'1'
+     if (ic==2) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'2'
+     if (ic==3) OPTICAL_averaged_dirs_string=trim(OPTICAL_averaged_dirs_string)//'3'
      n_OPTICAL_dir_to_eval=n_OPTICAL_dir_to_eval+1
      OPTICAL_do_average(n_OPTICAL_dir_to_eval)=ic
    enddo
@@ -80,6 +80,8 @@ subroutine X_AVERAGE_setup(what,i_counter,q0)
    if(ic>0) idir = +1
    if(ic<0) idir = -1
    q0( abs(ic) )= idir*1._SP
+   call c2a(v_in=q0,mode='ka2c')
+   q0(:)=q0/v_norm(q0)
    return
  endif
  !
