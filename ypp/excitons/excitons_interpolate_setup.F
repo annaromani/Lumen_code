@@ -52,6 +52,8 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  EXC_n_states_ref=EXCITONS_n_user_states
  BSS_n_eig_ref=BSS_n_eig
  ! 
+ if(EXCITONS_n_user_states==0) call error("Exciton states are zero! ")
+ !
  do i_c=1,EXC_n_states_ref
    i_l=EXCITONS_user_indexes(i_c)
    BS_all_E(i_c,1)=BS_E(i_l)
