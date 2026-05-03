@@ -67,6 +67,7 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  integer     :: iq_fg,iE_fg,iq_ibz,iq_db
  complex(SP) :: pole
  real(SP), external :: get_ph_E_DbGd
+ complex(SP), external :: Smear_func
  !
  !
  BS_ave_W       =BS_Sat_WEIGHT(il,i_beta,i_alpha)
@@ -149,21 +150,21 @@ subroutine Satellite_DbGrid(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
    !
    ! Phonon emission in absorption
    !
-   Sat_absorption=Sat_absorption+BS_ave_W/(W-pole)*(1._SP+bose_factor)
+   Sat_absorption=Sat_absorption+BS_ave_W*Smear_func(W,pole)*(1._SP+bose_factor)
    !
    ! Phonon emission in luminescence
    !
-   Sat_emission  =Sat_emission  +BS_ave_W/(W-pole)*bose_factor*boltzm_factor
+   Sat_emission  =Sat_emission  +BS_ave_W*Smear_func(W,pole)*bose_factor*boltzm_factor
    !
    pole=E_alpha+BS_Sat_E_DbGd_PH_abs
    !
    ! Phonon absorption in absorption
    !
-   Sat_absorption=Sat_absorption+BS_ave_W_PH_abs/(W-pole)*bose_factor
+   Sat_absorption=Sat_absorption+BS_ave_W_PH_abs*Smear_func(W,pole)*bose_factor
    ! 
    ! Phonon absorption in luminescence
    !
-   Sat_emission=Sat_emission    +BS_ave_W_PH_abs/(W-pole)*(1._SP+bose_factor)*boltzm_factor
+   Sat_emission=Sat_emission    +BS_ave_W_PH_abs*Smear_func(W,pole)*(1._SP+bose_factor)*boltzm_factor
    !
  enddo
  !

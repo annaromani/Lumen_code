@@ -280,7 +280,7 @@ subroutine setup(en,q,Xen,Ken,k,Xk)
  !
  if (wf_ng_1st_BZ>wf_ng) then
    call msg("r","wf_ng < maxval(g_rot(:wf_ng)). Increasing it to handle rotated WFs in the BZ")
-   call msg("rn","Reducing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(wf_ng_1st_BZ)))
+   call msg("rn","Increasing wf_ng from "//trim(intc(wf_ng))//" to "//trim(intc(wf_ng_1st_BZ)))
    wf_ng=wf_ng_1st_bz
  endif
  !

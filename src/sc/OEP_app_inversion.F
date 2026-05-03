@@ -29,13 +29,11 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  use electrons,       ONLY:levels,n_met_bands
  use R_lattice,       ONLY:bz_samp,nkibz,nkbz
  use FFT_m,           ONLY:fft_size,fft_g_table,fft_dim,fftw_plan,fft_rot_r
- use linear_algebra,  ONLY:INV
  use collision_el,    ONLY:elemental_collision,elemental_collision_free,elemental_collision_alloc
  use QP_m,            ONLY:QP_ng_Sx
  use SC,              ONLY:it_now,l_oep_EWeight
  use drivers,         ONLY:l_oep_kli,l_oep_ceda
  use parallel_m,      ONLY:PP_indexes,myid,PP_indexes_reset
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver 
  use parallel_int,    ONLY:PP_wait,PARALLEL_index 
  use wave_func,       ONLY:WF
  use LIVE_t,          ONLY:live_timing
@@ -58,7 +56,7 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  real(SP)                 :: EWeight, Prefactor
  complex(SP), allocatable :: rhotw_sum(:),rhotw_sum_TR(:),rho_xc(:),&
 &                            Vkli_RL(:),Ko(:,:),rhotw_prd(:,:),rhotw_rs(:)
- complex(SP)              :: SigmaXC
+ complex(SP)              :: SigmaXC,dummy_det
  complex(DP), allocatable :: Vx_dp(:),W_tmp(:),rhotw_ds(:)
  character(schlen)        :: ch
  type(elemental_collision):: isc
@@ -187,9 +185,9 @@ subroutine OEP_app_inversion(E,k,Vkli,Vslt,U,rho)
  !
  ! Calculate Vkli (RL) 
  !
- YAMBO_ALLOC(Vkli_RL,(QP_ng_Sx-1))
- call LINEAR_ALGEBRA_driver(INV,M=Ko)
+ call SERIAL_inversion(QP_ng_Sx-1,Ko,dummy_det,.false.)
  ! 
+ YAMBO_ALLOC(Vkli_RL,(QP_ng_Sx-1))
  Vkli_RL=matmul(Ko,rho_xc)
  !
  YAMBO_FREE(rho_xc)

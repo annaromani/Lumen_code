@@ -27,8 +27,6 @@ subroutine FL_FT_polarization(FL_time_pol,FL_floquet_pol)
  use units,          ONLY:HA2FSm1
  use fields,         ONLY:Efield,EtoT
  use wrapper,        ONLY:M_by_V
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra,  ONLY:INV
  use fl_optics,      ONLY:max_fl_mode,n_tot_fl_modes,FL_space_dim,FL_S_plus,FL_S_minus,&
 &                         FL_states,FL_Ho_plus_Sigma,FL_time_S_det,n_tot_time_steps,max_time_step
  !
@@ -66,7 +64,7 @@ subroutine FL_FT_polarization(FL_time_pol,FL_floquet_pol)
  ! Invert Matrix for Fourier Transform
  ! ===================================================================
  !
- call LINEAR_ALGEBRA_driver(INV,M=FL_FT_Mat)
+ call SERIAL_inversion(n_tot_time_steps,FL_FT_Mat,dummy_det,.false.)
  !
  ! Calculate FL_floquet_pol
  ! ===================================================================

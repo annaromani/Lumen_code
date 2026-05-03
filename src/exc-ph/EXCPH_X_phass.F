@@ -115,6 +115,7 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
  integer,  allocatable  :: max_Sat_pos_PH_abs(:,:)
  !
  integer, external :: io_EXCPH_gkkp,io_ELPH
+ complex(SP), external :: Smear_func
  !
  min_pos  =minloc(BS_all_E(1,:))
  min_EXC_E=minval(BS_all_E(1,:))
@@ -278,7 +279,8 @@ subroutine EXCPH_X_phass(wv,q,Epsilon_ii,PL_ii)
    do i_alpha=EXCPH_states(1),EXCPH_states(2)
      !
      pole =BS_E_in(i_alpha)
-     Epsilon_ii(iw,1:2)=Epsilon_ii(iw,1:2)+(1._SP-EXCPH_Renorm(i_alpha)-EXCPH_Renorm_PH_abs(i_alpha))*BS_R(i_alpha)/(W-pole)
+     Epsilon_ii(iw,1:2)=Epsilon_ii(iw,1:2)+(1._SP-EXCPH_Renorm(i_alpha)-EXCPH_Renorm_PH_abs(i_alpha))*BS_R(i_alpha) &
+& *Smear_func(W,pole)
      !
      ! [CA] The pole of luminescence should be the pole of BS_E_in 
      !      but I think this is not consistent with the Boltzman weight, I use always Lout.

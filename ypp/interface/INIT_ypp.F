@@ -768,7 +768,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    if (l_exc_wf.and.l_average_eh) call initactivate(1,"EHdensity")
    if (l_exc_wf.and.n_spin>1) call initactivate(1,"ElecSpin HoleSpin")
    if (l_spin) call initactivate(1,"Degen_Step")
-   if (l_exc_symm) call initactivate(1,"Degen_Step Symm_thresh FFTGvecs MinimizeMem")
+   if (l_exc_symm) call initactivate(1,"Degen_Step Symm_thresh Mix_thresh FFTGvecs MinimizeMem")
 #if defined _YPP_ELPH
    if (l_eliashberg)  call initactivate(1,"Degen_Step") 
 #endif

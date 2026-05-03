@@ -267,6 +267,7 @@ module YPPm
  ! symmetry groups analysis
  ! 
  real(SP)          :: symm_thresh
+ real(SP)          :: mix_thresh
  !
  ! Transition Analysis
  !

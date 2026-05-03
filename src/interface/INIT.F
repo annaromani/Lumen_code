@@ -23,9 +23,6 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
 &                         l_elph_Hamiltonian,l_elph_scatt,l_elphoton_corr,l_elphoton_scatt,l_em1d,l_eval_collisions,&
 &                         l_sc_magnetic,l_sc_electric,l_dipoles,l_pf_fxc,l_nl_optics,l_mpa,l_phel_corr,l_X,l_screen,&
 &                         l_EXCPH_optics,l_EXCPH_lifetime,l_fl_optics
-#if defined _SCALAPACK
- use drivers,        ONLY:l_slk_test
-#endif
  use drivers,        ONLY:l_gpu_test
  use pars,           ONLY:SP
  use parser_m,       ONLY:parser
@@ -330,9 +327,6 @@ integer function INIT(en,q,k,X,Xw,Dip,instr,lnstr,CLOSE_Gs,FINALIZE)
        l_rim_w=runlevel_is_on('rim_w')
        l_col_cut=l_rim.or.l_rim_w
        l_acfdt=runlevel_is_on('acfdt')
-#if defined _SCALAPACK
-       l_slk_test =runlevel_is_on('slktest')
-#endif
        l_gpu_test =runlevel_is_on('gputest')
 #if defined _RT
        l_real_time=runlevel_is_on('negf')

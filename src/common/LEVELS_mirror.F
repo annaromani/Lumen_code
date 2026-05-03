@@ -252,7 +252,7 @@ subroutine LEVELS_frozen_local(TMP_bands,TMP_bands_frozen,TMP_bands_frozen_ch,TM
  integer(LP),       intent(out) :: TMP_bands_frozen(nb)
  !
  integer :: ib1,ib2
- logical :: l_freeze_bands
+ logical :: l_freeze_bands,started_frozen_range
  character(schlen) :: TMP_bands_frozen_list(nb)
  !
  TMP_bands_frozen=0
@@ -261,12 +261,19 @@ subroutine LEVELS_frozen_local(TMP_bands,TMP_bands_frozen,TMP_bands_frozen_ch,TM
  if (l_freeze_bands) then
    call STRING_split(TMP_bands_frozen_ch,TMP_bands_frozen_list)
    ib1=1
+   started_frozen_range=.false.
    do ib2=TMP_bands(1),TMP_bands(2)
      !write(*,*) ib1,ib2,trim(intc(ib2))," ",trim(TMP_bands_frozen_list(ib1)),&
-     !&                  trim(intc(ib2))==trim(TMP_bands_frozen_list(ib1))
+     !&                  trim(intc(ib2))==trim(TMP_bands_frozen_list(ib1)),started_frozen_range
+     if( trim(TMP_bands_frozen_list(ib1)) == "-" ) then
+       started_frozen_range=.true.
+       ib1=ib1+1
+     endif
+     if( started_frozen_range) TMP_bands_frozen(ib2-TMP_bands(1)+1)=1
      if( .not. trim(intc(ib2))==trim(TMP_bands_frozen_list(ib1)) ) cycle
      TMP_bands_frozen(ib2-TMP_bands(1)+1)=1
      ib1=ib1+1
+     started_frozen_range=.false.
    enddo
  endif
  !

@@ -52,6 +52,12 @@ module EXCPH
  real(SP), allocatable    :: EXCPH_q(:,:)
  real(SP)                 :: EXC_q0(3)
  !
+ ! Smearing function 
+ character(schlen)        :: DmType
+ integer,parameter        :: LORENTZIAN=1
+ integer,parameter        :: GAUSSIAN=2
+ integer                  :: Smearing_type
+ !
  ! L_in and L_out paths
  !
  character(lchlen)       :: Lin_path 

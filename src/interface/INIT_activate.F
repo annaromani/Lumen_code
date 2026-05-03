@@ -29,9 +29,6 @@ subroutine INIT_activate()
 #if defined  _ELPH 
  use ELPH,           ONLY:elph_use_q_grid
 #endif
-#if defined _SCALAPACK
- use drivers,        ONLY:l_slk_test
-#endif
  use drivers,        ONLY:l_gpu_test
  !
  implicit none
@@ -84,13 +81,6 @@ subroutine INIT_activate()
    call CPU_activate("SE")
    call initactivate(1,'SE_Threads')
  endif
- !
-#if defined _SCALAPACK
- if (l_slk_test) then
-   call initactivate(1,"SLKdim")
-   call CPU_activate("SLK")
- endif
-#endif
  !
  if (l_gpu_test) then
    call initactivate(1,"GPUdim")
@@ -308,12 +298,7 @@ subroutine INIT_activate()
      call initactivate(1,'BSSSlepcMaxIt BSSSlepcNCV BSSSlepcMPD BSSSlepcTol BSSSlepcMatrixFormat')
    endif
    !
-   if (index(BSS_mode,'x')/=0) then
-        call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
-   endif
-   if (index(BSS_mode,'c')/=0) then
-        call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
-   endif
+   if (index(BSS_mode,'c')/=0)  call initactivate(1,'WRbsWF BSSPertWidth BSSNEig')
    !
    ! Special project dependent variables
    !
@@ -494,7 +479,7 @@ subroutine INIT_activate()
  if (l_EXCPH_lifetime) call initactivate(1,'InterpG2 NoMatrxEl KeepDeg ')
  if (l_EXCPH_optics)  then
    call initactivate(1,'EXCTemp AlphaQ ElPhModes PLqres DbGdOnlyPh DbGdWEIGHTs NoMatrxEl EnRngeXd DmRngeXd ETStpsXd')
-   call initactivate(1,'EXCPHdEtresh DbGdOnlyPh DbGdWEIGHTs NoMatrxEl EnRngeXd DmRngeXd ETStpsXd')
+   call initactivate(1,'EXCPHdEtresh DbGdOnlyPh DbGdWEIGHTs NoMatrxEl EnRngeXd DmType DmRngeXd ETStpsXd')
  endif
  !
 #endif
@@ -668,9 +653,6 @@ subroutine CPU_activate(what)
  if (what=="X_and_IO".or.what=="X".or.what=="BS") call initactivate(1,what//"_nCPU_LinAlg_INV")
  if (what=="BS")                                  call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
  if (what=="SE".and.l_sc_run)                     call initactivate(1,what//"_nCPU_LinAlg_DIAGO")
-#endif
-#if defined _SCALAPACK &&  defined _MPI
- if (what=="SLK")             call initactivate(1,what//"_nCPU_LinAlg_INV")
 #endif
  !
 end subroutine

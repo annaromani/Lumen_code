@@ -26,7 +26,7 @@ subroutine INIT_ypp_load(defs)
 &                        SOC_bands_buffer,SOC_bands_to_map,SOC_split,state_ctl,AVE_exc,BSiq_via_command_line,&
 &                        WF_multiplier,WF_ref,what_to_write,BSiq,PROJECT_mode,PROJECT_N_perp,PROJECT_steps,PROJECT_threshold,&
 &                        DIPs_direction,DIPs_E_range,DIPs_C_bands,DIPs_V_bands,DIPs_kind,center_kind,MAGNON_Res_threshold,&
-&                        epsi0,symm_thresh,EXC_mass,EXC_Phi_Grid,EXC_shift,EXC_temp
+&                        epsi0,symm_thresh,mix_thresh,EXC_mass,EXC_Phi_Grid,EXC_shift,EXC_temp
  use YPP_symm,      ONLY:wf_ng_cut
 #if defined _YPP_RT
  use YPPm,          ONLY:Nel_fac
@@ -310,6 +310,7 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'FFTGvecs','[FFT] Plane-waves',wf_ng,G_unit)
  call it(defs,'Degen_Step', 'Maximum energy separation of two degenerate states',deg_energy,E_unit)
  call it(defs,'Symm_thresh', 'Threshold for accepting symmetry character',symm_thresh)
+ call it(defs,'Mix_thresh', 'Threshold for considering 2 states dependent',mix_thresh,verb_level=V_general)
  call it('f',defs,'MinimizeMem', 'Minimize memory use')
 #if defined _YPP_ELPH
  call it(defs,'ResTresh', '[o/o] Treshold on processed polaronic residuals',elph_residual_treshold)
