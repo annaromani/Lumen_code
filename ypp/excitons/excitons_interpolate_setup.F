@@ -84,7 +84,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  endif
  !
  call excitons_read(k,Xk,en,Xen,1,"clean",.true.,io_err)
- if(io_err/=0) call error("Error reading exciton at q = "//intc(1))
+ if(io_err/=0) call error("Error reading exciton at q = 1")
  !
  ! Read all eigenvalues and eigenvectors
  !
@@ -92,7 +92,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
  do iq=2,q%nibz
    call msg('s','Reading '//exc_kind//'s at @ Q-index #',iq)
    call excitons_read(k,Xk,en,Xen,iq,"check",.false.,io_err)
-   if(io_err/=0) call error("Error reading exciton at q = "//intc(iq))
+   if(io_err/=0) call error("Error reading exciton at q = "//trim(intc(iq)))
    !
    if(l_exc_occ_interp) then
      call excitons_read(k,Xk,en,Xen,iq,"eigenvectors eigenvalues",.false.,io_err)
@@ -102,6 +102,7 @@ subroutine excitons_interpolate_setup(k,Xk,en,Xen,q,BS_all_E,ID_INTERP_EXC,ID_IN
    else
      call excitons_read(k,Xk,en,Xen,iq,"eigenvalues",.false.,io_err)
    endif
+   if(io_err/=0) call error("Error reading exciton at q = "//trim(intc(iq)))
    !
    n_eig=min(n_eig,BSS_n_eig)
    if (     l_magnons)  Res(:n_eig)=real(BS_R_left_magn(:n_eig,1)*BS_R_right_magn(:n_eig,1),SP)
