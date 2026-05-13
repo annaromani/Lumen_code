@@ -38,7 +38,6 @@ module X_m
  integer                  :: n_OPTICAL_dir_to_eval=1
  integer                  :: OPTICAL_do_average(6)=0
  character(schlen)        :: OPTICAL_averaged_dirs_string=""
- type(PAR_matrix)         :: X_par_average
  !
  ! Velocity gauge specific variables
  !
