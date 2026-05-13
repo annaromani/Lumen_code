@@ -64,6 +64,10 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  !
  self_detect_E_range=.false.
  !
+ ! Check if there is a Efield directions average to be done
+ !
+ call X_average_init(X%q0,syms_average,dirs_average)
+ !
  ! Some check
  !
  if(X%ib(2)>Xen%nb) call warning("More bands required in X than available in the current SAVE.")
@@ -256,10 +260,6 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
    if (l_write_disk_Xo) call elemental_IO( 0 , .TRUE. )
    !
  endif
- !
- ! Check if there is a Efield directions average to be done
- !
- call X_average_init(X%q0,syms_average,dirs_average)
  !
  call PP_wait()
  !
