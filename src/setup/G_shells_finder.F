@@ -111,7 +111,7 @@ subroutine G_shells_finder()
      g_phs(ig_1,i_s)=-dot_product(dl_tra(:,i_s),G_cc)
    enddo
  enddo
- g_phs(:ng_closed,nsym+1:)=g_phs(:ng_closed,:nsym)
+ if (n_spinor==2) g_phs(:ng_closed,nsym+1:)=g_phs(:ng_closed,:nsym)
  !
 #ifdef _GPU
  YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_phs),g_phs)
@@ -183,7 +183,7 @@ subroutine G_shells_finder()
  !
  if (ng_closed>1) call live_timing(steps=1)
  !
- g_rot(:ng_closed,nsym+1:)=g_rot(:ng_closed,:nsym)
+ if (n_spinor==2) g_rot(:ng_closed,nsym+1:)=g_rot(:ng_closed,:nsym)
  !
  call PP_redux_wait(g_rot)
  call PP_redux_wait(E_of_shell_TMP)
