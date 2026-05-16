@@ -74,6 +74,8 @@ subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
          ig=DEV_VAR(wf_igk)(ic,ik)
          WF_p_out(ig,1)=WF_p(ig,1)
        enddo
+       !DEV_OMPGPU end target
+       !DEV_ACC_DEBUG end data
        !
      else
        !
@@ -87,6 +89,8 @@ subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
          WF_p_out(ig,1)=WF_p(ig,1)
          WF_p_out(ig,2)=WF_p(ig,2)
        enddo
+       !DEV_OMPGPU end target
+       !DEV_ACC_DEBUG end data
        !
      endif
      !
@@ -149,6 +153,8 @@ subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
        gphase=cmplx(cos(DEV_VAR(g_phs)(igr,isymm)),sin(DEV_VAR(g_phs)(igr,isymm)))
        WF_k_tmp(igs,1)=WF_p(ig,1)*conjg(gphase)*conjg(kphase)
      enddo
+     !DEV_OMPGPU end target
+     !DEV_ACC_DEBUG end data
      !
    else
      !
@@ -166,6 +172,8 @@ subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
        WF_k_tmp(igs,2)=ssop_loc(2,1)*WF_p(ig,1)+ssop_loc(2,2)*WF_p(ig,2)
        WF_k_tmp(igs,:)=WF_k_tmp(igs,:)*conjg(gphase)*conjg(kphase)
      enddo
+     !DEV_OMPGPU end target
+     !DEV_ACC_DEBUG end data
    endif
    !
    ! take care of time reversal if needed
