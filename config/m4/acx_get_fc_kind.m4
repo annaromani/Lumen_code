@@ -25,6 +25,10 @@ case "${FC}" in
       FCKIND="nvfortran"
       FCVERSION=`$FC --version`
       ;;
+    *flang*)
+      FCKIND="flang"
+      FCVERSION=`$FC --version`
+      ;;
     *gfortran*)
       FCKIND="gfortran" 
       FCVERSION=`$FC --version`

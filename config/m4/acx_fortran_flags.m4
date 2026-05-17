@@ -78,6 +78,15 @@ i?86*linux*)
     NETCDFFLAGS="-DgFortran"
     DEBUG_FLAGS="-Og -g -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow"
     ;;
+  *flang* )
+    SYSFLAGS="-O3 -g -mtune=native -fno-lto"
+    FUFLAGS="-O0 -mtune=native"
+    SLK_FC_FLAGS="-fallow-argument-mismatch"
+    FCMFLAG=""
+    OMPFLAGS="-fopenmp"
+    #NETCDFFLAGS="-DgFortran"
+    #DEBUG_FLAGS="-Og -g -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow"
+  ;;
   *ifort* | *ifx* )
     OMPFLAGS="-openmp"
     NETCDFFLAGS="-DpgiFortran"
@@ -146,6 +155,15 @@ i?86*linux*)
     def_compiler="-D_PGI"
     DEBUG_FLAGS="-g -Minform=inform -Mbounds -Mchkptr -Mchkstk -Meh_frame"
     ;;
+  *flang* )
+    SYSFLAGS="-O3 -g -mtune=native"
+    FUFLAGS="-O0 -mtune=native"
+    SLK_FC_FLAGS="-fallow-argument-mismatch"
+    FCMFLAG=""
+    OMPFLAGS="-fopenmp"
+    #NETCDFFLAGS="-DgFortran"
+    #DEBUG_FLAGS="-Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow"
+  ;;
   *gfortran*)
     SYSFLAGS="-O3 -g -mtune=native"
     FUFLAGS="-O0 -g -mtune=native"
@@ -212,6 +230,15 @@ ia64*linux* )
     NETCDFFLAGS="-DpgiFortran"
     def_compiler="-D_PGI"
     DEBUG_FLAGS="-g -Minform=inform -Mbounds -Mchkptr -Mchkstk -Meh_frame"
+    ;;
+  *flang*)
+    SYSFLAGS="-O3 -g -mtune=native -fno-lto"
+    FUFLAGS="-O0 -g -mtune=native"
+    SLK_FC_FLAGS="-fallow-argument-mismatch"
+    FCMFLAG=""
+    OMPFLAGS="-fopenmp"
+    #NETCDFFLAGS="-DgFortran"
+    #DEBUG_FLAGS="-Og -g -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow"
     ;;
   *gfortran*)
     SYSFLAGS="-O3 -g -mtune=native -fno-lto"
@@ -309,6 +336,15 @@ aarch*linux* | arm*linux* )
     def_compiler="-D_PGI"
     NETCDFFLAGS="-DpgiFortran"
     DEBUG_FLAGS="-g -Minform=inform -Mbounds -Mchkptr -Mchkstk -Meh_frame  -Mbackslash -cpp"
+    ;;
+  *flang*)
+    SYSFLAGS="-O3 -g -mtune=native -fno-lto"
+    FUFLAGS="-O0 -g -mtune=native"
+    SLK_FC_FLAGS="-fallow-argument-mismatch"
+    FCMFLAG=""
+    OMPFLAGS="-fopenmp"
+    #NETCDFFLAGS="-DgFortran"
+    #DEBUG_FLAGS="-Og -g -Wall -pedantic -fbounds-check -ffpe-trap=invalid,zero,overflow"
     ;;
   *gfortran*)
     SYSFLAGS="-O3 -g -mtune=native -fno-lto"
