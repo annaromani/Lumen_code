@@ -15,6 +15,7 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
  ! in PRB 69, 085106 (2004)
  !
  use pars,           ONLY:SP,cI,cZERO,pi
+ use drivers,         ONLY:l_nl_optics,l_fl_optics
  use LIVE_t,         ONLY:live_timing
  use electrons,      ONLY:levels,n_sp_pol
  use DIPOLES,        ONLY:DIPOLE_t,DIP_S,DIP_iR,DIP_v,l_force_SndOrd,&
@@ -204,6 +205,11 @@ subroutine DIPOLE_covariant(Xen,Xk,Dip,direction_is_todo)
      endif
    enddo 
    Dip%computed=trim(Dip%computed)//trim(x_space_obs)//" [X-space]"
+ endif
+ !
+ if(l_nl_optics.or.l_fl_optics) then 
+   x_space_obs=""
+   call warning("Real space dipoles not calculate in non-linear or floquet dynamics ")    
  endif
  !
  call timing("DIPOLE_covariant",OPR="stop")
