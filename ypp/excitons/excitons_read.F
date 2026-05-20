@@ -11,7 +11,7 @@
 !
 subroutine excitons_read(k,Xk,en,Xen,iq,what,verbose,io_err)
  !
- use pars,          ONLY:SP,pi
+ use pars,          ONLY:SP,pi,schlen
  use R_lattice,     ONLY:bz_samp
  use stderr,        ONLY:intc
  use com,           ONLY:msg
@@ -47,6 +47,7 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,verbose,io_err)
  !
  integer                  :: neh
  logical                  :: l_check,l_eigenval,l_eigenvec,l_clean
+ character(schlen)        :: mesg
  !
  l_check   =index(what,"check")        >0
  l_eigenval=index(what,"eigenvalues")  >0
@@ -110,11 +111,14 @@ subroutine excitons_read(k,Xk,en,Xen,iq,what,verbose,io_err)
      &       bsL_kerr=BS_R_left_kerr,bsR_kerr=BS_R_right_kerr,bsR_dich=BS_R_right_dich,   &
              bsL_magn=BS_R_left_magn,bsR_magn=BS_R_right_magn,bsR_pl=BS_R_PL)
      if (io_err/=0) then
+       mesg='ndb.BS_diago_Q'//trim(intc(iq))//', SEC '//trim(intc(i_sec))//' not accepted'
        if(i_sec==1) then
-         call warning('Error reading SEC1 in ndb.BS_diago_Qx, this can be due to the missing ndb.dipoles or ndb.ems1')
+         mesg=trim(mesg)//". Provide any auxiliary DBs, i.e. dipoles, ems1, RIM ..."
        else
-         call warning('ndb.BS_diago_Qx, SEC '//trim(intc(i_sec))//', not compatible with ypp input')
+         mesg=trim(mesg)//". Not compatible with ypp input"
        endif
+       call io_disconnect(ID=io_ID)
+       call exp_user_warning(trim(mesg))
        return
      endif
    enddo

@@ -795,6 +795,11 @@ subroutine K_diago_driver(iq,W,X_static)
    !
    subroutine K_LA_init()
      !
+     ncpu_blacs=1
+     !
+#if !defined _SCALAPACK
+     return
+#else
      if (.not.(l_chase.or.l_odiago)) return
      !
      if (l_chase)  ncpu_blacs=ncpu
@@ -821,6 +826,7 @@ subroutine K_diago_driver(iq,W,X_static)
       endif
      !
      call PARALLEL_assign_LA_COMMs("Response_T_space",DIAGO,ncpu_blacs)
+#endif
      !
    end subroutine K_LA_init
    !
