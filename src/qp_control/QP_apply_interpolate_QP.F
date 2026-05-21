@@ -66,7 +66,7 @@ subroutine QP_apply_interpolate_QP(i_ACTION,bands,en,k,qp)
  !
  call QP_reset(qp_interpolated)
  qp_interpolated%nk=k%nibz
- qp_interpolated%n_states=(DB_bands(2)-DB_bands(1)+1)*n_sp_pol*k%nibz
+ qp_interpolated%n_states=(min(bands(2),DB_bands(2))-max(bands(1),DB_bands(1))+1)*n_sp_pol*k%nibz
  call QP_alloc(qp_interpolated)
  ! 
  ! Setup
@@ -118,7 +118,7 @@ subroutine QP_apply_interpolate_QP(i_ACTION,bands,en,k,qp)
     qp_interpolated%k(ik,:)=k%pt(ik,:)
     do iband=bands(1),bands(2)
        do i_spin=1,n_sp_pol
-	 !
+         !
          if (DB_bands(1)<=iband .and. iband<=DB_bands(2)) ic=ic+1
          !
          call INTERPOLATION_nearest_E(En%Eo(iband,ik,i_spin),qp,E_diff(i_spin),i_qp,i_spin)
