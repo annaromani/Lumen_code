@@ -49,7 +49,7 @@ integer function io_EXCPH_gkkp(ID)
  !! BSE L matrices used during writing match those used when reading.
  !!
  use pars,           ONLY:SP,schlen
- use IO_m,           ONLY:io_sec,read_is_on,frag_ELPH,io_status,io_mode,DUMP
+ use IO_m,           ONLY:io_sec,read_is_on,frag_ELPH,io_status
  use IO_int,         ONLY:io_connect,io_disconnect,io_elemental,io_bulk,io_header,&
 &                         def_variable_bulk,io_variable_bulk,io_fragment
  use EXCPH,          ONLY:EXCPH_Gkkp,EXCPH_Gkkp_sq,EXCPH_sum,EXCPH_states,&
@@ -70,7 +70,7 @@ integer function io_EXCPH_gkkp(ID)
  !Work Space
  !
  integer                :: iq,ierr,VAR_size(4),VAR_size_sq(3),ID_frag
- integer                :: states_usr(2),sum_usr(2),states_db(2),sum_db(2)
+ integer                :: states_db(2),sum_db(2)
  character(schlen)      :: db_name,VAR_name,dim_names(4),dim_names_sq(3)
  !
  call timing('io_EXCPH_gkkp',OPR='start')
@@ -89,23 +89,22 @@ integer function io_EXCPH_gkkp(ID)
    !
    io_EXCPH_gkkp=io_header(ID,R_LATT=.true.,KPTS=.true.,FRAG=frag_ELPH)
    !
-   ! Save user-specified ranges before the elemental read may overwrite them (DUMP mode)
-   !
-   if (read_is_on(ID)) then
-     states_usr = EXCPH_states
-     sum_usr    = EXCPH_sum
-   endif
-   !
    call io_elemental(ID,VAR="PARS",VAR_SZ=7,MENU=0)
    !
    call io_elemental(ID,&
 &       VAR=" Number of qpoints (BZ)   :",I0=nqbz,CHECK=.true.,OP=(/"=="/))
    !
-   call io_elemental(ID,&
-&       VAR=" Exciton states           :",I1=EXCPH_states,CHECK=.true.,OP=(/">=","<="/))
+   ! DB_I1 always returns the DB value regardless of IO mode; I1 (the user range)
+   ! is preserved in VERIFY mode and is what the OP-based subset check operates on.
+   ! The header must therefore be read in VERIFY mode for the check to be enforced.
    !
    call io_elemental(ID,&
-&       VAR=" Exciton sum (scattered)  :",I1=EXCPH_sum,CHECK=.true.,OP=(/">=","<="/))
+&       VAR=" Exciton states           :",I1=EXCPH_states,DB_I1=states_db,&
+&       CHECK=.true.,OP=(/">=","<="/))
+   !
+   call io_elemental(ID,&
+&       VAR=" Exciton sum (scattered)  :",I1=EXCPH_sum,DB_I1=sum_db,&
+&       CHECK=.true.,OP=(/">=","<="/))
    !
    call io_elemental(ID,&
 &       VAR=" Phonon modes            :",I0=ph_modes,CHECK=.true.,OP=(/"=="/))
@@ -115,29 +114,28 @@ integer function io_EXCPH_gkkp(ID)
    io_EXCPH_gkkp=io_status(ID)
    if (io_EXCPH_gkkp/=0) goto 1
    !
-   ! In DUMP mode the elemental read overwrites EXCPH_states/EXCPH_sum with the DB values.
-   ! If the user explicitly requested a sub-range (any bound != default 1), restore their
-   ! values provided the request lies within the DB range.
+   ! If the user left the ranges at the default (1,1) it means "read the full DB":
+   ! expand them to the DB ranges just captured via DB_I1.
    !
-   if (read_is_on(ID) .and. io_mode(ID)==DUMP) then
-     states_db = EXCPH_states
-     sum_db    = EXCPH_sum
-     if ((states_usr(1) > 1 .or. states_usr(2) > 1) .and. &
-&        states_usr(1) >= states_db(1) .and. states_usr(2) <= states_db(2)) &
-&       EXCPH_states = states_usr
-     if ((sum_usr(1) > 1 .or. sum_usr(2) > 1) .and. &
-&        sum_usr(1) >= sum_db(1) .and. sum_usr(2) <= sum_db(2)) &
-&       EXCPH_sum = sum_usr
+   if (read_is_on(ID)) then
+     if (EXCPH_states(1)==1 .and. EXCPH_states(2)==1) EXCPH_states = states_db
+     if (EXCPH_sum(1)   ==1 .and. EXCPH_sum(2)   ==1) EXCPH_sum    = sum_db
    endif
    !
-   call io_bulk(ID,VAR="EXCITON_STATES",VAR_SZ=(/2/))
-   call io_bulk(ID,I1=EXCPH_states)
+   ! On read these would unconditionally overwrite EXCPH_states/EXCPH_sum with the
+   ! DB values, clobbering any user-requested sub-range. The header values are
+   ! already obtained via io_elemental above, so skip the bulk read.
    !
-   call io_bulk(ID,VAR="EXCITON_SUM",VAR_SZ=(/2/))
-   call io_bulk(ID,I1=EXCPH_sum)
-   !
-   call io_bulk(ID,VAR="PHONON_MODES",VAR_SZ=(/1/))
-   call io_bulk(ID,I0=ph_modes)
+   if (.not. read_is_on(ID)) then
+     call io_bulk(ID,VAR="EXCITON_STATES",VAR_SZ=(/2/))
+     call io_bulk(ID,I1=EXCPH_states)
+     !
+     call io_bulk(ID,VAR="EXCITON_SUM",VAR_SZ=(/2/))
+     call io_bulk(ID,I1=EXCPH_sum)
+     !
+     call io_bulk(ID,VAR="PHONON_MODES",VAR_SZ=(/1/))
+     call io_bulk(ID,I0=ph_modes)
+   endif
    !
    call def_variable_elemental(ID,"L_kind_in",1,0,0)
    call io_variable_elemental(ID,VAR="[K] L_kind in",CH0=L_kind_in,CHECK=.true.,OP=(/"=="/))
