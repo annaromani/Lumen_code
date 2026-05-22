@@ -74,7 +74,7 @@ subroutine EXCPH_X_phass_from_Hpert(wv,q,PL_ii)
  !
  ! Load the Exciton-phonon elements and phonon energies
  !
- call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=DUMP,ID=ID_exc_gkkp)
+ call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID_exc_gkkp)
  io_err=io_EXCPH_gkkp(ID_exc_gkkp)
  if(io_err/=0) call error('excph_gkkp databases not found!')
  !
