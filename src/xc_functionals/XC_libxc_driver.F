@@ -38,7 +38,7 @@ subroutine XC_libxc_driver(en,Xk,FUNCTIONAL,ORDER,EXX_FRACTION,EXX_SCREENING)
 &                         XC_HYB_GGA_XC_GAUPBE,XC_FACTOR,&
 &                         XC_FAMILY_LDA,XC_FAMILY_GGA,XC_FAMILY_HYB_GGA,&
 &                         XC_GGA_X_PBE, XC_GGA_C_PBE
- use xc_f03_lib_m,   ONLY:xc_f03_lda_exc,xc_f03_lda_vxc,xc_f03_lda_fxc, &
+ use xc_functionals, ONLY:xc_f03_lda_exc,xc_f03_lda_vxc,xc_f03_lda_fxc, &
 &                         xc_f03_gga_exc,xc_f03_gga_vxc,xc_f03_gga_fxc
  use interfaces,     ONLY:el_density_and_current,el_magnetization
  use pseudo,         ONLY:pp_rho_nlcc,pp_has_nlcc,PP_nlcc_free

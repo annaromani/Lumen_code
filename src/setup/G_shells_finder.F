@@ -20,6 +20,7 @@ subroutine G_shells_finder()
  use pars,         ONLY:SP
  use com,          ONLY:msg
  use LIVE_t,       ONLY:live_timing
+ use electrons,    ONLY:n_spinor
  use D_lattice,    ONLY:nsym,inv_index,dl_tra
  use R_lattice,    ONLY:b,n_g_shells,ng_in_shell,ng_closed,&
 &                       g_vec,g_phs,g_rot,E_of_shell,rl_sop,minus_G,G_mod_indx
@@ -102,7 +103,7 @@ subroutine G_shells_finder()
  !
  ! De-finining the g-phase for fractional translations
  !====================================================
- YAMBO_ALLOC(g_phs,(ng_closed,nsym))
+ YAMBO_ALLOC(g_phs,(ng_closed,nsym*n_spinor))
  g_phs=0
  do ig_1=1,ng_closed
    call c2a(b,g_vec(ig_1,:),G_cc,'ki2c')
@@ -110,6 +111,7 @@ subroutine G_shells_finder()
      g_phs(ig_1,i_s)=-dot_product(dl_tra(:,i_s),G_cc)
    enddo
  enddo
+ if (n_spinor==2) g_phs(:ng_closed,nsym+1:)=g_phs(:ng_closed,:nsym)
  !
 #ifdef _GPU
  YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_phs),g_phs)
@@ -125,7 +127,7 @@ subroutine G_shells_finder()
  !
  ! Init
  !
- YAMBO_ALLOC(g_rot,(ng_closed,nsym))
+ YAMBO_ALLOC(g_rot,(ng_closed,nsym*n_spinor))
  !
  g_rot=0
  if (myid==0) g_rot(1,:)=1 ! Gamma point
@@ -180,6 +182,8 @@ subroutine G_shells_finder()
  enddo
  !
  if (ng_closed>1) call live_timing(steps=1)
+ !
+ if (n_spinor==2) g_rot(:ng_closed,nsym+1:)=g_rot(:ng_closed,:nsym)
  !
  call PP_redux_wait(g_rot)
  call PP_redux_wait(E_of_shell_TMP)

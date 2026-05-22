@@ -20,7 +20,7 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  use X_m,           ONLY:X_t,self_detect_E_range,X_poles,l_recalculate_X,l_write_disk_Xo,&
 &                        l_X_terminator,X_terminator_Kind,X_mat,X_par,&
 &                        X_DbGd_nkpt_at_q,use_X_DbGd,X_DbGd_nkpt_at_q_table,X_Double_Grid_setup,&
-&                        n_OPTICAL_dir_to_eval,X_par_average
+&                        n_OPTICAL_dir_to_eval
  use LIVE_t,        ONLY:live_timing
  use stderr,        ONLY:intc
  use frequency,     ONLY:w_samp
@@ -35,7 +35,7 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  use TDDFT,         ONLY:F_xc_gspace
  use interfaces,    ONLY:WF_load,WF_free
  use QP_m,          ONLY:QP_n_W_freqs_redux
- use matrix,        ONLY:MATRIX_reset,MATRIX_copy
+ use matrix,        ONLY:MATRIX_reset
  use y_memory_alloc
  !
  implicit none
@@ -53,9 +53,10 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  !
  ! Work Space
  !
+ logical              :: syms_average,dirs_average
  integer              :: iq,ID(2),i_err,X_MEM_n_freqs,io_X_done(nqibz),iq_mem,&
-&                        X_MEM_n_tot_freqs,n_poles,iq_dir
- real(SP)             :: minmax_ehe(2)
+&                        X_MEM_n_tot_freqs,n_poles
+ real(SP)             :: minmax_ehe(2),q0_save(3)
  character(1)         :: sec_mode
  character(schlen)    :: X_what
  !
@@ -65,7 +66,7 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
  !
  ! Check if there is a Efield directions average to be done
  !
- call X_AVERAGE_setup("INIT",-1,X%q0)
+ call X_average_init(X%q0,syms_average,dirs_average)
  !
  ! Some check
  !
@@ -267,10 +268,6 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
    if (     io_X_done(iq) > 0       ) cycle
    if (.not.PAR_IND_Q_ibz%element_1D(iq)) cycle
    !
-   ! Average setup
-   !
-   call X_AVERAGE_setup("Q-LOOP",iq,X%q0)
-   !
    if (iq/=1) then
      !
      ! TDDFT setup
@@ -297,33 +294,27 @@ integer function X_dielectric_matrix(Xen,Xk,q,X,Xw,Dip,SILENT_MODE,CHILD)
    iq_mem=PAR_Q_ibz_index(iq)
    if (io_RESPONSE) iq_mem=1
    !
+   call X_ALLOC_parallel(X_par(iq_mem),X%ng,Xw%n_freqs,"X")
+   !
    ! Live timing string
    X_what=" "
    !
-   ! n_OPTICAL_dir_to_eval is set in the previous call to X_AVERAGE_setup("Q-LOOP").
-   ! There, for iq>1 n_optical_dir_to_eval is set = 1
+   if (iq==1.and.dirs_average) then
+     q0_save=X%q0
+     call X_average_q0_def(1,X%q0,X_what)
+   endif
    !
-   do iq_dir=1,n_OPTICAL_dir_to_eval
-     !
-     call X_ALLOC_parallel(X_par(iq_mem),X%ng,Xw%n_freqs,"X")
-     !
-     if (n_OPTICAL_dir_to_eval>1) call X_AVERAGE_setup("DIR-LOOP",iq_dir,X%q0)
-     if (n_OPTICAL_dir_to_eval>1) X_what="("//trim(intc(iq_dir))//" of "//trim(intc(n_OPTICAL_dir_to_eval))//")"
-     !
-     call X_irredux(iq,"Xo"//trim(X_what),X_par(iq_mem),Xen,Xk,Xw,X,Dip)  
-     !
-     if (.not.l_rpa_IP) call X_redux(iq,"X"//trim(X_what),X_par(iq_mem),Xw,X)
-     !
-     if (n_OPTICAL_dir_to_eval>1.and.iq_dir==1) call MATRIX_copy(X_par(iq_mem),X_par_average,.TRUE.)
-     if (n_OPTICAL_dir_to_eval>1)               call X_AVERAGE_do_it("ACCUMULATE",X_par(iq_mem))
-     !
-     if (iq_dir<n_OPTICAL_dir_to_eval.and.io_RESPONSE) call MATRIX_reset(X_par(1))
-     !
-   enddo
+   call X_irredux(iq,"Xo"//trim(X_what),X_par(iq_mem),Xen,Xk,Xw,X,Dip)
    !
-   if (n_OPTICAL_dir_to_eval>1) then
-     call X_AVERAGE_do_it("DUMP",X_par(iq_mem))
-     call X_AVERAGE_setup("CLOSE",iq,X%q0)
+   ! Average, option 1, symmetrize via symmetry operations Xo
+   if (iq==1.and.syms_average) call X_symmetrize_q0(X_par(1),X%ng,Xw)
+   !
+   if (.not.l_rpa_IP) call X_redux(iq,"X"//trim(X_what),X_par(iq_mem),Xw,X)
+   !
+   ! Average, option 2: Selected-dirs Integration Method (SIM) for X
+   if (iq==1.and.dirs_average) then
+     call X_average_q0(X_par(1),Xen,Xk,Xw,X,Dip)
+     X%q0=q0_save
    endif
    !
    ! X_par => X_mat : this is needed when the I/O is off

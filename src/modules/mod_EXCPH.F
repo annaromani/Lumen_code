@@ -52,6 +52,12 @@ module EXCPH
  real(SP), allocatable    :: EXCPH_q(:,:)
  real(SP)                 :: EXC_q0(3)
  !
+ ! Smearing function 
+ character(schlen)        :: DmType
+ integer,parameter        :: LORENTZIAN=1
+ integer,parameter        :: GAUSSIAN=2
+ integer                  :: Smearing_type
+ !
  ! L_in and L_out paths
  !
  character(lchlen)       :: Lin_path 
@@ -141,8 +147,6 @@ module EXCPH
      use electrons,      ONLY:n_sp_pol 
      use BS,             ONLY:BS_bands
      !
-#include<y_memory.h>
-     !
      type(bz_samp) ::k
      ! 
      YAMBO_ALLOC(BS_E_in,(BSS_n_eig))
@@ -158,15 +162,12 @@ module EXCPH
    end subroutine BSE_in_alloc
    !
    subroutine BSE_out_alloc()
-     implicit none
-     !
      YAMBO_ALLOC(BS_mat_out,(BS_H_dim,EXCPH_sum(1):EXCPH_sum(2)))
      BS_mat_out=cZERO
-     !
    end subroutine BSE_out_alloc
    ! 
    subroutine Sat_alloc()
-     implicit none
+     !
      YAMBO_ALLOC(BS_Sat_E,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
      YAMBO_ALLOC(BS_Sat_E_PH_abs,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
      YAMBO_ALLOC(BS_Sat_WEIGHT,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
@@ -180,7 +181,6 @@ module EXCPH
    end subroutine Sat_alloc
    !
    subroutine Sat_free()
-     implicit none
      YAMBO_FREE(BS_Sat_E)
      YAMBO_FREE(BS_Sat_E_PH_abs)
      YAMBO_FREE(BS_Sat_WEIGHT)
@@ -188,7 +188,6 @@ module EXCPH
    end subroutine Sat_free
    !
    subroutine Renorm_alloc()
-     implicit none
      YAMBO_ALLOC(EXCPH_Renorm,(EXCPH_states(2)))
      YAMBO_ALLOC(EXCPH_Renorm_PH_abs,(EXCPH_states(2)))
      YAMBO_ALLOC(EXCPH_Renorm_PL,(EXCPH_states(2)))
@@ -202,7 +201,6 @@ module EXCPH
    end subroutine Renorm_alloc
    !
    subroutine Renorm_free()
-     implicit none
      YAMBO_FREE(EXCPH_Renorm)
      YAMBO_FREE(EXCPH_Renorm_PH_abs)
      YAMBO_FREE(EXCPH_Renorm_PL)
@@ -210,7 +208,6 @@ module EXCPH
    end subroutine Renorm_free
    !
    subroutine EXCPH_gkkp_alloc()
-     implicit none
      YAMBO_ALLOC(EXCPH_Gkkp,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
      YAMBO_ALLOC(EXCPH_Gkkp_sq,(ph_modes,EXCPH_sum(1):EXCPH_sum(2),EXCPH_states(1):EXCPH_states(2)))
      YAMBO_ALLOC(Xi,(BS_H_dim,2))    
@@ -219,14 +216,12 @@ module EXCPH
    end subroutine EXCPH_gkkp_alloc   
    !
    subroutine EXCPH_gkkp_free
-     implicit none
      YAMBO_FREE(EXCPH_Gkkp)
      YAMBO_FREE(EXCPH_Gkkp_sq)
      YAMBO_FREE(Xi)    
    end subroutine EXCPH_gkkp_free
    !
    subroutine RESIDUALS_and_EIGENVALUES_free
-     implicit none
      !
      YAMBO_FREE(BS_all_E)
      YAMBO_FREE_P(BS_R_left)
@@ -240,7 +235,6 @@ module EXCPH
    !
    subroutine RESIDUALS_and_EIGENVALUES_alloc(q)
      use R_lattice,      ONLY:bz_samp
-     implicit none
      type(bz_samp) ::q
      if(.not.allocated(BS_E)) then
        YAMBO_ALLOC(BS_E,(BSS_n_eig))
@@ -258,8 +252,6 @@ module EXCPH
      use BS_solvers,     ONLY:BS_mat,BSS_eh_table,BSS_eh_table_m1,BS_H_dim,BSS_n_eig
      use BS,             ONLY:BS_H_dim,BS_bands,BSqpts
      use R_lattice,      ONLY:bz_samp
-     !
-#include<y_memory.h>
      !
      type(bz_samp) ::k,q
      !      
@@ -286,8 +278,6 @@ module EXCPH
      use BS_solvers,     ONLY:BS_mat,BSS_eh_table,BSS_eh_table_m1,BS_H_dim,BSS_n_eig
      use BS,             ONLY:BSqpts
      !
-#include<y_memory.h>
-     !
      YAMBO_FREE(BS_mat)
      YAMBO_FREE(BSS_eh_table)
      YAMBO_FREE(BSS_eh_table_m1)
@@ -313,7 +303,6 @@ module EXCPH
     use ELPH,           ONLY:PH_qpt
     use com,            ONLY:msg
     !
-    implicit none
     type(bz_samp) ::q
     !
     integer :: iq,idb

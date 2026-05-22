@@ -13,7 +13,32 @@
 ! - FP
 !
 subroutine EXCPH_load_L(iq_bse,X,what,Ltype)
- !
+ !! **EXCPH_load_L - Load BSE L matrix from ndb.BSS_diago**
+ !!
+ !! Wrapper around io_BSS_diago that loads exciton eigenvectors and
+ !! eigenvalues for a given q-point. Used in excitonic Raman and
+ !! exciton-phonon coupling to provide the exciton states |S> needed
+ !! to evaluate matrix elements <S|g_nu|S'> and dipoles <0|v|S>.
+ !!
+ !! Arguments:
+ !!   iq_bse  - BSE q-point index
+ !!   X       - response function descriptor (passed through to io_BSS_diago)
+ !!   what    - controls what is loaded:
+ !!               'check'       : open DB, validate dimensions against EXCPH_states/EXCPH_sum,
+ !!                               set L_kind_in or L_kind_out from BSE_L_kind
+ !!               'eigenvalues' : read eigenvalues BS_E (and residuals if 'residuals' in what)
+ !!               'load'        : read full eigenvectors BS_mat + eigenvalues BS_E
+ !!                               (and residuals BS_R_left/BS_R_right if 'residuals' in what)
+ !!   Ltype   - which L matrix is being loaded:
+ !!               'Lin'  : incoming photon leg; sets L_kind_in
+ !!               'Lout' : outgoing photon leg; sets L_kind_out, optionally reads
+ !!                        from a different job directory (Lout_path)
+ !!
+ !! Validation (on 'check'):
+ !!   - EXCPH_states(2) must be <= BSS_n_eig  (enough eigenstates stored)
+ !!   - EXCPH_sum(2)    must be <= BS_H_dim   (virtual states within Hamiltonian size)
+ !!   - BSS_write_eig_2_db must be .TRUE.     (eigenvectors present in DB)
+ !!
  use pars,           ONLY:lchlen
  use BS_solvers,     ONLY:io_BSS_diago,BS_mat,BSS_n_eig,BSS_free,BSS_write_eig_2_db
  use IO_m,           ONLY:NONE,OP_APP_CL,OP_RD_CL,DUMP,OP_RD,RD_CL_IF_END,OP_WR_CL,deliver_IO_error_message

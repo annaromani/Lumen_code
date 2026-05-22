@@ -25,7 +25,6 @@
  PARALLEL_global_Response_IO.o
  PARALLEL_global_Response_T.o
  PARALLEL_global_Response_T_transitions.o
- PARALLEL_global_ScaLapacK.o
  PARALLEL_global_Self_Energy.o
  PARALLEL_global_defaults.o
  PARALLEL_global_dimensions.o

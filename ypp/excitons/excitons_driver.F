@@ -122,7 +122,7 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  ! 
  ! Exciton's symmetries
  !=====================
- if (l_exc_symm)  call excitons_symmetries(iq,Xen,Xk,q,BS_E)
+ if (l_exc_symm)  call excitons_symmetries(iq,Xen,Xk,q,BS_E,Res)
  ! 
  ! Exciton's spin
  !=====================

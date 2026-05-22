@@ -66,6 +66,8 @@ subroutine excitons_get_user_states(BS_E_degs,Res,n_eig,recompute)
      i_str=i_str+1
    endif
    !
+   if (i_end>n_eig) i_end=n_eig
+   !
    do i_st=i_start,i_end
      !
      if (i_st==0) cycle

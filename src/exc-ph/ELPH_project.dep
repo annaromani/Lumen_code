@@ -14,4 +14,6 @@
  EXC_occupations.o
  Satellite_DbGrid.o
  Satellite_Simple.o
+ Smear_func.o
+ daw.o
 

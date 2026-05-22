@@ -95,7 +95,7 @@ module y_memory
 #endif
 &                             MEM_i1,  MEM_i2,  MEM_i3,  MEM_i4,  MEM_i5,  MEM_i6,  MEM_i7, &
 &                             MEM_r1,  MEM_r2,  MEM_r3,  MEM_r4,  MEM_r5,                   &
-&                             MEM_c1,  MEM_c2,  MEM_c3,  MEM_c4,  MEM_c5,  MEM_c6,          &
+&                             MEM_c1,  MEM_c2,  MEM_c3,  MEM_c4,  MEM_c5,  MEM_c6,  MEM_c7, &
 #ifndef _DOUBLE
 &                             MEM_rd1, MEM_rd2, MEM_rd3, MEM_rd4, MEM_rd5,                  &
 &                             MEM_cd1, MEM_cd2, MEM_cd3, MEM_cd4, MEM_cd5, MEM_cd6,         &
@@ -389,6 +389,11 @@ module y_memory
      character(*)::name
      complex(SP) ::c(:,:,:,:,:,:)
      call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1,1)),HOST_)
+   end subroutine
+   subroutine MEM_c7(name,c)
+     character(*)::name
+     complex(SP) ::c(:,:,:,:,:,:,:)
+     call MEM_manager_alloc(name,size(c,KIND=IPL),2*kind(c(1,1,1,1,1,1,1)),HOST_)
    end subroutine
 #ifdef _DOUBLE
    subroutine MEM_c1_s(name,c)

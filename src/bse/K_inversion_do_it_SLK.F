@@ -12,8 +12,6 @@ subroutine K_inversion_do_it_SLK(Lo,what)
  use pars,           ONLY:SP
  use BS,             ONLY:BS_H_dim
  use BS_solvers,     ONLY:K_slk,K_inv_slk
- use interfaces,     ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra, ONLY:INV
  !
  implicit none
  !
@@ -37,6 +35,6 @@ subroutine K_inversion_do_it_SLK(Lo,what)
    enddo
  endif
  !
- call LINEAR_ALGEBRA_driver(INV,M_slk=K_inv_slk)
+ call INVERSION_driver(K_inv_slk)
  !
 end subroutine

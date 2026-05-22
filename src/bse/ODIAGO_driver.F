@@ -67,6 +67,7 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
    !
  else
    !
+#if defined _SCALAPACK
    if (present(E_cmpl)) then
      !
      !... non-Hermitian case
@@ -76,17 +77,13 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      !
      call MATRIX_init("SLK",  V_loc, N, 1 )
      V_loc%kind="SLK"
-#if defined _SCALAPACK
      if (SLK_ORTHO%coordinate(1)==-1) then
        rows=(/1,1/)
        cols=(/1,1/)
      else
-#endif
        rows=V_loc%BLCrows
        cols=V_loc%BLCcols
-#if defined _SCALAPACK
      endif
-#endif
      YAMBO_ALLOC(V_loc%blc,(rows(1):rows(2),cols(1):cols(2),1))
      V_loc%blc=cZERO
      !
@@ -118,6 +115,9 @@ subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
      call MATRIX_reset(V_loc)
      !
    endif
+#else
+   call error("ncpu_blacs>1 but scalapack not linked")
+#endif
    !
  endif
  !

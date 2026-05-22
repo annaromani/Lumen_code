@@ -5,9 +5,16 @@
 !
 ! Authors (see AUTHORS file for details): MG DV
 !
+! headers
+!
+#include<xc_version.h>
+!
 module mod_xc2y
  !
  use xc_f03_lib_m
+#if (XC_MAJOR_VERSION > 6)
+ use xc_f03_funcs_m
+#endif
  use xc_functionals, ONLY:XC_FACTOR, XC_NOT_AVAILABLE, NOXC, XC_libxcID,XC_HYB_GGA_XC_GAUPBE 
  !
  implicit none

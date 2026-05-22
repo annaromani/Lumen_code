@@ -340,7 +340,6 @@ integer function io_DB1(E,k,ID)
  else
    dl_tra=0._SP
  endif
- non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
  !
  if (read_is_on(ID)) then
    do is=1,nsym
@@ -355,6 +354,8 @@ integer function io_DB1(E,k,ID)
      S_contains_TR(nsym+1:)=S_contains_TR(:nsym)
    endif
  endif
+ !
+ non_symmorphic_syms=any((/abs(dl_tra)>0.01/))
  !
  ! G-vectors
  !
