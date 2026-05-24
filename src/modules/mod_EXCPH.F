@@ -49,6 +49,8 @@ module EXCPH
  integer                  :: EXCPH_states(2)    ! External states
  integer                  :: EXCPH_sum(2)       ! Internal states ("virtual")
  integer                  :: EXCPH_interband(2) ! Interband states
+ integer                  :: EXCPH_states_db(2) ! External states in database
+ integer                  :: EXCPH_sum_db(2)    ! Internal states ("virtual") in database
  real(SP), allocatable    :: EXCPH_q(:,:)
  real(SP)                 :: EXC_q0(3)
  !
