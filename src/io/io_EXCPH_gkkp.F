@@ -153,14 +153,14 @@ integer function io_EXCPH_gkkp(ID)
  !
  VAR_name="EXCITON_PH_GKKP_Q"//trim(intc(iq))
  VAR_size=(/2,ph_modes,EXCPH_sum(2)-EXCPH_sum(1)+1,EXCPH_states(2)-EXCPH_states(1)+1/)
- IPOS=(/1,1,EXCPH_sum_db(1)-EXCPH_sum(1)+1,EXCPH_states_db(1)-EXCPH_states(1)+1/)
+ IPOS=(/1,1,EXCPH_sum(1)-EXCPH_sum_db(1)+1,EXCPH_states(1)-EXCPH_states_db(1)+1/)
  dim_names = [character(schlen) :: 'complex','PH_modes','N_exc_sum','N_exc_states']
  call def_variable_bulk(ID_frag,trim(VAR_name),1,VAR_size,SP,dim_names)
  call io_variable_bulk(ID_frag,1,C3=EXCPH_gkkp,IPOS=IPOS)
  !
  VAR_name="EXCITON_PH_GKKP_SQUARED_Q"//trim(intc(iq))
  VAR_size_sq=(/ph_modes,EXCPH_sum(2)-EXCPH_sum(1)+1,EXCPH_states(2)-EXCPH_states(1)+1/)
- IPOS_sq=(/1,EXCPH_sum_db(1)-EXCPH_sum(1)+1,EXCPH_states_db(1)-EXCPH_states(1)+1/)
+ IPOS_sq=(/1,EXCPH_sum(1)-EXCPH_sum_db(1)+1,EXCPH_states(1)-EXCPH_states_db(1)+1/)
  dim_names_sq = [character(schlen) :: 'PH_modes','N_exc_sum','N_exc_states']
  call def_variable_bulk(ID_frag,trim(VAR_name),1,VAR_size_sq,SP,dim_names_sq)
  call io_variable_bulk(ID_frag,1,R3=EXCPH_gkkp_sq,IPOS=IPOS_sq)
