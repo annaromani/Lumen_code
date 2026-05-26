@@ -86,8 +86,6 @@ integer function EPS_via_perturbative_inversion(n,m,D,C,f,Lo)
    !
    f=f+delta_f
    !
-   write(*,*) abs(f),abs(delta_f),abs(fo),abs(delta_f)/abs(fo)<abs(K_INV_EPS%treshold)
-   !
    if (abs(delta_f)/abs(fo)<abs(K_INV_EPS%treshold)) return
    !
    if (abs(delta_f)>K_INV_EPS%max_treshold) exit
