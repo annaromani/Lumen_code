@@ -27,7 +27,6 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  use IO_int,          ONLY:io_control
  use IO_m,            ONLY:OP_RD,RD,RD_CL,OP_RD_CL,VERIFY,REP,NONE
  use timing_m,        ONLY:timing
- use pars,            ONLY:SP,rZERO
  use com,             ONLY:msg
 #if defined _QED || defined _RT
  use collision_ext,   ONLY:P_collisions,GW_NEQ_collisions
@@ -155,6 +154,7 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
    !
    subroutine local_IO( COLL )
      !
+     use pars,            ONLY:SP,rZERO
      use collision_ext,   ONLY:COLLISIONS_group
      use COLL_interfaces, ONLY:io_COLLISIONS
      use global_XC,       ONLY:H_SE_FOCK,H_SE_COH,H_SE_SEX,QP_SE_GW_NEQ,H_SE_HARTREE
