@@ -27,7 +27,7 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
  use TDDFT,          ONLY:io_BS_Fxc
  use it_tools,       ONLY:switch_off_runlevel
  use IO_int,         ONLY:io_control
- use IO_m,           ONLY:OP_RD_CL,DUMP,VERIFY,NONE
+ use IO_m,           ONLY:OP_RD_CL,DUMP,NONE
 #if defined _SC || defined _RT
  use collision_ext,  ONLY:COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions
 # if !defined _PAR_IO
@@ -275,7 +275,7 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
  io_ELPH_err(1)=io_ELPH(io_ID,'gkkp')
  call io_control(ACTION=OP_RD_CL,COM=NONE,MODE=DUMP,SEC=(/1/),ID=io_ID)
  io_ELPH_err(2)=io_ELPH(io_ID,'gkkp_expanded')
- call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1/),MODE=VERIFY,ID=io_ID)
+ call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1/),MODE=DUMP,ID=io_ID)
  io_err=io_EXCPH_gkkp(io_ID,'gkkp')
 #endif
  !
