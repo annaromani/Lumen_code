@@ -65,7 +65,13 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  &                BS_nk_bz,BS_nk_ibz
  character(20) :: PAR_ch,FREE_ch
  !
+#if defined _PAR_IO
  integer, external :: io_BS_header,io_BS_PAR_init
+#endif
+ !
+#if not defined _PAR_IO
+ call error("Collisions from BSE require parallel I/O support")
+#endif
  !
  call timing('COLLISIONS_eval',OPR='start')
  !
@@ -161,8 +167,10 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      else
      !if (IO_err_BS==0) then
        call set_BS_blks(Xk)
+#if defined _PAR_IO
        call io_control(ACTION=OP_RD,COM=REP,MODE=DUMP,ID=ID_mat)
        IO_err_BS=io_BS_PAR_init(1,ID_mat,"full")
+#endif
        call load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk_bz)
        call check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
        call build_BS_kpt_map(Xk)
@@ -471,7 +479,11 @@ subroutine load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  allocate(BS_blk(1)%table(5,BS_K_dim(1)))
  allocate(BS_blk(2)%table(5,BS_K_dim(1)))
  !
+#if defined _PAR_IO
  call read_BS_table(1,ID_mat)
+#else
+ call error("BSE table import requires parallel I/O support")
+#endif
  !
  call build_inverse_BS_eh_table_from_BS_kernel(Xk%nbz)
  !

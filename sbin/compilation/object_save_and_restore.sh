@@ -36,19 +36,22 @@ cd $dir
 if [ $count_obj != 0 ]; then
  for tos in *.o; do
   source $compdir/sbin/compilation/verbosity.sh "object_save_and_restore.sh: saving $tos"
-  if ! test -L $tos; then cp -u $tos $save_dir; fi
+#  if ! test -L $tos; then cp -u $tos $save_dir; fi
+   rsync -u $tos $save_dir/
  done
 fi
 if [ $count_mod != 0 ]; then
  for tos in *.mod; do
   source $compdir/sbin/compilation/verbosity.sh "object_save_and_restore.sh: saving $tos"
-  if ! test -L $tos; then cp -u $tos $save_dir; fi
+#  if ! test -L $tos; then cp -u $tos $save_dir; fi
+   rsync -u $tos $save_dir/
  done
 fi
 if [ $count_f90 != 0 ]; then
  for tos in *.f90; do
   source $compdir/sbin/compilation/verbosity.sh "object_save_and_restore.sh: saving $tos"
-  if ! test -L $tos; then cp -u $tos $save_dir; fi
+#  if ! test -L $tos; then cp -u $tos $save_dir; fi
+   rsync -u $tos $save_dir/
  done
 fi
 if [ $count_obj_ts != 0 ]; then
