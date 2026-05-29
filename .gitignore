@@ -88,8 +88,6 @@ lib/*/Ldiago*
 lib/*/devicexlib*
 lib/hdf5/hdf5*
 lib/external/*
-compile.sh
-gfortran_*
 src/wf_and_fft/sgfft.F
 bin/*
 lib/bin/*
@@ -142,6 +140,7 @@ compile_yambo_gcc
 gfortran*.sh*
 nvfortran*.sh*
 ifx*.sh*
+llvm*.sh*
 git_nmd.sh
 
 #Configuation files
