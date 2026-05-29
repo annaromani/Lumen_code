@@ -67,9 +67,8 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  !
 #if defined _PAR_IO
  integer, external :: io_BS_header,io_BS_PAR_init
-#endif
  !
-#if not defined _PAR_IO
+#else
  call error("Collisions from BSE require parallel I/O support")
 #endif
  !
