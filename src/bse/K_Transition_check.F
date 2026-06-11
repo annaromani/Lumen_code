@@ -12,6 +12,7 @@ logical function K_Transition_check(Ken,Dip,iq,ik,ikp,iv,ic,i_sp_c,i_res_ares,&
  use X_m,          ONLY:global_gauge
  use DIPOLES,      ONLY:DIPOLE_t
  use electrons,    ONLY:levels,n_sp_pol,filled_tresh,spin_occ
+ use stderr,       ONLY:STRING_same
  use BS,           ONLY:BS_not_const_eh_f,BS_perturbative_SOC,BS_eh_en,&
                         l_BS_magnons,l_BS_photolum,l_BS_res_from_E
 #if defined _RT
@@ -28,6 +29,7 @@ logical function K_Transition_check(Ken,Dip,iq,ik,ikp,iv,ic,i_sp_c,i_res_ares,&
  !
  ! Work Space
  !
+ logical :: dip_r_gspace
  integer :: i_sp_v,iv_SOC(2/n_sp_pol),ic_SOC(2/n_sp_pol),pert_range(2/n_sp_pol,2)
  real(SP):: Eo_eh,E_v_SOC(2/n_sp_pol),E_c_SOC(2/n_sp_pol),f_eh_REF,f_eh_EQ,f_e,f_h
  !
@@ -42,7 +44,8 @@ logical function K_Transition_check(Ken,Dip,iq,ik,ikp,iv,ic,i_sp_c,i_res_ares,&
  !
  ! Small energy transitions. Dipoles in length gauge are not defined
  if ((.not.l_BS_magnons).and.iq==1) then
-   if ( abs(Eo_eh) < Dip%Energy_threshold .and. trim(global_gauge)=="length") K_Transition_check=.FALSE.
+   dip_r_gspace=trim(global_gauge)=='length' .and. STRING_same(Dip%approach,"g-space v")
+   if ( abs(Eo_eh) < Dip%Energy_threshold .and. dip_r_gspace) K_Transition_check=.FALSE.
  endif
  ! Null energy transitions are always removed
  if ( abs(E_eh) == 0._SP )  K_Transition_check=.FALSE.
