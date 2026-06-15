@@ -20,29 +20,15 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  use drivers,         ONLY:l_sc_fock,l_sc_coh,l_sc_sex,l_sc_exx,l_use_collisions,l_sc_srpa,&
 &                          l_elel_scatt,l_elphoton_scatt,l_elphoton_corr,l_sc_hartree,&
 &                          l_use_Hxc_collisions,l_real_time,l_use_COH_collisions
- use LIVE_t,          ONLY:live_timing
- use QP_m,            ONLY:QP_QED_ng
- use R_lattice,       ONLY:nqbz
- use electrons,       ONLY:n_sp_pol
- use plasma,          ONLY:N_plasma_poles_global
  use hamiltonian,     ONLY:H_kind
- use xc_functionals,  ONLY:GS_xc_kind
  use global_XC,       ONLY:H_SE_FOCK,H_SE_COH,H_SE_SEX,QP_SE_GW_NEQ,H_SE_HARTREE
- use collision_ext,   ONLY:HXC_COLL_element,COH_COLL_element,COLLISIONS_have_HARTREE,&
-&                          COH_collisions,HXC_collisions,COLLISIONS_group,COLLISIONS_naming, &
-&                          COLLISIONS_compr,COLLISIONS_load_SP
+ use collision_ext,   ONLY:COLLISIONS_have_HARTREE,&
+&                          COH_collisions,HXC_collisions,COLLISIONS_naming
  use IO_int,          ONLY:io_control
  use IO_m,            ONLY:OP_RD,RD,RD_CL,OP_RD_CL,VERIFY,REP,NONE
- use parallel_m,      ONLY:PAR_IND_Plasma,PAR_IND_Q_bz,PAR_Q_bz_index,PAR_PLASMA_index
- use COLL_interfaces, ONLY:io_COLLISIONS
  use timing_m,        ONLY:timing
- use stderr,          ONLY:real2ch
- use pars,            ONLY:SP,rZERO
- use com,             ONLY:msg
 #if defined _QED || defined _RT
- use global_XC,       ONLY:QP_SE_GW_QED
- use collision_ext,   ONLY:P_COLL_element,COLL_bands,P_collisions,GW_NEQ_collisions,&
-&                          GW_NEQ_COLL_element
+ use collision_ext,   ONLY:P_collisions,GW_NEQ_collisions
 #endif
  !
  implicit none
@@ -51,14 +37,11 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  !
  ! Work Space
  !
- integer            :: COLL_kind(4),ID,io_err(4),COM_,i1,IO_ACT
+ integer            :: COLL_kind(4),ID,io_err(4),COM_,i1
  logical            :: l_use_scatt_collisions,l_warning,l_error,l_use_P_collisions
  !
 #if defined _PAR_IO
  integer, external :: io_COLLs_header
-#if defined _NL || defined _FL
- real(SP)  :: COLL_full,COLL_compr
-#endif
 #endif
  !
  io_err      =0
@@ -166,16 +149,54 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
  !
  call timing('COLLISIONS_load',OPR='stop')
  !
- contains
+ end subroutine COLLISIONS_load
    !
    subroutine local_IO( COLL )
+     !
+     use pars,            ONLY:SP,rZERO
+     use com,             ONLY:msg
+     use collision_ext,   ONLY:COLLISIONS_group
+     use COLL_interfaces, ONLY:io_COLLISIONS
+     use global_XC,       ONLY:H_SE_FOCK,H_SE_COH,H_SE_SEX,QP_SE_GW_NEQ,H_SE_HARTREE
+     use collision_ext,   ONLY:P_COLL_element,GW_NEQ_COLL_element,COH_COLL_element,&
+     &                         HXC_COLL_element,COLLISIONS_compr,COLLISIONS_load_SP,&
+     &                         COLL_bands
+     use plasma,          ONLY:N_plasma_poles_global
+     use parallel_m,      ONLY:PAR_IND_Plasma,PAR_IND_Q_bz,PAR_Q_bz_index,PAR_PLASMA_index
+     use xc_functionals,  ONLY:GS_xc_kind
+     use stderr,          ONLY:real2ch
+     use IO_int,          ONLY:io_control
+     use IO_m,            ONLY:OP_RD,RD,RD_CL,OP_RD_CL
+     use LIVE_t,          ONLY:live_timing
+     use electrons,       ONLY:n_sp_pol
+     use R_lattice,       ONLY:nqbz
+     use QP_m,            ONLY:QP_QED_ng
+#if defined _QED || defined _RT
+     use global_XC,       ONLY:QP_SE_GW_QED
+#endif
      !
      implicit none
      !
      type(COLLISIONS_group) :: COLL
-     integer :: iqbz,i_J,ic,i_coll,&
+     !
+     ! Workspace
+     !
+     integer :: iqbz,i_J,ic,i_coll,ID,IO_ACT,io_err(4),&
 &               i_coll_mem,i_q_mem,i_J_mem,i_b,i_g,i_sp
-     logical :: l_COH,l_HXC,l_NGW,l_QED,l_NGW_init,l_QED_init
+     logical :: l_COH,l_HXC
+#if defined _QED
+     logical :: l_QED,l_QED_init
+#endif
+#if defined _RT
+     logical :: l_NGW,l_NGW_init
+#endif
+     !
+#if defined _PAR_IO
+     integer, external :: io_COLLs_header
+#if defined _NL || defined _FL
+ real(SP)  :: COLL_full,COLL_compr
+#endif
+#endif
      !
      call live_timing(trim(COLL%name)//' collisions I/O',COLL%PAR_N)
      !
@@ -184,13 +205,12 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
      &      COLL%kind==GS_xc_KIND.or.COLL%kind>=H_SE_HARTREE)
 #if defined _QED
      l_QED=(COLL%kind==QP_SE_GW_QED)
+     l_QED_init=l_QED
 #endif
 #if defined _RT
      l_NGW=(COLL%kind==QP_SE_GW_NEQ)
-#endif
-     !
      l_NGW_init=l_NGW
-     l_QED_init=l_QED
+#endif
      !
      if (l_COH.or.l_HXC) then
        call COLLISIONS_alloc_and_free(trim(COLL%name),"collision","alloc",0)
@@ -220,8 +240,12 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
      !
      if (l_COH) io_err(1)=io_COLLs_header(ID,COLL)
      if (l_HXC) io_err(1)=io_COLLs_header(ID,COLL)
+#if defined _RT
      if (l_NGW) io_err(1)=io_COLLs_header(ID,COLL)
+#endif
+#if defined _QED
      if (l_QED) io_err(1)=io_COLLs_header(ID,COLL)
+#endif
      !
 #if defined _PAR_IO
      call io_control(ACTION=OP_RD,SEC=(/1/),ID=ID)
@@ -265,11 +289,14 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
        !
        if (l_COH) call COLLISIONS_alloc_and_free(trim(COLL%name),"v1 table","alloc",i_coll_mem)
        if (l_HXC) call COLLISIONS_alloc_and_free(trim(COLL%name),"v1 table","alloc",i_coll_mem)
+#if defined _RT
        if (l_NGW_init) call COLLISIONS_alloc_and_free("GW_NEQ","v1 table","alloc",1)
-       if (l_QED_init) call COLLISIONS_alloc_and_free("Momentum","v1 table","alloc",1)
-       !
        l_NGW_init=.false.
+#endif
+#if defined _QED
+       if (l_QED_init) call COLLISIONS_alloc_and_free("Momentum","v1 table","alloc",1)
        l_QED_init=.false.
+#endif
        !
 #if !defined _PAR_IO
        IO_ACT=RD_CL
@@ -367,4 +394,3 @@ subroutine COLLISIONS_load(CHECK_EXISTENCE_ONLY)
      !
    end subroutine
    !
-end subroutine COLLISIONS_load

@@ -20,9 +20,7 @@ subroutine io_RT_components_G_lesser(ID,T_size)
 &                         NE_i_time,RT_dyn_step,RT_step,i_MEM_now,i_MEM_prev,i_MEM_old, &
 &                         H_EQ,l_RT_RWA,RTibz,Ho_plus_sigma
  use netcdf,         ONLY:NF90_UNLIMITED
-#if defined _PAR_IO
  use parallel_m,     ONLY:PAR_G_k_range
-#endif
  !
  implicit none
  !

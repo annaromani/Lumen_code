@@ -74,7 +74,7 @@ subroutine EXCPH_lifetime(k,q,X)
  use com,            ONLY:msg,of_open_close
  use X_m,            ONLY:X_t
  use IO_int,         ONLY:io_control
- use IO_m,           ONLY:manage_action,OP_RD,REP,RD_CL_IF_END,DUMP
+ use IO_m,           ONLY:manage_action,OP_RD,REP,RD_CL_IF_END,DUMP, VERIFY
  use EXCPH,          ONLY:EXCPH_sum,EXCPH_states,BS_E,BS_all_E,BS_E_in,L_damping,n_exc_in, &
 &                         EXC_LifeTime,min_EXC_E,EXCPH_Gkkp_sq,DB_Q_map,l_no_matrix_elements, &
 &                         RESIDUALS_and_EIGENVALUES_alloc,RESIDUALS_and_EIGENVALUES_free,alphaQ, &
@@ -165,7 +165,7 @@ subroutine EXCPH_lifetime(k,q,X)
  !
  ! Load the Exciton-phonon elements and phonon energies
  !
- call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=DUMP,ID=ID_exc_gkkp)
+ call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID_exc_gkkp)
  io_err=io_EXCPH_gkkp(ID_exc_gkkp)
  if(io_err/=0) call error('excph_gkkp databases not found!')
  !

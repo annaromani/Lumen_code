@@ -440,8 +440,13 @@ subroutine COLLISIONS_HXC(X,Xk,E,k,q,Xw,IO_BS_err,ID_BS)
          allocate(BS_blk(jB)%tam (BS_blk(jB)%zise(1),BS_blk(jB)%zise(2)))
          BS_blk(jB)%mat=cZERO
          BS_blk(jB)%tam=cZERO
+#if defined _PAR_IO
          call io_control(ACTION=RD,ID=ID_BS)
          call read_BS_par_collisions(1,jB,ID_BS)
+#else
+	call error("BSE collision import requires parallel I/O support")
+#endif
+
        enddo
        !
      else

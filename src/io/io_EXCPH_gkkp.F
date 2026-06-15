@@ -54,7 +54,7 @@ integer function io_EXCPH_gkkp(ID)
 &                         def_variable_bulk,io_variable_bulk,io_fragment
  use EXCPH,          ONLY:EXCPH_Gkkp,EXCPH_Gkkp_sq,EXCPH_sum,EXCPH_states,&
 &                         BS_EXCPH_E,ph_EXCPH_E,EXCPH_q,L_kind_in,L_kind_out,Sat_alloc, &
-&                         EXCPH_gkkp_alloc
+&                         EXCPH_gkkp_alloc,EXCPH_states_db,EXCPH_sum_db
  use IO_int,         ONLY:io_variable_elemental,def_variable_elemental
  use ELPH,           ONLY:ph_modes
  use stderr,         ONLY:intc
@@ -69,7 +69,7 @@ integer function io_EXCPH_gkkp(ID)
  !
  !Work Space
  !
- integer                :: iq,ierr,VAR_size(4),VAR_size_sq(3),ID_frag
+ integer                :: iq,ierr,VAR_size(4),IPOS(4),VAR_size_sq(3),IPOS_sq(3),ID_frag
  character(schlen)      :: db_name,VAR_name,dim_names(4),dim_names_sq(3)
  !
  call timing('io_EXCPH_gkkp',OPR='start')
@@ -93,11 +93,17 @@ integer function io_EXCPH_gkkp(ID)
    call io_elemental(ID,&
 &       VAR=" Number of qpoints (BZ)   :",I0=nqbz,CHECK=.true.,OP=(/"=="/))
    !
-   call io_elemental(ID,&
-&       VAR=" Exciton states           :",I1=EXCPH_states,CHECK=.true.,OP=(/"==","=="/))
+   ! DB_I1 always returns the DB value regardless of IO mode; I1 (the user range)
+   ! is preserved in VERIFY mode and is what the OP-based subset check operates on.
+   ! The header must therefore be read in VERIFY mode for the check to be enforced.
    !
    call io_elemental(ID,&
-&       VAR=" Exciton sum (scattered)  :",I1=EXCPH_sum,CHECK=.true.,OP=(/"==","=="/))
+&       VAR=" Exciton states           :",I1=EXCPH_states,DB_I1=EXCPH_states_db,&
+&       CHECK=.true.,OP=(/">=","<="/))
+   !
+   call io_elemental(ID,&
+&       VAR=" Exciton sum (scattered)  :",I1=EXCPH_sum,DB_I1=EXCPH_sum_db,&
+&       CHECK=.true.,OP=(/">=","<="/))
    !
    call io_elemental(ID,&
 &       VAR=" Phonon modes            :",I0=ph_modes,CHECK=.true.,OP=(/"=="/))
@@ -106,15 +112,6 @@ integer function io_EXCPH_gkkp(ID)
    !
    io_EXCPH_gkkp=io_status(ID)
    if (io_EXCPH_gkkp/=0) goto 1
-   !
-   call io_bulk(ID,VAR="EXCITON_STATES",VAR_SZ=(/2/))
-   call io_bulk(ID,I1=EXCPH_states)
-   !
-   call io_bulk(ID,VAR="EXCITON_SUM",VAR_SZ=(/2/))
-   call io_bulk(ID,I1=EXCPH_sum)
-   !
-   call io_bulk(ID,VAR="PHONON_MODES",VAR_SZ=(/1/))
-   call io_bulk(ID,I0=ph_modes)
    !
    call def_variable_elemental(ID,"L_kind_in",1,0,0)
    call io_variable_elemental(ID,VAR="[K] L_kind in",CH0=L_kind_in,CHECK=.true.,OP=(/"=="/))
@@ -155,16 +152,18 @@ integer function io_EXCPH_gkkp(ID)
  endif
  !
  VAR_name="EXCITON_PH_GKKP_Q"//trim(intc(iq))
- VAR_size=(/2,ph_modes,EXCPH_sum(2),EXCPH_states(2)/)
+ VAR_size=(/2,ph_modes,EXCPH_sum(2)-EXCPH_sum(1)+1,EXCPH_states(2)-EXCPH_states(1)+1/)
+ IPOS=(/1,1,EXCPH_sum(1)-EXCPH_sum_db(1)+1,EXCPH_states(1)-EXCPH_states_db(1)+1/)
  dim_names = [character(schlen) :: 'complex','PH_modes','N_exc_sum','N_exc_states']
  call def_variable_bulk(ID_frag,trim(VAR_name),1,VAR_size,SP,dim_names)
- call io_variable_bulk(ID_frag,1,C3=EXCPH_gkkp)
+ call io_variable_bulk(ID_frag,1,C3=EXCPH_gkkp,IPOS=IPOS)
  !
  VAR_name="EXCITON_PH_GKKP_SQUARED_Q"//trim(intc(iq))
- VAR_size_sq=(/ph_modes,EXCPH_sum(2),EXCPH_states(2)/)
+ VAR_size_sq=(/ph_modes,EXCPH_sum(2)-EXCPH_sum(1)+1,EXCPH_states(2)-EXCPH_states(1)+1/)
+ IPOS_sq=(/1,EXCPH_sum(1)-EXCPH_sum_db(1)+1,EXCPH_states(1)-EXCPH_states_db(1)+1/)
  dim_names_sq = [character(schlen) :: 'PH_modes','N_exc_sum','N_exc_states']
  call def_variable_bulk(ID_frag,trim(VAR_name),1,VAR_size_sq,SP,dim_names_sq)
- call io_variable_bulk(ID_frag,1,R3=EXCPH_gkkp_sq)
+ call io_variable_bulk(ID_frag,1,R3=EXCPH_gkkp_sq,IPOS=IPOS_sq)
  !
  io_EXCPH_gkkp=io_status(ID)
  !

@@ -11,6 +11,7 @@
 !
 integer function io_COLLISIONS(ID,COLL,COLL_element,i_coll_,COMM)
  !
+ use electrons,     ONLY:n_sp_pol
  use pars,          ONLY:schlen,IP,SP,IP_YIO
  use R_lattice,     ONLY:RIM_ng,RIM_n_rand_pts
  use collision_ext, ONLY:COLLISIONS_cutoff,COLLISIONS_element,COLL_bands,COLLISIONS_group,COLLISIONS_CV_only
@@ -210,14 +211,15 @@ integer function io_COLLISIONS(ID,COLL,COLL_element,i_coll_,COMM)
  !
  if (any(io_sec(ID,:)==3)) then     
    !
-   call def_variable_bulk(ID_frag,'COLLISIONS_TABLE',1,&
-&                           (/COLL%D(1,2)-COLL%D(1,1)+1,&
-&                             COLL%D(2,2)-COLL%D(2,1)+1,&
-&                             COLL%D(3,2)-COLL%D(3,1)+1/),0,silent=.true.)
+   call def_variable_bulk(ID_frag,'COLLISIONS_TABLE',1,   &
+&                           (/COLL%D(1,2)-COLL%D(1,1)+1,  &
+&                             COLL%D(2,2)-COLL%D(2,1)+1,  &
+&                             COLL%D(3,2)-COLL%D(3,1)+1/),&
+&                             n_sp_pol,0,silent=.true.)
    !
-   call  io_variable_bulk(ID_frag,1,CH3=COLL_element%table(COLL%D(1,1):COLL%D(1,2),&
+   call  io_variable_bulk(ID_frag,1,CH4=COLL_element%table(COLL%D(1,1):COLL%D(1,2),&
 &                                                    COLL%D(2,1):COLL%D(2,2),&
-&                                                    COLL%D(3,1):COLL%D(3,2)))
+&                                                    COLL%D(3,1):COLL%D(3,2),1:n_sp_pol))
    !
    if(COLL%kind==QP_SE_GW_NEQ.or.COLL%kind==QP_SE_GW_QED) then
      ! Real collisions

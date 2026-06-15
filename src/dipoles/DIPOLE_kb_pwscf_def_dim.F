@@ -48,15 +48,19 @@ subroutine Dipole_kb_pwscf_def_dim()
          i2=i2+1
          i3=i3+1
          !
+         tmp_var=cZERO
+         !
          do i_spinor=1,n_spinor
-           do ic=1,wf_nc_k(1)
-             tmp_var(ic,n_spinor,1)= pp_kb(ic,is,i_pp,1)*pp_kbs(is,i_pp)
-             tmp_var(ic,n_spinor,2)= pp_kbd(ic,is,i_pp,1)+pp_kb(ic,is,i_pp,1)
+           tmp_var(1,i_spinor,1)= pp_kb(1,is,i_pp,1)*pp_kbs(is,i_pp)
+           tmp_var(1,i_spinor,2)= cZERO
+           do ic=2,wf_nc_k(1)
+             tmp_var(ic,i_spinor,1)= pp_kb(ic,is,i_pp,1)*pp_kbs(is,i_pp)
+             tmp_var(ic,i_spinor,2)= pp_kbd(ic,is,i_pp,1)+pp_kb(ic,is,i_pp,1)
            enddo
          enddo
          !
-         check(1)=sum(tmp_var(:,:,1))
-         check(2)=sum(tmp_var(:,:,2))
+         check(1) = sum(tmp_var(1:wf_nc_k(1), 1:n_spinor, 1))
+         check(2) = sum(tmp_var(1:wf_nc_k(1), 1:n_spinor, 2))
          !
          if ( any(check==cZERO) ) then
            i1=i1-1

@@ -7,25 +7,6 @@
 !
 #include<dev_defs.h>
 #include<y_memory.h>
-! 
-! This file is distributed under the terms of the GNU 
-! General Public License. You can redistribute it and/or 
-! modify it under the terms of the GNU General Public 
-! License as published by the Free Software Foundation; 
-! either version 2, or (at your option) any later version.
-!
-! This program is distributed in the hope that it will 
-! be useful, but WITHOUT ANY WARRANTY; without even the 
-! implied warranty of MERCHANTABILITY or FITNESS FOR A 
-! PARTICULAR PURPOSE.  See the GNU General Public License 
-! for more details.
-!
-! Authors (see AUTHORS file for details): AM
-!
-! headers
-!
-#include<dev_defs.h>
-#include<y_memory.h>
 !
 !
 subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
