@@ -15,7 +15,7 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  use pars,           ONLY:SP,pi
  use electrons,      ONLY:n_spinor
- use D_lattice,      ONLY:a,nsym,dl_sop,sop_inv,S_contains_TR,alat
+ use D_lattice,      ONLY:a,nsym,dl_sop,dl_tra,sop_inv,S_contains_TR,alat
  use R_lattice,      ONLY:b,g_vec,ng_closed
  use matrix_operate, ONLY:m3inv
  use FFT_m,          ONLY:fft_dim,fft_size,fft_rot_r,fft_rot_r_inv,&
@@ -49,7 +49,7 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  !
  ! Work Space
  !
- integer  :: i1,i2,i3,i4,iG_max,iv(3),ln(3),is,space_inv(3,3),wf_ng_closed
+ integer  :: i1,i2,i3,i4,iG_max,iv(3),iv4,ln(3),is,space_inv(3,3),T1(3),wf_ng_closed
  real(SP) :: v1(3),M1(3,3),M2(3,3),mat(3,3),scal(3)
  real(SP), allocatable :: g_vec_rot(:,:)
  real(SP), allocatable DEV_ATTR :: g_vec_rot_d(:,:)
@@ -106,6 +106,8 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
  endif
  !
  ! SIZE estimation
+ !
+ call m3inv(transpose(a),mat)
  !
 !#ifdef _GPU
 ! ln_1=-1
@@ -260,29 +262,41 @@ subroutine fft_setup(iG_max_in,iGo_max,ONLY_SIZE)
    ! Now I want to rewrite wf_ks(r)= wf_k(r(s^-1))
    !
    do is=1,nsym+1
+     !
      if( is==nsym+1 )  then
        M1=matmul( space_inv,transpose(a))
      else
        M1=matmul( dl_sop(:,:,sop_inv(is)),transpose(a))
        if(S_contains_TR(is)) M1=-M1
      endif
+     !
      M2=matmul(b,M1)/2.0_SP/pi
      forall (i1=1:3,i2=1:3) M2(i1,i2)=M2(i1,i2)*fft_dim(i1)/fft_dim(i2)
+     !
+     if( is<=nsym)   T1=nint(matmul(mat,dl_tra(:,is))*fft_dim)
+     if( is==nsym+1) T1=0
      !
      do i1=0,fft_dim(1)-1
        do i2=0,fft_dim(2)-1
          do i3=0,fft_dim(3)-1
-           iv=nint(matmul(M2,(/i1,i2,i3/)))
-           i4=1+i1+i2*fft_dim(1)+i3*fft_dim(1)*fft_dim(2)
-           if( is==nsym+1) then
-             fft_rot_r_inv(i4)=1+modx(iv(1),fft_dim(1))+&
-&                            modx(iv(2),fft_dim(2))*fft_dim(1)+&
-&                            modx(iv(3),fft_dim(3))*fft_dim(1)*fft_dim(2)
-             cycle
-           endif
-           fft_rot_r(i4,is)=1+modx(iv(1),fft_dim(1))+&
-&                          modx(iv(2),fft_dim(2))*fft_dim(1)+&
-&                          modx(iv(3),fft_dim(3))*fft_dim(1)*fft_dim(2)
+           !
+           ! r
+           iv=(/i1,i2,i3/)
+           ! r-T
+           iv=iv+T1
+           ! R^-1(r-T)
+           iv=nint(matmul(M2,iv))
+           ! back to 1st RL
+           iv(1)=modx(iv(1),fft_dim(1))
+           iv(2)=modx(iv(2),fft_dim(2))
+           iv(3)=modx(iv(3),fft_dim(3))
+           !
+           i4 =1+  i1+   i2 *fft_dim(1)+  i3 *fft_dim(1)*fft_dim(2)
+           iv4=1+iv(1)+iv(2)*fft_dim(1)+iv(3)*fft_dim(1)*fft_dim(2)
+           !
+           if( is<=nsym)   fft_rot_r(i4,is) =iv4
+           if( is==nsym+1) fft_rot_r_inv(i4)=iv4
+           !
          enddo
        enddo
      enddo

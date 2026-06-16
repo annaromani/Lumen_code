@@ -7,25 +7,6 @@
 !
 #include<dev_defs.h>
 #include<y_memory.h>
-! 
-! This file is distributed under the terms of the GNU 
-! General Public License. You can redistribute it and/or 
-! modify it under the terms of the GNU General Public 
-! License as published by the Free Software Foundation; 
-! either version 2, or (at your option) any later version.
-!
-! This program is distributed in the hope that it will 
-! be useful, but WITHOUT ANY WARRANTY; without even the 
-! implied warranty of MERCHANTABILITY or FITNESS FOR A 
-! PARTICULAR PURPOSE.  See the GNU General Public License 
-! for more details.
-!
-! Authors (see AUTHORS file for details): AM
-!
-! headers
-!
-#include<dev_defs.h>
-#include<y_memory.h>
 !
 !
 subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
@@ -101,7 +82,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
  real(SP)         :: eet_cutoff0_sp(n_sp_pol),eet_cutoff0,eet_cutoff1_sp(n_sp_pol),eet_cutoff1
  real(SP)         :: X_ppaE,bose_PPA_E,eet_energy
  real(SP)         :: E_kmq,f_kmq,PPA_E
- complex(SP)      :: PPA_R,pre_factor
+ complex(SP)      :: PPA_R,pre_factor,X_ratio
  complex(SP)      :: W_i,lW,QP_ppa_EET
  real(DP)         :: dp_dummy_r,dp_dummy_i
  complex(DP)      :: dp_dummy,ctmp
@@ -346,7 +327,7 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
        !
        if (l_ppa) then
          !
-         !$omp     parallel do default(shared), private(ig1,ig2,l_RIM_W_g), &
+         !$omp     parallel do default(shared), private(ig1,ig2,l_RIM_W_g,X_ratio), &
          !$omp &   reduction(+:PPcond_rate,TO_rate,PP_err), collapse(2)
          do ig2=X_par(iq_mem)%cols(1),X_par(iq_mem)%cols(2)
          do ig1=X_par(iq_mem)%rows(1),X_par(iq_mem)%rows(2)
@@ -360,16 +341,35 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
              X_par(iq_mem)%blc(ig1,ig2,X_range2)=RIM_W_E(ig1,ig2)
              !
            else
-             if (real(X_par(iq_mem)%blc(ig1,ig2,X_range1)/X_par(iq_mem)%blc(ig1,ig2,X_range2))<=1._SP) then
+             !
+             ! Here the code checks if the PPA fit works or not,
+             ! i.e. if it is possible to find real poles.
+             X_ratio=2.E10_SP
+             if(abs(X_par(iq_mem)%blc(ig1,ig2,X_range2))>0._SP) &
+             & X_ratio=X_par(iq_mem)%blc(ig1,ig2,X_range1)/X_par(iq_mem)%blc(ig1,ig2,X_range2)
+             !
+             if ( real(X_ratio)>1.E10_SP ) then
+               ! X_ratio larger than 1.E10_SP, in this we consider that the fit fails
+               ! It is likely due to X_par(iq_mem)%blc(ig1,ig2,X_range2)~0
+               X_par(iq_mem)%blc(ig1,ig2,X_range2)=X_ppaE
+               !
+               PP_err=PP_err+1._SP/(X_ppaE**2+1._SP)
+               PPcond_rate=PPcond_rate+1
+               !
+             else if (real(X_ratio)<=1._SP) then
+               ! This is the case where the fit fails.
+               ! See PRB 104, 115157 (2021), eq. 19, X_par is set to X_ppaE
                X_par(iq_mem)%blc(ig1,ig2,X_range2)=X_ppaE
                !
                PP_err=PP_err+abs( X_par(iq_mem)%blc(ig1,ig2,X_range1)/(X_ppaE**2+1._SP)-X_par(iq_mem)%blc(ig1,ig2,X_range2) )/&
 &                              maxval( abs( X_par(iq_mem)%blc(ig1,ig2,X_range1:X_range2) ) )
                PPcond_rate=PPcond_rate+1
              else
-               X_par(iq_mem)%blc(ig1,ig2,X_range2)=sqrt(X_par(iq_mem)%blc(ig1,ig2,X_range1)/X_par(iq_mem)%blc(ig1,ig2,X_range2)-1)
+               X_par(iq_mem)%blc(ig1,ig2,X_range2)=sqrt(X_ratio-1._SP)
                !
-               if(real(1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range2),SP)*aimag( 1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range1) )>0._SP) then
+               !if(real(1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range2),SP)*aimag( 1._SP/X_par(iq_mem)%blc(ig1,ig2,X_range1) )>0._SP) then
+               ! 2026/04/29 DS: condition rewritten to avoid inversion operations
+               if(real(X_par(iq_mem)%blc(ig1,ig2,X_range2),SP)*aimag(X_par(iq_mem)%blc(ig1,ig2,X_range1))<0._SP) then
                    TO_rate=TO_rate+1
                endif
              endif
@@ -719,14 +719,14 @@ subroutine QP_ppa_cohsex(X,Xk,E,k,q,qp,Xw,GW_iter)
            dp_dummy = 0.0_DP
            !
            !DEV_ACC_DEBUG data present(X_blc_p,RIM_W,isc_gamp_p,conjg_iscp_rhotw,isc_rhotw_p,iscp_rhotw_p)
-           !DEV_ACC parallel  loop collapse(2) private(PPA_E,PPA_R,l_RIM_W_g,bose_PPA_E,ctmp) &
+           !DEV_ACC parallel  loop collapse(2) private(PPA_E,PPA_R,l_rim_W_g,bose_PPA_E,ctmp) &
            !DEV_ACC                reduction(+:dp_dummy_r,dp_dummy_i)
            !DEV_CUF kernel do(2)
            !DEV_OMPGPU target map(present,alloc:X_blc_p,RIM_W,isc_gamp_p,conjg_iscp_rhotw,isc_rhotw_p,iscp_rhotw_p) &
            !DEV_OMPGPU &      map(tofrom:dp_dummy_r,dp_dummy_i)
            !DEV_OMPGPU teams  loop collapse(2) private(PPA_E,PPA_R,l_rim_W_g,bose_PPA_E,ctmp) &
            !DEV_OMPGPU &           reduction(+:dp_dummy_r,dp_dummy_i)
-           !DEV_OMP parallel do default(shared), private(ig1,ig2,PPA_E,PPA_R,ctmp,l_RIM_W_g), &
+           !DEV_OMP parallel do default(shared),private(ig1,ig2,PPA_E,PPA_R,bose_PPA_E,ctmp,l_rim_W_g), &
            !DEV_OMP &        reduction(+:dp_dummy), collapse(2)
            !
            do ig2=X_cols1,X_cols2

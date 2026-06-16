@@ -13,6 +13,8 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  !
  use drivers,         ONLY:l_rt_carriers_in_use
  use pars,            ONLY:SP,pi,cZERO,rZERO,schlen,DP,cI
+ use stderr,          ONLY:intc
+ use parser_m,        ONLY:parser
  use R_lattice,       ONLY:bz_samp,q0_def_norm,d3k_factor
  use electrons,       ONLY:levels,spin,spin_occ
  use LIVE_t,          ONLY:live_timing
@@ -20,11 +22,12 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  use RT_control,      ONLY:RT_apply,CARR_RT_IO_t
  use YPP_real_time,   ONLY:RT_conf,RT_time,TRabsDIP_dir,TRabsWHAT,TRabsDIP_plane,&
 &                          TRabs_RES_left,TRabs_RES_right,TRabsMODE,TRabs_E,Epsilon_ij,&
-&                          B_Hall,TRabs_lEPS,TRabs_EPS_label
- use YPPm,            ONLY:DIPs
+&                          B_Hall,TRabs_lEPS,TRabs_EPS_label,TRabs_Exc_Pol,TRabs_Exc
+ use YPPm,            ONLY:DIPs,EXCITONS_n_user_states
  use X_m,             ONLY:global_gauge
  use IO_m,            ONLY:LOG
  use BS,              ONLY:BS_bands,BS_K_dim,BS_H_dim
+ use BS_solvers,      ONLY:BSS_n_eig
  use frequency,       ONLY:w_samp
  use parallel_int,    ONLY:PARALLEL_global_indexes,PP_redux_wait,PARALLEL_index
  use parallel_m,      ONLY:PAR_COM_DIPk_ibz_INDEX,PAR_COM_DIPk_ibz_A2A,PP_indexes,PP_indexes_reset
@@ -42,10 +45,11 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  ! Work space
  !
  type(w_samp)            :: W_bss
- integer                 :: N_cv_trans,N_cc_trans,N_vv_trans,N_cc_vv_trans,N_trans,N_trans_real,i_T,io_err,i_trans,&
+ integer                 :: N_cv_trans,N_cc_trans,N_vv_trans,N_cc_vv_trans,N_trans,N_trans_real,i_T,io_err,i_trans,i_shift,&
 &                           nb(2),N_DIP_dirs,i_dir,j_dir,N_res,N_files,DIP_dir_table(3),ic,jc
- real(SP)                :: DIP_dir(3,3),Co
- logical                 :: l_BS,l_OFF,l_cv,l_cc,l_vv,l_ABS,l_EQ,l_KERR,l_TRANS,l_REFL
+ real(SP)                :: DIP_dir(3,3),Co,Time
+ complex(SP)             :: diam(3,3)
+ logical                 :: l_BS,l_OFF,l_cv,l_cc,l_vv,l_ABS,l_EQ,l_KERR,l_TRANS,l_REFL,l_neq_exc,l_full_expression
  character(2)            :: label
  character(schlen)       :: ofile(20)
  type(PP_indexes)        :: PX_bs,PX_ip
@@ -59,19 +63,14 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  !
  l_TRabs_YPP=.TRUE.
  !
- ! Pre-setup of carrier components and Time evolution parameters
- !
- call RT_apply(DIPs%ib,Xen,Xk,IO_COM=LOG,TIMES_ONLY=.TRUE.)
- if (.not.l_rt_carriers_in_use) return
- !
- ! Setup of Time-range & Report
- !
- call RT_time_configuration_setup("CARRIERS",CARR_RT_IO_t)
+ ! Instead of imposing the conductivity sum rule by hand, it sums explicitly the 1/w2 term
+ call parser("TRabsVelFullExpr",l_full_expression)
  !
  ! Dimensions, Constant, Logicals and allocs
  !
  ! ...logicals
  l_BS      = BS_K_dim(1)> 0
+ !
  l_ABS     = STRING_match(TRabsWHAT,"abs")
  l_KERR    = STRING_match(TRabsWHAT,"kerr")
  l_TRANS   = STRING_match(TRabsWHAT,"trans")
@@ -85,10 +84,32 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  endif
  !
  ! ...transitions
- l_cv      = STRING_match(TRabsMODE,"cv")
- l_cc      = STRING_match(TRabsMODE,"cc")
- l_vv      = STRING_match(TRabsMODE,"vv")
+ !
+ l_neq_exc = STRING_match(TRabsMODE,"inter-exc") .and. EXCITONS_n_user_states>0 .and. l_BS
+ l_cv      = STRING_match(TRabsMODE,"cv") .or.       l_neq_exc
+ l_cc      = STRING_match(TRabsMODE,"cc") .and. .not.l_neq_exc
+ l_vv      = STRING_match(TRabsMODE,"vv") .and. .not.l_neq_exc
  l_EQ      = STRING_match(TRabsMODE,"eq")
+ !
+ ! Pre-setup of carrier components and Time evolution parameters
+ !
+ if(.not.l_neq_exc) call RT_apply(DIPs%ib,Xen,Xk,IO_COM=LOG,TIMES_ONLY=.TRUE.)
+ !
+ if(.not.(l_rt_carriers_in_use.or.l_neq_exc)) return
+ !
+ ! Setup of Time-range & Report
+ !
+ if (l_rt_carriers_in_use) call RT_time_configuration_setup("CARRIERS",CARR_RT_IO_t)
+ !
+ if (l_neq_exc) then
+   if(TRabs_Exc(1)<=0) TRabs_Exc(1)=1
+   if(TRabs_Exc(2)==0) TRabs_Exc(2)=BSS_n_eig
+   if(TRabs_Exc(2)> BSS_n_eig) then
+     TRabs_Exc(2)=BSS_n_eig
+     call warning(" Number of excitons in the sum reduced to"//trim(intc(BSS_n_eig)))
+   endif
+   RT_conf%T_n_steps=1
+ endif
  !
  !  |   | <- RT_bands(2)
  !  |   |
@@ -105,9 +126,13 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  ! vv ( RT_bands(1) - nbf ) -> ( same )
  ! cc ( nbm+1 - RT_bands(2) ) -> ( same )
  !
- if (l_BS) then
+ if (l_neq_exc) then
+   DIPs%ib =BS_bands
+   !DIPs%bands_ordered=.false.
+   N_cv_trans=TRabs_Exc(2)-TRabs_Exc(1)+1
+ else if (l_BS) then
    DIPs%ib   =BS_bands
-   N_cv_trans=BS_K_dim(1)
+   N_cv_trans=BSS_n_eig
  else
    DIPs%ib   =RT_bands
    N_cv_trans=(RT_bands(2)-Xen%nbf(1))*(Xen%nbm(1)-RT_bands(1)+1)*Xk%nbz
@@ -133,12 +158,19 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
    call PARALLEL_index(PX_ip,(/N_trans/))
  endif
  !
- if (l_cv) call msg('s','[TR-OBS] cv (EQ)  transitions :',N_cv_trans)
+ if (l_cv) then
+    if (l_neq_exc) then
+      if (l_EQ) call msg('s','[TR-OBS] BSE (EQ) transitions :',N_cv_trans)
+                call msg('s','[TR-OBS] EXC-EXC  transitions :',N_cv_trans)
+    else
+           call msg('s','[TR-OBS] cv  (EQ) transitions :',N_cv_trans)
+    endif
+ endif
  if (l_cc) call msg('s','[TR-OBS] cc (NEQ) transitions :',N_cc_trans)
  if (l_vv) call msg('s','[TR-OBS] vv (NEQ) transitions :',N_vv_trans)
  call msg('s','[TR-OBS] Total    transitions :',N_trans)
  !
- Co=real(spin_occ)/(2._SP*pi)**3*d3k_factor*4._SP*pi/q0_def_norm**2 
+ Co=real(spin_occ)/(2._SP*pi)**3*d3k_factor*4._SP*pi
  !
  ! Par Setup
  !
@@ -178,8 +210,11 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  DIP_dir=rZERO
  call msg('s','Creating '//trim(TRabsDIP_plane)//' related dipole directions')
  call msg('s','Dipole direction seed (defines `x` axis)',TRabsDIP_dir)
+ if (l_neq_exc) call msg('s','Exciton polarization ',TRabs_Exc_Pol)
+ !
  TRabsDIP_dir=TRabsDIP_dir/v_norm( TRabsDIP_dir )
- if (trim(global_gauge)=='length'  ) TRabsDIP_dir=TRabsDIP_dir*q0_def_norm
+ if (trim(global_gauge)=='length'  ) TRabsDIP_dir=TRabsDIP_dir !*q0_def_norm
+ !
  do i_dir=1,N_DIP_dirs
    if (DIP_dir_table(i_dir)==1) DIP_dir(i_dir,:)=TRabsDIP_dir
    if (DIP_dir_table(i_dir)==2) call v_rotate("xy",-pi/2._SP,TRabsDIP_dir,v_out=DIP_dir(i_dir,:))
@@ -190,16 +225,21 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  call DIPOLE_IO(Xk,Xen,DIPs,'read',io_err,'DIP')
  if (io_err/=0) return
  !
- ! Allocations
+ if (l_neq_exc.and.DIPs%bands_ordered) &
+ &  call error(" Dipoles database must be generated with bands_ordered=.false. for inter-exciton transitions")
  !
- ! ... Energies
- YAMBO_ALLOC(TRabs_E,(N_trans))
+ ! Allocations
  !
  ! ... Residuals 
  N_res=1
- if (l_BS) N_res=N_res+1
- YAMBO_ALLOC(TRabs_RES_left ,(N_trans*N_res,N_DIP_dirs,2)) ! (ABS/IP, i_dir Res/delta_Res)
+ if (l_BS.and. ((.not.l_neq_exc).or.l_EQ) ) N_res=N_res+1
+ YAMBO_ALLOC(TRabs_RES_left ,(N_trans*N_res,N_DIP_dirs,2)) ! (BSE/IP or BSE/EXC, i_dir , Res/delta_Res)
  YAMBO_ALLOC(TRabs_RES_right,(N_trans*N_res,N_DIP_dirs,2))
+ !
+ ! ... Energies
+ N_res=1
+ if (l_neq_exc.and.l_EQ) N_res=N_res+1
+ YAMBO_ALLOC(TRabs_E,(N_trans*N_res))
  !
  ! ... Observables 
  if (l_ABS) then
@@ -226,13 +266,18 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
  ! Output (open)
  call RT_Trabs_output("open","all",ofile,N_files,W_bss,0._SP)
  !
+ Time=0._SP
+ !
  do i_T=1,RT_conf%T_n_steps
    !
    YAMBO_FREE(Xen%df)
    !
-   call RT_apply(DIPs%ib,Xen,Xk,TIME=RT_time(i_T),VERBOSE=i_T==1)
+   if(l_RT_carriers_in_use) then
+     call RT_apply(DIPs%ib,Xen,Xk,TIME=RT_time(i_T),VERBOSE=i_T==1)
+     Time=RT_time(i_T)
+   endif
    !
-   if (i_T==1)  then
+   if (i_T==1.and..not.l_neq_exc)  then
      call live_timing('Transient '//trim(TRabsWHAT),RT_conf%T_n_steps)
      INTERPOLATE_is_quiet=.TRUE.
    endif
@@ -242,38 +287,62 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
    TRabs_RES_right=cZERO
    if (l_KERR) B_Hall    =cZERO
    if (l_ABS ) Epsilon_ij=cZERO
+   diam           =cZERO
    !
    N_trans_real=0
-   if (l_BS) call RT_TRabs_residuals("BSE",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
-   if (l_cv.and..not.l_BS) call RT_TRabs_residuals("cv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
-   if (l_vv) call RT_TRabs_residuals("vv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
-   if (l_cc) call RT_TRabs_residuals("cc IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+   if (l_BS) then
+     if((.not.l_neq_exc).or.l_EQ) call RT_TRabs_residuals("BSE",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+     ! Inter and intra excitons transitions
+     if(      l_neq_exc         ) call RT_TRabs_residuals("EXC",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+   else
+     ! IP spectrum
+     if (l_cv) call RT_TRabs_residuals("cv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+   endif
+   !
+   if (l_rt_carriers_in_use) then
+     if (l_vv) call RT_TRabs_residuals("vv IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+     if (l_cc) call RT_TRabs_residuals("cc IP",N_trans_real,N_DIP_dirs,DIP_dir,Xen,Xk,nb,l_EQ)
+   endif
    ! 
    call PP_redux_wait(TRabs_RES_right,COMM=PAR_COM_DIPk_ibz_INDEX%COMM)
    call PP_redux_wait(TRabs_RES_left,COMM=PAR_COM_DIPk_ibz_A2A%COMM)
    call PP_redux_wait(TRabs_RES_left,COMM=PAR_COM_DIPk_ibz_INDEX%COMM)
    call PP_redux_wait(TRabs_RES_right,COMM=PAR_COM_DIPk_ibz_A2A%COMM)
-   call PP_redux_wait(TRabs_E,COMM=PAR_COM_DIPk_ibz_INDEX%COMM)
-   call PP_redux_wait(TRabs_E,COMM=PAR_COM_DIPk_ibz_A2A%COMM)
    !
    do ic=1,N_DIP_dirs
      do jc=1,N_DIP_dirs
-       if (l_ABS)             call build_up_eps_ij("EPS-"//label,ic,jc)
-       if (l_KERR.and.ic/=jc) call build_up_eps_ij("AH-"//label,ic,jc)
+       if (l_ABS) then
+         if ((.not.l_neq_exc).or.l_EQ) call build_up_eps_ij("EPS-"//label,ic,jc)
+         if (l_neq_exc)                call build_up_eps_ij("EPS-EXC",ic,jc)
+       endif
+       if (l_KERR.and.ic/=jc)          call build_up_eps_ij("AH-"//label,ic,jc)
      enddo
    enddo
    !
    if (l_ABS)  call PP_redux_wait(Epsilon_ij)
    if (l_KERR) call PP_redux_wait(B_Hall)
    !
-   ! Output (write)
-   call RT_Trabs_output("write",label,ofile,N_files,W_bss,RT_time(i_T))
+   if (trim(global_gauge)=='length'  ) Epsilon_ij = Epsilon_ij !/ q0_def_norm**2
+   if (trim(global_gauge)=='velocity' .and. l_full_expression) then
+     do ic=1,N_DIP_dirs
+       do jc=1,N_DIP_dirs
+         Epsilon_ij(:,ic,jc)= (Epsilon_ij(:,ic,jc)-diam(ic,jc))/W_bss%p(:)**2
+       enddo
+     enddo
+   endif
    !
-   call live_timing(steps=1)
+   ! Output (write)
+   !
+   if (.not.l_neq_exc) then
+     call live_timing(steps=1)
+     call RT_Trabs_output("write",label,ofile,N_files,W_bss,Time)
+   else
+     call RT_Trabs_output("write",label,ofile,N_files,W_bss,0._SP)
+   endif
    !
  enddo
  !
- call live_timing()
+ if (.not.l_neq_exc) call live_timing()
  INTERPOLATE_is_quiet=.FALSE.
  !
  ! Output (close)
@@ -293,36 +362,76 @@ subroutine RT_transient_absorption(Xen,Xk,Xq)
    subroutine build_up_eps_ij(what,I,J)
      character(*) :: what
      integer      :: I,J
+     !
+     logical      :: l_velocity_procedure
      complex(SP)  :: RES,GF(W_bss%n_freqs)
      complex(DP)  :: ACC(W_bss%n_freqs)
      ACC=0._DP
      i_dir=DIP_dir_table(I)
      j_dir=DIP_dir_table(J)
      if (.not.TRabs_lEPS(i_dir,j_dir)) return
-     if (what=="EPS-IP".or.what=="AH-IP") then
-       do i_trans=BS_K_dim(1)+1,N_trans_real
-         if (.not.PX_ip%element_1D(i_trans-BS_K_dim(1))) cycle
-         if (what=="EPS-IP") then
+     !
+     l_velocity_procedure = (trim(global_gauge)=="velocity" .and. .not.l_full_expression)
+     !
+     if ( index(what,"IP")>0 ) then
+       do i_trans=BSS_n_eig+1,N_trans_real
+         if (.not.PX_ip%element_1D(i_trans-BSS_n_eig)) cycle
+         if ( index(what,"EPS")>0 ) then
            RES=Co*TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,1)
            ACC(:)=ACC(:)-RES/(W_bss%p(:)-TRabs_E(i_trans))+conjg(RES)/(W_bss%p(:)+TRabs_E(i_trans))
          endif
-         if (what=="AH-IP") then
-           RES=2.*Co*aimag(TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,1))
+         if ( index(what,"AH")>0 ) then
+           RES=2._SP*Co*aimag(TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,1))
            ACC(1)=ACC(1)+RES
          endif
        enddo
-       if (what=="EPS-IP")  Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir)+ACC(:)
-       if (what=="AH-IP" )  B_Hall(i_dir,j_dir)=B_Hall(i_dir,j_dir)+cI*ACC(1)
+       if ( index(what,"EPS")>0 ) Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir)+ACC(:)
+       if ( index(what,"AH") >0 ) B_Hall(i_dir,j_dir)=B_Hall(i_dir,j_dir)+cI*ACC(1)
      endif
-     if (what=="EPS-BS".or.what=="AH-BS") then
-       do i_trans=1,BS_K_dim(1)
+     if ( index(what,"BS")>0 ) then
+       do i_trans=1,BSS_n_eig
          if (.not.PX_bs%element_1D(i_trans)) cycle
-         RES=Co*( TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,2) +&
-&                 TRabs_RES_right(i_trans,I,2)*TRabs_RES_left(i_trans,J,1) )
+         RES=cZERO
+         if (l_rt_carriers_in_use) then
+           RES=Co*( TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,2) +&
+&                   TRabs_RES_right(i_trans,I,2)*TRabs_RES_left(i_trans,J,1) )
+         endif
          if (l_EQ) RES=RES+Co*TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,1)
          ! ANTI-RES part to be coded for EPS-BS.
-         if (what=="EPS-BS") Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir)-RES/(W_bss%p(:)-TRabs_E(i_trans))
-         if (what=="AH-BS")  B_Hall(i_dir,j_dir)=B_Hall(i_dir,j_dir)+RES-conjg(RES)
+         if ( index(what,"EPS")>0 ) then
+           if (l_velocity_procedure) then
+             ! This is a direct expression for the epsilon after removing the two terms 1/w2 and 1/w
+             Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir) &
+             &                          -RES/(W_bss%p(:)-TRabs_E(i_trans))/TRabs_E(i_trans)**2
+           else
+             Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir)-RES/(W_bss%p(:)-TRabs_E(i_trans))
+           endif
+           if (ic==jc .and. global_gauge=="velocity") diam(ic,jc)=diam(ic,jc)+RES/TRabs_E(i_trans)
+         endif
+         ! This includes also the ANTI-RES part via conjg(RES)
+         if ( index(what,"AH")>0 ) B_Hall(i_dir,j_dir)=B_Hall(i_dir,j_dir)+RES-conjg(RES)
+       enddo
+     endif
+     if ( index(what,"EXC")>0 ) then
+       i_shift=0
+       if(l_EQ) i_shift=BSS_n_eig
+       do i_trans=i_shift+1,i_shift+TRabs_Exc(2)-TRabs_Exc(1)+1
+         if (.not.PX_bs%element_1D(i_trans-i_shift)) cycle
+         RES=Co*( TRabs_RES_right(i_trans,I,1)*TRabs_RES_left(i_trans,J,1) )
+         if(RES==cZERO) cycle
+         ! ANTI-RES part to be coded for EPS-BS.
+         if ( index(what,"EPS")>0 ) then
+           if (l_velocity_procedure) then
+             ! This is a direct expression for the epsilon after removing the two terms 1/w2 and 1/w
+             Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir) &
+             &                          -RES/(W_bss%p(:)-TRabs_E(i_trans))/TRabs_E(i_trans)**2
+           else
+             Epsilon_ij(:,i_dir,j_dir)=Epsilon_ij(:,i_dir,j_dir)-RES/(W_bss%p(:)-TRabs_E(i_trans))
+           endif
+           if (ic==jc .and. global_gauge=="velocity") diam(ic,jc)=diam(ic,jc)+RES/TRabs_E(i_trans)
+         endif
+         ! This includes also the ANTI-RES part via conjg(RES)
+         if ( index(what,"AH")>0 ) B_Hall(i_dir,j_dir)=B_Hall(i_dir,j_dir)+RES-conjg(RES)
        enddo
      endif
    end subroutine

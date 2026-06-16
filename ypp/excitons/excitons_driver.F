@@ -12,12 +12,15 @@
 subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  use pars,          ONLY:SP,pi,schlen
+ use parser_m,      ONLY:parser
  use R_lattice,     ONLY:bz_samp
  use stderr,        ONLY:intc
  use electrons,     ONLY:levels,spin
+ use drivers,       ONLY:l_exc_rad_life
+ use electrons,     ONLY:levels,spin
  use YPP_interfaces,ONLY:excitons_sort_and_report
- use YPPm,          ONLY:l_magnons,l_sort,l_exc_wf,l_spin,l_amplitude,exc_kind,&
- &                       EXCITONS_n_user_states,EXCITONS_user_indexes,BSiq, &
+ use YPPm,          ONLY:l_magnons,l_sort,l_exc_wf,l_exc_symm,l_spin,l_amplitude,exc_kind,&
+ &                       EXCITONS_n_user_states,EXCITONS_user_indexes,BSiq,p_format, &
  &                       BS_R_left,BS_R_right,BS_R_left_magn,BS_R_right_magn,&
  &                       BS_E,BS_E_SOC_corr,l_interp,l_dipoles,MAGNON_Res_threshold
  use BS_solvers,    ONLY:BSS_n_eig
@@ -42,7 +45,8 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !... I/0
  integer              :: iq,io_err
  !
- l_flag=l_sort .or. l_exc_wf .or.l_amplitude .or. l_spin .or. l_interp .or. l_dipoles
+ l_flag=l_sort .or. l_exc_wf .or.l_amplitude .or. l_spin .or. l_exc_symm &
+ &             .or. l_exc_rad_life .or. l_interp .or. l_dipoles
 #if defined _YPP_ELPH
  l_flag=l_flag .or. l_eliashberg .or. l_gkkp .or. l_ph_ass_dos
 #endif
@@ -63,14 +67,14 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
    iq = 1
  endif
  !
- call                excitons_read(k,Xk,en,Xen,BSiq,"check",io_err)
- !
- if (io_err==0) call excitons_read(k,Xk,en,Xen,BSiq,"eigenvalues",io_err)
- !
- if (io_err/=0) then
+ call excitons_read(k,Xk,en,Xen,BSiq,"check",.true.,io_err)
+ if (io_err==0) then
+   call excitons_read(k,Xk,en,Xen,BSiq,"eigenvalues",.true.,io_err)
+ else
    call warning("BSE databases not found.")
 #if defined _YPP_RT
-   if (l_RT_abs) call RT_transient_absorption(Xen,Xk,q)
+   ! IP Transient absorption 
+   if (l_RT_abs)   call RT_transient_absorption(Xen,Xk,q)
 #endif
    return
  endif
@@ -83,9 +87,9 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !===================================
  if (l_sort) call excitons_sort_and_report(iq,Res,BS_E,BS_E_SOC_corr=BS_E_SOC_corr)
  !
-#if defined _YPP_RT
- if (.not.l_RT_abs) then
-#endif
+ call parser("States",l_flag)
+ !
+ if (l_flag) then
    !
    ! Sort energies to find degenerate states
    !========================================
@@ -96,9 +100,7 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
    !=========================================
    if(.not.l_sort) call excitons_get_user_states(BS_E_degs,Res,BSS_n_eig,.false.)
    !
-#if defined _YPP_RT
  endif
-#endif
  !
  ! Exciton dispersion interpolation
  ! =======================================
@@ -116,7 +118,11 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  endif
 #endif
  !
- if(.not.l_sort)   call excitons_read(k,Xk,en,Xen,BSiq,"eigenvectors",io_err)
+ if(.not.l_sort)   call excitons_read(k,Xk,en,Xen,BSiq,"eigenvectors",.true.,io_err)
+ ! 
+ ! Exciton's symmetries
+ !=====================
+ if (l_exc_symm)  call excitons_symmetries(iq,Xen,Xk,q,BS_E,Res)
  ! 
  ! Exciton's spin
  !=====================
@@ -126,9 +132,16 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !=====================
  if (l_amplitude.or.l_dipoles)  call excitons_amplitudes(Xk,Xen,q,BS_E_degs,iq)
  !
+ ! Exciton's lifetimes from BSE
+ !=======================================
+ if (l_exc_rad_life) call excitons_lifetimes(Xen,Xk,q,BS_R_right,BS_E,BS_E_degs)
+ !
  ! Exciton's WFs
  !=====================
- if (l_exc_wf)     call exciton_WFs(Xk,BS_E_degs,iq)
+ if (l_exc_wf) then
+   if(p_format/="k")  call exciton_WFs(Xk,BS_E_degs,iq)
+   if(p_format=="k")  call exciton_WFs_kspace(Xk,BS_E_degs,iq)
+ endif
  !
  ! Excitonic Eliashberg function 
  !================================
@@ -150,8 +163,8 @@ subroutine excitons_driver(k,Xk,en,Xen,q)
  !
  ! CLEAN
  !
- call excitons_read(k,Xk,en,Xen,BSiq,"clean",io_err)
+ call excitons_read(k,Xk,en,Xen,BSiq,"clean",.true.,io_err)
  !
- YAMBO_FREE(EXCITONS_user_indexes)
+ if((.not.l_sort).and.allocated(EXCITONS_user_indexes)) deallocate(EXCITONS_user_indexes)
  !
 end subroutine

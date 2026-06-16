@@ -9,9 +9,11 @@
  RT_OBSERVABLES_IO_path.o
  RT_OBSERVABLES_damp_and_write.o
  RT_Polarization.o
+ RT_TR_ARPES.o
  RT_TRabs_driver.o
  RT_TRabs_output.o
  RT_TRabs_residuals.o
+ RT_TRabs_rotate_exciton.o
  RT_X_LRR_real_field.o
  RT_X_response.o
  RT_apply_Texp.o

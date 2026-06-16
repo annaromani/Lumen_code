@@ -44,7 +44,7 @@ subroutine Build_Overlaps_Det_EQ(Xen,i_sp_pol,ikbz,Sm1_plus,Sm1_minus,S_det)
      !
      do istep=1,max_step
        idx=k_map%k_map_inv(ikbz,:)
-       idx(id)=idx(id)-istep
+       idx(id)=idx(id)-istep*k_map%step
        idx=k_periodic_idx(idx,k_map)
        ikm=k_map%k_map_dir(idx(1),idx(2),idx(3))
        !

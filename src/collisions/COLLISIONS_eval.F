@@ -36,7 +36,8 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  use hamiltonian,    ONLY:H_potential,H_kind
  use global_XC,      ONLY:QP_SE_GW_NEQ,QP_SE_GW_QED
  use collision_ext,  ONLY:COLLISIONS_parallel_SC_structure,COLLISIONS_group,COLLISIONS_from_BSE,&
-&                        COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions,COLLISIONS_naming
+&                        COH_collisions,HXC_collisions,P_collisions,GW_NEQ_collisions,COLLISIONS_naming 
+ use QP_m,           ONLY:QP_ng_Sc
  use X_m,            ONLY:X_t
  use plasma,         ONLY:EH_gas
  use frequency,      ONLY:w_samp
@@ -47,6 +48,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  use parallel_m,     ONLY:PAR_IND_G_k,PAR_IND_Bp_mat,PAR_IND_Plasma
  use parallel_int,   ONLY:PP_wait,PARALLEL_global_indexes,PARALLEL_WF_distribute,PARALLEL_WF_index
  use interfaces,     ONLY:WF_free
+ use com,            ONLY:msg
  use timing_m,       ONLY:timing
  !
  implicit none
@@ -54,7 +56,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  type(levels)  :: E
  type(w_samp)  :: Xw(2) 
  type(bz_samp) :: k,Xk,q
- type(X_t)     :: X(4)
+ type(X_t)     :: X
  !
  ! WorkSpace
  !
@@ -63,7 +65,12 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
  &                BS_nk_bz,BS_nk_ibz
  character(20) :: PAR_ch,FREE_ch
  !
+#if defined _PAR_IO
  integer, external :: io_BS_header,io_BS_PAR_init
+ !
+#else
+ call error("Collisions from BSE require parallel I/O support")
+#endif
  !
  call timing('COLLISIONS_eval',OPR='start')
  !
@@ -126,6 +133,11 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
  endif
  !
+ if (QP_ng_Sc<0) then
+   QP_ng_Sc=X%ng
+   call msg('s','[COLL] Correlation use all G-vectors of W ',QP_ng_Sc)
+  endif
+ !
  if (l_use_Hxc_collisions.or.l_use_COH_collisions) then
    !
    call section('+',trim(H_potential)//' (e-e correlation)')
@@ -141,22 +153,24 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      ! Check if I can use the BSE kernel for the collisions
      !
      call io_control(ACTION=OP_RD,COM=NONE,MODE=DUMP,ID=ID_head)
-     IO_err_BS=io_BS_header(1,X(2),ID_head,"connect")
+     IO_err_BS=io_BS_header(1,X,ID_head,"connect")
      BS_nk_bz =netcdf_dim_size(ID_head,"n_kpt_bz")
      BS_nk_ibz=netcdf_dim_size(ID_head,"n_kpt_ibz")
      allocate(BS_kpt_bz(3,BS_nk_bz))
      allocate(BS_kpt_ibz(3,BS_nk_ibz))
      call io_control(ACTION=RD_CL,COM=NONE,MODE=DUMP,ID=ID_head)
-     IO_err_BS=io_BS_header(1,X(2),ID_head,"full")
+     IO_err_BS=io_BS_header(1,X,ID_head,"full")
      !
      if (IO_err_BS/=0) then
         call error("Collisions from BSE, error while reading io_BS_header")
      else
      !if (IO_err_BS==0) then
        call set_BS_blks(Xk)
+#if defined _PAR_IO
        call io_control(ACTION=OP_RD,COM=REP,MODE=DUMP,ID=ID_mat)
        IO_err_BS=io_BS_PAR_init(1,ID_mat,"full")
-       call build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk_bz)
+#endif
+       call load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk_bz)
        call check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
        call build_BS_kpt_map(Xk)
      endif
@@ -169,7 +183,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
    if (IO_err_COLL/=0) then
      !
-     call COLLISIONS_HXC(X(2),Xk,E,k,q,Xw(2),IO_err_BS,ID_mat)
+     call COLLISIONS_HXC(X,Xk,E,k,q,Xw(2),IO_err_BS,ID_mat)
      !
      ! COHSEX clean
      !--------------
@@ -230,7 +244,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
    !
    if (IO_err_COLL/=0) then 
      !
-     call COLLISIONS_NEQ_GW_static(X(2),Xk,E,k,q,Xw(2)) 
+     call COLLISIONS_NEQ_GW_static(X,Xk,E,k,q,Xw(2)) 
      !
      ! GW_NEQ clean
      !--------------
@@ -285,6 +299,7 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      ! Define io_COLLs_header to handle either serial or parallel I/O
      !
      use COLL_interfaces,   ONLY:io_COLLISIONS
+     use collision_ext,     ONLY:COLL_check_cutoff
 #if defined _PAR_IO
      integer, external :: io_COLLs_header
 #endif
@@ -295,20 +310,24 @@ subroutine COLLISIONS_eval(E,X,k,xk,q,Xw)
      !
      IO_err_COLL=-1
      !
+     COLL_check_cutoff=.TRUE.
+     !
      if (io_COLLs) then
        COLL_grp%IO_status=-1
        call io_control(ACTION=OP_RD_CL,COM=REP,SEC=(/1/),MODE=VERIFY,ID=ID)
        IO_err_COLL=io_COLLs_header(ID,COLL_grp)
 #if defined _PAR_IO
-       call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),ID=ID)
-       io_err_COLL=io_COLLISIONS(ID,COLL_grp)
-       if(io_err_COLL==0) then
-         call warning(" Restarting from previous database")
-         do i_coll=1,COLL_grp%N
-           IO_ACT=manage_action(RD_CL_IF_END,i_coll,1,COLL_grp%N)
-           call io_control(ACTION=IO_ACT,COM=REP,SEC=(/4/),ID=ID)
-           io_err_COLL=io_COLLISIONS(ID,COLL_grp,i_coll=i_coll)
-         enddo
+       if(IO_err_COLL==0) then
+         call io_control(ACTION=OP_RD,COM=REP,SEC=(/1/),ID=ID)
+         io_err_COLL=io_COLLISIONS(ID,COLL_grp)
+         if(io_err_COLL==0) then
+           call warning(" Restarting from previous database")
+           do i_coll=1,COLL_grp%N
+             IO_ACT=manage_action(RD_CL_IF_END,i_coll,1,COLL_grp%N)
+             call io_control(ACTION=IO_ACT,COM=REP,SEC=(/4/),ID=ID)
+             io_err_COLL=io_COLLISIONS(ID,COLL_grp,i_coll=i_coll)
+           enddo
+         endif
        endif
 #endif
        if (any(COLL_grp%IO_status/=1)) IO_err_COLL=-1
@@ -441,7 +460,7 @@ subroutine check_BS_parameters_consistency(Xk,BS_nk_bz,BS_nk_ibz)
 end subroutine check_BS_parameters_consistency
 !
 !
-subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
+subroutine load_and_build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  !
  use electrons,       ONLY:n_sp_pol
  use R_lattice,       ONLY:bz_samp
@@ -459,40 +478,18 @@ subroutine build_inverse_BS_eh_table(Xk,ID_mat)!,BS_nk)
  allocate(BS_blk(1)%table(5,BS_K_dim(1)))
  allocate(BS_blk(2)%table(5,BS_K_dim(1)))
  !
+#if defined _PAR_IO
  call read_BS_table(1,ID_mat)
+#else
+ call error("BSE table import requires parallel I/O support")
+#endif
  !
- !BS_nk=-1
- !do i_res_ares=1,2
- !do i_H=1,BS_K_dim(1)
- !  BS_nk = max(BS_blk(i_res_ares)%table(1,i_H),BS_nk)
- !enddo
- !enddo
- !
- allocate(BSS_eh_table_m1(Xk%nbz,BS_bands(1):BS_bands(2),BS_bands(1):BS_bands(2),n_sp_pol,n_sp_pol))
- BSS_eh_table_m1=0
- !call live_timing('BSE inverse eh-table',BS_H_dim)
- !
- do i_res_ares=1,2
- do i_H=1,BS_K_dim(1)
-   !
-   ik_bz    = BS_blk(i_res_ares)%table(1,i_H)
-   iv       = BS_blk(i_res_ares)%table(2,i_H)
-   ic       = BS_blk(i_res_ares)%table(3,i_H)
-   i_sp_c   = BS_blk(i_res_ares)%table(4,i_H)
-   i_sp_v   = BS_blk(i_res_ares)%table(5,i_H)
-   !
-   BSS_eh_table_m1(ik_bz,iv,ic,i_sp_c,i_sp_v)=i_H+(i_res_ares-1)*BS_K_dim(1)
-   !
-   !call live_timing(steps=1)
-   !
- enddo
- enddo
- !call live_timing( )
+ call build_inverse_BS_eh_table_from_BS_kernel(Xk%nbz)
  !
  deallocate(BS_blk(1)%table)
  deallocate(BS_blk(2)%table)
  !
-end subroutine build_inverse_BS_eh_table
+end subroutine load_and_build_inverse_BS_eh_table
 !
 !
 subroutine build_BS_kpt_map(Xk)

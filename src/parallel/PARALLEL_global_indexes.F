@@ -160,10 +160,6 @@ subroutine PARALLEL_global_indexes(E,Xk,q,ENVIRONMENT,X,Dip,RESET,Dip_limits_pre
  if (      ENVIRONMENT=="Oscillators")         call PARALLEL_global_Oscillators(E,Xk,q)
 #endif
  !
-#if defined _SCALAPACK
- if (      ENVIRONMENT=="ScaLapacK")           call PARALLEL_global_ScaLapack( )
-#endif
- !
  !==============================================================================
  if ( ENVIRONMENT=="Response_G_space".or.ENVIRONMENT=="Response_G_space_and_IO") then
    !============================================================================

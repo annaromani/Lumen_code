@@ -42,6 +42,7 @@ subroutine c2y_db1(en,k,file_name_)
  integer                        :: i1, ik, i2, i3, inel,i_spin,ig
  logical                        :: ldum
  integer                        :: int_sop(3,3,1) ! Symmetries in RLU
+ real(DP)                       :: sym_tra(3,1)   ! Translations
  !
  integer,  allocatable          :: rel_gvec(:,:)
  real(DP), allocatable          :: rstr(:)
@@ -285,7 +286,7 @@ subroutine c2y_db1(en,k,file_name_)
  enddo
  !
  call warning ('Symmetries not supported for the moment')
- call symmetries_check_and_load(int_sop,1) 
+ call symmetries_check_and_load(int_sop,sym_tra,1) 
  !
  call msg('s','RL vectors...')
  !============================

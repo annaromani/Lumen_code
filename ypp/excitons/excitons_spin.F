@@ -12,7 +12,7 @@
 subroutine excitons_spin(Xk,Res,BS_E,BS_E_degs)
  !
  use pars,          ONLY:SP,cZERO,rZERO
- use BS,            ONLY:BS_bands
+ use BS,            ONLY:BS_bands,BS_H_dim
  use BS_solvers,    ONLY:BS_mat,BSS_n_eig
  use FFT_m,         ONLY:fft_size
  use R_lattice,     ONLY:bz_samp
@@ -76,13 +76,13 @@ subroutine excitons_spin(Xk,Res,BS_E,BS_E_degs)
  !
  call live_timing('Excitonic Spin',px%n_of_elements(myid+1)) 
  !
- do i_eh = 1,BSS_n_eig
+ do i_eh = 1,BS_H_dim
    !
    if (.not.px%element_1D(i_eh)) cycle
    !
    call excitons_kinematics(Xk,eh,i_eh)
    !
-   do i_eh_p = 1,BSS_n_eig
+   do i_eh_p = 1,BS_H_dim
      !
      call excitons_kinematics(Xk,eh_p,i_eh_p)
      !

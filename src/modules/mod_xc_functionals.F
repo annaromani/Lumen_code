@@ -5,12 +5,17 @@
 !
 ! Copyright (C) 2006 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM MG DV
+! Authors (see AUTHORS file for details): AM MG DV DS
+!
+#include<xc_version.h>
 !
 module xc_functionals
  !
  use pars,      ONLY:SP,lchlen
  use xc_f03_lib_m
+#if (XC_MAJOR_VERSION > 6)
+ use xc_f03_funcs_m
+#endif
  !
  implicit none
  !
@@ -161,7 +166,12 @@ module xc_functionals
    subroutine xc_setup_hyb(f,exx_frac,exx_screen)
      !
      use pars,         ONLY:DP
-     use xc_f03_lib_m, ONLY:XC_HYB_GGA_XC_HSE06,XC_HYB_GGA_XC_PBEH,XC_HYB_GGA_XC_B3LYP
+#if (XC_MAJOR_VERSION > 6)
+     use xc_f03_funcs_m, &
+#else
+     use xc_f03_lib_m,   &
+#endif
+     &                 ONLY:XC_HYB_GGA_XC_HSE06,XC_HYB_GGA_XC_PBEH,XC_HYB_GGA_XC_B3LYP
      implicit none
      type(xc_fnctl_t), intent(inout) :: f(2)
      real(SP), intent(in) :: exx_frac, exx_screen 

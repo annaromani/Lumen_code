@@ -111,13 +111,16 @@ module YPPm
  !
  logical      ::l_plot
  logical      ::l_wavefunction
+ logical      ::l_group_symm
  logical      ::l_density
  logical      ::l_bands
  logical      ::l_mag
  logical      ::l_interp
  logical      ::l_current
  logical      ::l_sp_wf
+ logical      ::l_sp_symm
  logical      ::l_exc_wf
+ logical      ::l_exc_symm
  logical      ::l_norm_to_one
  logical      ::l_add_EQ_occ,l_separate_eh,l_skip_occ
  logical      ::use_gnuplot
@@ -252,6 +255,19 @@ module YPPm
  integer           :: normdir, ngloc
  integer           :: loc_bands(2)
  integer           :: loc_kpts(2)
+ !
+ !  Exciton lifetimes
+ !
+ real(SP)          :: EXC_temp
+ real(SP)          :: EXC_mass(3)
+ real(SP)          :: EXC_shift
+ real(SP)          :: epsi0(3)
+ integer           :: EXC_Phi_Grid
+ !
+ ! symmetry groups analysis
+ ! 
+ real(SP)          :: symm_thresh
+ real(SP)          :: mix_thresh
  !
  ! Transition Analysis
  !

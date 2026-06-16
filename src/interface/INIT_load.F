@@ -15,7 +15,8 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  use it_tools,      ONLY:it
  use it_m,          ONLY:initdefs,E_unit,G_unit,T_unit,Bfield_unit,MEM_unit,&
 &                        Time_unit,I_unit,Angle_unit,V_parallel,initmode,V_ph,&
-&                        V_RL,V_kpt,V_sc,V_qp,V_io,V_general,V_resp,V_real_time,V_nl_optics
+&                        V_RL,V_kpt,V_sc,V_qp,V_io,V_general,V_resp,V_real_time,V_nl_optics,&
+&                        V_fl_optics
  use X_m,           ONLY:Chi_mode,X_t,q_plus_G_direction,Q_Shift_Order,&
 &                        global_gauge,Chi_linalg_mode, &
 &                        X_terminator_Kind,X_terminator_E,X_DbGd_percentual
@@ -34,7 +35,8 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
 &                        bz_samp,RIM_ng,RIM_epsm1,eps_env,RIM_id_epsm1_reference,&
 &                        RIM_n_rand_pts,RIM_sphe_n_rand_pts,cyl_ph_radius,box_length,cut_geometry,ws_cutoff
  use BS,            ONLY:BSE_mode,BSE_prop,BSK_mode,BS_eh_en,BS_eh_win,BS_q,BS_bands,BS_bands_frozen_ch,&
-&                        BS_n_g_W,BS_n_g_exch,BS_n_g_fxc,BSE_L_kind,BS_K_cutoff,BSK_IO_mode,BSE_dipole_geometry
+&                        BS_n_g_W,BS_n_g_exch,BS_n_g_fxc,BSE_L_kind,BS_K_cutoff,BSK_IO_mode,BSE_dipole_geometry,&
+&                        BSE_disk_IO,BSK_IO_shape
  use BS_solvers,    ONLY:BSS_mode,Haydock_threshold,Haydock_iterIO,BSS_n_freqs,BSS_target_E,BSS_trange_E,&
 &                        BSS_dr,BSS_er,BSS_E_dir,BSS_Q_dir,BSS_damp_reference,BSS_inversion_mode,&
 &                        BSS_Wd,K_INV_EPS,K_INV_PL,BSS_n_eig_Input,BSS_first_eig,Haydock_iterMAX,BSS_ldiago_solver
@@ -84,6 +86,11 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  use nl_optics,     ONLY:NL_bands,NL_damping,NL_correlation,NL_er,n_frequencies,NL_LRC_alpha, &
 &                        NL_verb_name,n_angles,NL_rot_axis,NL_bands_frozen,NL_bands_frozen_ch,max_angle
 #endif 
+#if defined _FL
+ use fl_optics,     ONLY:FL_Chi_order,FL_Chi_thr_1,FL_Chi_thr_2,FL_Chi_thr_3,FL_deg_thrs,FL_deg_lift,&
+&                        FL_solver_mode,FL_S_inv_mode,FL_max_iterations,FL_beta,FL_add_mode,&
+&                        FL_ild,FL_Pade_damping
+#endif 
 #if defined _NL | defined _SC
  use fields,        ONLY:Efield
 #endif 
@@ -93,16 +100,13 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
 #if defined _ELPH 
  use ELPH,          ONLY:QP_PH_n_G_bands,elph_nQ_used,elph_Ham_ik,elph_Ham_bands,elph_branches,&
 &                               RES_tresh,FAN_deltaE_treshold,DW_deltaE_treshold,E_kpq_sh_fact,gkkp_db
- use EXCPH,         ONLY:EXCPH_states,EXCPH_sum,Lout_path,L_damping,EXC_q0,alphaQ, &
+ use EXCPH,         ONLY:EXCPH_states,EXCPH_sum,Lout_path,L_damping,EXC_q0,alphaQ,DmType, &
 &                        EXCPH_deltaE_treshold,EXCPH_kthresh
  use D_lattice,     ONLY:Boltz_Temp
 #endif
 #if defined _OPENMP
  use openmp,        ONLY:n_threads_X,n_threads_SE,n_threads_SX,n_threads_RT,n_threads_DIP,n_threads_K,&
 &                        n_threads_NL,n_threads_OSCLL
-#endif
-#if defined _SCALAPACK
- use SLK_m,         ONLY:SLK_test_H_dim
 #endif
  use gpu_m,         ONLY:GPU_test_dim
  use PHOTOLUM,      ONLY:PL_weights
@@ -184,7 +188,7 @@ subroutine INIT_load(defs,en,q,k,X,Xw,Dip)
  !=======
  !
 #if defined _MPI 
- call CPU_structure_load( )
+ call CPU_structure_load(defs)
 #endif
  !
  ! Cutoff on the density
@@ -236,7 +240,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'EkpqShFact', '[ELPH] E(k+q) Interpolation shell factor (used only with double-grid)',E_kpq_sh_fact,verb_level=V_ph)
 #endif
  call it('f',defs,'WFbuffIO','[IO] Wave-functions buffered I/O',verb_level=V_io) 
- call it('f',defs,'NoDiagSC','New setup for non-diagonal supercells',verb_level=V_general) 
+ call it('f',defs,'NoDiagSC','New setup for non-diagonal supercells') 
  call it('f',defs,'DegFix','Force the code to impose the energy levels to respect their degeneracy',verb_level=V_general) 
  !
  ! Parallel Setup
@@ -273,7 +277,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'EXXRLvcs', '[XX] Exchange    RL components',QP_ng_Sx,G_unit)
  call it('f',defs,'UseNLCC',  '[XC] If present, add NLCC contributions to the charge density ',verb_level=V_qp)
  call it(defs,'VXCRLvcs', '[XC] XCpotential RL components',QP_ng_Vxc,G_unit)
- call it(defs,'CORRLvcs', '[GW] Correlation RL components',QP_ng_Sc,G_unit)
+ call it(defs,'CORRLvcs', '[GW] Correlation RL components [if -1 uses all the G-vectors of W_{G,Gp}]',QP_ng_Sc,G_unit)
 #if defined _QED
  call it(defs,'QEDRLvcs', '[QED] Vector-Potential G-vectors components',QP_QED_ng,G_unit)
 #endif
@@ -322,26 +326,28 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  !
  ! BSE/BSK
  !
- call it(defs,'BSEmod',  '[BSE] resonant/retarded/coupling',BSE_mode,case="a")
- call it(defs,'Lkind',   '[BSE,X] bar(default)/full/tilde',BSE_L_kind,verb_level=V_resp)
+ call it(defs,'BSEmod',    '[BSE] resonant/retarded/coupling',BSE_mode,case="a")
+ call it(defs,'Lkind',     '[BSE,X] bar(default)/full/tilde',BSE_L_kind,verb_level=V_resp)
+ call it(defs,'BSKIOshape','[BSK] "1D_linear"/"2D_standard"',BSK_IO_shape,verb_level=V_resp)
+ call it(defs,'BSEdiskIO','[BSE] high(restart always) |medium(restart only corr.) |low(writes at the end)|none',BSE_disk_IO)
  call it(defs,'BSEBands','[BSK] Bands range',BS_bands)
  call it(defs,'BSEFrozenBands','[BSK] Bands expluded from BSE construction',BS_bands_frozen_ch,verb_level=V_resp)
- call it(defs,'BSENGBlk','[BSK] Screened interaction block size [if -1 uses all the G-vectors of W(q,G,Gp)]',BS_n_g_W,G_unit)
+ call it(defs,'BSENGBlk','[BSK] Screened interaction block size [if -1 uses all the G-vectors of W_{G,Gp}]',BS_n_g_W,G_unit)
  call it(defs,'BSENGexx','[BSK] Exchange components',BS_n_g_exch,G_unit)
  call it(defs,'BSENGfxc','[BSK] Fxc components', BS_n_g_fxc,G_unit,verb_level=V_resp)
  call it(defs,'RhoMapThresh','[BSK] Density cutoff for <Fxc> integrals region',rho_map_thresh,verb_level=V_resp)
  call it(defs,'FxcMode', '[TDDFT] ("G-XXX" or "R-XXX" with XXX=def/full/cut_Gmax/cut_GmGp") ',FXC_mode,verb_level=V_resp)
  call it(defs,'BSEEhEny','[BSK] Electron-hole energy range',BS_eh_en,E_unit,verb_level=V_resp)
  call it(defs,'BSKCut',  '[BSK] Cutoff on the BSE Kernel, 0=full 1=none',BS_K_cutoff,verb_level=V_resp)
- call it(defs,'BSKIOmode','[BSK] ("1D_linear"/"2D_standard" + "norestart" + "write_all_steps")',BSK_IO_mode,verb_level=V_resp)
  call it(defs,'BSKmod',  '[BSE] IP/Hartree/HF/ALDA/SEX/BSfxc',BSK_mode,protect=.FALSE.,case="A")
  call it(defs,'Gauge' ,  '[BSE/X] Gauge (length|velocity)',global_gauge,verb_level=V_resp)
  call it('f',defs,'NoCondSumRule' ,'[BSE/X] Do not impose the conductivity sum rule in velocity gauge',verb_level=V_resp)
  call it('f',defs,'MetDamp' ,      '[BSE] Define '//slash//'w+=sqrt('//slash//'w*('//slash//'w+i'//slash//'eta))',verb_level=V_resp)
- call it(defs,'BSSmod',    '[BSS] (h)aydock/(d)iagonalization/(s)lepc/(i)nversion/(t)ddft`',BSS_mode,protect=.FALSE.)
+ call it(defs,'BSSmod',    '[BSS] (h)aydock/(d)iago/(o)ld-diago/(s)lepc/(i)nversion/(c)hase'&
+&       ,BSS_mode,protect=.FALSE.)
  call it(defs,'BSEprop',   '[BSS] Can be any among abs/jdos/kerr/asymm/anHAll/magn/dich/photolum/esrt/MEspin/MEorb',BSE_prop)
  call it(defs,'BSEdips',   '[BSS] Can be "trace/none" or "xy/xz/yz" to define off-diagonal rotation plane',BSE_dipole_geometry)
- call it(defs,'BSSldiaLib','[BSS] Library used with ldiago solver `(s)calapack/(e)lpa`',BSS_ldiago_solver)
+ call it(defs,'BSSldiaLib','[BSS] Library used with ldiago solver `(s)scalapack/(e1)elpa1/(e2)elpa2`',BSS_ldiago_solver)
  call it(defs,'BSSInvMode','[BSS] Inversion solver modality `(f)ull/(p)erturbative`',BSS_inversion_mode)
  call it(defs,'BSSInvPFratio','[BSS] Inversion solver. Ratio between the number of frequencies solved pert/full',&
 &             K_INV_EPS%PERT_FULL_ratio)
@@ -592,6 +598,26 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  !
 #endif
  !
+#if defined _FL
+ !
+ ! Floquet optics
+ !
+ call it(defs,'Xorder',    '[FL] Max order of the response/exc functions',FL_Chi_order)
+ call it(defs,'Xadd_mode', '[FL] Additional modes to ensure convercence',FL_add_mode,verb_level=V_fl_optics)
+ call it(defs,'Xthresh_1', '[FL] Self-consistent threshold on 1st order response function',FL_Chi_thr_1)
+ call it(defs,'Xthresh_2', '[FL] Self-consistent threshold on 2nd order response function',FL_Chi_thr_2)
+ call it(defs,'Xthresh_3', '[FL] Self-consistent threshold on 3rd order response function',FL_Chi_thr_3)
+ call it(defs,'FL_solver',    '[FL] Eigenproblem solver mode ("(D)IAGONALIZATION")',FL_solver_mode,verb_level=V_fl_optics)
+ call it(defs,'FL_deg_thresh','[FL] Degeneracy threshold in KS band structure',FL_deg_thrs,verb_level=V_fl_optics)
+ call it(defs,'FL_deg_lift',  '[FL] Degeneracy lifting of KS band structure',FL_deg_lift,verb_level=V_fl_optics)
+ call it(defs,'S_inv_mode',   '[FL] Inversion method ("(N)UMERICAL/(P)ERTURBATIVE")',FL_S_inv_mode,verb_level=V_fl_optics)
+ call it(defs,'FL_beta',     '[FL] Mixing beta',FL_beta,verb_level=V_fl_optics)
+ call it(defs,'FL_max_it',   '[FL] Maximum number of iterations',FL_max_iterations,verb_level=V_fl_optics)
+ call it(defs,'FL_2D_ild',   '[FL] Interlayer distance [Bohr] (-1 for bulk)',FL_ild,verb_level=V_fl_optics)
+ call it(defs,'FL_Pade',   '[FL] Additional Floquet-mode-dependent damping',FL_Pade_damping,unit=E_unit,verb_level=V_fl_optics)
+ !
+#endif
+ !
 #if defined _RT || defined _NL
  !
  ! External fields
@@ -609,13 +635,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it(defs,'ExtF2_Dir',             '[NL ExtF] Versor',Efield(2)%versor,verb_level=V_nl_optics)
  call it(defs,'ExtF2_Int',             '[NL ExtF] Intensity',Efield(2)%intensity,unit=I_unit,verb_level=V_nl_optics)
  call it('f',defs,'FrSndOrd','[NL] Force second order in Covariant Dipoles',verb_level=V_sc)
-#endif
- !
-#if defined _SCALAPACK
- !
- ! SLK test
- !
- call it(defs,'SLKdim',  '[SLK] Matrix Dimension',SLK_test_H_dim)
 #endif
  !
  ! GPU test
@@ -727,6 +746,7 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  call it('f',defs,'ExtendOutput', '[EXCPH] Print additional output with q-resolved lifetimes and resonances')
  call it('f',defs,'DbGdWEIGHTs', '[EXCPH] Use Double-grid also for satellite &
 &  weights and renormalization',verb_level=V_resp)
+ call it(defs,'DmType',     '[EXCPH] Smearing type (Lorentizan | Gaussian)',DmType)
  call it('f',defs,'PLqres', '[EXCPH] Write contribution from each q-point')
  !
  ! Testing only zone <
@@ -810,51 +830,6 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
  ! 
  contains 
    !
-#if defined _MPI 
-   !
-   subroutine CPU_structure_load()
-     use parallel_m, ONLY:n_CPU_str_max,CPU_structure,PARALLEL_default_mode
-     integer           :: i_s
-     character(schlen) :: name,possible_fields
-     !
-     call it(defs,"PAR_def_mode",'[PARALLEL] Default distribution mode ("balanced"/"memory"/"workload"/"KQmemory")',&
-&            PARALLEL_default_mode,verb_level=V_parallel)
-     !
-     do i_s=1,n_CPU_str_max 
-       !
-       if (i_s==1) possible_fields='(k,c,v)'     ! DIP
-       if (i_s==2) possible_fields='(q,g,k,c,v)' ! X_and_IO
-       if (i_s==3) possible_fields='(q,g,k,c,v)' ! X
-       if (i_s==4) possible_fields='(k,eh,t)'    ! BS
-       if (i_s==5) possible_fields='(q,g,qp,b)'  ! SE
-       if (i_s==6) possible_fields='(k,b,q,qp)'  ! RT
-       if (i_s==7) possible_fields='(p,d) '      ! SLK
-       if (i_s==8) possible_fields='(w,k) '      ! NL
-       if (i_s==9) possible_fields='(k) '        ! BZ
-       if (i_s==10)possible_fields='(q,k,b) '    ! PH_SE
-       if (i_s==11)possible_fields='(k,b) '      ! OSCLL
-       if (i_s==12)possible_fields='(q,g,qp,b)'  ! SX
-       !
-       if (len_trim(CPU_structure(i_s)%Short_Description)==0) cycle
-       !
-       name=trim(CPU_structure(i_s)%Short_Description)//"_CPU"
-       call it(defs,trim(name),'[PARALLEL] CPUs for each role',&
-&              CPU_structure(i_s)%CPU_string,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_ROLEs"
-       call it(defs,trim(name),'[PARALLEL] CPUs roles '//trim(possible_fields),&
-&              CPU_structure(i_s)%ROLE_string,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_INV"
-       call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
-&              CPU_structure(i_s)%nCPU_lin_algebra_INV,verb_level=V_parallel)
-       name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_DIAGO"
-       call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
-&              CPU_structure(i_s)%nCPU_lin_algebra_DIAGO,verb_level=V_parallel)
-     enddo
-     !
-   end subroutine
-   !
-#endif
-   !
    subroutine Xload(X,wv)
      !
      use pars,   ONLY:SP
@@ -935,3 +910,56 @@ call it(defs,'ElPhRndNq',  '[ELPH] Read random Q-points',elph_nQ_used,verb_level
    end subroutine
    !
 end subroutine
+!
+!
+#if defined _MPI 
+!
+subroutine CPU_structure_load(defs)
+  use pars,          ONLY:schlen
+  use it_tools,      ONLY:it
+  use it_m,          ONLY:initdefs,V_parallel
+  use parallel_m,    ONLY:n_CPU_str_max,CPU_structure,PARALLEL_default_mode
+  !
+  implicit none
+  !
+  type(initdefs)    :: defs
+  !
+  integer           :: i_s
+  character(schlen) :: name,possible_fields
+  !
+  call it(defs,"PAR_def_mode",'[PARALLEL] Default distribution mode ("balanced"/"memory"/"workload"/"KQmemory")',&
+&         PARALLEL_default_mode,verb_level=V_parallel)
+  !
+  do i_s=1,n_CPU_str_max 
+    !
+    if (i_s==1) possible_fields='(k,c,v)'     ! DIP
+    if (i_s==2) possible_fields='(q,g,k,c,v)' ! X_and_IO
+    if (i_s==3) possible_fields='(q,g,k,c,v)' ! X
+    if (i_s==4) possible_fields='(k,eh,t)'    ! BS
+    if (i_s==5) possible_fields='(q,qp,b)'    ! SE
+    if (i_s==6) possible_fields='(k,b,q,qp)'  ! RT
+    if (i_s==7) possible_fields='(p,d) '      ! SLK
+    if (i_s==8) possible_fields='(w,k) '      ! NL
+    if (i_s==9) possible_fields='(k) '        ! BZ
+    if (i_s==10)possible_fields='(q,k,b) '    ! PH_SE
+    if (i_s==11)possible_fields='(k,b) '      ! OSCLL
+    if (i_s==12)possible_fields='(q,g,qp,b)'  ! SX
+    !
+    if (len_trim(CPU_structure(i_s)%Short_Description)==0) cycle
+    name=trim(CPU_structure(i_s)%Short_Description)//"_CPU"
+    call it(defs,trim(name),'[PARALLEL] CPUs for each role',&
+&           CPU_structure(i_s)%CPU_string,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_ROLEs"
+    call it(defs,trim(name),'[PARALLEL] CPUs roles '//trim(possible_fields),&
+&           CPU_structure(i_s)%ROLE_string,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_INV"
+    call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
+&           CPU_structure(i_s)%nCPU_lin_algebra_INV,verb_level=V_parallel)
+    name=trim(CPU_structure(i_s)%Short_Description)//"_nCPU_LinAlg_DIAGO"
+    call it(defs,trim(name),'[PARALLEL] CPUs for Linear Algebra (if -1 it is automatically set)',&
+&           CPU_structure(i_s)%nCPU_lin_algebra_DIAGO,verb_level=V_parallel)
+  enddo
+  !
+end subroutine
+   !
+#endif

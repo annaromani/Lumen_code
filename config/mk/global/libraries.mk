@@ -26,7 +26,7 @@ YLIBIO_LD     = $(YLIBIO)
 #
 BASIC_LIBS   = driver tools modules memory allocations matrices linear_algebra parallel parser communicate output common timing Yio io $(IO_MODE) \
                xc_functionals interface stop_and_restart wf_and_fft bz_ops coulomb
-BASIC_LIBS_LD= driver tools memory allocations communicate modules matrices linear_algebra Yio io $(IO_MODE) common bz_ops parallel parser output timing \
+BASIC_LIBS_LD= driver tools memory allocations communicate modules matrices linear_algebra Yio $(IO_MODE) io $(IO_MODE) common bz_ops parallel parser output timing \
                xc_functionals interface stop_and_restart wf_and_fft coulomb
 
 MAIN_LIBS    = $(BASIC_LIBS) interpolate qp_control setup tddft dipoles pol_function qp acfdt bse
@@ -55,6 +55,9 @@ PJ_NLLIBS_LD = $(BASIC_LIBS_LD) interpolate real_time_control qp_control setup \
                tddft dipoles pol_function qp acfdt bse hamiltonian collisions \
                real_time_hamiltonian real_time_propagation \
                real_time_initialize real_time_drivers nloptics
+
+PJ_FLLIBS    = $(PJ_NLLIBS) floquet
+PJ_FLLIBS_LD = $(PJ_NLLIBS_LD) floquet
 #
 # Yambo folders needed by Interfaces
 #=====================================
@@ -93,6 +96,6 @@ YPPRT_MAIN_LIBS    = $(BASIC_LIBS) real_time_control interpolate qp_control setu
 YPPRT_MAIN_LIBS_LD = $(BASIC_LIBS_LD) real_time_control interpolate qp_control setup interface \
                      dipoles pol_function qp bse hamiltonian collisions
 YPPNL_MAIN_LIBS    = $(BASIC_LIBS) real_time_control interpolate qp_control setup interface \
-                     dipoles pol_function qp bse collisions hamiltonian nloptics
-YPPNL_MAIN_LIBS_LD = $(BASIC_LIBS_LD) real_time_control interpolate qp_control setup interface \
-                     dipoles pol_function qp bse hamiltonian collisions nloptics
+                     tddft dipoles pol_function qp bse collisions hamiltonian nloptics
+YPPNL_MAIN_LIBS_LD = $(BASIC_LIBS_LD) interpolate qp_control setup interface \
+                     tddft dipoles pol_function qp bse hamiltonian real_time_control collisions nloptics

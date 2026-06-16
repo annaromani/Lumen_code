@@ -24,8 +24,6 @@ subroutine RT_coefficients_Inversion(NW,NX,P,X,W,T_period)
  use YPP_real_time,   ONLY:X_order,RT_conf
  use real_time,       ONLY:RT_step,NE_steps
  use fields,          ONLY:Efield
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra,  ONLY:INV
  use y_memory_alloc
  !
  implicit none
@@ -37,6 +35,7 @@ subroutine RT_coefficients_Inversion(NW,NX,P,X,W,T_period)
  ! Work space
  !
  integer                 :: i_t,i_n,i_deltaT,nP_components,M_size,i_t_start
+ complex(SP)             :: det
  real(SP)   ,allocatable :: P_i(:),T_i(:)
  complex(SP),allocatable :: M(:,:),X_here(:)
  !
@@ -72,7 +71,7 @@ subroutine RT_coefficients_Inversion(NW,NX,P,X,W,T_period)
    end do
  end do
  !
- call LINEAR_ALGEBRA_driver(INV,M=M)
+ call SERIAL_inversion(M_size,M,det,.false.)
  !
  X = cZERO
  X_here = cZERO

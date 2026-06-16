@@ -7,6 +7,12 @@
 #
 # Folders
 #
+if [[ "$compdir" != "$srcdir" ]] && [[ "$srcdir" != "." ]] ; then
+  if test -f "$srcdir/config/report" ; then 
+    AC_MSG_ERROR([Compiling from external folder, but source is not clean. Please run make distclean in source.])
+  fi
+fi
+#
 if ! test -d log      ; then mkdir log      ; fi
 if ! test -d bin      ; then mkdir bin      ; fi
 if ! test -d include  ; then mkdir include  ; fi

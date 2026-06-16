@@ -37,11 +37,17 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
 &                              alat_used_for_output,l_QP_DB_expand,coo_out,coo_in,l_dipoles,&
 &                              DIPs_kind,l_sp_wf,l_mean_potential,l_magnons
 #if defined _YPP_RT
- use YPP_real_time,       ONLY:l_RealTime,l_RT_DBs,l_NL_X,l_NL_exc,l_RT_abs
+ use YPP_real_time,       ONLY:l_RealTime,l_RT_DBs,l_RT_abs,l_RT_ARPES
 #endif
 #if defined _YPP_ELPH
  use YPP_ELPH,            ONLY:l_atomic_amplitude,l_eliashberg,l_phonons,l_gkkp,ELPH_general_gFsq, &
 &                              l_gkkp_dg,l_gkkp_plot,l_gkkp_db,l_gkkp_sngl
+#endif
+#if defined _YPP_NL
+ use YPP_real_time,       ONLY:l_NL_X,l_NL_exc
+#endif
+#if defined _YPP_FL
+ use YPP_real_time,       ONLY:l_FL_bands
 #endif
 #if defined _YPP_SC
  ! DS This is needed otherwise ypp_sc fails if compiling after ypp_ph and later yambo_sc
@@ -268,11 +274,21 @@ integer function ypp(np,pid,lnstr,iinf,iind,iod,icd,ijs,instr,inf,ind,od,com_dir
  !
 #endif
  !
+#if defined _YPP_FL
+ if (l_FL_bands) call FL_bands_interpolation(en,k,q)
+#endif
+ !
  l_flag=l_excitons.or.l_magnons.or.(l_dipoles.and.trim(DIPs_kind)=="EXCITONIC")
+ !
 #if defined _YPP_RT
  l_flag=l_flag.or.l_RT_abs
 #endif
  if (l_flag)    call excitons_driver(k,Xk,en,Xen,q)
+ !
+#if defined _YPP_RT
+ l_flag=l_RT_ARPES
+ if (l_flag)    call RT_transient_ARPES(Xen,Xk,q)
+#endif
  !
  l_flag=l_electrons
 #if defined _YPP_ELPH && !defined _YPP_RT

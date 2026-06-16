@@ -17,13 +17,13 @@ do
 done
 #
 llocal="-lqe_pseudo -lmath77 -lslatec -llocal"
-lPLA="\$(lldiago) \$(lelpa) \$(lscalapack) \$(lblacs) \$(lmagma) \$(llapack) \$(lblas)"
+lPLA="\$(lldiago) \$(lelpa) \$(lchase) \$(lscalapack) \$(lmagma) \$(llapack) \$(lblas)"
 lSL="\$(lslepc) \$(lpetsc)"
 lIO="\$(liotk) \$(lnetcdff) \$(lnetcdf) \$(lhdf5)"
 lextlibs="\$(llibxc) \$(lfft) \$(lfutile) \$(lyaml)  \$(ldevxlib) \$(llapack) \$(lblas) \$(lcudalib)"
 #
 case $target in
-  yambo_nl)
+  yambo_nl|yambo_fl)
    libs="$libs $llocal $lPLA $lIO $lextlibs -lm"
     ;;
   yambo*)

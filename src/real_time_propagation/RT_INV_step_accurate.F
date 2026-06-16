@@ -23,8 +23,6 @@ subroutine RT_INV_step_accurate(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  use pars,           ONLY:SP,cI,cZERO
  use wrapper_omp,    ONLY:M_by_M_omp
- !use linear_algebra, ONLY:LIN_SYS
- !use interfaces,     ONLY:LINEAR_ALGEBRA_driver
  use iso_c_binding,  ONLY:C_LOC,C_F_POINTER
  use real_time,      ONLY:Ho_plus_Sigma,RT_bands,RT_nbands,&
 &                         G_lesser_reference,I1_matrix
@@ -65,7 +63,7 @@ subroutine RT_INV_step_accurate(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
  !
  !*******************************************************
  !U_k=Ho_plus_Sigma(:,:,ik,i_sp_pol)
- !call SERIAL_HERMITIAN_diagonalization(RT_nbands,U_k,En)
+ !call SERIAL_HERMITIAN_diago(RT_nbands,U_k,En)
  !!
  !! Generate the matrix  
  !!
@@ -97,7 +95,6 @@ subroutine RT_INV_step_accurate(dG_old,dG_inp,dG_out,ik,i_sp_pol,deltaT)
    enddo
  enddo
  !
- !call LINEAR_ALGEBRA_driver(LIN_SYS,M=AdA_k,B=vec_dG_out)
  call SERIAL_lin_system(RT_nbands**2,1,AdA_k,vec_dG_out)
  !
  nullify(vec_dG_out)

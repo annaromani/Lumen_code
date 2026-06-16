@@ -22,8 +22,8 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
  use pars,           ONLY:cZERO,cONE,DP,SP
  use electrons,      ONLY:n_spinor
  use collision_el,   ONLY:elemental_collision
- use D_lattice,      ONLY:idt_index
- use R_lattice,      ONLY:DEV_VAR(g_rot)
+ use D_lattice,      ONLY:idt_index,non_symmorphic_syms
+ use R_lattice,      ONLY:DEV_VAR(g_rot),DEV_VAR(g_phs)
  use pseudo,         ONLY:pp_is_uspp
  use FFT_m
 ! use FFT_m,          ONLY:fftw_plan,cufft_plan,hipfft_plan,mklgpu_desc,&
@@ -36,7 +36,8 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
  type(elemental_collision), target::isc
 
  integer :: qs,iGo
- integer :: ig,ir,isc_ngrho,ib,ibp
+ integer :: ig,igr,igs,ir,isc_ngrho,ib,ibp
+ complex(SP) :: gphase
  complex(SP), pointer DEV_ATTR :: WF_symm_i_p(:,:), WF_symm_o_p(:,:)
  complex(SP), pointer DEV_ATTR :: rhotw_p(:)
  complex(DP), pointer DEV_ATTR :: rho_tw_rs_p(:)
@@ -149,19 +150,27 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
  qs =isc%qs(3)
  isc_ngrho=isc%ngrho
  !
+ if (qs/=idt_index .and. non_symmorphic_syms) &
+ & call error(" Non symmorphic syms not coded with q-rotation in scatter bamp")
+ !
 #if defined _FFTQE && !defined _USE_3D_FFT && !defined _GPU_LOC
  !
  ! one extra conjg is performed on rho_tw_rs
  !
- if (qs==idt_index) then
-   !$omp parallel do default(shared), private(ig)
+ if (qs==idt_index) then 
+   !$omp parallel do default(shared), private(ig,igr)
    do ig = 1, isc%ngrho
-     isc%rhotw(ig)= cmplx(conjg(isc%rho_tw_rs(fft_g_table(ig,iGo))),kind=SP)
+     igr=fft_g_table(ig,iGo)
+     isc%rhotw(ig)= conjg(cmplx(isc%rho_tw_rs(igr),kind=SP))
    enddo
  else
-   !$omp parallel do default(shared), private(ig)
+   !$omp parallel do default(shared), private(ig,igr,igs,gphase)
    do ig = 1, isc%ngrho
-     isc%rhotw(ig)= cmplx(conjg(isc%rho_tw_rs(fft_g_table(g_rot(ig,qs),iGo))),kind=SP)
+     igr=g_rot(ig,qs)
+     igs=fft_g_table(igr,iGo)
+     !To check what to do. gphase coding below might not be not correct
+     !gphase=cmplx(cos(g_phs(igr,qs)),sin(g_phs(igr,qs)))
+     isc%rhotw(ig)= conjg(cmplx(isc%rho_tw_rs(igs),kind=SP))!*gphase)
    enddo
  endif
  !
@@ -170,13 +179,14 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
  if (qs==idt_index) then
    !
    !DEV_ACC_DEBUG data present(rhotw_p,rho_tw_rs_p,fft_g_table)
-   !DEV_ACC parallel loop
+   !DEV_ACC parallel loop private(igr)
    !DEV_CUF kernel do(1) <<<*,*>>>
    !DEV_OMPGPU target map(present,alloc:rhotw_p,rho_tw_rs_p,fft_g_table)
    !DEV_OMPGPU teams loop
-   !DEV_OMP parallel do default(shared), private(ig)
+   !DEV_OMP parallel do default(shared), private(ig,igr)
    do ig = 1, isc_ngrho
-     rhotw_p(ig)= cmplx(rho_tw_rs_p(DEV_VAR(fft_g_table)(ig,iGo)),kind=SP)
+     igr=DEV_VAR(fft_g_table)(ig,iGo)
+     rhotw_p(ig)= cmplx(rho_tw_rs_p(igr),kind=SP)
    enddo
    !DEV_ACC_DEBUG end data
    !DEV_OMPGPU end target
@@ -184,13 +194,17 @@ subroutine DEV_SUB(scatter_Bamp)(isc)
  else
    !
    !DEV_ACC_DEBUG data present(rhotw_p,rho_tw_rs_p,fft_g_table,g_rot)
-   !DEV_ACC parallel loop
+   !DEV_ACC parallel loop private(igr,igs)
    !DEV_CUF kernel do(1) <<<*,*>>>
    !DEV_OMPGPU target map(present,alloc:rhotw_p,rho_tw_rs_p,fft_g_table,g_rot)
    !DEV_OMPGPU teams loop
-   !DEV_OMP parallel do default(shared), private(ig)
+   !DEV_OMP parallel do default(shared), private(ig,igr,igs)
    do ig = 1, isc_ngrho
-     rhotw_p(ig)= cmplx(rho_tw_rs_p(DEV_VAR(fft_g_table)(DEV_VAR(g_rot)(ig,qs),iGo)),kind=SP)
+     igr=DEV_VAR(g_rot)(ig,qs)
+     igs=DEV_VAR(fft_g_table)(igr,iGo)
+     !To check what to do. gphase coding below might not be not correct
+     !gphase=cmplx(cos(DEV_VAR(g_phs)(igr,qs)),sin(DEV_VAR(g_phs)(igr,qs)))
+     rhotw_p(ig)= cmplx(rho_tw_rs_p(igs),kind=SP)!*gphase
    enddo
    !DEV_ACC_DEBUG end data
    !DEV_OMPGPU end target

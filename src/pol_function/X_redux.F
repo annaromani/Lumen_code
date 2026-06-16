@@ -33,10 +33,9 @@ subroutine X_redux(iq,what,X_par,Xw,X)
 &                        PAR_COM_X_WORLD,PAR_COM_SLK_INDEX_local,PAR_COM_SLK,PAR_n_freqs,PAR_FREQS_index
  use R_lattice,     ONLY:bare_qpg, bare_qpg_d
  use frequency,     ONLY:w_samp
- use linear_algebra,ONLY:INV,SVD_INV,LIN_SYS,MAT_MUL
  use matrix,        ONLY:PAR_matrix,MATRIX_reset
  use wrapper,       ONLY:M_by_M
- use interfaces,    ONLY:LINEAR_ALGEBRA_driver,MATRIX_transfer
+ use interfaces,    ONLY:MATRIX_transfer
  use stderr,        ONLY:intc
  use X_m,           ONLY:X_t,X_use_lin_sys,X_use_gpu,X_redux_build_kernel
  use TDDFT,         ONLY:FXC_n_g_corr,F_xc_gspace,FXC_LRC_alpha,FXC_LRC_beta,FXC_SVD_digits
@@ -58,7 +57,7 @@ subroutine X_redux(iq,what,X_par,Xw,X)
  ! Work Space
  !
  type(PP_indexes) :: PAR_IND_freqs
- integer          :: ig1,ig2,iw_par,iw,iw_X(1),INV_MODE,i_LA_pool,&
+ integer          :: ig1,ig2,iw_par,iw,iw_X(1),i_LA_pool,&
 &                    PAR_n_freqs_global(PAR_COM_SLK_INDEX_local%n_CPU)
  integer          :: Xo_rows(2), Xo_cols(2)
  logical          :: compute_on_gpu
@@ -183,7 +182,7 @@ subroutine X_redux(iq,what,X_par,Xw,X)
    Xo_cols(:)=Xo%cols(:)
    Xo_rows(:)=Xo%rows(:)
    !
-   if (FXC_SVD_digits>0) INV_MODE=SVD_INV
+   !if (FXC_SVD_digits>0) INV_MODE=SVD_INV
    !
    ! TDDFT Kernel. Different procedure depending on the kernel
    !
@@ -245,8 +244,8 @@ subroutine X_redux(iq,what,X_par,Xw,X)
      !                  BUFFER%blc(:,:,BUFFER%I) =  Xo%blc(:,:,1)
      !endif
      !
-     !call LINEAR_ALGEBRA_driver(LIN_SYS,M_slk=KERNEL,B_slk=BUFFER)
-     call LINEAR_ALGEBRA_driver(LIN_SYS,M_slk=KERNEL,B_slk=Xo)
+     !call LIN_SYSTEM_driver(KERNEL,BUFFER)
+     call LIN_SYSTEM_driver(KERNEL,Xo)
      !
    else
      !
@@ -254,8 +253,8 @@ subroutine X_redux(iq,what,X_par,Xw,X)
      !
      if (compute_on_gpu) call error("[LA] inversion+matmul not available on GPUs")
      !
-     call LINEAR_ALGEBRA_driver(INV,M_slk=KERNEL)
-     call LINEAR_ALGEBRA_driver(MAT_MUL,M_slk=KERNEL,B_slk=Xo,C_slk=BUFFER)
+     call INVERSION_driver(KERNEL)
+     call MATMUL_driver(KERNEL,Xo,BUFFER)
      Xo%blc(:,:,1)=BUFFER%blc(:,:,BUFFER%I)
      !
    endif

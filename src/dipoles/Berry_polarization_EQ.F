@@ -70,6 +70,7 @@ subroutine Berry_polarization_EQ(P_Berry_Red,All_S_det,en,Xk,k_map)
          !
          idx(id_in)=i1
          ikbz=k_map%k_map_dir(idx(1),idx(2),idx(3))
+         if(ikbz==0) cycle
          zeta=zeta*All_S_det(id_in,ikbz)
          !
        enddo

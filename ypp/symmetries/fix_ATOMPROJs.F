@@ -9,7 +9,7 @@
 !
 #include<y_memory.h>
 !
-subroutine fix_ATOMPROJs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,S_contains_TR)
+subroutine fix_ATOMPROJs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv)
  !
  use pars,                ONLY:LP,SP,lchlen,cZERO
  use com,                 ONLY:msg,core_io_path,more_io_path
@@ -35,7 +35,6 @@ subroutine fix_ATOMPROJs(E,k,k_save,kpoints_map,old_nsym,old_dl_sop,old_sop_inv,
  integer,intent(in)       :: old_nsym
  real(SP),intent(in)      :: old_dl_sop(3,3,old_nsym*n_spinor)
  integer,intent(in)       :: old_sop_inv(old_nsym*n_spinor)
- integer(LP),intent(in)   :: S_contains_TR(old_nsym*n_spinor)
  !
  ! Work space
  !

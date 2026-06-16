@@ -7,8 +7,9 @@
 !
 !> @brief Load wave-function in different forms
 !!
-!! @param[in]       iG_in                       max-number of G-vectors
-!! @param[in]       iGo_max_in                  ???
+!! @param[in]       iG_in                       max size for fft_setup, input var 1 (see fft_setup)
+!! @param[in]       iGo_max_in                  max size for fft_setup, input var 2 (see fft_setup)
+!! @param[in]       wf_ng_in                    in case the WFs needs to be allocated with size from input
 !! @param[in]       bands_to_load               bands range 
 !! @param[in]       kpts_to_load                k-points range 
 !! @param[in]       k_extrema_only              k-points, load only !first and last in range
@@ -28,7 +29,7 @@
 #include<y_memory.h>
 #include<yambo_wfs.h>
 !
-subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load,k_extrema_only,&
+subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load,wf_ng_in,k_extrema_only,&
 &                  space,title,impose_free_and_alloc,force_WFo,keep_states_to_load,quiet)
  !
  ! Load and (eventually) FFTs the wavefunctions
@@ -67,6 +68,7 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
  integer               :: iG_in,iGo_max_in,bands_to_load(2),kpts_to_load(2)
  type(WAVEs), target   :: WF
  integer,     optional :: sp_pol_to_load(2)
+ integer,     optional :: wf_ng_in
  character(*),optional :: space
  character(*),optional :: title
  logical,     optional :: k_extrema_only
@@ -81,7 +83,7 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
  character(schlen)::wf_title
  integer          ::i_sp_pol,ikibz,ifrag,ib_grp,ib_to_load,ib,ib1,ib2,i_spinor,ic,ig,igfft,&
 &                   iG_max,iG_bounds_loaded(2),iGo_max,sp_pol_to_load_(2),wf_grid_size,&
-&                   npwk,N
+&                   npwk,wf_ng_loc,N
  real(SP)         ::mndp,mxdp,xk(3)
  complex(SP)      ::c
  logical          ::loaded_bounds_ok,free_and_alloc,buffer_is_ok,clean_up_states,&
@@ -104,6 +106,9 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
  if (iG_max==0) iG_max=wf_ng
  !
  iGo_max=iGo_max_in
+ !
+ wf_ng_loc=wf_ng
+ if (present(wf_ng_in)) wf_ng_loc=wf_ng_in
  !
  call PARSER_close_G(iG_max,'tRL')
  call PARSER_close_G(iGo_max,'tRL')
@@ -272,10 +277,10 @@ subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load
  !
  ! Memory allocation
  !
- call WF_alloc(WF,k_extrema_only_)
+ call WF_alloc(WF,wf_ng_loc,k_extrema_only_)
  !
  if (WF%space=='R')  wf_grid_size=fft_size
- if (WF%space=='G')  wf_grid_size=wf_ng
+ if (WF%space=='G')  wf_grid_size=wf_ng_loc
  if (WF%space=='C')  wf_grid_size=wf_ncx
  if (WF%space=='B')  wf_grid_size=wf_ncx
  !
