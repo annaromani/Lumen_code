@@ -163,7 +163,7 @@ subroutine OUTPUT_unit_conversion(Ivar,Rvar,DESC,KIND,PARSER_call)
        Rvar_tmp=Rvar_tmp
      endif
    endif
-   if (index(v_line,'K')/=0) then
+   if (index(v_line,'K')/=0.or.index(v_line,'k')/=0) then
      Rvar_tmp=Rvar_tmp/11604./HA2EV
      call set_itp_unit('Kn',1)
    endif
