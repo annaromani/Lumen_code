@@ -22,6 +22,8 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
  use electrons,     ONLY:levels,spin_occ
  use R_lattice,     ONLY:bz_samp
  use frequency,     ONLY:w_samp,W_reset
+ use OUTPUT,        ONLY:OUTPUT_driver
+ use com,           ONLY:msg
  !
  implicit none
  !
@@ -37,6 +39,18 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
  complex(DP)        ::DP_FAN(gsqF_energy_steps),DP_DW,coefficient
  complex(SP)        ::Sc_local(gsqF_energy_steps)
  real(SP)           ::ph_freq
+ complex(DP)        ::DP_FAN_mode(elph_branches(1):elph_branches(2))
+ complex(DP)        ::DP_DW_mode(elph_branches(1):elph_branches(2)) 
+ complex(DP),allocatable ::QP_FAN_mode(:,:),QP_DW_mode(:,:)
+ integer            ::imode,n_modes
+ character(32)      ::mode_file
+ !
+ n_modes=elph_branches(2)-elph_branches(1)+1
+ mode_file='elph_mode_sigma'
+ allocate(QP_FAN_mode(QP_n_states,n_modes))
+ allocate(QP_DW_mode (QP_n_states,n_modes))
+ QP_FAN_mode=cmplx(0.,0.,kind=DP)
+ QP_DW_mode =cmplx(0.,0.,kind=DP)
  !
  call ELPH_simmetrize_and_distribute_gsqF(en)
  !
@@ -80,7 +94,8 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
    !
    DP_FAN=cmplx(0.,0.,kind=DP)
    DP_DW =cmplx(0.,0.,kind=DP)
-   !
+   DP_FAN_mode=cmplx(0.,0.,kind=DP)
+   DP_DW_mode =cmplx(0.,0.,kind=DP)
    do iq_loop=1,nq
      !
      if (.not.PAR_IND_Q_bz%element_1D(iq_loop)) cycle
@@ -122,12 +137,40 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
        ! QP energies : DW
        !------------------
        !
-       DP_DW=DP_DW+gsqF_dw(i_qp,iq_mem,il)*(2._DP*bose_f(ph_freq)/spin_occ+1._DP)/2._DP/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
-       ! 
+       DP_DW=DP_DW+gsqF_dw(i_qp,iq_mem,il)* &
+        & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/ &
+        & 2._DP/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
+
+       DP_DW_mode(il)=DP_DW_mode(il)+gsqF_dw(i_qp,iq_mem,il)* &
+        & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/ &
+        & 2._DP/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
+
+       DP_FAN_mode(il)=DP_FAN_mode(il)+coefficient* &
+        & (gsqF_life_bose(i_qp,iq_mem,il,1)*(bose_f(ph_freq)/spin_occ+1._DP)/2._DP+ &
+        &  gsqF_life_f(i_qp,iq_mem,il,1))/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
+
+       DP_FAN_mode(il)=DP_FAN_mode(il)+(gsqF_fan(i_qp,iq_mem,il,1)* &
+        & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/2._DP+ &
+        &  gsqF_ca_corr(i_qp,iq_mem,il,1))/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)      
+      ! DP_DW=DP_DW+gsqF_dw(i_qp,iq_mem,il)* &
+      !  & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/ &
+      !  & 2._DP/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
+      ! DP_DW_mode(il)=DP_DW_mode(il)+gsqF_dw(i_qp,iq_mem,il)* &
+      !  & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/ &
+      !  & 2._DP/real(PAR_COM_G_b_INDEX%n_CPU,kind=DP)
+      ! DP_FAN_mode(il)=DP_FAN_mode(il)+(gsqF_fan(i_qp,iq_mem,il,1)* &
+      !  & (2._DP*bose_f(ph_freq)/spin_occ+1._DP)/2._DP+ &
+      !  &  gsqF_ca_corr(i_qp,iq_mem,il,1))/real(PAR_COM_G_b_INDEX%n_CPU)
+        ! 
      enddo
      !
      call live_timing(steps=1)
      !
+   enddo
+   do il=elph_branches(1),elph_branches(2)
+     imode=il-elph_branches(1)+1
+     QP_FAN_mode(i_qp,imode)=DP_FAN_mode(il)
+     QP_DW_mode (i_qp,imode)=DP_DW_mode(il)
    enddo
    !
    if ( trim(QP_solver)=='n' )  then
@@ -164,6 +207,46 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
    !
  enddo
  !
+ call PP_redux_wait(QP_FAN_mode)
+ call PP_redux_wait(QP_DW_mode)
+ !
+ if (trim(QP_solver)=='n') then
+   !
+   call OUTPUT_driver(mode_file,action="reset")
+   call OUTPUT_driver(mode_file,action="open")
+   call msg('o '//trim(mode_file),'#',' Mode-resolved electron-phonon self-energy from ELPH_gsqF_to_Sigma',INDENT=0)
+   call msg('o '//trim(mode_file),'#',' Values are summed over q; OUTPUT_driver converts Ha to meV.',INDENT=0)
+   call msg('o '//trim(mode_file),'#',' Fan value corresponds to DP_FAN_mode(il), i.e. iw=1 in this routine.',INDENT=0)
+   call msg('o '//trim(mode_file),'#',' ',INDENT=0)
+   !
+   do i_qp=1,QP_n_states
+     ib=QP_table(i_qp,1)
+     ik=QP_table(i_qp,3)
+     do il=elph_branches(1),elph_branches(2)
+       imode=il-elph_branches(1)+1
+       !
+       call OUTPUT_driver(mode_file,TITLES=(/"K-point","Band   ","Mode   "/),I_VALUES=(/ik,ib,il/))
+       call OUTPUT_driver(mode_file,TITLES=(/"ReFan  ","ReDW   ","ReTot  "/),&
+&        R_VALUES=(/real(real(QP_FAN_mode(i_qp,imode)),SP),&
+&                   real(real(QP_DW_mode (i_qp,imode)),SP),&
+&                   real(real(QP_FAN_mode(i_qp,imode)+QP_DW_mode(i_qp,imode)),SP)/),UNIT="meV")
+       call OUTPUT_driver(mode_file,TITLES=(/"ImFan  ","ImDW   ","ImTot  "/),&
+&        R_VALUES=(/real(aimag(QP_FAN_mode(i_qp,imode)),SP),&
+&                   real(aimag(QP_DW_mode (i_qp,imode)),SP),&
+&                   real(aimag(QP_FAN_mode(i_qp,imode)+QP_DW_mode(i_qp,imode)),SP)/),UNIT="meV")
+       !
+       call OUTPUT_driver(mode_file,ORDER=(/"K-poi","Band ","Mode "/))
+       call OUTPUT_driver(mode_file,ORDER=(/"ReFan","ReDW ","ReTot"/))
+       call OUTPUT_driver(mode_file,ORDER=(/"ImFan","ImDW ","ImTot"/))
+       call OUTPUT_driver(mode_file,action="write")
+       !
+     enddo
+   enddo
+   !
+   call OUTPUT_driver(mode_file,action="close")
+   !
+ endif
+ !
  call PP_redux_wait(QP_DW)
  call PP_redux_wait(QP_OMS_Fan)
  call PP_redux_wait(QP_Sc)
@@ -172,6 +255,8 @@ subroutine ELPH_gsqF_to_Sigma(en,q,l_GF_from_CA,Sc_W)
  !
  ! CLEAN
  !
+ if (allocated(QP_FAN_mode)) deallocate(QP_FAN_mode)
+ if (allocated(QP_DW_mode )) deallocate(QP_DW_mode )
  call W_reset(Sc_local_W)
  !
 end subroutine
