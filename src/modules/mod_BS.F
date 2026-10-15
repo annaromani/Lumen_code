@@ -38,11 +38,13 @@ module BS
  logical :: BS_K_has_been_calculated_loaded=.FALSE.
  logical :: BSK_IO_sum_value
  character(schlen) :: BSE_L_kind
+ character(schlen) :: BSE_disk_IO
  character(schlen) :: BSE_mode
  character(schlen) :: BSE_prop
  character(schlen) :: BSE_dipole_geometry="none"
  character(schlen) :: BSK_mode
  character(schlen) :: BSK_IO_mode
+ character(schlen) :: BSK_IO_shape
  character(schlen) :: BS_bands_frozen_ch=""
  !
  ! Dipoles tracing 
@@ -63,6 +65,8 @@ module BS
  logical :: l_BS_magnons
  logical :: l_BS_dichroism
  logical :: l_BS_optics
+ logical :: l_BS_optics_sp_up=.FALSE.
+ logical :: l_BS_optics_sp_dw=.FALSE.
  logical :: l_BS_esort
  logical :: l_BS_esort_indx
  logical :: l_BS_mespin
@@ -279,6 +283,7 @@ module BS
  !
  integer                    :: n_BS_blks
  integer                    :: n_BS_blks_min
+ integer                    :: n_BS_blks_max
  type(BS_block), allocatable, target :: BS_blk(:)
  !
  ! WF phases

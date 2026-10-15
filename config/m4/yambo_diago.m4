@@ -8,13 +8,18 @@
 AC_DEFUN([AC_LDIAGO],[
 
 #
+AC_ARG_ENABLE(ldiago,   AS_HELP_STRING([--enable-ldiago],[Use ldiago. Default is yes]),[],[enable_ldiago="yes"])
 AC_ARG_WITH(ldiago-branch,[AS_HELP_STRING([--with-ldiago-branch=<branch>],[Use the <branch> of the ldiago repository.],[32])],,[with_ldiago_branch=none])
 #
 AC_CONFIG_FILES([lib/ldiago/make_ldiago.inc:lib/ldiago/make_ldiago.inc.in])
 
-if test "$def_scalapack" = "-D_SCALAPACK" ; then
+compile_ldiago="no"
+def_ldiago=""
+
+if test "$def_scalapack" = "-D_SCALAPACK" && test "$enable_ldiago" = "yes" ; then
 
   compile_ldiago="yes"
+  def_ldiago="-D_LDIAGO"
   
   # GPU flags are passed to ldiago compilation only if elpa library is available
   if test ! x"$def_gpu" = "x" && test "$def_elpa" = "-D_ELPA" ; then
@@ -33,6 +38,7 @@ if test "$def_scalapack" = "-D_SCALAPACK" ; then
 else
 
   compile_ldiago="no"
+  def_ldiago=""
   ldiago_opt=""
   LDIAGO_LIBS=""
   LDIAGO_INCS=""
@@ -44,6 +50,7 @@ AC_SUBST(LDIAGO_INCS)
 AC_SUBST(LDIAGO_GPU_SUPPORT)
 
 AC_SUBST(compile_ldiago)
+AC_SUBST(def_ldiago)
 AC_SUBST(ldiago_opt)
 AC_SUBST(with_ldiago_branch)
 

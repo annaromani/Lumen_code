@@ -29,9 +29,8 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
 &                         H_QP_table_setup,H_rotation,H_rotation_ref
  use wave_func,      ONLY:WF,WAVEs,WF_copy
  use FFT_m,          ONLY:fft_size
- use linear_algebra, ONLY:DIAGO
  use interfaces,     ONLY:el_density_and_current,el_magnetization,WF_load,WF_free, &
-&                         LINEAR_ALGEBRA_driver,OCCUPATIONS_Fermi
+&                         OCCUPATIONS_Fermi
  use H_interfaces,   ONLY:V_real_space_to_H
  use com,            ONLY:msg
  use ALLOC,          ONLY:X_ALLOC_elemental
@@ -120,11 +119,6 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
    call PARALLEL_WF_distribute(QP_index=PAR_IND_QP)
    call PARALLEL_WF_index( )
  endif
- !
- ! LA communicators
- !==================
- !
- call PARALLEL_assign_LA_COMMs("SE",DIAGO,CPU_structure(5)%nCPU_lin_algebra_DIAGO)
  !
  ! Initial Start & Restart 
  !==========================
@@ -414,7 +408,7 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
        !
        ! Add local V_xc
        !
-       if (l_sc_XC_is_local.and..not.l_use_collisions)     call V_real_space_to_H(ik,i_sp_pol,H_nl_sc,WFo,'xc ',Vxc=V_xc_sc)
+       if (l_sc_XC_is_local.and..not.l_use_collisions) call V_real_space_to_H(ik,i_sp_pol,H_nl_sc,WFo,'xc ',Vxc=V_xc_sc)
        !
        IO_ACT=manage_action(WR_CL_IF_END,i_frag,1,QP_nk*n_sp_pol)
        call io_control(ACTION=IO_ACT,COM=NONE,SEC=(/1+i_frag/),ID=ID(3))
@@ -449,7 +443,7 @@ subroutine SC_driver(X,Xw,Xk,E,k,q,Dip)
        ! Diagonalize H_nl_sc 
        !=====================
        !
-       call LINEAR_ALGEBRA_driver(DIAGO,M=H_nl_sc,E_real=E%E(SC_bands(1):SC_bands(2),ik,i_sp_pol))
+       call SERIAL_HERMITIAN_diago(SC_nbands,H_nl_sc,E%E(SC_bands(1):SC_bands(2),ik,i_sp_pol))
        !
        ! Rotation (WFo->WF) matrix
        !

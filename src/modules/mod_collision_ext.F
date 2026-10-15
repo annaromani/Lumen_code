@@ -38,6 +38,7 @@ module collision_ext
  logical :: COLLISIONS_from_BSE=.FALSE.
  logical :: COLLISIONS_load_SP=.FALSE.  ! Force loading of collision in single precision
  logical :: COLLISIONS_compr  =.FALSE. ! If parallel-io is used collisions in memory are compressed
+ logical :: COLL_check_cutoff =.FALSE.
  !
  ! Elements used in the code
  !

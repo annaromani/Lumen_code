@@ -86,37 +86,25 @@ module interfaces
      !
    end subroutine
    !
-   subroutine LINEAR_ALGEBRA_driver(idriver,lib_in,M,M_slk,M_bse,B,B_slk,C,C_slk,V_left,V_right,E_real,&
-&                                   E_cmpl,SVD_digits,det)
-     !
-     use matrix,         ONLY:PAR_matrix
-     use pars,           ONLY:SP
-     use BS,             ONLY:BS_block
-     !
-     integer                    :: idriver
-     integer,          optional :: lib_in
-     complex(SP),      optional :: M(:,:)
-     type(PAR_matrix), optional :: M_slk
-     type(BS_block),   optional :: M_bse(:)
-     complex(SP),      optional :: B(:,:)
-     type(PAR_matrix), optional :: B_slk
-     complex(SP),      optional :: C(:,:)
-     type(PAR_matrix), optional :: C_slk
-     complex(SP),      optional :: V_left(:,:)
-     complex(SP),      optional :: V_right(:,:)
-     real(SP),         optional :: E_real(:)
-     complex(SP),      optional :: E_cmpl(:)
-     integer,          optional :: SVD_digits 
-     complex(SP),      optional :: det
-     !
-   end subroutine
+#if defined _LDIAGO
+   subroutine K_stored_in_a_blacs_matrix_ldiago(i_BS_mat, BS_mat_dim, diago_mat, mpicxt, blacs_blk_size )
+     use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
+     integer,             intent(in)   :: i_BS_mat
+     integer,             intent(in)   :: BS_mat_dim
+     type(c_ptr),         intent(out)  :: mpicxt, diago_mat
+     integer(YDIAGO_INT), intent(out)  :: blacs_blk_size 
+   end subroutine K_stored_in_a_blacs_matrix_ldiago
    !
-  subroutine LDIAGO_driver(i_BS_mat, BS_energies, BS_VR, &
+   subroutine LDIAGO_driver(i_BS_mat, diago_mat, mpicxt, &
+    & blacs_blk_size, BS_energies, BS_VR, &
     & neigs_this_cpu, neig_shift, neigs_range, eigvals_range, &
     & BS_VL, BS_overlap, solver_type, elpasolver)
-    use pars,           ONLY:SP
+    use pars,             ONLY:SP
+    use ldiago_interface, ONLY:YDIAGO_INT,c_ptr
     implicit none
     integer, intent(in)      :: i_BS_mat
+    type(c_ptr), intent(in)  :: mpicxt, diago_mat
+    integer(YDIAGO_INT), intent(in) :: blacs_blk_size 
     complex(SP), allocatable :: BS_energies(:)
     complex(SP), allocatable, target :: BS_VR(:,:) 
     integer, intent(out)     :: neigs_this_cpu  
@@ -127,7 +115,38 @@ module interfaces
     character, optional                :: solver_type
     integer,  optional                 :: elpasolver
     complex(SP),pointer,optional       :: BS_overlap(:,:)
-  end subroutine LDIAGO_driver
+   end subroutine LDIAGO_driver
+#endif
+
+
+#if defined _CHASE
+   subroutine CHASE_driver(N,neig,M_slk,V_right,V_left,E_cmpl,E_real)
+     use pars,          ONLY:SP
+     use matrix,        ONLY:PAR_matrix
+     integer, intent(in)           :: N
+     integer, intent(in)           :: neig
+     type(PAR_matrix), intent(in)  :: M_slk
+     complex(SP),      intent(out) :: V_right(N,neig)
+     complex(SP),      intent(out), optional :: V_left(N,neig)
+     real(SP),         intent(out), optional :: E_real(neig)
+     complex(SP),      intent(out), optional :: E_cmpl(neig)
+   end subroutine CHASE_driver
+#endif
+
+
+   subroutine ODIAGO_driver(N,neig,ncpu_blacs,M_slk,V_right,V_left,E_cmpl,E_real)
+     use pars,          ONLY:SP
+     use matrix,        ONLY:PAR_matrix
+     integer, intent(in)           :: N
+     integer, intent(in)           :: neig
+     integer, intent(in)           :: ncpu_blacs
+     type(PAR_matrix), intent(in)  :: M_slk
+     complex(SP),      intent(out) :: V_right(N,neig)
+     complex(SP),      intent(out), optional :: V_left(N,neig)
+     real(SP),         intent(out), optional :: E_real(neig)
+     complex(SP),      intent(out), optional :: E_cmpl(neig)
+   end subroutine ODIAGO_driver
+
 
    subroutine el_density_and_current(E,k,rho,drho,J,bands,force_spatial_inversion)
      use pars,           ONLY:SP
@@ -194,12 +213,13 @@ module interfaces
    end function
    !
    subroutine WF_load(WF,iG_in,iGo_max_in,bands_to_load,kpts_to_load,sp_pol_to_load,&
-&                     k_extrema_only,space,title,impose_free_and_alloc,&
+&                     wf_ng_in,k_extrema_only,space,title,impose_free_and_alloc,&
 &                     force_WFo,keep_states_to_load,quiet)
      use wave_func,       ONLY:WAVEs
      integer :: iG_in,iGo_max_in,bands_to_load(2),kpts_to_load(2)
      type(WAVEs)           :: WF
      integer,     optional :: sp_pol_to_load(2)
+     integer,     optional :: wf_ng_in
      character(*),optional :: space
      character(*),optional :: title
      logical     ,optional :: k_extrema_only
@@ -215,6 +235,21 @@ module interfaces
      logical     ,optional :: keep_fft
      logical     ,optional :: keep_states_to_load
    end subroutine
+   !
+   subroutine EXC_WF_symm_qpoint(Xk,qpt,first_state,nstates,iq,isq,igq,&
+   &                                ID,S_index,EXC_WFs,l_min_mem_in)
+     use pars,          ONLY:SP
+     use R_lattice,     ONLY:bz_samp
+     use BS,            ONLY:BS_H_dim
+     use BS_solvers,    ONLY:BSS_n_eig
+     type(bz_samp), intent(in)   :: Xk,qpt
+     integer,       intent(in)   :: first_state,nstates
+     integer,       intent(in)   :: iq,isq,igq
+     integer,       intent(inout):: ID
+     complex(SP),   intent(out)  :: EXC_WFs(BS_H_dim,nstates)
+     integer,       intent(in)   :: S_index(BSS_n_eig)
+     logical,     optional,   intent(in)  :: l_min_mem_in
+   end subroutine EXC_WF_symm_qpoint
    !
    subroutine OCCUPATIONS_Gaps(E,E_g_dir,E_g_ind,N_f,N_m,I_dir,E_k_dir,E_k_ind)
      use pars,          ONLY: SP
@@ -268,13 +303,6 @@ module interfaces
      complex(SP), target, allocatable, intent(in)  :: BS_V_left(:,:)
      complex(SP), pointer, optional,   intent(in)  :: BS_Overlap(:,:) 
    end subroutine K_diago_L_res
-   !
-   subroutine K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,what)
-    use pars,           ONLY:SP
-    integer,      intent(in) :: i_BS_mat,iq,BS_mat_dim
-    complex(SP), allocatable, target :: BS_mat(:,:) 
-    character(*), intent(in) :: what
-   end subroutine K_stored_in_a_big_matrix
    !
    subroutine K_diago_perturbative(pert_dim, what, i_BS_mat, &
     &           BS_corrections, BS_VR, neigs_this_cpu, neig_shift, BS_VL, BS_Overlap) 
@@ -344,36 +372,15 @@ module interfaces
      type (WAVEs), target, intent(inout) :: WF
    end subroutine WF_symm_kpoint_g
    !
-   subroutine WF_shift_kpoint(b_to_shift,nb_to_shift,ikbz,wf_shift,Xk,WF_k_in,WF_k_out)
+   subroutine WF_symm_kpoint_g_tmp(b_to_load,ik,i_sp_pol,isymm,ig0,WF,WF_k_out)
      use pars,          ONLY:SP
      use electrons,     ONLY:n_spinor
-     use wave_func,     ONLY:wf_ng_1st_BZ,wf_ng_overlaps
-     use R_lattice,     ONLY:bz_samp
-     integer,       intent(in) :: wf_shift(3),ikbz,b_to_shift(2),nb_to_shift
-     type(bz_samp), intent(in) :: Xk
-     complex(SP),   intent(in)  DEV_ATTR :: WF_k_in (wf_ng_1st_BZ,n_spinor,nb_to_shift)
-     complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_overlaps,n_spinor,nb_to_shift)
-   end subroutine WF_shift_kpoint
-   !
-   subroutine WF_symm_kpoint(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
-     use pars,          ONLY:SP 
-     use R_lattice,     ONLY:bz_samp
-     use wave_func,     ONLY:wf_ng_1st_BZ
-     use electrons,     ONLY:n_spinor
-     integer,       intent(in)  :: ikbz,i_sp_pol,b_to_load(2)
-     type(bz_samp), intent(in)  :: Xk
-     complex(SP),   intent(out) :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
-   end subroutine WF_symm_kpoint
-   !
-   subroutine WF_symm_kpoint_gpu(b_to_load,ikbz,i_sp_pol,Xk,WF_k_out)
-     use pars,          ONLY:SP 
-     use R_lattice,     ONLY:bz_samp
-     use wave_func,     ONLY:wf_ng_1st_BZ
-     use electrons,     ONLY:n_spinor
-     integer,       intent(in)  :: ikbz,i_sp_pol,b_to_load(2)
-     type(bz_samp), intent(in)  :: Xk
-     complex(SP),   intent(out) DEV_ATTR :: WF_k_out(wf_ng_1st_BZ,n_spinor,b_to_load(2)-b_to_load(1)+1)
-   end subroutine WF_symm_kpoint_gpu
+     use wave_func,     ONLY:WAVEs,wf_ng_overlaps
+     integer,              intent(in)    :: b_to_load(2)
+     integer,              intent(in)    :: ik,i_sp_pol,isymm,ig0
+     type (WAVEs), target, intent(inout) :: WF
+     complex(SP) DEV_ATTR, target, intent(out)   :: WF_k_out(wf_ng_overlaps,n_spinor,b_to_load(1):b_to_load(2))
+   end subroutine WF_symm_kpoint_g_tmp
    !
    subroutine WF_apply_symm(isc,WF_symm)
      use pars,          ONLY:SP

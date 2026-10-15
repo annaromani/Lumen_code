@@ -8,11 +8,12 @@
 subroutine INIT_ypp_load(defs)
  !
  use it_tools,      ONLY:it
- use it_m,          ONLY:initdefs,E_unit,G_unit,V_general,V_RL,&
+ use it_m,          ONLY:initdefs,E_unit,G_unit,V_general,V_RL,V_real_time,&
 &                        Time_unit,Bfield_unit,V_real_time,T_unit,V_nl_optics,V_io,V_sc
  use wave_func,     ONLY:wf_ng
  use LIVE_t,        ONLY:nhash
- use D_lattice,     ONLY:Tel,Bose_Temp,Boltz_Temp
+ use X_m,           ONLY:global_gauge
+ use D_lattice,     ONLY:Tel,Bose_Temp,Boltz_Temp,non_periodic_directions
  use R_lattice,     ONLY:BZ_FineGd_mode
  use electrons,     ONLY:n_spinor,nel_cond
  use interpolate,   ONLY:INTERP_shell_factor,INTERP_mode,NN_n_of_nearest
@@ -24,16 +25,20 @@ subroutine INIT_ypp_load(defs)
 &                        PDOS_j,PDOS_wfcs,PDOS_kinds,PDOS_l,PDOS_m,perturbative_SOC_path,PtsPath,r_fixed,seed_name,&
 &                        SOC_bands_buffer,SOC_bands_to_map,SOC_split,state_ctl,AVE_exc,BSiq_via_command_line,&
 &                        WF_multiplier,WF_ref,what_to_write,BSiq,PROJECT_mode,PROJECT_N_perp,PROJECT_steps,PROJECT_threshold,&
-&                        DIPs_direction,DIPs_E_range,DIPs_C_bands,DIPs_V_bands,DIPs_kind,center_kind,MAGNON_Res_threshold
+&                        DIPs_direction,DIPs_E_range,DIPs_C_bands,DIPs_V_bands,DIPs_kind,center_kind,MAGNON_Res_threshold,&
+&                        epsi0,symm_thresh,mix_thresh,EXC_mass,EXC_Phi_Grid,EXC_shift,EXC_temp
  use YPP_symm,      ONLY:wf_ng_cut
 #if defined _YPP_RT
  use YPPm,          ONLY:Nel_fac
  use YPP_real_time, ONLY:RT_conf,Eh_pumped_Nel,Eh_pumped_pair_deltaE,Rho_deph,ypp_chirp,&
 &                        Eh_pumped_pair_width,Probe_Keyword,Pump_Keyword,X_order,X_kind,Eh_pumped_pair_energy,&
 &                        Eh_pumped_pair_BZ_width,Eh_mu,Eh_temp,h_mu_autotune_thr,TRabsWHAT,TRabsDIP_plane,&
-&                        TRabsMODE,TRabsDIP_dir,TRabs_Eeh_treshold,Pump_path,RT_pol_mode
+&                        TRabsMODE,TRabsDIP_dir,TRabs_Eeh_treshold,TRabs_Exc_Pol,TRabs_exc,Pump_path,RT_pol_mode
  use real_time,     ONLY:RT_bands
  use fields,        ONLY:n_ext_fields
+#endif
+#if defined _YPP_FL
+ use YPP_real_time, ONLY:FL_freq_indx
 #endif
 #if defined _YPP_SC
  use YPPm,          ONLY:V_value
@@ -57,6 +62,14 @@ subroutine INIT_ypp_load(defs)
  !
  call INIT_C_driver_runlevels(defs)
  !
+ !=======
+ ! CPU's
+ !=======
+ !
+#if defined _MPI 
+ call CPU_structure_load(defs)
+#endif
+ !
  ! ... derived
  !=============
  !
@@ -68,11 +81,13 @@ subroutine INIT_ypp_load(defs)
  call it('r',defs,'High_Symm',   '[R] High_Symmetry points and paths') 
  call it('r',defs,'Regular_Grid','[R] Regular grid')
  call it('r',defs,'amplitude',   '[R] Amplitude')
+ call it('r',defs,'ExcRadLife',  '[R] Exciton Radiative Lifetimes')
  call it('r',defs,'plot',        '[R] Plot')
  call it('r',defs,'density',     '[R] Density')
  call it('r',defs,'current',     '[R] Current')
  call it('r',defs,'bnds',        '[R] Bands')
  call it('r',defs,'wavefunction','[R] Wavefunction')
+ call it('r',defs,'group_symm',  '[R] Symmetry analisis based on group theory')
  call it('r',defs,'interpolate', '[R] Interpolate')
 #if defined _YPP_ELPH
  call it('r',defs,'eliashberg', '[R] Eliashberg')
@@ -103,6 +118,7 @@ subroutine INIT_ypp_load(defs)
  call it('r',defs,'Select_Fermi', '[R] NEQ DBs according to Fermi distribution')
  !
  call it('r',defs,'RTabs',        '[R] Transient absorption')
+ call it('r',defs,'RTARPES',      '[R] Transient ARPES')
  call it('r',defs,'RToccupations','[R] Analize time-dependent occupations')
  call it('r',defs,'RTlifetimes',  '[R] Analize time-dependent lifetimes')
  call it('r',defs,'RTpol',        '[R] Analize time-dependent polarization')
@@ -180,16 +196,17 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'RTtempEh', '[RT] Effective temperature hole | electron',Eh_temp,unit=E_unit)
  call it(defs,'RTautotuneThr', '[RT] Threshold to match no. of pumped holes and electrons.',h_mu_autotune_thr)
  !
- call it('f',defs,'LoadGhistory','[NEGF] Build the NEQ density from G<(t,t)')
- call it('f',defs,'OCCgroup',    '[NEGF] Double grid states occupations are grouped')
+ call it('f',defs,'LoadGhistory','[NEGF] Build the NEQ density from rho(t) history')
+ call it('f',defs,'OCCgroup',    '[NEGF] Double grid states occupations are grouped',verb_level=V_real_time)
  call it('f',defs,'IncludeEQocc','[NEGF] Include also equilibrium occupations')
  call it('f',defs,'BuildGles',   '[NEGF] Build G<(t,tp) with GKBA')
- call it('f',defs,'KeepCC',      '[NEGF] Use only the cc channel when reconstructuing G<(t,tp)')
- call it('f',defs,'NoOcc',       '[NEGF] Consider only the changes in the energy')
- call it('f',defs,'SkipFermiFIT','[NEGF] Do a Fermi Fit of occupations (and lifetimes ratio)')
- call it('f',defs,'SeparateEH',  '[NEGF] Separate electrons from holes in the data file') 
+ call it('f',defs,'KeepCC',      '[NEGF] Include the cc channel when reconstructuing G<(t,tp)',verb_level=V_real_time)
+ call it('f',defs,'KeepVV',      '[NEGF] Include the vv channel when reconstructuing G<(t,tp)',verb_level=V_real_time)
+ call it('f',defs,'NoOcc',       '[NEGF] Consider only the changes in the energy',verb_level=V_real_time)
+ call it('f',defs,'SkipFermiFIT','[NEGF] Do a Fermi Fit of occupations (and lifetimes ratio)',verb_level=V_real_time)
+ call it('f',defs,'SeparateEH',  '[NEGF] Separate electrons from holes in the data file',verb_level=V_real_time) 
  !
- ! TRANSIENT ABSORPTION
+ ! TRANSIENT ABSORPTION and ARPES
  !
  call it(defs,'TRabsOBS',&
 &             '[RT] RT obs. Use a combination of (abs)bsorption, (trans)mission, (refl)ectivity, (kerr)err',TRabsWHAT)
@@ -197,6 +214,12 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'TRabsDIPdir',   '[RT] Dipole reference direction. Defines the internal `x` axis',TRabsDIP_dir)
  call it(defs,'TRabsMODE',     '[RT] TRabs mode. It can be a combination of cv,vv,cc,ip,eq',TRabsMODE)
  call it(defs,'TRabsEtresh',   '[RT] Treshold imposed on the e/h pairs energy',TRabs_Eeh_treshold,unit=E_unit)
+ call it(defs,'TRabsExcPol',   '[RT] Polarization of the exciton in the initial state',TRabs_Exc_Pol,verb_level=V_real_time)
+ call it(defs,'TRabsExc',      '[RT] Range of exciton considered as final state for inter/intra excitons transitions',TRabs_Exc)
+ call it(defs,'EXCTemp'       ,'[EXCPH] Excitonic Temperature (for luminescence spectra)',Boltz_Temp,T_unit)
+ call it(defs,'Gauge' ,        '[RT] Gauge (length|velocity)',global_gauge)
+ call it('f',defs,'TRabsVelFullExpr','[RT] Use explicit expression with the terms 1/w2 and 1/w',verb_level=V_real_time)
+ call it('f',defs,'TRabsGoldModes',  '[RT] Include transitions at zero energy',verb_level=V_real_time)
  !
 #endif
  !
@@ -273,10 +296,22 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'ElecSpin', '[cc] The spin of the elec can be "up" "dn" "average" "diag"',elec_spin)
  call it('f',defs,'PrtDOS', 'Print Exciton Density of States') 
  !
+ ! Exciton lifetimes
+ !
+ call it(defs,'NonPDirs','[EXC life] Non periodic chartesian directions (X,Y,Z,XY...)',non_periodic_directions)
+ call it(defs,'Texc'    ,'[EXC life] Temp',EXC_temp,T_unit)
+ call it(defs,'Mexc'    ,'[EXC life] Exciton Mass components (M_XX, M_YY, M_ZZ)',EXC_mass)
+ call it(defs,'Epsi0'   ,'[EXC life] static dielectric matrix (for 3D case) (eps_XX | eps_YY | eps_ZZ)',epsi0)
+ call it(defs,'PhiGrid' ,'[EXC life] angle grid (for 2D)',EXC_Phi_Grid)
+ call it(defs,'Excshift' ,'[EXC life] Energy shift',EXC_shift,E_unit)
+ !
  ! WFs
  !
  call it(defs,'FFTGvecs','[FFT] Plane-waves',wf_ng,G_unit)
  call it(defs,'Degen_Step', 'Maximum energy separation of two degenerate states',deg_energy,E_unit)
+ call it(defs,'Symm_thresh', 'Threshold for accepting symmetry character',symm_thresh)
+ call it(defs,'Mix_thresh', 'Threshold for considering 2 states dependent',mix_thresh,verb_level=V_general)
+ call it('f',defs,'MinimizeMem', 'Minimize memory use')
 #if defined _YPP_ELPH
  call it(defs,'ResTresh', '[o/o] Treshold on processed polaronic residuals',elph_residual_treshold)
 #endif
@@ -291,9 +326,9 @@ subroutine INIT_ypp_load(defs)
  !
  ! p_dir: plot cut in the a1,a2,a3 basis
  ! 
- ! p_format: (c)ube/(g)nuplot/(x)crysden
+ ! p_format: (c)ube/(g)nuplot/(x)crysden in real space, or simply (k)-space
  !
- call it(defs,'Format', 'Output format [(c)ube/(g)nuplot/(x)crysden]',p_format)
+ call it(defs,'Format', 'Output format [(c)ube/(g)nuplot/(x)crysden;(k)-space]',p_format)
  call it(defs,'Direction', '[rlu] [1/2/3] for 1d or [12/13/23] for 2d [123] for 3D',p_dir)
  call it(defs,'MagDir', 'Magnetization component',mag_dir)
  call it(defs,'CurrentDir', '[cc] Carthesian direction (used to average in 2D/3D plots or to plot in 1D)',current_dir)
@@ -349,6 +384,7 @@ subroutine INIT_ypp_load(defs)
  !
  if(n_spinor==2) call it('f',defs,'ExpandSymm' , 'Add inv and magnetic symms if possible')
  call it('f',defs,'RmAllSymm' , 'Remove all symmetries')
+ call it('f',defs,'RmNoSymmo' , 'Remove non-symmorphic symmetries')
  call it('f',defs,'RmTimeRev' , 'Remove Time Reversal')
  call it('f',defs,'KeepKGrid' , 'Do not expand the k-grid')
  !
@@ -391,6 +427,14 @@ subroutine INIT_ypp_load(defs)
  call it(defs,'ChirpFac','Prefactor for linear chirping in frequency space',ypp_chirp,unit=Time_unit(1))
  call Afield(defs,1)
  !
+#endif
+ !
+#if defined _YPP_FL
+ !
+ ! FL Post-Processing
+ !
+ call it(defs,'FreqIndx','Index for the frequency',FL_freq_indx)
+ ! 
 #endif
  !
 end subroutine

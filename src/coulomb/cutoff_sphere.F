@@ -24,8 +24,7 @@ subroutine cutoff_sphere()
      radius=real(bare_qpg(iq,ig),SP)*cyl_ph_radius
      d_cos=cos(mod(radius,2*pi))
      !
-     pre_factor=sqrt(1._SP -d_cos)
-     if (abs(pre_factor)<1.E-5_SP) pre_factor=1.E-5_SP
+     pre_factor = max(sqrt(max(0._SP, 1._SP - d_cos)), 1.E-5_SP)
      !
      bare_qpg(iq,ig)=bare_qpg(iq,ig)/pre_factor
      !

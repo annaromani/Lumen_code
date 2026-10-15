@@ -22,7 +22,7 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
  use frequency,      ONLY:w_samp
  use BS,             ONLY:BS_n_g_exch,BS_n_g_fxc,BS_q,BSqpts
  use R_lattice,      ONLY:ng_closed,nqibz,bz_samp
- use QP_m,           ONLY:QP_t,QP_ng_Sx,QP_ng_Sc,QP_ng_SH,QP_ng_Vxc
+ use QP_m,           ONLY:QP_t,QP_ng_Sx,QP_ng_SH,QP_ng_Vxc
  use wave_func,      ONLY:io_WF
  use TDDFT,          ONLY:io_BS_Fxc
  use it_tools,       ONLY:switch_off_runlevel
@@ -118,7 +118,6 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
  ! Updates RL variables
  !
  QP_ng_Sx   =ng_closed
- QP_ng_Sc   =ng_closed
  QP_ng_SH   =ng_closed
  QP_ng_Vxc  =ng_closed
  BS_n_g_exch=ng_closed
@@ -277,7 +276,7 @@ subroutine INIT_check_databases(X,Xbsk,qp,Xxcw,Xw,q,k,en,en_sc,Dip,lnstr,instr,I
  call io_control(ACTION=OP_RD_CL,COM=NONE,MODE=DUMP,SEC=(/1/),ID=io_ID)
  io_ELPH_err(2)=io_ELPH(io_ID,'gkkp_expanded')
  call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1/),MODE=DUMP,ID=io_ID)
- io_err=io_EXCPH_gkkp(io_ID,'gkkp') 
+ io_err=io_EXCPH_gkkp(io_ID,'gkkp')
 #endif
  !
  ! RT 

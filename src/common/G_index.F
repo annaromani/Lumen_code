@@ -37,11 +37,19 @@ integer function G_index(v1,accept_fail)
      ng1=ng_in_shell(i_shell-1)
      exit
    endif
+   if( E_of_shell(i_shell)-E_of_shell_v1>0._SP) then
+     ng2=ng_in_shell(maxval((/i_shell-2,1/)))
+     exit
+   endif
  enddo
  !
  do i_shell=n_g_shells-1,2,-1
    if(abs(E_of_shell(i_shell)-E_of_shell_v1)<1.E-4_SP) then
      ng2=ng_in_shell(minval((/i_shell+2,n_g_shells/)))
+     exit
+   endif
+   if( E_of_shell(i_shell)-E_of_shell_v1<0._SP) then
+     ng2=ng_in_shell(minval((/i_shell+3,n_g_shells/)))
      exit
    endif
  enddo

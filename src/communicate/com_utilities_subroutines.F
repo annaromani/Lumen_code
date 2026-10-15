@@ -278,7 +278,7 @@ subroutine exp_user_warning(mesg)
  endif
  !
  if (.not.exp_user) then
-   call warning("Exp user error. Launch the code with -expuser to skip this ")
+   call warning("Launch with -expuser to overcome error. Results with -expuser might be wrong.")
    call error(mesg)
  endif
  !

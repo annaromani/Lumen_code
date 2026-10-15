@@ -36,6 +36,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
  use BS_solvers,    ONLY:B_Hall
  use PHOTOLUM,      ONLY:PL,PL_prefactor,PL_weights
  use units,         ONLY:SPEED_OF_LIGHT
+ use stderr,        ONLY:STRING_same
  use y_memory_alloc
  !
  implicit none
@@ -50,7 +51,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
  !
  integer           ::i_T_g,i_T,n_SOC,i_pert_SOC,i_res_ares,i_sort,nVAR,Indexes(5)
  real(SP)          ::f_eh,f_eh_PL(2),res_PL(2)
- logical           ::dip_v,dip_r
+ logical           ::dip_r_gspace
  complex(SP)       ::res_abs,E_plus_W0,E_plus_W(2/n_sp_pol),Z_eh,E_eh,g_fac
  !
  integer       :: i_ColFG
@@ -93,12 +94,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
  diam_term_exact=cONE*Co_factor*nel*real(Xk%nbz,SP)/spin_occ
  para_term_w0=cZERO
  if (trim(global_gauge)=='length') g_fac=cONE*Co_factor/bare_qpg(iq,i_G_shift)**2
- dip_r=.true.
- dip_v=.false.
- if (trim(global_gauge)=='velocity') then
-   dip_r=.false.
-   dip_v=.true.
- endif
+ dip_r_gspace=trim(global_gauge)=='length' .and. STRING_same(Dip%approach,"g-space v")
  !
  ! Sorting pre-setup
  !-------------------
@@ -285,7 +281,7 @@ subroutine K_IP(iq,Ken,Xk,Dip,W_bss)
 
      endif
      !
-     if ( abs(real(E_plus_W0)) < Dip%Energy_threshold .and. iq==1 .and. dip_r ) then
+     if ( abs(real(E_plus_W0)) < Dip%Energy_threshold .and. iq==1 .and. dip_r_gspace ) then
        res_abs =0._SP
        res_kerr=0._SP
        res_PL  =0._SP

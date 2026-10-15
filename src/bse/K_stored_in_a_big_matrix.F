@@ -43,20 +43,17 @@ subroutine K_stored_in_a_big_matrix(i_BS_mat,BS_mat_dim,BS_mat,iq,what)
  !
  implicit none
  !
- integer,      intent(in) :: i_BS_mat,BS_mat_dim,iq
- complex(SP), allocatable, target :: BS_mat(:,:) 
- character(*), intent(in) :: what
+ integer,        intent(in) :: i_BS_mat,BS_mat_dim,iq
+ complex(SP),   intent(out) :: BS_mat(BS_mat_dim,BS_mat_dim) 
+ character(*),   intent(in) :: what
  !
  ! Work Space
  !
  complex(SP) :: Mij
  integer     :: i_Tk,i_Tp,i_r,i_c,H_pos(2),H_shift(2),i_B
  !
- if (allocated(BS_mat)) return
- !
  call timing('BSE matrix filling',OPR='start')
  !
- YAMBO_ALLOC(BS_mat,(BS_mat_dim,BS_mat_dim))
  BS_mat    = cZERO
  !
  do i_B=1,n_BS_blks

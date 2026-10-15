@@ -64,6 +64,7 @@ subroutine Satellite_Simple(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  real(SP)    :: PH_E,bose_factor,boltzm_factor
  complex(SP) :: pole,E_alpha
  integer     :: iq_db,iq_ibz
+ complex(SP), external :: Smear_func
  !
  Sat_absorption=cZERO
  Sat_emission  =cZERO
@@ -91,20 +92,20 @@ subroutine Satellite_Simple(iq_bz,q,il,i_alpha,i_beta,W,Sat_absorption,Sat_emiss
  !
  ! Phonon emission in absorption [photon absorption / phonon emission]
  !
- Sat_absorption=Sat_absorption+BS_Sat_WEIGHT(il,i_beta,i_alpha)/(W-pole)*(1._SP+bose_factor)
+ Sat_absorption=Sat_absorption+BS_Sat_WEIGHT(il,i_beta,i_alpha)*Smear_func(W,pole)*(1._SP+bose_factor)
  !
  ! Phonon absorption in luminescence [photon emission / phonon absorption]
  !
- Sat_emission=Sat_emission    +BS_Sat_WEIGHT(il,i_beta,i_alpha)/(W-pole)*bose_factor*boltzm_factor
+ Sat_emission=Sat_emission +BS_Sat_WEIGHT(il,i_beta,i_alpha)*Smear_func(W,pole)*bose_factor*boltzm_factor
  !
  pole=E_alpha+BS_Sat_E_PH_abs(il,i_beta,i_alpha)
  !
  ! Phonon absorption in absorption [photon absorption / phonon absorption]
  !
- Sat_absorption=Sat_absorption+BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)/(W-pole)*bose_factor 
+ Sat_absorption=Sat_absorption+BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)*Smear_func(W,pole)*bose_factor 
  ! 
  ! Phonon emission in luminescence [photon emission / phonon emission]
  !
- Sat_emission=Sat_emission   +BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)/(W-pole)*(1._SP+bose_factor)*boltzm_factor
+ Sat_emission=Sat_emission   +BS_Sat_WEIGHT_PH_abs(il,i_beta,i_alpha)*Smear_func(W,pole)*(1._SP+bose_factor)*boltzm_factor
  !
 end subroutine Satellite_Simple

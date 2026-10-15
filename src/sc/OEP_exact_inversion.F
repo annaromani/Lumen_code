@@ -29,8 +29,6 @@ subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
  use R_lattice,       ONLY:bz_samp,g_rot,nkibz,nkbz
  use FFT_m,           ONLY:fft_size,fft_g_table,fft_dim,fftw_plan
  use frequency,       ONLY:w_samp,W_reset,bare_grid_N,coarse_grid_Pt,coarse_grid_index,ordered_grid_index
- use interfaces,      ONLY:LINEAR_ALGEBRA_driver
- use linear_algebra,  ONLY:INV
  use collision_el,    ONLY:elemental_collision,elemental_collision_free
  use wave_func,       ONLY:WF
  !
@@ -51,7 +49,7 @@ subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
  complex(SP), allocatable :: Xo_inverse(:,:),&
 &                            rhotw_sum(:),rhotw_sum_TR(:),rho_xc(:),Voep_RL(:)
  complex(DP), allocatable :: Vx_dp(:),rho_tw_rs(:)
- complex(SP)              :: SigmaXC
+ complex(SP)              :: SigmaXC,dummy_det
  type(w_samp)             :: Xw
  type(elemental_collision):: isc
  !
@@ -77,7 +75,7 @@ subroutine OEP_exact_inversion(X,E,k,Voep,W_x)
  Xo_inverse(:X%ng-1,:X%ng-1) =  X_mat(2:X%ng,2:X%ng,1) 
  call X_ALLOC_elemental('X')
  ! 4:
- call LINEAR_ALGEBRA_driver(INV,M=Xo_inverse)
+ call SERIAL_inversion(X%ng-1,Xo_inverse,dummy_det,.false.)
  !
  !
  ! Calculate rho_xc(G) =>  1 - initialize vars/dim

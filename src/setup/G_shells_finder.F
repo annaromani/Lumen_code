@@ -20,11 +20,12 @@ subroutine G_shells_finder()
  use pars,         ONLY:SP
  use com,          ONLY:msg
  use LIVE_t,       ONLY:live_timing
- use D_lattice,    ONLY:nsym,inv_index
- use R_lattice,    ONLY:n_g_shells,ng_in_shell,ng_closed,&
-&                       g_vec,g_rot,E_of_shell,rl_sop,minus_G
- use R_lattice,    ONLY:DEV_VAR(g_rot),DEV_VAR(minus_G)
- use vec_operate,  ONLY:iku_v_norm,v_is_zero,sort,degeneration_finder
+ use electrons,    ONLY:n_spinor
+ use D_lattice,    ONLY:nsym,inv_index,dl_tra
+ use R_lattice,    ONLY:b,n_g_shells,ng_in_shell,ng_closed,&
+&                       g_vec,g_phs,g_rot,E_of_shell,rl_sop,minus_G,G_mod_indx
+ use R_lattice,    ONLY:DEV_VAR(g_rot),DEV_VAR(g_phs),DEV_VAR(minus_G)
+ use vec_operate,  ONLY:c2a,iku_v_norm,v_is_zero,sort,degeneration_finder
  use wave_func,    ONLY:wf_nc_k,E_of_WFs
  use IO_int,       ONLY:io_control
  use IO_m,         ONLY:OP_RD_CL,OP_WR_CL,VERIFY
@@ -38,8 +39,8 @@ subroutine G_shells_finder()
  ! Work Space
  !
  integer :: i_1,i_2,ig_1,ig_2,i_s,i_m,n_g_shells_no_holes
- integer :: G_mod_indx(ng_closed),ng_in_shell_TMP(ng_closed),first_G_in_shell(ng_closed)
- real(SP):: G_mod(ng_closed),g_rotated(3),E_of_shell_TMP(ng_closed)
+ integer :: ng_in_shell_TMP(ng_closed),first_G_in_shell(ng_closed)
+ real(SP):: G_mod(ng_closed),g_rotated(3),G_cc(3),E_of_shell_TMP(ng_closed)
  type(PP_indexes) :: px
  !
  ! I/O
@@ -61,9 +62,12 @@ subroutine G_shells_finder()
      YAMBO_FREE(ng_in_shell)
      YAMBO_FREE(E_of_shell)
      YAMBO_FREE_GPU(DEV_VAR(g_rot))
+     YAMBO_FREE_GPU(DEV_VAR(g_phs))
      YAMBO_FREE_GPU(DEV_VAR(minus_G))
      YAMBO_FREE(g_rot)
+     YAMBO_FREE(g_phs)
      YAMBO_FREE(minus_G)
+     YAMBO_FREE(G_mod_indx)
      call io_control(ACTION=OP_RD_CL,SEC=(/1,2/),MODE=VERIFY,ID=ID)
      io_err=io_GROT(ID)
      !
@@ -78,9 +82,12 @@ subroutine G_shells_finder()
      YAMBO_FREE(E_of_shell)
      !
      YAMBO_FREE_GPU(DEV_VAR(g_rot))
+     YAMBO_FREE_GPU(DEV_VAR(g_phs))
      YAMBO_FREE_GPU(DEV_VAR(minus_G))
      YAMBO_FREE(g_rot)
+     YAMBO_FREE(g_phs)
      YAMBO_FREE(minus_G)
+     YAMBO_FREE(G_mod_indx)
    endif
    !
  endif
@@ -88,10 +95,27 @@ subroutine G_shells_finder()
  ! Re-ordering by increasing module
  !==================================
  !
+ YAMBO_ALLOC(G_mod_indx,(ng_closed))
  do ig_1=1,ng_closed
    G_mod(ig_1)=iku_v_norm(g_vec(ig_1,:))
  enddo
  call sort(G_mod,indx=G_mod_indx)
+ !
+ ! De-finining the g-phase for fractional translations
+ !====================================================
+ YAMBO_ALLOC(g_phs,(ng_closed,nsym*n_spinor))
+ g_phs=0
+ do ig_1=1,ng_closed
+   call c2a(b,g_vec(ig_1,:),G_cc,'ki2c')
+   do i_s=1,nsym
+     g_phs(ig_1,i_s)=-dot_product(dl_tra(:,i_s),G_cc)
+   enddo
+ enddo
+ if (n_spinor==2) g_phs(:ng_closed,nsym+1:)=g_phs(:ng_closed,:nsym)
+ !
+#ifdef _GPU
+ YAMBO_ALLOC_GPU_SOURCE(DEV_VAR(g_phs),g_phs)
+#endif
  !
  ! Shells build-up by finding equal module G_vectors
  ! ==================================================
@@ -103,7 +127,7 @@ subroutine G_shells_finder()
  !
  ! Init
  !
- YAMBO_ALLOC(g_rot,(ng_closed,nsym))
+ YAMBO_ALLOC(g_rot,(ng_closed,nsym*n_spinor))
  !
  g_rot=0
  if (myid==0) g_rot(1,:)=1 ! Gamma point
@@ -158,6 +182,8 @@ subroutine G_shells_finder()
  enddo
  !
  if (ng_closed>1) call live_timing(steps=1)
+ !
+ if (n_spinor==2) g_rot(:ng_closed,nsym+1:)=g_rot(:ng_closed,:nsym)
  !
  call PP_redux_wait(g_rot)
  call PP_redux_wait(E_of_shell_TMP)

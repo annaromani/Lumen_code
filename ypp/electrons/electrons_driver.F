@@ -19,7 +19,7 @@ subroutine electrons_driver(Xk,Xen,Xq)
  use QP_m,           ONLY:QP_table,QP_state
  use YPP_interfaces, ONLY:PROJECTION_setup
  use YPPm,           ONLY:l_density,l_mag,v2plot,&
-&                         nr,l_sp_wf,DOS_bands,plot_title,l_dos,l_bands,l_current,&
+&                         nr,l_sp_wf,l_sp_symm,DOS_bands,plot_title,l_dos,l_bands,l_current,&
 &                         l_angular_momentum,l_position,l_mean_potential,INTERP_input_mode
  use xc_functionals, ONLY:magn
  use interfaces,     ONLY:WF_load,WF_free
@@ -39,7 +39,7 @@ subroutine electrons_driver(Xk,Xen,Xq)
  ! Doing something?
  !==================
  !
- if ( .not. any((/l_density,l_mag,l_sp_wf,l_dos,l_bands,l_current,&
+ if ( .not. any((/l_density,l_mag,l_sp_wf,l_sp_symm,l_dos,l_bands,l_current,&
 &                 l_mean_potential,l_angular_momentum,l_position/)) ) return
  !
  INTERP_input_mode=INTERP_mode
@@ -58,7 +58,7 @@ subroutine electrons_driver(Xk,Xen,Xq)
  NB=(/1,maxval(Xen%nbm)/)
  NK=(/1,Xk%nibz/)
  !
- if ( any((/l_sp_wf,l_angular_momentum,l_position,l_mean_potential/)) ) then
+ if ( any((/l_sp_wf,l_sp_symm,l_angular_momentum,l_position,l_mean_potential/)) ) then
    !
    call QP_state_table_setup(Xen)
    !
@@ -100,6 +100,13 @@ subroutine electrons_driver(Xk,Xen,Xq)
  ! WAVEFUNCTIONS 
  !===============
  if (l_sp_wf.or.l_mean_potential) call electrons_WFs(Xen)
+ !
+ ! SYMMETRIES
+ !===============
+ if (l_sp_symm) then
+   call electrons_symmetries(Xk,Xen,NB,NK)
+   !call transitions_symmetries(1,Xk,Xen,Xq,NB,NK)
+ endif
  !
  ! MAGNETIZATION 
  !===============

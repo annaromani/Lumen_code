@@ -11,13 +11,14 @@
 !
 subroutine INIT_ypp(E,instr,FINALIZE)
  !
+ use drivers,        ONLY:l_exc_rad_life
  use units,          ONLY:FS2AUT
  use YPPm,           ONLY:l_plot,l_SOC_map,l_map_kpts,l_mag,l_k_grid,l_high_sym_pts,BSiq,&
-&                         l_free_hole,l_fix_syms,l_excitons,l_magnons,l_dipoles,l_exc_wf,DIPs_kind,&
+&                         l_free_hole,l_fix_syms,l_excitons,l_magnons,l_dipoles,l_exc_wf,l_exc_symm,DIPs_kind,&
 &                         l_amplitude,l_bands,l_bz_grids,l_current,BANDS_bands,BSiq_via_command_line,&
 &                         l_density,l_dos,l_electrons,l_q_grid,l_QP_DBs_create_and_modify,&
-&                         l_QP_DBs_manipulate,l_random_grid,l_shifted_grid,l_sort,l_sp_wf,l_spin,&
-&                         l_wannier,l_wavefunction,n_FineGd_DBs,n_u_interp_pts,n_u_k_pts,n_u_q_pts,&
+&                         l_QP_DBs_manipulate,l_random_grid,l_shifted_grid,l_sort,l_sp_symm,l_sp_wf,l_spin,&
+&                         l_wannier,l_wavefunction,l_group_symm,n_FineGd_DBs,n_u_interp_pts,n_u_k_pts,n_u_q_pts,&
 &                         U_k_pts,U_interp_pts,U_q_pts,U_q_shifts,FineGd_DB1_paths,l_angular_momentum,l_position,&
 &                         l_QP_DB_expand,l_average_eh,l_interp,l_regular_grid,DIPs
  use pars,           ONLY:pi,schlen
@@ -46,13 +47,17 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  use YPP_real_time,  ONLY:l_RealTime,l_RT_dos,l_RT_abs,l_RT_bands,l_RT_DBs,l_RT_density,l_RT_G_two_times,&
 &                         l_RT_energy,l_RT_lifetimes,l_RT_occupations,l_RT_time,l_RT_X,l_RTpump_Fermi,&
 &                         l_RTpump_energy,Eh_pumped_pair_n_BZ_regions,Eh_pumped_pair_BZ_regions,&
-&                         l_NL_X,l_NL_exc,RT_conf,l_RT_pol,l_RT_fields
+&                         RT_conf,l_RT_pol,l_RT_fields,l_RT_ARPES
  use fields,         ONLY:n_ext_fields
  use real_time,      ONLY:RT_bands
 #endif
 #if defined _YPP_NL 
+ use YPP_real_time,  ONLY:l_NL_X,l_NL_exc
  use nl_optics,      ONLY:NL_damping,DephMult
  use pars,           ONLY:SP
+#endif
+#if defined _YPP_FL 
+ use YPP_real_time,  ONLY:l_FL_bands
 #endif
 #if defined _YPP_ELPH
  use YPP_ELPH,       ONLY:l_phonons,l_atomic_amplitude,l_eliashberg,l_gkkp,l_gkkp_db,l_gkkp_dg,l_gkkp_plot,&
@@ -93,6 +98,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_NL
  integer, external::io_NL
  integer          ::io_Nonlinear
+#endif
+#if defined _YPP_FL
+ integer, external::io_FL
+ integer          ::io_Floquet
 #endif
  !
  if (FINALIZE) then
@@ -150,6 +159,13 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if(io_Nonlinear==0) then
    if(NL_damping/=0._SP) RT_conf%T_range(:)  =(/2._SP/NL_damping*DephMult,-real(FS2AUT,SP)/)
  endif
+ !
+#endif
+ !
+#if defined _YPP_FL
+ !
+ call io_control(ACTION=OP_RD_CL,COM=NONE,SEC=(/1/),MODE=DUMP,ID=ID)
+ io_Floquet=io_FL(ID)
  !
 #endif
  !
@@ -265,14 +281,16 @@ subroutine INIT_ypp(E,instr,FINALIZE)
      endif
      if ( trim(rstr_piece(i1)) == 'excitons' .or. trim(rstr_piece(i1)) == 'magnons') then
        l_wavefunction   =STRING_match(rstr_piece(i1+1),'w')
+       l_group_symm     =STRING_match(rstr_piece(i1+1),'g')
        l_sort           =STRING_match(rstr_piece(i1+1),'s').and..not.STRING_match(rstr_piece(i1+1),'sp')
        l_amplitude      =STRING_match(rstr_piece(i1+1),'a')
+       l_exc_rad_life   =STRING_match(rstr_piece(i1+1),'l')
        !
        l_spin  =STRING_match(rstr_piece(i1+1),'sp').and.n_spin>1
        l_mag   =STRING_match(rstr_piece(i1+1),'m').and.n_spin>1
        !
 #if defined _YPP_ELPH
-       l_gkkp           =STRING_match(rstr_piece(i1+1),'g')
+       !l_gkkp           =STRING_match(rstr_piece(i1+1),'g')
        l_eliashberg     =STRING_match(rstr_piece(i1+1),'e')
        l_ph_ass_dos     =STRING_match(rstr_piece(i1+1),'p')
 #endif
@@ -298,6 +316,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
        l_density        =STRING_match(rstr_piece(i1+1),'d')
        l_dos            =STRING_match(rstr_piece(i1+1),'s')
        l_wavefunction   =STRING_match(rstr_piece(i1+1),'w')
+       l_group_symm     =STRING_match(rstr_piece(i1+1),'g')
        l_bands          =STRING_match(rstr_piece(i1+1),'b')
        l_mag            =STRING_match(rstr_piece(i1+1),'m').and.n_spin>1
        !
@@ -327,6 +346,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
        l_RT_density     =STRING_match(rstr_piece(i1+1),'d')
        l_RT_G_two_times =STRING_match(rstr_piece(i1+1),'g')
        l_RT_abs         =STRING_match(rstr_piece(i1+1),'a')
+       l_RT_ARPES       =STRING_match(rstr_piece(i1+1),'s')
        l_RT_pol         =STRING_match(rstr_piece(i1+1),'p')
        l_RT_fields      =STRING_match(rstr_piece(i1+1),'f')
        !
@@ -353,6 +373,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_NL
      l_NL_X   =  trim(rstr_piece(i1)) == 'nonlinear'
 #endif   
+     !
+#if defined _YPP_FL
+     l_FL_Bands =  trim(rstr_piece(i1)) == 'floquet'
+#endif   
      !    
    enddo
  enddo
@@ -363,6 +387,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  !
  if (l_RT_X)           call initactivate(1,'RT_X')
  if (l_RT_abs)         call initactivate(1,'RTabs')
+ if (l_RT_ARPES)       call initactivate(1,'RTARPES')
  if (l_RT_occupations) call initactivate(1,'RToccupations')
  if (l_RT_lifetimes)   call initactivate(1,'RTlifetimes')
  if (l_RT_density)     call initactivate(1,'RTdeltaRho')
@@ -380,6 +405,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_spin)           call initactivate(1,'spin')
  if (l_mag)            call initactivate(1,'magnetization')
  if (l_wavefunction)   call initactivate(1,'wavefunction')
+ if (l_group_symm)     call initactivate(1,'group_symm')
  if (l_interp)         call initactivate(1,'interpolate')
  !
 #if defined _YPP_ELPH
@@ -404,6 +430,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_current)        call initactivate(1,'current')
  if (l_density)        call initactivate(1,'density')
  if (l_sort)           infile_editing=.false.
+ if (l_exc_rad_life)   call initactivate(1,'ExcRadLife')
  if (l_dos)            call initactivate(1,'dos')
  if (l_bands)          call initactivate(1,'bnds')
  !
@@ -416,6 +443,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  !
 #if defined _YPP_NL
  if (l_NL_X)         call initactivate(1,'nonlinear')
+#endif
+ !
+#if defined _YPP_FL
+ if (l_FL_bands)     call initactivate(1,'floquet')
 #endif
  !
  l_flag=.not.l_sort
@@ -464,6 +495,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_RT_pol           = runlevel_is_on('RTpol')
  l_RT_fields        = runlevel_is_on('RTfields')
  l_RT_abs           = runlevel_is_on('RTabs')
+ l_RT_ARPES         = runlevel_is_on('RTARPES')
  l_RT_occupations   = runlevel_is_on('RToccupations')
  l_RT_lifetimes     = runlevel_is_on('RTlifetimes')
  l_RT_density       = runlevel_is_on('RTdeltaRho')
@@ -477,6 +509,9 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #endif
 #if defined _YPP_NL
  l_NL_X   =runlevel_is_on('nonlinear')
+#endif
+#if defined _YPP_FL
+ l_FL_Bands=runlevel_is_on('floquet')
 #endif
 #if defined _YPP_SC
  l_angular_momentum = runlevel_is_on('angular_m').and.runlevel_is_on('electrons')
@@ -497,9 +532,12 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_free_hole =runlevel_is_on('freehole')
  l_average_eh=runlevel_is_on('avehole')
  l_amplitude=runlevel_is_on('amplitude')
+ l_exc_rad_life   =runlevel_is_on('ExcRadLife')
  l_exc_wf   =runlevel_is_on('wavefunction').and.(runlevel_is_on('excitons').or.runlevel_is_on('magnons'))
- l_interp    =runlevel_is_on('interpolate').and.(runlevel_is_on('excitons').or.runlevel_is_on('magnons'))
- l_sp_wf    =runlevel_is_on('wavefunction').and. runlevel_is_on('electrons')
+ l_exc_symm =runlevel_is_on('group_symm').and.(runlevel_is_on('excitons').or.runlevel_is_on('magnons'))
+ l_interp   =runlevel_is_on('interpolate').and.(runlevel_is_on('excitons').or.runlevel_is_on('magnons'))
+ l_sp_wf    =runlevel_is_on('wavefunction').and.runlevel_is_on('electrons')
+ l_sp_symm  =runlevel_is_on('group_symm').and.runlevel_is_on('electrons')
  l_density  =runlevel_is_on('density').and.runlevel_is_on('electrons')
  l_current  =runlevel_is_on('current').and.runlevel_is_on('electrons')
  l_mag      =runlevel_is_on('magnetization')
@@ -534,7 +572,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_mean_potential) call initactivate(1,"PotValue")
 #endif
  !
- if (l_fix_syms) call initactivate(1,"Efield1 Efield2 BField Bpsi Btheta RmAllSymm RmTimeRev RmSpaceInv GvecsCut KeepKGrid")
+ if (l_fix_syms) then
+   call initactivate(1,"Efield1 Efield2 BField Bpsi Btheta GvecsCut KeepKGrid")
+   call initactivate(1,"RmAllSymm RmNoSymmo RmTimeRev RmSpaceInv")
+ endif
  !
 #if defined _YPP_RT
  !
@@ -566,7 +607,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_flag=(l_dipoles.and.trim(DIPs_kind)=="IP").or.(l_electrons.and.l_dos)&
  &      .or.l_bands.or.(l_excitons.and.l_interp).or.(l_magnons.and.l_interp)
 #if defined _YPP_RT
- l_flag=l_flag.or.(l_RealTime.and.(l_RT_bands.or.l_RT_dos.or.l_RT_G_two_times))
+ l_flag=l_flag.or.(l_RealTime.and.(l_RT_bands.or.l_RT_dos.or.l_RT_G_two_times.or.l_RT_ARPES))
+#endif
+#if defined _YPP_FL
+ l_flag=l_flag.or.l_FL_bands
 #endif
  if (l_flag) call initactivate(1,"INTERP_mode INTERP_Shell_Fac INTERP_NofNN")
  !
@@ -579,7 +623,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if ((l_excitons.or.l_magnons).and.l_interp) call initactivate(1,"BANDS_steps cooIn cooOut")
  l_flag=l_bands
 #if defined _YPP_RT
- l_flag=l_bands.or.l_RT_bands.or.l_RT_G_two_times
+ l_flag=l_bands.or.l_RT_bands.or.l_RT_G_two_times.or.l_RT_ARPES
+#endif
+#if defined _YPP_FL
+ l_flag=l_bands.or.l_FL_bands
 #endif
  if (l_flag) then
    call initactivate(1,"OutputAlat cooIn cooOut NormN NelFac")
@@ -609,6 +656,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  ! Electrons
  if (l_electrons) then
    if (l_dos.or.l_bands) call INIT_QP_ctl_switch('G')
+   if (l_sp_symm) then
+     call INIT_QP('')
+     call initactivate(1,"Symm_thresh FFTGvecs")
+   endif
    if (l_dos) then
      call initactivate(1,"DOSERange DOSESteps DOS_broad DOS_bands DOSUsesOcc")
      call initactivate(1,"PDOS_atoms PDOS_kinds PDOS_wfcs PDOS_l PDOS_j PDOS_m")
@@ -634,7 +685,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  !
  if (l_RealTime) then
    !
-   l_flag=l_RT_occupations.or.l_RT_abs.or.l_RT_pol
+   l_flag=l_RT_occupations.or.l_RT_abs.or.l_RT_pol.or.l_RT_ARPES
    if (l_flag)      call init_RT_ctl_switch('G')
    l_flag=l_RT_occupations.or.l_RT_density.or.l_RT_lifetimes.or.l_RT_abs.or.l_RT_pol.or.l_RT_G_two_times.or.l_RT_fields
    if (l_flag)      call initactivate(1,"TimeStep TimeRange")
@@ -659,8 +710,15 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    endif
    if ((l_RT_dos.or.l_RT_time).and.n_spinor==2) call initactivate(1,'WFReference')
    !
+   if (l_RT_abs.or.l_RT_ARPES) then
+     call CPU_activate("DIP")
+     call initactivate(1,"EnRngeRt ETStpsRt DampFactor")
+     call initactivate(1,"Gauge States En_treshold BSQindex")
+     call initactivate(1,"TRabsExcPol TRabsExc EXCTemp")
+   endif
+   !
    if (l_RT_abs) then
-     call initactivate(1,"BSQindex EnRngeRt ETStpsRt DampFactor")
+     call initactivate(1,"BSQindex TRabsVelFullExpr TRabsGoldModes")
      call initactivate(1,"TRabsOBS TRabsDIPdir TRabsDIPplane TRabsMODE TRabsEtresh")
    endif
    if (l_RT_fields) then
@@ -675,6 +733,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
 #if defined _YPP_NL
  if(l_NL_X)   call initactivate(1,"Xorder TimeRange ETStpsRt EnRngeRt DampMode DampFactor PrtPwrSpec PumpPATH")
  if(l_NL_exc) call initactivate(1,"Xorder PrintExc")
+#endif
+ !
+#if defined _YPP_FL
+ if(l_FL_bands)   call initactivate(1,"FreqIndx")
 #endif
  !
 #if defined _YPP_SC
@@ -697,6 +759,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  if (l_excitons.or.l_magnons) then
    call initactivate(1,"States En_treshold Res_treshold BSQindex")
    if (l_amplitude) call INIT_QP_ctl_switch('G')
+   if (l_exc_rad_life) call initactivate(1,"NonPDirs Texc Mexc PhiGrid Degen_Step Excshift Epsi0")
    if (l_exc_wf.or.l_amplitude) call initactivate(1,"Degen_Step Weight_treshold")
    if (l_exc_wf.and.(.not.l_free_hole.and..not.l_average_eh)) &
    &  call initactivate(1,"Cells Hole CenterKind Dimension") 
@@ -705,6 +768,7 @@ subroutine INIT_ypp(E,instr,FINALIZE)
    if (l_exc_wf.and.l_average_eh) call initactivate(1,"EHdensity")
    if (l_exc_wf.and.n_spin>1) call initactivate(1,"ElecSpin HoleSpin")
    if (l_spin) call initactivate(1,"Degen_Step")
+   if (l_exc_symm) call initactivate(1,"Degen_Step Symm_thresh Mix_thresh FFTGvecs MinimizeMem")
 #if defined _YPP_ELPH
    if (l_eliashberg)  call initactivate(1,"Degen_Step") 
 #endif
@@ -771,7 +835,10 @@ subroutine INIT_ypp(E,instr,FINALIZE)
  l_flag=l_bands
  !
 #if defined _YPP_RT
- l_flag=l_flag.or.l_RT_bands.or.l_RT_G_two_times
+ l_flag=l_flag.or.l_RT_bands.or.l_RT_G_two_times.or.l_RT_ARPES
+#endif
+#if defined _YPP_FL
+ l_flag=l_flag.or.l_FL_bands
 #endif
  !
  if (l_flag) call USER_vector_handle("BANDS_kpts",3)

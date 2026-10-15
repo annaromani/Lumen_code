@@ -11,12 +11,14 @@ subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
   !  K = |                       |
   !      | (-cI*K_c^*)  (-K_r^*) |
   !
-  use pars,           ONLY:cI,cONE,cZERO
+  use pars,           ONLY:cI,cONE,cZERO,lchlen
   use BS,             ONLY:BS_K_dim,BS_H_dim,BS_blk,n_BS_blks,BS_K_coupling,&
   &                        BS_res_ares_n_mat,l_BS_ares_from_res
   use BS_solvers,     ONLY:BSS_eh_E,BSS_eh_W,BSS_perturbative_width, &
   &                        run_inversion,run_Haydock
   use  gpu_m,         ONLY:have_cuda
+  use parallel_m,     ONLY:ncpu
+  use LIVE_t,         ONLY:live_timing
   !
   !use, intrinsic :: iso_c_binding, only: c_ptr
   use ldiago_interface
@@ -28,6 +30,7 @@ subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
   !
   ! Workspace
   !
+  character(lchlen)                 :: timing_msg
   logical                           :: l_mat_allocated
   integer                           :: i_c,i_r,i_Tk,i_Tp,i_B,H_shift(2)
   complex(YDIAGO_CMPLX)             :: Mij,Mij_star
@@ -101,6 +104,9 @@ subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
   error_diago = initiateSetQueue(diago_mat, nelements)
   if (error_diago /= 0) call error("Initiating set Queue failed")
   !
+  timing_msg="Copying BSE kernel in matrix form"
+  if(ncpu>1) timing_msg='Redistributing BSE kernel in Blacs form'
+  call live_timing(trim(timing_msg),n_BS_blks)
   !
   ! // fill the elements
   do i_B=1,n_BS_blks
@@ -108,7 +114,10 @@ subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
     i_Tk  =BS_blk(i_B)%iT_k
     i_Tp  =BS_blk(i_B)%iT_p
     !
-    if (i_BS_mat/=BS_blk(i_B)%ira_k .and. BS_res_ares_n_mat==2) cycle
+    if (i_BS_mat/=BS_blk(i_B)%ira_k .and. BS_res_ares_n_mat==2) then
+      call live_timing(steps=1)
+      cycle
+    endif
     !
     l_mat_allocated = allocated(BS_blk(i_B)%mat)
     !
@@ -228,7 +237,11 @@ subroutine K_fill_block_cyclic(i_BS_mat, diago_mat)
       !
     enddo
     !
+    call live_timing(steps=1)
+    !
   enddo
+  !
+  call live_timing()
   !
   ! Free the blocks immediately if not required.
   if ( (.not.(run_Haydock.or.run_inversion)) ) call BS_blks_free(i_BS_mat)

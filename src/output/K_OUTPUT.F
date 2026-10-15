@@ -49,7 +49,9 @@ subroutine K_OUTPUT(iq,W,WHAT,OBS)
    !
    if (STRING_match(WHAT,"Haydock"))   solver="haydock"
    if (STRING_match(WHAT,"Diago"))     solver="diago"
+   if (STRING_match(WHAT,"Ldiago"))    solver="diago"
    if (STRING_match(WHAT,"Slepc"))     solver="slepc"
+   if (STRING_match(WHAT,"ChASE"))     solver="chase"
    if (STRING_match(WHAT,"Inversion")) solver="inv"
    if (STRING_match(WHAT,"IP"))        solver="IP"
    !

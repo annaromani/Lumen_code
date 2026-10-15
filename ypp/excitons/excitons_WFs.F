@@ -3,7 +3,7 @@
 !
 ! Copyright (C) 2015 The Yambo Team
 !
-! Authors (see AUTHORS file for details): AM DV
+! Authors (see AUTHORS file for details): AM DV DS
 !
 ! headers
 !
@@ -47,7 +47,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  integer           :: iv,ic,ikbz,ikibz,is,neh,i1,i2,i_lambda,j_lambda,i_sp_c,i_sp_v,ir,ir_fixed,j1,&
 &                     n_lambda_deg,BS_E_deg_done,neh1,iv1,ic1,ikbz1,ikibz1,i_sp_c1,i_sp_v1,is1,&
 &                     i_spin_hole,i_spin_elec,n1_lambda,n2_lambda
- integer           :: ikpbz,ikp,isp,i_spinor,j_spinor,rh_size,ir_fixed_rlu(3)
+ integer           :: ikpbz,ikp,isp,i_spinor,j_spinor,rh_size,re_size,ir_fixed_rlu(3)
  character(schlen) :: exc_index_msg
  real(SP)          :: r_fixed_rlu(3),k1(3),k2(3)
  complex(SP)       :: B_coeff
@@ -160,8 +160,14 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
  !
  if(.not.l_average_eh) then
    rh_size=1
-   if (l_free_hole) rh_size=nr_tot
-   YAMBO_ALLOC(k_dot_r_e,(nr_tot))
+   re_size=1
+   if (l_free_hole) then
+     re_size=nr_tot
+     rh_size=nr_tot
+   endif
+   if (fixed_hole_plot) re_size=nr_tot
+   if (fixed_elec_plot) rh_size=nr_tot
+   YAMBO_ALLOC(k_dot_r_e,(re_size))
    YAMBO_ALLOC(kp_dot_r_h,(rh_size))
    !
    i1=n_spinor
@@ -462,7 +468,7 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
                 alpha(ir)=k_dot_r_e(1)-kp_dot_r_h(ir)
                 phase(ir)=cmplx(cos(alpha(ir)),sin(alpha(ir)),kind=SP)
                 wf_tmp(ir,i_spinor,j_spinor) = wf_tmp(ir,i_spinor,j_spinor)+&
-                &  BS_mat(neh,j_lambda)*wf_vc(rindex(ir),i_spinor,j_spinor)*phase(ir)
+                &  wf_vc(rindex(ir),i_spinor,j_spinor)*phase(ir)
              enddo
            enddo
          enddo
@@ -596,3 +602,124 @@ subroutine exciton_WFs(Xk,BS_E_degs,iq)
    end subroutine
    !
 end subroutine exciton_WFs
+!
+!
+subroutine exciton_WFs_kspace(Xk,BS_E_degs,iq)
+ !
+ use pars,          ONLY:SP,cZERO,pi,schlen
+ use R_lattice,     ONLY:bz_samp,k_map
+ use units,         ONLY:BO2ANG
+ use stderr,        ONLY:intc
+ use electrons,     ONLY:n_spinor,n_sp_pol
+ use YPPm,          ONLY:v2plot,nr,EXCITONS_user_indexes,EXCITONS_n_user_states
+ use BS_solvers,    ONLY:BSS_eh_table_m1,BS_mat,BSS_desc,BSS_n_eig
+ use BS,            ONLY:BS_bands
+ use LIVE_t,        ONLY:live_timing
+ use y_memory_alloc
+ !
+ implicit none
+ !
+ type(bz_samp)     :: Xk
+ integer           :: BS_E_degs(BSS_n_eig),iq
+ ! 
+ ! Workspace
+ !
+ integer           :: iv,ic,ikbz,ik_3D,ik1,ik2,ik3,neh,i_lambda,j_lambda,i_sp_c,i_sp_v,&
+&                     n_lambda_deg,BS_E_deg_done,i1,n1_lambda,n2_lambda,ip1,ip2,ip3
+ character(schlen) :: exc_index_msg
+ !
+ call section('+','Excitonic Wave Function in reciprocal space')
+ !
+ YAMBO_ALLOC(v2plot,(Xk%nbz))
+ !
+ if (iq/=1) call error("finite q excitons in k-space not implemented")
+ !
+ call build_inverse_BS_eh_table_from_BSS_table(Xk%nbz)
+ !
+ call k_map_nearest_by_dir(Xk,k_map)
+ !
+ nr=k_map%max_kdir
+ !
+ BS_E_deg_done=-1
+ !
+ do i_lambda=1,EXCITONS_n_user_states
+   !
+   j_lambda=EXCITONS_user_indexes(i_lambda)
+   !
+   !call live_timing('ExcWF@'//trim(intc(j_lambda)),px%n_of_elements(myid+1))
+   call live_timing('ExcWF@'//trim(intc(j_lambda)),Xk%nbz)
+   !
+   if (BS_E_degs(j_lambda)/=BS_E_deg_done) i1=0
+   !
+   BS_E_deg_done=BS_E_degs(j_lambda)
+   !
+   i1=i1+1
+   !
+   n_lambda_deg=count(BS_E_degs==BS_E_degs(j_lambda))
+   !
+   n1_lambda=BS_E_degs(j_lambda)
+   n2_lambda=BS_E_degs(j_lambda)+n_lambda_deg-1
+   !
+   if(i1==1) v2plot=0._SP
+   !
+   ik_3D=0
+   !
+   do ik1=1,k_map%max_kdir(1)
+     do ik2=1,k_map%max_kdir(2)
+       do ik3=1,k_map%max_kdir(3)
+         !
+         ik_3D=ik_3D+1
+         !
+         !ip1=mod(ik1+1,k_map%max_kdir(1))+1
+         !ip2=mod(ik2+1,k_map%max_kdir(2))+1
+         !ip3=mod(ik3+1,k_map%max_kdir(3))+1
+         !
+         ikbz=k_map%k_map_dir(ik1,ik2,ik3)
+         !ikbz=k_map%k_map_dir(ip1,ip2,ip3)
+         !
+         !if (.not.px%element_1D(ikbz)) cycle
+         !
+         !ikibz = Xk%sstar(ikbz,1)
+         !is    = Xk%sstar(ikbz,2)
+         !
+         !ikpbz = qindx_X(iq,ikbz,1)
+         !ikp   = Xk%sstar(ikpbz,1)
+         !isp   = Xk%sstar(ikpbz,2)
+         !
+         !k1=Xk%ptbz(ikbz,:)/alat(:)*2._SP*pi
+         !k2=Xk%ptbz(ikpbz,:)/alat(:)*2._SP*pi
+         !
+         !
+         do iv    = BS_bands(1),BS_bands(2)
+         do ic    = BS_bands(1),BS_bands(2)
+         do i_sp_c= 1,n_sp_pol
+         do i_sp_v= 1,n_sp_pol
+           !
+           neh=BSS_eh_table_m1(ikbz,iv,ic,i_sp_c,i_sp_v)
+           if (neh==0) cycle
+           !
+           v2plot(ik_3D) = v2plot(ik_3D) + abs(BS_mat(neh,j_lambda))**2
+           !
+         enddo
+         enddo
+         enddo
+         enddo
+         !
+         call live_timing(steps=1)
+         !
+       enddo
+     enddo
+   enddo
+   !
+   call live_timing()
+   !
+   if (i1/=n_lambda_deg) cycle
+   !
+   if (n_lambda_deg==1) exc_index_msg=trim(intc(j_lambda))
+   if (n_lambda_deg> 1) exc_index_msg=trim(intc(n1_lambda))//'-'//trim(intc(n2_lambda))
+   !
+   call plot_xcrysden_kspace(iq,exc_index_msg)
+   !
+ enddo
+ !
+end subroutine exciton_WFs_kspace

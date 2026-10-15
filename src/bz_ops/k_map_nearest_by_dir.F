@@ -15,6 +15,7 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !  
  use pars,           ONLY:SP,zero_dfl,schlen
  use R_lattice,      ONLY:bz_samp,bz_map,WF_shifts
+ use vec_operate,    ONLY:rlu_v_norm
  use com,            ONLY:msg
  use pars,           ONLY:zero_dfl
  use y_memory_alloc
@@ -26,8 +27,9 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  ! Work Space
  !
- integer  :: id,ik,idx(3)
- real(SP) :: k_shift(3),dshift
+ integer  :: id,ik,idx(3),ishift,n_mapped,n_not_mapped,grid_dim,n_shifts
+ logical  :: kpt_mapped(Xk%nbz)
+ real(SP) :: k_shift(3,4),dshift
  character(schlen) :: dump_ch
  !
  YAMBO_FREE(WF_shifts)
@@ -38,6 +40,20 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  if(allocated(Xk%ptbz)) call k_ibz2bz(Xk,'d',.false.)
  call k_ibz2bz(Xk,'a',.false.)
+ !
+ ! Check if it is a shifted grid
+ !
+ k_shift=10.E10_SP
+ kpt_mapped=.false.
+ do ishift=1,4 
+   do ik=1,Xk%nbz
+     if(kpt_mapped(ik)) cycle
+     if(rlu_v_norm(Xk%ptbz(ik,:))>=rlu_v_norm(k_shift(:,ishift))) cycle
+     k_shift(:,ishift) =Xk%ptbz(ik,:)
+     kpt_mapped(ik)=.true.
+   enddo
+ enddo
+ dshift=rlu_v_norm(k_shift(:,1))
  !
  ! Check the points out of the BZ before bring them inside
  !
@@ -59,31 +75,11 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  write(dump_ch,'(a,3f14.8)') " Lenght of G vectors in each direction: ",k_map%g0_length(1:3)
  call msg("r",dump_ch)
  !
- ! Check if it is a shifted grid
- !
- dshift=10.E10_SP
- do ik=1,Xk%nbz
-   if(sqrt(sum(Xk%ptbz(ik,:)**2))<dshift) then
-      dshift=sqrt(sum(Xk%ptbz(ik,:)**2))
-      k_shift =Xk%ptbz(ik,:) 
-   endif
- enddo
- !
- if(dshift>zero_dfl) then
-   write(dump_ch,'(a,3f12.6)') " Shifted grid: ",k_shift
-   call msg("sr",dump_ch)
-   call warning('Yambo_nl works only with a single-shift k-point grid! ')
- else
-   k_shift=0._SP
- endif
- !
+ grid_dim=count(abs(k_map%q_step(:))>zero_dfl)
  do id=1,3
-   k_map%max_kdir(id)=nint(maxval(Xk%ptbz(:,id)-k_shift(id))/k_map%q_step(id))+1
+   k_map%max_kdir(id)=nint(maxval(Xk%ptbz(:,id))/k_map%q_step(id))+1
    if(k_map%q_step(id)==0._SP) k_map%max_kdir(id)=1
  enddo
- !
- write(dump_ch,'(a,3i4)') "Number of k-point in each direction: ",k_map%max_kdir
- call msg("s",dump_ch)
  !
  if(allocated(k_map%k_map_dir)) then
    YAMBO_FREE(k_map%k_map_dir)
@@ -99,20 +95,45 @@ subroutine k_map_nearest_by_dir(Xk,k_map)
  !
  YAMBO_ALLOC(k_map%k_map_dir,(k_map%max_kdir(1),k_map%max_kdir(2),k_map%max_kdir(3)))
  YAMBO_ALLOC(k_map%k_map_inv,(Xk%nbz,3))
+ k_map%k_map_dir=0
+ k_map%k_map_inv=0
  ! 
  !Find index	     
  ! 
  do ik=1,Xk%nbz
    do id=1,3
      if(abs(k_map%q_step(id))>zero_dfl) then
-       idx(id)=nint((Xk%ptbz(ik,id)-k_shift(id))/k_map%q_step(id))+1
+       idx(id)=nint(Xk%ptbz(ik,id)/k_map%q_step(id))+1
      else ! non periodic directions
        idx(id)=1
      endif
    enddo
+   !write(*,*) idx
    k_map%k_map_dir(idx(1),idx(2),idx(3))=ik
    k_map%k_map_inv(ik,:)=idx
  enddo
+ !
+ n_not_mapped=count(k_map%k_map_dir==0)
+ n_mapped=count(k_map%k_map_dir/=0)
+ call msg("sr","k-points (mappend, not mapped)",(/n_mapped,n_not_mapped/))
+ !
+ k_map%step=1
+ if(dshift>zero_dfl) then
+   k_map%step=2
+   n_shifts=2**grid_dim/((n_mapped+n_not_mapped)/n_mapped)
+   call msg("sr","Shifted grid") 
+   call msg("sr","Number of k-point in each direction",k_map%max_kdir/2)
+   call msg("sr","Number of shifts",n_shifts)
+   do ishift=1,n_shifts
+     write(dump_ch,'(a,i1,a,3f12.6)') "Shift ",ishift,": ",k_shift(:,ishift)
+     call msg("sr",trim(dump_ch)) 
+   enddo
+   if (n_shifts>1) call warning("Using one grid at time for k-derivatives ")
+ else
+   if (n_not_mapped>0) call error("Gamma centered grid, but not all points are mapped")
+   call msg("sr","Gamma centered grid")
+   call msg("sr","Number of k-point in each direction",k_map%max_kdir)
+ endif
  !
 end subroutine k_map_nearest_by_dir
  
